@@ -1,4 +1,4 @@
-package org.arbitrary;
+package org.tomfoolery;
 
 import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.Test;
