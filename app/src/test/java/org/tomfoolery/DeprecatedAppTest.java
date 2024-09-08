@@ -3,8 +3,8 @@ package org.tomfoolery;
 import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.Test;
 
-public class AppTest {
+public class DeprecatedAppTest {
     @Test public void appHasName() {
-        assertNotNull(App.NAME, "App should have static attribute NAME");
+        assertNotNull(DeprecatedApp.NAME, "App should have static attribute NAME");
     }
 };

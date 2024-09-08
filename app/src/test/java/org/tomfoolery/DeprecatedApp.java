@@ -1,6 +1,6 @@
 package org.tomfoolery;
 
-public class App {
+public class DeprecatedApp {
     public static final String NAME = "tomfoolery";
 
     static Mouse hieu = new Mouse("Logitech", "G102", 8000);
