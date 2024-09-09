@@ -1,8 +1,8 @@
-package org.tomfoolery.configurations.contracts;
+package org.tomfoolery.configurations.monolith_terminal_configurations.contracts;
 
 public interface TerminalContract {
     public interface View {
-        public void displayResult(String result);
+        public void displayResponse(String response);
         public void onDestroy();
     }
 

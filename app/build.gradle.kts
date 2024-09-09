@@ -23,7 +23,7 @@ group = "org.tomfoolery"
 version = 1.0
 
 application {
-    mainClass = "${group}.App"
+    mainClass = "${group}.configurations.monolith_terminal_configurations.MonolithApplication"
 }
 
 java {
@@ -114,4 +114,9 @@ tasks {
 tasks.named<Test>("test") {
     // For unit testing
     useTestNG()
+}
+
+// Prevents non-blocking `java.util.Scanner`
+tasks.getByName("run", JavaExec::class) {
+    standardInput = System.`in`
 }
