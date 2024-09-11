@@ -13,7 +13,7 @@ public class MonolithApplication {
     }
 
     private void start() {
-        this.view.listenForUserInput();
+        this.view.start();
     }
 
     public static void main(String[] args) {

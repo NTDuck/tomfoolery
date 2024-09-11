@@ -4,55 +4,60 @@ import org.tomfoolery.configurations.monolith_terminal_configurations.contracts.
 import org.tomfoolery.configurations.monolith_terminal_configurations.presenters.TerminalPresenter;
 import org.tomfoolery.infrastructures.repositories.InMemoryDictionaryEntryRepository;
 
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-/**
- * The view does not acknowledge the existence of the domain, and vice versa.
- */
 public class TerminalView implements TerminalContract.View {
     private final TerminalPresenter presenter;
 
-    private volatile boolean isListening = true;
+    private final Scanner scanner;
+    private boolean isActive = true;
 
     public TerminalView(InMemoryDictionaryEntryRepository dictionaryEntryRepository) {
         this.presenter = new TerminalPresenter(this, dictionaryEntryRepository);
+        this.scanner = new Scanner(System.in);
     }
 
-    public void listenForUserInput() {
-        Scanner scanner = new Scanner(System.in);
-        String userInput;
+    public void start() {
+        this.presenter.onStart();
 
-        displayPrompt();
-
-        while (this.isListening) {
-            userInput = scanner.nextLine();
-            onUserInput(userInput);
+        while (this.isActive) {
+            requestUserActionSelection();
         }
-
-        scanner.close();
     }
 
     @Override
-    public void displayResponse(String response) {
-        System.out.println(response);
+    public void requestUserActionSelection() {
+        final String PROMPT = "\nYour action: ";
+        display(PROMPT);
+
+        String userActionSelection = this.scanner.nextLine();
+        this.presenter.onUserActionSelection(userActionSelection);
+    }
+
+    @Override
+    public void requestUserActionInputs(String[] labels) {
+        String[] userInputs = new String[labels.length];
+
+        for (int index = 0; index < labels.length; index++)
+            userInputs[index] = this.requestUserActionInput(labels[index]);
+
+        this.presenter.onUserInputs(userInputs);
+    }
+
+    private String requestUserActionInput(String label) {
+        this.display(label);
+        String userInput = this.scanner.nextLine();
+        return userInput;
+    }
+
+    @Override
+    public void display(String content) {
+        System.out.print(content);
     }
 
     @Override
     public void onDestroy() {
-        this.isListening = false;
-    }
-
-    private void onUserInput(String userInput) {
-        presenter.onUserInput(userInput);
-    }
-
-    private void displayPrompt() {
-        System.out.println("This is a dictionary!");
-        System.out.println("Supported commands:");
-        System.out.println("/add {word} {definition}");
-        System.out.println("/get {word}");
-        System.out.println("/quit");
-        System.out.println();
+        this.scanner.close();
+        this.isActive = false;
     }
 }
