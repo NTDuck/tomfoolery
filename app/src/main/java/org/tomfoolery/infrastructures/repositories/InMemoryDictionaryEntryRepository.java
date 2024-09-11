@@ -18,4 +18,4 @@ public class InMemoryDictionaryEntryRepository implements DictionaryEntryReposit
     public void addDictionaryEntry(DictionaryEntry dictionaryEntry) {
         dictionaryEntryHashMap.putIfAbsent(dictionaryEntry.headword, dictionaryEntry);
     }
-};
+}

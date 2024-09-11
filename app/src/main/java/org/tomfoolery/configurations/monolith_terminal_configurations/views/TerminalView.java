@@ -10,7 +10,7 @@ public class TerminalView implements TerminalContract.View {
     private final TerminalPresenter presenter;
 
     private final Scanner scanner;
-    private boolean isActive = true;
+    private boolean isActive = false;
 
     public TerminalView(InMemoryDictionaryEntryRepository dictionaryEntryRepository) {
         this.presenter = new TerminalPresenter(this, dictionaryEntryRepository);
@@ -19,6 +19,7 @@ public class TerminalView implements TerminalContract.View {
 
     public void start() {
         this.presenter.onStart();
+        this.isActive = true;
 
         while (this.isActive) {
             requestUserActionSelection();
@@ -27,8 +28,7 @@ public class TerminalView implements TerminalContract.View {
 
     @Override
     public void requestUserActionSelection() {
-        final String PROMPT = "\nYour action: ";
-        display(PROMPT);
+        display("\n\nYour action: ");
 
         String userActionSelection = this.scanner.nextLine();
         this.presenter.onUserActionSelection(userActionSelection);
@@ -41,13 +41,12 @@ public class TerminalView implements TerminalContract.View {
         for (int index = 0; index < labels.length; index++)
             userInputs[index] = this.requestUserActionInput(labels[index]);
 
-        this.presenter.onUserInputs(userInputs);
+        this.presenter.onUserActionInputs(userInputs);
     }
 
     private String requestUserActionInput(String label) {
         this.display(label);
-        String userInput = this.scanner.nextLine();
-        return userInput;
+        return this.scanner.nextLine();
     }
 
     @Override

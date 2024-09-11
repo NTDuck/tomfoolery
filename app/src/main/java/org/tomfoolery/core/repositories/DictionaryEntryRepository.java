@@ -7,4 +7,4 @@ import java.util.Optional;
 public interface DictionaryEntryRepository {
     Optional<DictionaryEntry> getDictionaryEntry(String headword);
     void addDictionaryEntry(DictionaryEntry dictionaryEntry);
-};
+}

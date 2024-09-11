@@ -1,16 +1,16 @@
 package org.tomfoolery.configurations.monolith_terminal_configurations.contracts;
 
 public interface TerminalContract {
-    public interface View {
-        public void display(String content);
-        public void requestUserActionSelection();
-        public void requestUserActionInputs(String[] labels);
-        public void onDestroy();
+    interface View {
+        void display(String content);
+        void requestUserActionSelection();
+        void requestUserActionInputs(String[] labels);
+        void onDestroy();
     }
 
-    public interface Presenter {
-        public void onStart();
-        public void onUserActionSelection(String userActionSelection);
-        public void onUserInputs(String[] userInputs);
+    interface Presenter {
+        void onStart();
+        void onUserActionSelection(String userActionSelection);
+        void onUserActionInputs(String[] userInputs);
     }
 }

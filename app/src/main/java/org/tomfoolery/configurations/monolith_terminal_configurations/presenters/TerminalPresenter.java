@@ -1,17 +1,17 @@
 package org.tomfoolery.configurations.monolith_terminal_configurations.presenters;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
 import org.tomfoolery.configurations.monolith_terminal_configurations.contracts.TerminalContract;
 import org.tomfoolery.core.domain.DictionaryEntry;
 import org.tomfoolery.core.repositories.DictionaryEntryRepository;
 import org.tomfoolery.core.usecases.AddDictionaryEntryUseCase;
 import org.tomfoolery.core.usecases.GetDictionaryEntryUseCase;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 public class TerminalPresenter implements TerminalContract.Presenter {
-    private static record UserAction(
+    private record UserAction(
         Function<String[], String> responseResolver,
         String labelForUserActionSelection,
         String... labelsForUserActionInputs
@@ -20,7 +20,7 @@ public class TerminalPresenter implements TerminalContract.Presenter {
     private record UserActionManager(UserAction... userActions) {
         public Optional<UserAction> getUserAction(String userActionSelection) {
             try {
-                return Optional.ofNullable(this.userActions[Integer.valueOf(userActionSelection)]);
+                return Optional.ofNullable(this.userActions[Integer.parseInt(userActionSelection)]);
             } catch (Exception exception) {
                 return Optional.empty();
             }
@@ -59,7 +59,7 @@ public class TerminalPresenter implements TerminalContract.Presenter {
         this.userActionManager = new UserActionManager(
             new UserAction((String[] userInputs) -> {
                 this.view.onDestroy();
-                return "Thank you for listening\n";
+                return "Terminated successfully.\n";
             }, "Exit"),
 
             new UserAction((String[] userInputs) -> {
@@ -70,16 +70,16 @@ public class TerminalPresenter implements TerminalContract.Presenter {
                     new DictionaryEntry(headword, List.of(definition))
                 );
 
-                return "";
+                return "Added word " + headword + ".";
             }, "Add", "word: ", "definition: "),
 
             new UserAction((String[] userInputs) -> {
                 String headword = userInputs[0];
                 Optional<DictionaryEntry> dictionaryEntryOptional = this.getDictionaryEntryUseCase.invoke(headword);
 
-                return dictionaryEntryOptional.isEmpty()
-                        ? "No definition found"
-                        : String.join("\n", dictionaryEntryOptional.get().definitions);
+                return "Found " + dictionaryEntryOptional.get().definitions.size() + " definition(s) of word " + headword + ":\n" + dictionaryEntryOptional
+                    .map(dictionaryEntry -> String.join("\n", dictionaryEntry.definitions))
+                    .orElse("Found 0 definitions of word " + headword);
             }, "Get", "word: ")
         );
     }
@@ -104,8 +104,7 @@ public class TerminalPresenter implements TerminalContract.Presenter {
     }
 
     @Override
-    public void onUserInputs(String[] userInputs) {
-        this.userActionSelection = userActionSelection;
+    public void onUserActionInputs(String[] userInputs) {
         Optional<UserAction> userAction = this.userActionManager.getUserAction(this.userActionSelection);
 
         if (userAction.isEmpty()) {
