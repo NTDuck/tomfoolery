@@ -77,9 +77,15 @@ public class TerminalPresenter implements TerminalContract.Presenter {
                 String headword = userInputs[0];
                 Optional<DictionaryEntry> dictionaryEntryOptional = this.getDictionaryEntryUseCase.invoke(headword);
 
-                return "Found " + dictionaryEntryOptional.get().definitions.size() + " definition(s) of word " + headword + ":\n" + dictionaryEntryOptional
-                    .map(dictionaryEntry -> String.join("\n", dictionaryEntry.definitions))
-                    .orElse("Found 0 definitions of word " + headword);
+                return dictionaryEntryOptional.map(dictionaryEntry -> new StringBuilder()
+                    .append("Found ")
+                    .append(dictionaryEntry.definitions.size())
+                    .append(" definition(s) of word ")
+                    .append(headword)
+                    .append(":\n")
+                    .append(String.join("\n", dictionaryEntry.definitions))
+                    .toString())
+                    .orElseGet(() -> "Found 0 definitions of word " + headword);
             }, "Get", "word: ")
         );
     }
