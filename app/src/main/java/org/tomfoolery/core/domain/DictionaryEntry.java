@@ -1,5 +1,7 @@
 package org.tomfoolery.core.domain;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.List;
 
