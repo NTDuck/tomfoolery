@@ -1,6 +1,6 @@
 package org.tomfoolery.configurations.monolith_terminal_configurations.presenters;
 
-import org.tomfoolery.core.domain.DictionaryEntry;
+import org.tomfoolery.core.domain.ReadonlyDictionaryEntry;
 import org.tomfoolery.core.usecases.RetrieveAllDictionaryEntriesUseCase;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class RetrieveAllDictionaryEntriesPresenter extends DictionaryEntryPresen
     public String generateResponse(String[] userInput) {
         assert(userInput.length == this.getParameterLabels().length);
 
-        List<DictionaryEntry> dictionaryEntries = this.retrieveAllDictionaryEntriesUseCase.invoke();
+        List<ReadonlyDictionaryEntry> dictionaryEntries = this.retrieveAllDictionaryEntriesUseCase.invoke();
 
         return new StringBuilder()
             .append("Found ")

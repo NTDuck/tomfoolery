@@ -1,6 +1,6 @@
 package org.tomfoolery.core.domain;
 
-import lombok.Getter;
+import lombok.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,19 +9,22 @@ import java.util.List;
  * @see <a href="https://dictionaryapi.dev/">Free Dictionary API</a>
  * @see <a href="https://dictionaryapi.com/products/json#sec-2">Merriam-Webster's Collegiate Dictionary API</a>
  */
+@Data
+@RequiredArgsConstructor(staticName = "of", access = AccessLevel.PROTECTED)
 public class DictionaryEntry {
-    public String headword;
+    @NonNull String headword;
+    @NonNull @Singular List<Meaning> meanings;
 
+    List<String> syllables;
+    HashMap<String, String> pronunciations;   // Maps partOfSpeech to pronunciation label
+    Number frequencyScore;
+
+    @Data
+    @RequiredArgsConstructor(staticName = "of")
     public static class Meaning {
-        public String definition;
-        public String partOfSpeech;
+        @NonNull String definition;
+        String partOfSpeech;
 
-        public HashMap<String, List<String>> properties;
+        @NonNull @Singular HashMap<String, List<String>> properties;
     }
-
-    public List<Meaning> meanings;
-
-    public List<String> syllables;
-    public HashMap<String, String> pronunciations;   // Maps partOfSpeech to pronunciation label
-    public Number frequencyScore;
 }

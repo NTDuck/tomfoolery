@@ -8,7 +8,7 @@ public class MonolithApplication {
     private final MainController mainController;
 
     private MonolithApplication() {
-        this.dictionaryEntryRepository = new InMemoryDictionaryEntryRepository();
+        this.dictionaryEntryRepository = InMemoryDictionaryEntryRepository.of();
         this.mainController = new MainController(this.dictionaryEntryRepository);
     }
 

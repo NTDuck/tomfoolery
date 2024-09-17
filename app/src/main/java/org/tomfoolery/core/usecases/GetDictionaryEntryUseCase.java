@@ -2,15 +2,15 @@ package org.tomfoolery.core.usecases;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.tomfoolery.core.domain.DictionaryEntry;
 import org.tomfoolery.core.repositories.DictionaryEntryRepository;
 
-
 @RequiredArgsConstructor(staticName = "of")
-public class DeleteDictionaryEntryUseCase {
+public class GetDictionaryEntryUseCase {
     @NonNull
     private final DictionaryEntryRepository dictionaryEntryRepository;
 
-    public void invoke(@NonNull String headword) {
-        this.dictionaryEntryRepository.delete(headword);
+    public DictionaryEntry invoke(@NonNull String headword) throws DictionaryEntryRepository.NotFoundException {
+        return this.dictionaryEntryRepository.get(headword);
     }
 }

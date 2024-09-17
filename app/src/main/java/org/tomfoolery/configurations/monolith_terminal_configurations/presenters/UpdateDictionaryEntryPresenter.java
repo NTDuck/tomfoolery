@@ -1,6 +1,6 @@
 package org.tomfoolery.configurations.monolith_terminal_configurations.presenters;
 
-import org.tomfoolery.core.domain.DictionaryEntry;
+import org.tomfoolery.core.domain.ReadonlyDictionaryEntry;
 import org.tomfoolery.core.usecases.UpdateDictionaryEntryUseCase;
 
 public class UpdateDictionaryEntryPresenter extends DictionaryEntryPresenter {
@@ -18,7 +18,7 @@ public class UpdateDictionaryEntryPresenter extends DictionaryEntryPresenter {
         String headword = userInput[0];
         String[] definitions = userInput[1].split("\\|");
 
-        DictionaryEntry dictionaryEntry = generateDictionaryEntry(headword, definitions);
+        ReadonlyDictionaryEntry dictionaryEntry = generateDictionaryEntry(headword, definitions);
 
         this.updateDictionaryEntryUseCase.invoke(headword, dictionaryEntry);
 

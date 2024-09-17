@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith_terminal_configurations.views;
 
 import java.util.Scanner;
 
-public class MainView {
+public class MainView implements AutoCloseable {
     private final Scanner scanner;
 
     public MainView() {
@@ -17,6 +17,7 @@ public class MainView {
         return this.scanner.nextLine();
     }
 
+    @Override
     public void close() {
         this.scanner.close();
     }

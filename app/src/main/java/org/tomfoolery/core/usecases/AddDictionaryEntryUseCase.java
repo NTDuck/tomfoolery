@@ -6,13 +6,13 @@ import org.tomfoolery.core.domain.DictionaryEntry;
 import org.tomfoolery.core.repositories.DictionaryEntryRepository;
 
 @RequiredArgsConstructor(staticName = "of")
-public class UpdateDictionaryEntryUseCase {
+public class AddDictionaryEntryUseCase {
     @NonNull
     private final DictionaryEntryRepository dictionaryEntryRepository;
 
-    public void invoke(DictionaryEntry dictionaryEntry) throws DictionaryEntryRepository.NotFoundException {
-        if (!this.dictionaryEntryRepository.contains(dictionaryEntry.getHeadword()))
-            throw new DictionaryEntryRepository.NotFoundException();
+    public void invoke(@NonNull DictionaryEntry dictionaryEntry) {
+        if (this.dictionaryEntryRepository.contains(dictionaryEntry.getHeadword()))
+            return;
 
         this.dictionaryEntryRepository.save(dictionaryEntry);
     }

@@ -1,6 +1,6 @@
 package org.tomfoolery.configurations.monolith_terminal_configurations.presenters;
 
-import org.tomfoolery.core.domain.DictionaryEntry;
+import org.tomfoolery.core.domain.ReadonlyDictionaryEntry;
 import org.tomfoolery.core.usecases.RetrieveDictionaryEntryExactMatchUseCase;
 
 import java.util.Optional;
@@ -19,7 +19,7 @@ public class RetrieveDictionaryEntryExactMatchPresenter extends DictionaryEntryP
 
         String headword = userInput[0];
 
-        Optional<DictionaryEntry> dictionaryEntry = this.retrieveDictionaryEntryExactMatchUseCase.invoke(headword);
+        Optional<ReadonlyDictionaryEntry> dictionaryEntry = this.retrieveDictionaryEntryExactMatchUseCase.invoke(headword);
 
         return dictionaryEntry.map(DictionaryEntryPresenter::generateStringFromDictionaryEntry)
             .orElse("Word \"" + headword + "\" not found");

@@ -1,6 +1,6 @@
 package org.tomfoolery.configurations.monolith_terminal_configurations.presenters;
 
-import org.tomfoolery.core.domain.DictionaryEntry;
+import org.tomfoolery.core.domain.ReadonlyDictionaryEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,14 @@ public abstract class DictionaryEntryPresenter extends Presenter {
         super(selectionLabel, parameterLabels);
     }
 
-    protected static DictionaryEntry generateDictionaryEntry(String headword, String[] definitions) {
-        DictionaryEntry dictionaryEntry = new DictionaryEntry();
+    protected static ReadonlyDictionaryEntry generateDictionaryEntry(String headword, String[] definitions) {
+        ReadonlyDictionaryEntry dictionaryEntry = new ReadonlyDictionaryEntry();
 
         dictionaryEntry.headword = headword;
         dictionaryEntry.meanings = new ArrayList<>();
 
         for (String definition : definitions) {
-            DictionaryEntry.Meaning meaning = new DictionaryEntry.Meaning();
+            ReadonlyDictionaryEntry.Meaning meaning = new ReadonlyDictionaryEntry.Meaning();
             meaning.definition = definition.trim();
             dictionaryEntry.meanings.add(meaning);
         }
@@ -27,14 +27,14 @@ public abstract class DictionaryEntryPresenter extends Presenter {
         return dictionaryEntry;
     }
 
-    protected static String generateStringFromDictionaryEntry(DictionaryEntry dictionaryEntry) {
+    protected static String generateStringFromDictionaryEntry(ReadonlyDictionaryEntry dictionaryEntry) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder
             .append(dictionaryEntry.headword)
             .append(": ");
 
-        for (DictionaryEntry.Meaning meaning : dictionaryEntry.meanings)
+        for (ReadonlyDictionaryEntry.Meaning meaning : dictionaryEntry.meanings)
             stringBuilder.append(meaning.definition).append(DELIMITER);
 
         // Remove last delimiter
@@ -44,10 +44,10 @@ public abstract class DictionaryEntryPresenter extends Presenter {
         return stringBuilder.toString();
     }
 
-    protected static String generateStringFromDictionaryEntries(List<DictionaryEntry> dictionaryEntries) {
+    protected static String generateStringFromDictionaryEntries(List<ReadonlyDictionaryEntry> dictionaryEntries) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (DictionaryEntry dictionaryEntry : dictionaryEntries)
+        for (ReadonlyDictionaryEntry dictionaryEntry : dictionaryEntries)
             stringBuilder.append(generateStringFromDictionaryEntry(dictionaryEntry));
 
         return stringBuilder.toString();

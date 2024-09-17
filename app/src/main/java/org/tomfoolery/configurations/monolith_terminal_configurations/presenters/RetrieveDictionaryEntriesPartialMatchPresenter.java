@@ -1,6 +1,6 @@
 package org.tomfoolery.configurations.monolith_terminal_configurations.presenters;
 
-import org.tomfoolery.core.domain.DictionaryEntry;
+import org.tomfoolery.core.domain.ReadonlyDictionaryEntry;
 import org.tomfoolery.core.usecases.RetrieveDictionaryEntriesPartialMatchUseCase;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class RetrieveDictionaryEntriesPartialMatchPresenter extends DictionaryEn
 
         String partialHeadword = userInput[0];
 
-        List<DictionaryEntry> dictionaryEntries = this.retrieveDictionaryEntriesPartialMatchUseCase.invoke(partialHeadword);
+        List<ReadonlyDictionaryEntry> dictionaryEntries = this.retrieveDictionaryEntriesPartialMatchUseCase.invoke(partialHeadword);
 
         return new StringBuilder()
                 .append("Found ")

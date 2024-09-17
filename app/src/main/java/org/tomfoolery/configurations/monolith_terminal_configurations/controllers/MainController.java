@@ -5,13 +5,13 @@ import org.tomfoolery.configurations.monolith_terminal_configurations.views.*;
 import org.tomfoolery.core.repositories.DictionaryEntryRepository;
 import org.tomfoolery.core.usecases.*;
 
-public class MainController {
+public class MainController implements AutoCloseable {
     private static final Integer selectionOfExitPresenter = 0;
 
-    private final CreateDictionaryEntryUseCase createDictionaryEntryUseCase;
-    private final RetrieveAllDictionaryEntriesUseCase retrieveAllDictionaryEntriesUseCase;
+    private final AddDictionaryEntryUseCase addDictionaryEntryUseCase;
+    private final SearchDictionaryEntriesUseCase retrieveAllDictionaryEntriesUseCase;
     private final RetrieveDictionaryEntriesPartialMatchUseCase retrieveDictionaryEntriesPartialMatchUseCase;
-    private final RetrieveDictionaryEntryExactMatchUseCase retrieveDictionaryEntryExactMatchUseCase;
+    private final GetDictionaryEntryUseCase retrieveDictionaryEntryExactMatchUseCase;
     private final UpdateDictionaryEntryUseCase updateDictionaryEntryUseCase;
     private final DeleteDictionaryEntryUseCase deleteDictionaryEntryUseCase;
 
@@ -23,10 +23,10 @@ public class MainController {
     public MainController(DictionaryEntryRepository dictionaryEntryRepository) {
         this.dictionaryEntryRepository = dictionaryEntryRepository;
 
-        this.createDictionaryEntryUseCase = new CreateDictionaryEntryUseCase(this.dictionaryEntryRepository);
-        this.retrieveAllDictionaryEntriesUseCase = new RetrieveAllDictionaryEntriesUseCase(this.dictionaryEntryRepository);
+        this.addDictionaryEntryUseCase = new AddDictionaryEntryUseCase(this.dictionaryEntryRepository);
+        this.retrieveAllDictionaryEntriesUseCase = new SearchDictionaryEntriesUseCase(this.dictionaryEntryRepository);
         this.retrieveDictionaryEntriesPartialMatchUseCase = new RetrieveDictionaryEntriesPartialMatchUseCase(this.dictionaryEntryRepository);
-        this.retrieveDictionaryEntryExactMatchUseCase = new RetrieveDictionaryEntryExactMatchUseCase(this.dictionaryEntryRepository);
+        this.retrieveDictionaryEntryExactMatchUseCase = new GetDictionaryEntryUseCase(this.dictionaryEntryRepository);
         this.updateDictionaryEntryUseCase = new UpdateDictionaryEntryUseCase(this.dictionaryEntryRepository);
         this.deleteDictionaryEntryUseCase = new DeleteDictionaryEntryUseCase(this.dictionaryEntryRepository);
 
@@ -79,7 +79,7 @@ public class MainController {
     private void addPresenters() {
         this.presenter.addPresenter(selectionOfExitPresenter, new ExitPresenter());
 
-        this.presenter.addPresenter(1, new CreateDictionaryEntryPresenter(this.createDictionaryEntryUseCase));
+        this.presenter.addPresenter(1, new CreateDictionaryEntryPresenter(this.addDictionaryEntryUseCase));
         this.presenter.addPresenter(2, new DeleteDictionaryEntryPresenter(this.deleteDictionaryEntryUseCase));
         this.presenter.addPresenter(3, new UpdateDictionaryEntryPresenter(this.updateDictionaryEntryUseCase));
         this.presenter.addPresenter(4, new RetrieveAllDictionaryEntriesPresenter(this.retrieveAllDictionaryEntriesUseCase));

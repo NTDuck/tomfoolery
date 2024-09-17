@@ -1,17 +1,19 @@
 package org.tomfoolery.core.repositories;
 
+import lombok.NonNull;
 import org.tomfoolery.core.domain.DictionaryEntry;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface DictionaryEntryRepository {
-    void createDictionaryEntry(String headword, DictionaryEntry dictionaryEntry);
-    void deleteDictionaryEntry(String headword);
+    class NotFoundException extends Exception {}
 
-    Optional<DictionaryEntry> retrieveDictionaryEntryExactMatch(String headword);
-    List<DictionaryEntry> retrieveDictionaryEntriesPartialMatch(String partialHeadword);
-    List<DictionaryEntry> retrieveAllDictionaryEntries();
+    void save(@NonNull DictionaryEntry dictionaryEntry);
+    void delete(@NonNull String headword);
 
-    Boolean contains(String headword);
+    DictionaryEntry get(@NonNull String headword) throws NotFoundException;
+    List<DictionaryEntry> search(@NonNull String headword);
+    List<DictionaryEntry> search();
+
+    boolean contains(@NonNull String headword);
 }
