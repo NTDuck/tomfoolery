@@ -1,0 +1,23 @@
+
+// Comes when installation, user can't modify
+Repo default;
+
+// = 0 when installation, user can CRUD
+List<Repo> userRepos;
+
+// operate on the current repo
+Add, Update, Delete... DictionaryEntryUseCases
+
+// operate on all repos
+Get, SearchByPrefix, Search
+
+// operate on repos
+CreateRepo, UpdateRepo, DeleteRepo, SelectRepo
+ImportFromFileUseCase: add new repository to userRepos i.e. CreateRepo
+ExportFromFileUseCase: export current repository to local file
+
+// Game: todo
+
+// impls
+Db/API/... Repo: EtoE
+EtoV: translate all E definitions to V
