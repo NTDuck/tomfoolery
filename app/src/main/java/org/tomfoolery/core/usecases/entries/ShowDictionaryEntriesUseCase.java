@@ -4,7 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
-import org.tomfoolery.core.usecases.utils.responses.ShowDictionaryEntriesResponse;
+import org.tomfoolery.core.usecases.utils.responses.entries.ShowDictionaryEntriesResponse;
 
 import java.util.function.Supplier;
 

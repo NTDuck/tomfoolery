@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.usecases.utils.function.ThrowableFunction;
-import org.tomfoolery.core.usecases.utils.requests.GetDictionaryEntryRequest;
-import org.tomfoolery.core.usecases.utils.responses.GetDictionaryEntryResponse;
+import org.tomfoolery.core.usecases.utils.requests.entries.GetDictionaryEntryRequest;
+import org.tomfoolery.core.usecases.utils.responses.entries.GetDictionaryEntryResponse;
 
 @RequiredArgsConstructor(staticName = "of")
 public class GetDictionaryEntryUseCase implements ThrowableFunction<GetDictionaryEntryRequest, GetDictionaryEntryResponse> {

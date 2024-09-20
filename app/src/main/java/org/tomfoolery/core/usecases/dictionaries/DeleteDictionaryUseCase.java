@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryRepository;
 import org.tomfoolery.core.usecases.utils.function.ThrowableConsumer;
-import org.tomfoolery.core.usecases.utils.requests.DeleteDictionaryRequest;
+import org.tomfoolery.core.usecases.utils.requests.dictionaries.DeleteDictionaryRequest;
 
 @RequiredArgsConstructor(staticName = "of")
 public class DeleteDictionaryUseCase implements ThrowableConsumer<DeleteDictionaryRequest> {
@@ -17,7 +17,7 @@ public class DeleteDictionaryUseCase implements ThrowableConsumer<DeleteDictiona
 
         if (!this.repository.contains(dictionaryID))
             throw new NotFoundException();
-        
+
         this.repository.delete(dictionaryID);
     }
 

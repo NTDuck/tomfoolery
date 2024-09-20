@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import lombok.Value;
+import org.jmolecules.ddd.types.AggregateRoot;
 import org.jmolecules.ddd.types.Entity;
 import org.jmolecules.ddd.types.Identifier;
 import org.jmolecules.ddd.types.ValueObject;

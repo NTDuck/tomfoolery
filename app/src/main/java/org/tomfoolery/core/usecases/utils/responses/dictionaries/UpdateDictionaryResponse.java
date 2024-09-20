@@ -1,10 +1,10 @@
-package org.tomfoolery.core.usecases.utils.responses;
+package org.tomfoolery.core.usecases.utils.responses.dictionaries;
 
 import lombok.NonNull;
 import lombok.Value;
-import org.tomfoolery.core.domain.DictionaryEntry;
+import org.tomfoolery.core.domain.Dictionary;
 
 @Value(staticConstructor = "of")
 public class UpdateDictionaryResponse {
-    @NonNull DictionaryEntry.ID dictionaryID;
+    @NonNull Dictionary.ID dictionaryID;
 }

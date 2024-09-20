@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.usecases.utils.function.ThrowableConsumer;
-import org.tomfoolery.core.usecases.utils.requests.DeleteDictionaryEntryRequest;
+import org.tomfoolery.core.usecases.utils.requests.entries.DeleteDictionaryEntryRequest;
 
 
 @RequiredArgsConstructor(staticName = "of")
