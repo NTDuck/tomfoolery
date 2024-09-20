@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith_terminal_configurations.controlle
 
 import org.tomfoolery.configurations.monolith_terminal_configurations.presenters.*;
 import org.tomfoolery.configurations.monolith_terminal_configurations.views.*;
-import org.tomfoolery.core.repositories.DictionaryEntryRepository;
+import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.usecases.*;
 
 public class MainController implements AutoCloseable {

@@ -1,29 +1,44 @@
 package org.tomfoolery.core.domain;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Singular;
+import lombok.Value;
+import org.jmolecules.ddd.types.Entity;
+import org.jmolecules.ddd.types.Identifier;
+import org.jmolecules.ddd.types.ValueObject;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @see <a href="https://dictionaryapi.dev/">Free Dictionary API</a>
  * @see <a href="https://dictionaryapi.com/products/json#sec-2">Merriam-Webster's Collegiate Dictionary API</a>
  */
-@Data
-@RequiredArgsConstructor(staticName = "of", access = AccessLevel.PROTECTED)
-public class DictionaryEntry {
-    @NonNull String headword;
-    @NonNull @Singular List<Meaning> meanings;
+@Data(staticConstructor = "of")
+public class DictionaryEntry implements Entity<Dictionary, DictionaryEntry.ID> {
+    @NonNull private final ID id;
+    @NonNull @Singular private List<Meaning> meanings;
 
-    List<String> syllables;
-    HashMap<String, String> pronunciations;   // Maps partOfSpeech to pronunciation label
-    Number frequencyScore;
+    private List<String> syllables;
+    private HashMap<String, String> pronunciations;   // Maps partOfSpeech to pronunciation label
+    private Number frequencyScore;
 
-    @Data
-    @RequiredArgsConstructor(staticName = "of")
-    public static class Meaning {
+    public String getHeadword() {
+        return this.id.getHeadword();
+    }
+
+    @Value(staticConstructor = "of")
+    public static class ID implements Identifier {
+        @NonNull String headword;
+    }
+
+    @Value(staticConstructor = "of")
+    public static class Meaning implements ValueObject {
         @NonNull String definition;
-        String partOfSpeech;
+        @NonNull String partOfSpeech;
 
         @NonNull @Singular HashMap<String, List<String>> properties;
     }

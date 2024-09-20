@@ -3,7 +3,7 @@ package org.tomfoolery.infrastructures.repositories;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.tomfoolery.core.domain.DictionaryEntry;
-import org.tomfoolery.core.repositories.DictionaryEntryRepository;
+import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 
 import java.util.HashMap;
 import java.util.List;
