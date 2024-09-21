@@ -6,15 +6,6 @@ import org.tomfoolery.core.domain.DictionaryEntry;
 
 import java.util.List;
 
-/**
- * Combines the best of both worlds.<br>
- * <code>DictionaryEntryRepository</code> is used by aggregate root <code>Dictionary</code>
- * to manage persistence of its entities, <code>DictionaryEntry</code>.<br>
- * It adheres to DDD by forcing an aggregate root to manage the persistence of its entities
- * within its transactional boundaries.
- * It also adheres to Clean Architecture by moving implementation details
- * to the infrastructures layer.
- */
 @Repository
 public interface DictionaryEntryRepository {
     void save(@NonNull DictionaryEntry dictionaryEntry);

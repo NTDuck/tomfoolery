@@ -3,23 +3,23 @@ package org.tomfoolery.core.usecases.entries;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
-import org.tomfoolery.core.usecases.utils.function.ThrowableFunction;
-import org.tomfoolery.core.usecases.utils.requests.entries.AddDictionaryEntryRequest;
-import org.tomfoolery.core.usecases.utils.responses.entries.AddDictionaryEntryResponse;
+import org.tomfoolery.core.domain.Dictionary;
+import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.requests.entries.AddDictionaryEntryRequest;
+import org.tomfoolery.core.utils.responses.entries.AddDictionaryEntryResponse;
 
 @RequiredArgsConstructor(staticName = "of")
 public class AddDictionaryEntryUseCase implements ThrowableFunction<AddDictionaryEntryRequest, AddDictionaryEntryResponse> {
-    @NonNull private final DictionaryEntryRepository repository;
+    @NonNull private final Dictionary dictionary;
 
     @Override
     public AddDictionaryEntryResponse apply(@NonNull AddDictionaryEntryRequest request) throws AlreadyExistsException {
         val dictionaryEntry = request.getDictionaryEntry();
 
-        if (this.repository.contains(dictionaryEntry.getId()))
+        if (this.dictionary.getEntryRepository().contains(dictionaryEntry.getId()))
             throw new AlreadyExistsException();
 
-        this.repository.save(dictionaryEntry);
+        this.dictionary.getEntryRepository().save(dictionaryEntry);
         return AddDictionaryEntryResponse.of(dictionaryEntry.getId());
     }
 

@@ -2,17 +2,14 @@ package org.tomfoolery.core.domain;
 
 import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import lombok.Value;
-import org.jmolecules.ddd.types.AggregateRoot;
 import org.jmolecules.ddd.types.Entity;
 import org.jmolecules.ddd.types.Identifier;
 import org.jmolecules.ddd.types.ValueObject;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <code>DictionaryEntry</code> is an entity within the transactional boundaries

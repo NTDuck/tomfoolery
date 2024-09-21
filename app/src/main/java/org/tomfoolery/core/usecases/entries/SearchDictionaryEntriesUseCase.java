@@ -3,20 +3,21 @@ package org.tomfoolery.core.usecases.entries;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
-import org.tomfoolery.core.usecases.utils.requests.entries.SearchDictionaryEntriesRequest;
-import org.tomfoolery.core.usecases.utils.responses.entries.SearchDictionaryEntriesResponse;
+import org.tomfoolery.core.domain.Dictionary;
+import org.tomfoolery.core.utils.requests.entries.SearchDictionaryEntriesRequest;
+import org.tomfoolery.core.utils.responses.entries.SearchDictionaryEntriesResponse;
 
 import java.util.function.Function;
 
 @RequiredArgsConstructor(staticName = "of")
 public class SearchDictionaryEntriesUseCase implements Function<SearchDictionaryEntriesRequest, SearchDictionaryEntriesResponse> {
-    @NonNull private final DictionaryEntryRepository repository;
+    @NonNull private final Dictionary dictionary;
 
     @Override
     public SearchDictionaryEntriesResponse apply(@NonNull SearchDictionaryEntriesRequest request) {
         val prefixOfDictionaryEntryID = request.getPrefixOfDictionaryEntryID();
-        val dictionaryEntries = this.repository.search(prefixOfDictionaryEntryID);
+        val dictionaryEntries = this.dictionary.getEntryRepository()
+            .search(prefixOfDictionaryEntryID);
         return SearchDictionaryEntriesResponse.of(dictionaryEntries);
     }
 }

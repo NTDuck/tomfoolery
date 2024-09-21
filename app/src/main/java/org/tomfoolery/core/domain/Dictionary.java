@@ -1,6 +1,10 @@
 package org.tomfoolery.core.domain;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.jmolecules.ddd.types.AggregateRoot;
 import org.jmolecules.ddd.types.Identifier;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
@@ -9,7 +13,7 @@ import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Dictionary implements AggregateRoot<Dictionary, Dictionary.ID> {
     @NonNull private final ID id;
-    @NonNull private final DictionaryEntryRepository entries;
+    @NonNull private final DictionaryEntryRepository entryRepository;
 
     public String getName() {
         return this.id.getName();
