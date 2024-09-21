@@ -15,6 +15,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * <code>DictionaryEntry</code> is an entity within the transactional boundaries
+ * of aggregate root <code>Dictionary</code>. <br>
+ * Adhering to Clean Architecture, <code>DictionaryEntry</code> was originally intended
+ * to be managed by a repository; this means that it should be made an DDD's aggregate root.
+ * However, that means that it could be referenced and manipulated independently of
+ * the <code>Dictionary</code> aggregate; in other words, the aggregate root loses control of
+ * its entities.
+ *
  * @see <a href="https://dictionaryapi.dev/">Free Dictionary API</a>
  * @see <a href="https://dictionaryapi.com/products/json#sec-2">Merriam-Webster's Collegiate Dictionary API</a>
  */

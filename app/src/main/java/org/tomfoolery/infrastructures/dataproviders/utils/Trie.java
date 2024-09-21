@@ -1,13 +1,21 @@
 package org.tomfoolery.infrastructures.dataproviders.utils;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.val;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(staticName = "of")
 @AllArgsConstructor(staticName = "of", access = AccessLevel.PRIVATE)
-public class TrieMap<T> implements Map<CharSequence, T> {
+public class Trie<T> implements Map<CharSequence, T> {
     private Node<T> rootNode = Node.of();
     private int size = 0;
 
@@ -32,6 +40,7 @@ public class TrieMap<T> implements Map<CharSequence, T> {
 
     @Override
     public boolean containsValue(Object value) {
+        // Highly inaccurate!
         return false;
     }
 
@@ -57,20 +66,20 @@ public class TrieMap<T> implements Map<CharSequence, T> {
         return currNode.value;
     }
 
-    public TrieMap<T> getByPrefix(@NonNull CharSequence prefix) {
+    public Trie<T> getByPrefix(@NonNull CharSequence prefix) {
         var currNode = this.rootNode;
 
         for (var index = 0; index < prefix.length(); ++index) {
             val chr = prefix.charAt(index);
 
             if (!currNode.successors.containsKey(chr))
-                return TrieMap.of();
+                return Trie.of();
 
             currNode = currNode.successors.get(chr);
         }
 
         // Highly inaccurate!
-        return TrieMap.of(currNode, this.size);
+        return Trie.of(currNode, this.size);
     }
 
     @Override
@@ -144,7 +153,7 @@ public class TrieMap<T> implements Map<CharSequence, T> {
     }
 
     @Override
-    public @NonNull Collection<T> values() {
+    public @NonNull Set<T> values() {
         return this.entrySet()
             .stream()
             .map(Entry::getValue)
