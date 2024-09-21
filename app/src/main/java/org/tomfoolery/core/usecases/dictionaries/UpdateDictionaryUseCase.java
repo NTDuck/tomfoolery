@@ -4,9 +4,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryRepository;
-import org.tomfoolery.core.usecases.utils.function.ThrowableFunction;
-import org.tomfoolery.core.usecases.utils.requests.dictionaries.UpdateDictionaryRequest;
-import org.tomfoolery.core.usecases.utils.responses.dictionaries.UpdateDictionaryResponse;
+import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.requests.dictionaries.UpdateDictionaryRequest;
+import org.tomfoolery.core.utils.responses.dictionaries.UpdateDictionaryResponse;
 
 @RequiredArgsConstructor(staticName = "of")
 public class UpdateDictionaryUseCase implements ThrowableFunction<UpdateDictionaryRequest, UpdateDictionaryResponse> {

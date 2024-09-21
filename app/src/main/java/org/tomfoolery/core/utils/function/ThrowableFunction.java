@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.utils.function;
+package org.tomfoolery.core.utils.function;
 
 @FunctionalInterface
 public interface ThrowableFunction<Request, Response> {

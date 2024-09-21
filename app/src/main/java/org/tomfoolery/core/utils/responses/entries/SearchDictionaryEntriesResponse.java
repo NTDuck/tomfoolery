@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.utils.responses.entries;
+package org.tomfoolery.core.utils.responses.entries;
 
 import lombok.NonNull;
 import lombok.Value;

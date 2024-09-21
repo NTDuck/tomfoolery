@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.utils.requests.dictionaries;
+package org.tomfoolery.core.utils.requests.dictionaries;
 
 import lombok.NonNull;
 import lombok.Value;

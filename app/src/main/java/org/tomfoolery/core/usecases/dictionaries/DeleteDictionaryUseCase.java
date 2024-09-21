@@ -4,8 +4,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryRepository;
-import org.tomfoolery.core.usecases.utils.function.ThrowableConsumer;
-import org.tomfoolery.core.usecases.utils.requests.dictionaries.DeleteDictionaryRequest;
+import org.tomfoolery.core.utils.function.ThrowableConsumer;
+import org.tomfoolery.core.utils.requests.dictionaries.DeleteDictionaryRequest;
 
 @RequiredArgsConstructor(staticName = "of")
 public class DeleteDictionaryUseCase implements ThrowableConsumer<DeleteDictionaryRequest> {
