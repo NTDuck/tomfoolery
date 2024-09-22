@@ -23,5 +23,10 @@ public class MonolithApplication {
 
     public static void main(String[] args) {
         System.out.println("Please do not expect anything big.");
+
+//        InMemoryDictionaryRepository repository = InMemoryDictionaryRepository.of();
+//        Library library = Library.of(repository);
+//
+//        AddDictionaryUseCase useCase = AddDictionaryUseCase.of(library);
     }
 }

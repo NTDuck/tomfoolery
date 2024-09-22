@@ -19,9 +19,6 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:1.18.34")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 
-    // Uses `jMolecules` for explicit expression of DDD concepts
-    implementation("org.jmolecules:jmolecules-ddd:1.9.0")
-
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 

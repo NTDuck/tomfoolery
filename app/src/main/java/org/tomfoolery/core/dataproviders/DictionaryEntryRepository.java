@@ -1,19 +1,17 @@
 package org.tomfoolery.core.dataproviders;
 
 import lombok.NonNull;
-import org.jmolecules.ddd.annotation.Repository;
 import org.tomfoolery.core.domain.DictionaryEntry;
 
-import java.util.List;
+import java.util.Collection;
 
-@Repository
 public interface DictionaryEntryRepository {
-    void save(@NonNull DictionaryEntry dictionaryEntry);
-    void delete(@NonNull DictionaryEntry.ID dictionaryEntryID);
+    void save(@NonNull DictionaryEntry entry);
+    void delete(@NonNull DictionaryEntry.ID entryID);
 
-    DictionaryEntry get(@NonNull DictionaryEntry.ID dictionaryEntryID);
-    List<DictionaryEntry> search(@NonNull DictionaryEntry.ID prefixOfDictionaryEntryID);
-    List<DictionaryEntry> show();
+    DictionaryEntry get(@NonNull DictionaryEntry.ID entryID);
+    Collection<DictionaryEntry> search(@NonNull DictionaryEntry.ID prefixOfEntryID);
+    Collection<DictionaryEntry> show();
 
-    boolean contains(@NonNull DictionaryEntry.ID dictionaryEntryID);
+    boolean contains(@NonNull DictionaryEntry.ID entryID);
 }
