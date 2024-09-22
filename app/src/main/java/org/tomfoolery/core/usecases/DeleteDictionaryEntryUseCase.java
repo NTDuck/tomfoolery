@@ -2,7 +2,6 @@ package org.tomfoolery.core.usecases;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.utils.exceptions.NotFoundException;
@@ -14,8 +13,7 @@ public class DeleteDictionaryEntryUseCase implements ThrowableConsumer<DeleteDic
     private final @NonNull DictionaryEntryRepository repository;
 
     @Override
-    @SneakyThrows
-    public void accept(@NonNull DeleteDictionaryEntryRequest request) {
+    public void accept(@NonNull DeleteDictionaryEntryRequest request) throws NotFoundException {
         val entryID = request.getEntryID();
 
         if (!this.repository.contains(entryID))

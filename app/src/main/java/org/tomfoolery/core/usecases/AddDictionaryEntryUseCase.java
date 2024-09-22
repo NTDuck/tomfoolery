@@ -2,7 +2,6 @@ package org.tomfoolery.core.usecases;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.utils.exceptions.AlreadyExistsException;
@@ -15,8 +14,7 @@ public class AddDictionaryEntryUseCase implements ThrowableFunction<AddDictionar
     private final @NonNull DictionaryEntryRepository repository;
 
     @Override
-    @SneakyThrows
-    public AddDictionaryEntryResponse apply(@NonNull AddDictionaryEntryRequest request) {
+    public AddDictionaryEntryResponse apply(@NonNull AddDictionaryEntryRequest request) throws AlreadyExistsException {
         val entry = request.getEntry();
         val entryID = entry.getId();
 

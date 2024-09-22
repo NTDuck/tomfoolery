@@ -2,7 +2,6 @@ package org.tomfoolery.core.usecases;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.utils.exceptions.NotFoundException;
@@ -15,8 +14,7 @@ public class UpdateDictionaryEntryUseCase implements ThrowableFunction<UpdateDic
     private final @NonNull DictionaryEntryRepository repository;
 
     @Override
-    @SneakyThrows
-    public UpdateDictionaryEntryResponse apply(@NonNull UpdateDictionaryEntryRequest request) {
+    public UpdateDictionaryEntryResponse apply(@NonNull UpdateDictionaryEntryRequest request) throws NotFoundException {
         val entry = request.getEntry();
         val entryID = entry.getId();
 
