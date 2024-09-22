@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(staticName = "of")
-@AllArgsConstructor(staticName = "of", access = AccessLevel.PRIVATE)
 public class Trie<T> implements Map<String, T> {
     @Override
     public int size() {
