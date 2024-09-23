@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.domain.DictionaryEntry;
-import org.tomfoolery.infrastructures.dataproviders.utils.Trie;
+import org.tomfoolery.infrastructures.utils.Trie;
 
 import java.util.Collection;
 import java.util.List;
