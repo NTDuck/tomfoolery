@@ -8,11 +8,14 @@ import org.tomfoolery.core.domain.DictionaryEntry;
 import org.tomfoolery.infrastructures.utils.Trie;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 @NoArgsConstructor(staticName = "of")
 public class InMemoryDictionaryEntryRepository implements DictionaryEntryRepository {
-    private final @NonNull Trie<DictionaryEntry> entries = Trie.of();
+    // Uncomment this when implementation of Trie is available
+    //    private final @NonNull Trie<DictionaryEntry> entries = Trie.of();
+    private final @NonNull HashMap<String, DictionaryEntry> entries = new HashMap<>();
 
     @Override
     public void save(@NonNull DictionaryEntry entry) {

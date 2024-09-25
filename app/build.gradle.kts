@@ -30,7 +30,7 @@ group = "org.tomfoolery"
 version = 1.0
 
 application {
-    mainClass = "${group}.configurations.monolith_terminal_configurations.MonolithApplication"
+    mainClass = "${group}.configurations.monolith.terminal.Application"
 }
 
 java {
