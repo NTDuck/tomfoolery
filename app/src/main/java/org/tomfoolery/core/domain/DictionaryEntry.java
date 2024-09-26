@@ -1,12 +1,12 @@
 package org.tomfoolery.core.domain;
 
+import java.util.HashMap;
+import java.util.List;
+
 import lombok.Data;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
-
-import java.util.HashMap;
-import java.util.List;
 
 @Data(staticConstructor = "of")
 public class DictionaryEntry {
@@ -27,6 +27,6 @@ public class DictionaryEntry {
         @NonNull String definition;
         @NonNull String partOfSpeech;
 
-        @NonNull @Singular HashMap<String, List<String>> properties;
+        @NonNull @Singular HashMap<String, List<ID>> properties; //unclear
     }
 }
