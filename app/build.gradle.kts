@@ -3,12 +3,25 @@ plugins {
     // Implicitly includes `java` and `distribution` plugins
     // Eases Java compilation, testing, and bundling
     application
-
+    id("org.openjfx.javafxplugin") version "0.1.0"
     // Supports publishing build artifacts to an Apache Maven repository
     `maven-publish`
 
     // Supports signing built files and artifacts
     signing
+}
+
+javafx {
+    version = "21"
+    modules("javafx.controls", "javafx.fxml")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir("custom/resources/dir")
+        }
+    }
 }
 
 dependencies {
@@ -30,7 +43,7 @@ group = "org.tomfoolery"
 version = 1.0
 
 application {
-    mainClass = "${group}.configurations.monolith.terminal.Application"
+    mainClass = "${group}.configurations.monolith.gui.MainApplication"
 }
 
 java {
