@@ -3,12 +3,14 @@ plugins {
     // Implicitly includes `java` and `distribution` plugins
     // Eases Java compilation, testing, and bundling
     application
-    id("org.openjfx.javafxplugin") version "0.1.0"
+
     // Supports publishing build artifacts to an Apache Maven repository
     `maven-publish`
 
     // Supports signing built files and artifacts
     signing
+
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 javafx {
