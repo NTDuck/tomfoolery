@@ -1,8 +1,11 @@
 package org.tomfoolery.core.usecases;
 
+import java.util.List;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
 import org.tomfoolery.core.utils.exceptions.AlreadyExistsException;
 import org.tomfoolery.core.utils.function.ThrowableFunction;

@@ -1,12 +1,18 @@
 package org.tomfoolery.infrastructures.facades;
 
-import lombok.NonNull;
 import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
-import org.tomfoolery.core.usecases.*;
+import org.tomfoolery.core.usecases.AddDictionaryEntryUseCase;
+import org.tomfoolery.core.usecases.DeleteDictionaryEntryUseCase;
+import org.tomfoolery.core.usecases.UpdateDictionaryEntryUseCase;
 import org.tomfoolery.core.utils.exceptions.AlreadyExistsException;
 import org.tomfoolery.core.utils.exceptions.NotFoundException;
-import org.tomfoolery.core.utils.requests.*;
-import org.tomfoolery.core.utils.responses.*;
+import org.tomfoolery.core.utils.requests.AddDictionaryEntryRequest;
+import org.tomfoolery.core.utils.requests.DeleteDictionaryEntryRequest;
+import org.tomfoolery.core.utils.requests.UpdateDictionaryEntryRequest;
+import org.tomfoolery.core.utils.responses.AddDictionaryEntryResponse;
+import org.tomfoolery.core.utils.responses.UpdateDictionaryEntryResponse;
+
+import lombok.NonNull;
 
 public class Dictionary extends ReadonlyDictionary {
     private final @NonNull AddDictionaryEntryUseCase addDictionaryEntryUseCase;
