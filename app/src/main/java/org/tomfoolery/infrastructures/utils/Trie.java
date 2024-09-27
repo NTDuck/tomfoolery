@@ -14,8 +14,8 @@ import org.tomfoolery.core.utils.exceptions.NotFoundException;
 @NoArgsConstructor(staticName = "of")
 public class Trie<T> implements Map<String, T> {
 
-    private TrieNode root;
-    private int size;
+    private TrieNode root = new TrieNode();
+    private int size = 0;
 
     private class TrieNode {
         Map<Character, TrieNode> children;
