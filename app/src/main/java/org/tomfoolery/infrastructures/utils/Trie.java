@@ -17,6 +17,11 @@ public class Trie<T> implements Map<String, T> {
     private TrieNode root;
     private int size;
 
+    {
+        root = new TrieNode();
+        size = 0;
+    }
+
     private class TrieNode {
         Map<Character, TrieNode> children;
         T value;
@@ -27,8 +32,6 @@ public class Trie<T> implements Map<String, T> {
             isEndOfWord = false;
         }
     }
-    
-    //constructor automatically created by lombok
 
     @Override
     public int size() {
@@ -59,12 +62,6 @@ public class Trie<T> implements Map<String, T> {
         TrieNode node = getNode((String) key);
         return node != null && node.isEndOfWord;
     }
-
-    //why so strange?
-    // @Override
-    // public boolean containsValue(Object value) {
-    //     return false;
-    // }
 
     @Override
     public T get(Object key) {
@@ -199,4 +196,32 @@ public class Trie<T> implements Map<String, T> {
         throw new UnsupportedOperationException("Unimplemented method 'containsValue'");
     }
 
+
+    public List<String> prefixSearch(String prefix) {
+        List<String> results = new ArrayList<>();
+        
+        TrieNode node = getNode(prefix);
+        
+        // null mean doesnt exist
+        if (node == null) {
+            return results; 
+        }
+        
+        collectWordsWithPrefix(node, new StringBuilder(prefix), results);
+        
+        return results;
+    }
+
+    private void collectWordsWithPrefix(TrieNode node, StringBuilder currentPrefix, List<String> results) {
+
+        if (node.isEndOfWord) {
+            results.add(currentPrefix.toString());
+        }
+        
+        for (Map.Entry<Character, TrieNode> entry : node.children.entrySet()) {
+            currentPrefix.append(entry.getKey()); 
+            collectWordsWithPrefix(entry.getValue(), currentPrefix, results);
+            currentPrefix.setLength(currentPrefix.length() - 1); // RETURN
+        }
+    }
 }

@@ -1,15 +1,15 @@
 package org.tomfoolery.infrastructures.dataproviders;
 
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.val;
-import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
-import org.tomfoolery.core.domain.DictionaryEntry;
-import org.tomfoolery.infrastructures.utils.Trie;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import org.tomfoolery.core.dataproviders.DictionaryEntryRepository;
+import org.tomfoolery.core.domain.DictionaryEntry;
+
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.val;
 
 @NoArgsConstructor(staticName = "of")
 public class InMemoryDictionaryEntryRepository implements DictionaryEntryRepository {
