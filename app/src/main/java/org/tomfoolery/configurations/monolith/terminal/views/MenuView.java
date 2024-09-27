@@ -1,26 +1,27 @@
 package org.tomfoolery.configurations.monolith.terminal.views;
 
+import org.tomfoolery.configurations.monolith.terminal.utils.requests.MenuUserSubmission;
+import org.tomfoolery.configurations.monolith.terminal.utils.responses.MenuViewResponse;
+
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.val;
-import org.tomfoolery.configurations.monolith.terminal.utils.requests.MenuUserSubmission;
-import org.tomfoolery.configurations.monolith.terminal.utils.responses.MenuViewResponse;
 
 @NoArgsConstructor(staticName = "of")
 public class MenuView extends View {
     private static final String PROMPT = """
-Welcome to My Application!
+Welcome to Tomfoolery!
 [0] Exit
-[1] Add
-[2] Remove
-[3] Update
-[4] Display
-[5] Lookup
-[6] Search
-[7] Game
-[8] Import from file
-[9] Export to file
-Your action:\s""";
+[1] Add Document
+[2] Remove Document
+[3] Update Document
+[4] Find Document
+[5] Display Document
+[6] Add User
+[7] Borrow Document
+[8] Return Document
+[9] Display User Info
+""";
 
     public MenuUserSubmission waitForUserSubmission() {
         this.display(PROMPT);
