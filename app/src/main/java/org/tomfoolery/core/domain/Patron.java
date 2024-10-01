@@ -3,9 +3,9 @@ package org.tomfoolery.core.domain;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.Value;
+import org.tomfoolery.core.utils.id.CompactID;
 
 import java.util.HashSet;
-import java.util.UUID;
 
 @Data(staticConstructor = "of")
 public class Patron {
@@ -14,7 +14,8 @@ public class Patron {
     private final @NonNull HashSet<Document.ID> borrowedDocumentIds = new HashSet<>();
 
     @Value(staticConstructor = "of")
-    public static class ID {
-        @NonNull UUID value = UUID.randomUUID();
+    public static class ID implements CompactID {
+        private static int size = 0;
+        int value = ++size;
     }
 }

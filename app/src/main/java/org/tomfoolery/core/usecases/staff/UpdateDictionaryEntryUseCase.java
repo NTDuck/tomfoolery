@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases;
+package org.tomfoolery.core.usecases.staff;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
