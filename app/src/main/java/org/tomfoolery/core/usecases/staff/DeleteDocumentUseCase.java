@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
+import org.tomfoolery.core.dataproviders.PatronRepository;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.utils.function.ThrowableConsumer;
 
@@ -20,6 +21,10 @@ public class DeleteDocumentUseCase implements ThrowableConsumer<DeleteDocumentUs
             throw new DocumentNotFoundException();
 
         this.documents.delete(documentId);
+    }
+
+    private void invalidate() {
+
     }
 
     @Value(staticConstructor = "of")

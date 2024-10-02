@@ -10,6 +10,7 @@ plugins {
     // Supports signing built files and artifacts
     signing
 
+    // Primary GUI
     id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
@@ -33,6 +34,9 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.34")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+
+    // Uses `Bcrypt` for password hashing (no need to reinvent the wheel)
+    implementation("at.favre.lib:bcrypt:{latest-version}")
 
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)

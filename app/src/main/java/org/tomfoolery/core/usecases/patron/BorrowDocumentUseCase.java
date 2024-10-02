@@ -26,11 +26,11 @@ public class BorrowDocumentUseCase implements ThrowableFunction<BorrowDocumentUs
             throw new DocumentNotFoundException();
 
         val document = this.documents.get(documentId);
-        val patronIds = document.getPatronIds();
+        val borrowingPatronIds = document.getBorrowingPatronIds();
         val patronId = patron.getId();
 
         borrowedDocumentIds.add(documentId);
-        patronIds.add(patronId);
+        borrowingPatronIds.add(patronId);
 
         return Response.of(document);
     }
