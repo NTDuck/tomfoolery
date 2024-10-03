@@ -19,14 +19,6 @@ javafx {
     modules("javafx.controls", "javafx.fxml")
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDir("custom/resources/dir")
-        }
-    }
-}
-
 dependencies {
     // Uses `Lombok` for reduced boilerplate
     compileOnly("org.projectlombok:lombok:1.18.34")
@@ -36,7 +28,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 
     // Uses `Bcrypt` for password hashing (no need to reinvent the wheel)
-    implementation("at.favre.lib:bcrypt:{latest-version}")
+     implementation("at.favre.lib:bcrypt:0.10.2")
 
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
@@ -49,7 +41,11 @@ group = "org.tomfoolery"
 version = 1.0
 
 application {
-    mainClass = "${group}.configurations.monolith.gui.MainApplication"
+    // Terminal version
+    mainClass = "${group}.configurations.monolith.terminal.Application"
+
+    // JavaFX version
+    // mainClass = "${group}.configurations.monolith.gui.MainApplication"
 }
 
 java {

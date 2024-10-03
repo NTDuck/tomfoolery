@@ -10,5 +10,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
 rootProject.name = "tomfoolery"
 include("app")
