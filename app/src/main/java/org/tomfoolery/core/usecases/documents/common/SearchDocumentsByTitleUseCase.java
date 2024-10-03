@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.common;
+package org.tomfoolery.core.usecases.documents.common;
 
 import lombok.NonNull;
 import lombok.Value;
