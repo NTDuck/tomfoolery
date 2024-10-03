@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.documents.common;
+package org.tomfoolery.core.usecases.common;
 
 import lombok.NonNull;
 import lombok.Value;
@@ -6,10 +6,10 @@ import org.tomfoolery.core.domain.Document;
 
 import java.util.Collection;
 
-public class SearchDocumentsByAuthorUseCase {
+public class SearchDocumentsByTitleUseCase {
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull String documentAuthor;
+        @NonNull String documentTitle;
     }
 
     @Value(staticConstructor = "of")
