@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.patron;
+package org.tomfoolery.core.usecases.documents.patron;
 
 public class BorrowDocumentUseCase {
 }
