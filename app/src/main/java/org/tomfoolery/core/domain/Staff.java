@@ -7,11 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Staff extends User {
-    public Staff(@NonNull Credentials credentials) {
-        super(credentials);
+    public Staff(@NonNull Credentials credentials, @NonNull Timestamps timestamps) {
+        super(credentials, timestamps);
     }
 
-    public static Staff of(@NonNull Credentials credentials) {
-        return new Staff(credentials);
+    public static Staff of(@NonNull Credentials credentials, @NonNull Timestamps timestamps) {
+        return new Staff(credentials, timestamps);
     }
 }
