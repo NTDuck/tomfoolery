@@ -65,6 +65,9 @@ public class Trie<T> implements Map<String, T> {
 
     @Override
     public T get(Object key) {
+        if (key == null) {
+            return null;
+        }
         if (!(key instanceof String)) {
             return null;
         }
@@ -73,7 +76,8 @@ public class Trie<T> implements Map<String, T> {
     }
 
     @Override
-    public T put(String key, T value) {
+    public T put(@NonNull String key, T value) {
+        
         TrieNode node = root;
         for (char c : key.toCharArray()) {
             node.children.putIfAbsent(c, new TrieNode());
