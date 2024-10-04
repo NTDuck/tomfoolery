@@ -27,11 +27,11 @@ public class TrieTest {
         Assert.assertFalse(trie.containsKey("key2"), "The map should not contain the key 'key2'.");
     }
 
-   @Test
-   public void testContainsValue() {
-       trie.put("key1", "value1");
-       Assert.assertTrue(trie.containsValue("value1"), "The map should contain the value 'value1'.");
-       Assert.assertFalse(trie.containsValue("value2"), "The map should not contain the value 'value2'.");
+    @Test
+    public void testContainsValue() {
+        trie.put("key1", "value1");
+        Assert.assertTrue(trie.containsValue("value1"), "The map should contain the value 'value1'.");
+        Assert.assertFalse(trie.containsValue("value2"), "The map should not contain the value 'value2'.");
    }
 
     @Test
@@ -41,13 +41,13 @@ public class TrieTest {
         Assert.assertFalse(trie.containsKey("key1"), "The map should not contain the key 'key1' after removal.");
     }
 
-   @Test
-   public void testIsEmpty() {
-       trie.clear(); 
-       Assert.assertTrue(trie.isEmpty(), "The map should be empty initially.");
-       trie.put("key1", "value1");
-       Assert.assertFalse(trie.isEmpty(), "The map should not be empty after adding an entry.");
-   }
+    @Test
+    public void testIsEmpty() {
+        trie.clear();
+        Assert.assertTrue(trie.isEmpty(), "The map should be empty initially.");
+        trie.put("key1", "value1");
+        Assert.assertFalse(trie.isEmpty(), "The map should not be empty after adding an entry.");
+    }
 
     @Test
     public void testOverwriteValue() {
