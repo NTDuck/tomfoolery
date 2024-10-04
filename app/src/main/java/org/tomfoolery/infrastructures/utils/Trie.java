@@ -1,13 +1,17 @@
 package org.tomfoolery.infrastructures.utils;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.val;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(staticName = "of")
 public class Trie<T> implements Map<String, T> {
@@ -174,7 +178,6 @@ public class Trie<T> implements Map<String, T> {
         return values;
     }
 
-
     private void collectEntries(TrieNode node, StringBuilder prefix, Set<Entry<String, T>> entries) {
         if (node.isEndOfWord) {
             entries.add(new AbstractMap.SimpleEntry<>(prefix.toString(), node.value));
@@ -193,18 +196,12 @@ public class Trie<T> implements Map<String, T> {
         return entries;
     }
 
-    @Override
-    public boolean containsValue(Object value) {
-        throw new UnsupportedOperationException("Unimplemented method 'containsValue'");
-    }
-
 
     public List<String> prefixSearch(String prefix) {
         List<String> results = new ArrayList<>();
         
         TrieNode node = getNode(prefix);
         
-        // null mean doesnt exist
         if (node == null) {
             return results; 
         }
@@ -225,5 +222,24 @@ public class Trie<T> implements Map<String, T> {
             collectWordsWithPrefix(entry.getValue(), currentPrefix, results);
             currentPrefix.setLength(currentPrefix.length() - 1); // RETURN
         }
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return containsValueHelper(root, value);
+    }
+
+    private boolean containsValueHelper(TrieNode node, Object value) {
+        if (node.isEndOfWord && Objects.equals(node.value, value)) {
+            return true;
+        }
+        
+        for (TrieNode child : node.children.values()) {
+            if (containsValueHelper(child, value)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
