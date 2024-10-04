@@ -43,6 +43,7 @@ public class TrieTest {
 
    @Test
    public void testIsEmpty() {
+       trie.clear(); 
        Assert.assertTrue(trie.isEmpty(), "The map should be empty initially.");
        trie.put("key1", "value1");
        Assert.assertFalse(trie.isEmpty(), "The map should not be empty after adding an entry.");
