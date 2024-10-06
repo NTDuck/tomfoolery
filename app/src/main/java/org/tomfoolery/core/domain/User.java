@@ -1,39 +1,28 @@
 package org.tomfoolery.core.domain;
 
-import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
-    private final @NonNull ID id = ID.of();
-
-    private final @NonNull Credentials credentials;
-    private final @NonNull Timestamps timestamps;
-
-    @Value(staticConstructor = "of")
-    public static class ID {
-        @NonNull UUID value = UUID.randomUUID();
+public class User extends ReadonlyUser {
+    public User(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Timestamps timestamps) {
+        super(credentials, audit, timestamps);
+    }
+    
+    @Override
+    public @NonNull Timestamps getTimestamps() {
+        return (Timestamps) super.getTimestamps();
     }
 
-    @Data(staticConstructor = "of")
-    public static class Credentials {
-        private @NonNull String username;
-        private @NonNull String password;
-    }
+    @Getter @Setter
+    public static class Timestamps extends ReadonlyUser.Timestamps {
+        private @NonNull LocalDateTime lastModified;
 
-    @Data(staticConstructor = "of")
-    public static class Timestamps {
-        private final @NonNull LocalDateTime created = LocalDateTime.now();
-        private @NonNull LocalDateTime lastModified = LocalDateTime.now();
-        private @NonNull LocalDateTime lastLogin;
-        private @NonNull LocalDateTime lastLogout;
+        public Timestamps(@NonNull LocalDateTime lastLogin, @NonNull LocalDateTime lastLogout, @NonNull LocalDateTime lastModified) {
+            super(lastLogin, lastLogout);
+            this.lastModified = lastModified;
+        }
     }
 }

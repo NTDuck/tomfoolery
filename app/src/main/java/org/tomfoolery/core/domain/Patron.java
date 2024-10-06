@@ -1,26 +1,26 @@
 package org.tomfoolery.core.domain;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-@Getter
-@Setter
+@Getter @Setter
 public class Patron extends User {
     private final @NonNull Metadata metadata;
-    private final @NonNull Audit audit = Audit.of();
 
-    public Patron(@NonNull Credentials credentials, @NonNull Timestamps timestamps, @NonNull Metadata metadata) {
-        super(credentials, timestamps);
+    public Patron(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Timestamps timestamps, @NonNull Metadata metadata) {
+        super(credentials, audit, timestamps);
         this.metadata = metadata;
     }
 
-    public static Patron of(@NonNull Credentials credentials, @NonNull Timestamps timestamps, @NonNull Metadata metadata) {
-        return new Patron(credentials, timestamps, metadata);
+    public static Patron of(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Timestamps timestamps, @NonNull Metadata metadata) {
+        return new Patron(credentials, audit, timestamps, metadata);
+    }
+
+    @Override
+    public @NonNull Audit getAudit() {
+        return (Audit) super.getAudit();
     }
 
     @Data(staticConstructor = "of")
@@ -30,8 +30,9 @@ public class Patron extends User {
         private @NonNull String gmail;
     }
 
+    @EqualsAndHashCode(callSuper = true)
     @Data(staticConstructor = "of")
-    public static class Audit {
+    public static class Audit extends User.Audit {
         private final @NonNull Collection<Document.ID> borrowedDocumentIds = new HashSet<>();
     }
 }

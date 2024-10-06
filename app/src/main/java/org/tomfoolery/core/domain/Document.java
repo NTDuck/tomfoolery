@@ -17,7 +17,7 @@ public class Document {
 
     private final @NonNull Metadata metadata;
     private final @NonNull Audit audit;
-    private final @NonNull Document.Timestamps timestamps;
+    private final @NonNull Timestamps timestamps;
 
     @Value(staticConstructor = "of")
     public static class ID {
