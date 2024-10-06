@@ -32,3 +32,5 @@ build
 # IDE-specific directories
 .vscode
 .idea
+
+!gradle-wrapper.jar
