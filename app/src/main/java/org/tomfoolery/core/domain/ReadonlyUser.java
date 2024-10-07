@@ -24,9 +24,10 @@ public class ReadonlyUser {
         private @NonNull String password;
     }
 
-    @Data(staticConstructor = "of")
+    @Getter
+    @AllArgsConstructor
     public static class Audit {
-        private transient boolean isLoggedIn = false;
+        private transient boolean isLoggedIn;
     }
 
     @Getter @Setter

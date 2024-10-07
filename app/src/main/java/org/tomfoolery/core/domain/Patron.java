@@ -30,9 +30,11 @@ public class Patron extends User {
         private @NonNull String gmail;
     }
 
-    @EqualsAndHashCode(callSuper = true)
-    @Data(staticConstructor = "of")
     public static class Audit extends User.Audit {
         private final @NonNull Collection<Document.ID> borrowedDocumentIds = new HashSet<>();
+
+        public Audit(boolean isLoggedIn) {
+            super(isLoggedIn);
+        }
     }
 }
