@@ -50,28 +50,43 @@ Search bar foreground: #CFD5DB
     -fx-text-fill: #7E8A95;
 }
 
+.notification-button:hover {
+    -fx-background-color: #7E8A954D;
+    -fx-cursor: hand;
+}
+
 .profile-button {
     -fx-background-color: transparent;
     -fx-background-radius: 50;
 }
 
+.profile-button:hover {
+    -fx-background-color: #7E8A954D;
+    -fx-cursor: hand;
+}
+
 .below-navbar {
     -fx-background-color: #F4F6FA;
-    -fx-padding: 0 20 0 50;
+    -fx-padding: 0 20 0 20;
 }
 
 /* Sidebar styling */
 .sidebar {
     -fx-padding: 20 0 20 0;
     -fx-background-color: transparent;
-    -fx-alignment: top-center;
 }
 
-.sidebar-text {
-    -fx-padding: 5 0 0 0;
-    -fx-font-family: 'Varela Round';
-    -fx-font-size: 30;
+.sidebar-option {
+    -fx-background-radius: 15;
+    -fx-background-color: transparent;
     -fx-text-fill: #7E8A95;
+    -fx-font-size: 30;
+    -fx-font-family: 'Varela Round';
+}
+
+.sidebar-option:hover {
+    -fx-background-color: #E5E9F0;
+    -fx-cursor: hand;
 }
 
 .sidebar-icon {
