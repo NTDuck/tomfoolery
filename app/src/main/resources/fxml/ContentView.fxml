@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
+            prefWidth="1000" HBox.hgrow="ALWAYS" styleClass="dashboard"
+            stylesheets="/css/MainMenuStyle.css">
+
+    <Label text="THIS IS DASHBOARD"/>
+</ScrollPane>
