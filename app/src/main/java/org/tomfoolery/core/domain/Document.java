@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.Value;
 
+import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ public class Document {
 
     private final @NonNull Metadata metadata;
     private final @NonNull Audit audit;
-    private final @NonNull Timestamps timestamps;
 
     @Value(staticConstructor = "of")
     public static class ID {
@@ -36,14 +36,16 @@ public class Document {
     @Data(staticConstructor = "of")
     public static class Audit {
         private final @NonNull Staff.ID createdByStaffId;
-        private @NonNull Staff.ID lastModifiedByStaffId;
+        private @Nullable Staff.ID lastModifiedByStaffId = null;
 
         private final @NonNull Collection<Patron.ID> borrowingPatronIds = new HashSet<>();
-    }
 
-    @Data(staticConstructor = "of")
-    public static class Timestamps {
-        private final @NonNull LocalDateTime created = LocalDateTime.now();
-        private @NonNull LocalDateTime lastModified = LocalDateTime.now();
+        private final @NonNull Timestamps timestamps = Timestamps.of();
+
+        @Data(staticConstructor = "of")
+        public static class Timestamps {
+            private final @NonNull LocalDateTime created = LocalDateTime.now();
+            private @Nullable LocalDateTime lastModified = null;
+        }
     }
 }

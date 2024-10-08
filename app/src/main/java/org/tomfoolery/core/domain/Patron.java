@@ -5,17 +5,17 @@ import lombok.*;
 import java.util.Collection;
 import java.util.HashSet;
 
-@Getter @Setter
+@Getter
 public class Patron extends User {
     private final @NonNull Metadata metadata;
 
-    public Patron(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Timestamps timestamps, @NonNull Metadata metadata) {
-        super(credentials, audit, timestamps);
+    public Patron(@NonNull Credentials credentials, @NonNull Metadata metadata) {
+        super(credentials);
         this.metadata = metadata;
     }
 
-    public static Patron of(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Timestamps timestamps, @NonNull Metadata metadata) {
-        return new Patron(credentials, audit, timestamps, metadata);
+    public static Patron of(@NonNull Credentials credentials, @NonNull Metadata metadata) {
+        return new Patron(credentials, metadata);
     }
 
     @Override
@@ -29,12 +29,11 @@ public class Patron extends User {
         private @NonNull String address;
         private @NonNull String gmail;
     }
-
+    
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @NoArgsConstructor(staticName = "of")
     public static class Audit extends User.Audit {
         private final @NonNull Collection<Document.ID> borrowedDocumentIds = new HashSet<>();
-
-        public Audit(boolean isLoggedIn) {
-            super(isLoggedIn);
-        }
     }
 }
