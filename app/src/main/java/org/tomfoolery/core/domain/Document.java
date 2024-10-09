@@ -16,7 +16,7 @@ import java.util.List;
 public class Document {
     private final @NonNull ID id;
 
-    private final @NonNull Metadata metadata;
+    private @NonNull Metadata metadata;
     private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
