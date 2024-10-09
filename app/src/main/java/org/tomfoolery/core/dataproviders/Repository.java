@@ -1,15 +1,16 @@
 package org.tomfoolery.core.dataproviders;
 
-import lombok.NonNull;
-
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public interface Repository<Entity, EntityID> {
-    void save(@NonNull Entity entity);
-    void delete(@NonNull EntityID entityId);
+    void save(Entity entity);
+    void delete(EntityID entityId);
 
-    Entity get(@NonNull EntityID entityId);
+    @Nullable Entity getById(EntityID entityId);
     Collection<Entity> show();
 
-    boolean contains(@NonNull EntityID entityId);
+    default boolean contains(EntityID entityId) {
+        return this.getById(entityId) != null;
+    }
 }
