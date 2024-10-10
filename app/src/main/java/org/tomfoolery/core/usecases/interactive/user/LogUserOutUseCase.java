@@ -10,11 +10,11 @@ import org.tomfoolery.core.domain.ReadonlyUser;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor(staticName = "of")
-public class LogUserOutUseCase<User extends ReadonlyUser> implements Consumer<LogUserOutUseCase<User>.Request> {
+public class LogUserOutUseCase<User extends ReadonlyUser> implements Consumer<LogUserOutUseCase.Request<User>> {
     private final @NonNull UserRepository<User> userRepository;
 
     @Override
-    public void accept(@NonNull Request request) {
+    public void accept(@NonNull Request<User> request) {
         val user = request.getUser();
         val audit = user.getAudit();
 
@@ -23,7 +23,7 @@ public class LogUserOutUseCase<User extends ReadonlyUser> implements Consumer<Lo
     }
 
     @Value(staticConstructor = "of")
-    public class Request {
+    public static class Request<User extends ReadonlyUser> {
         @NonNull User user;
     }
 }

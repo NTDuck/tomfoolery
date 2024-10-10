@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.interactive.patron;
+package org.tomfoolery.core.usecases.interactive.staff;
 
 import lombok.*;
 

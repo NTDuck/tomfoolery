@@ -7,11 +7,11 @@ import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.utils.function.ThrowableFunction;
 
 @RequiredArgsConstructor(staticName = "of")
-public class LogUserInUseCase<User extends ReadonlyUser> implements ThrowableFunction<LogUserInUseCase<User>.Request, LogUserInUseCase<User>.Response> {
+public class LogUserInUseCase<User extends ReadonlyUser> implements ThrowableFunction<LogUserInUseCase.Request<User>, LogUserInUseCase.Response<User>> {
     private final @NonNull UserRepository<User> userRepository;
 
     @Override
-    public Response apply(@NonNull Request request)
+    public Response<User> apply(@NonNull Request<User> request)
     throws ValidationException, UserNotFoundException, UserAlreadyLoggedInException {
         val userCredentials = request.getUserCredentials();
 
@@ -37,12 +37,12 @@ public class LogUserInUseCase<User extends ReadonlyUser> implements ThrowableFun
     }
 
     @Value(staticConstructor = "of")
-    public class Request {
+    public static class Request<User extends ReadonlyUser> {
         @NonNull User.Credentials userCredentials;
     }
 
     @Value(staticConstructor = "of")
-    public class Response {
+    public static class Response<User extends ReadonlyUser> {
         @NonNull User user;
     }
 

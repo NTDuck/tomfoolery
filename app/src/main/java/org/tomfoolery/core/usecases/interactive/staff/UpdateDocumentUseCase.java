@@ -17,7 +17,7 @@ public class UpdateDocumentUseCase implements ThrowableFunction<UpdateDocumentUs
 
         val document = this.documentRepository.getById(documentId);
         if (document == null)
-            throw new GetDocumentByIdUseCase.DocumentNotFoundException();
+            throw new DocumentNotFoundException();
 
         document.setMetadata(documentMetadata);
         this.documentRepository.save(document);
