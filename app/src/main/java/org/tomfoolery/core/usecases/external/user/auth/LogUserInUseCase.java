@@ -1,33 +1,40 @@
 package org.tomfoolery.core.usecases.external.user.auth;
 
-import lombok.*;
-
-import org.tomfoolery.core.dataproviders.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.dataproviders.UserRepositories;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.utils.function.ThrowableFunction;
 
-import java.util.Optional;
-import java.util.SequencedCollection;
-
 @RequiredArgsConstructor(staticName = "of")
-public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request, LogUserInUseCase.Response> {
-    private final @NonNull SequencedCollection<UserRepository<?>> userRepositories;
+public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request, LogUserInUseCase.Response<?>> {
+    private final @NonNull UserRepositories userRepositories;
 
     @Override
-    public Response apply(@NonNull Request request)
+    public @NonNull Response<?> apply(@NonNull Request request)
     throws ValidationException, UserNotFoundException, UserAlreadyLoggedInException {
         val userCredentials = request.getUserCredentials();
 
         if (!isCredentialsValid(userCredentials))
             throw new ValidationException();
 
-        ReadonlyUser user = this.userRepositories.stream()
-                .map(userRepository -> )
+        val userRepository = this.userRepositories.getUserRepositoryByUserCredentials(userCredentials);
 
+        if (userRepository == null)
+            throw new UserNotFoundException();
+
+        val user = userRepository.getByCredentials(userCredentials);
+        assert user != null;
+
+        markUserAsLoggedIn(user);
+
+        userRepository.save(user);
         return Response.of(user);
     }
 
-    private static boolean isCredentialsValid(@NonNull ReadonlyUser.Credentials userCredentials) {
+    private static boolean isCredentialsValid(ReadonlyUser.@NonNull Credentials userCredentials) {
         return isUsernameValid(userCredentials.getUsername())
             && isPasswordValid(userCredentials.getPassword());
     }
@@ -40,18 +47,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         return true;
     }
 
-    private static <User extends ReadonlyUser> @NonNull User findAndAuthenticateUserByCredentials(@NonNull UserRepository<User> userRepository, @NonNull User.Credentials userCredentials)
-    throws UserNotFoundException, UserAlreadyLoggedInException {
-        val user = Optional.ofNullable(userRepository.getByCredentials(userCredentials))
-            .orElseThrow(UserNotFoundException::new);
-
-        authenticateUser(user.get());
-        userRepository.save(user);
-
-        return user;
-    }
-
-    private static <User extends ReadonlyUser> void authenticateUser(@NonNull User user)
+    private static <User extends ReadonlyUser> void markUserAsLoggedIn(@NonNull User user)
     throws UserAlreadyLoggedInException {
         val audit = user.getAudit();
 
@@ -63,12 +59,12 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull ReadonlyUser.Credentials userCredentials;
+        ReadonlyUser.@NonNull Credentials userCredentials;
     }
 
     @Value(staticConstructor = "of")
-    public static class Response {
-        @NonNull ReadonlyUser user;
+    public static class Response<User extends ReadonlyUser> {
+        @NonNull User user;
     }
 
     public static class ValidationException extends Exception {}

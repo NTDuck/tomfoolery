@@ -35,10 +35,10 @@ public class Document {
 
     @Data(staticConstructor = "of")
     public static class Audit {
-        private final Staff.@NonNull ID createdByStaffId;
-        private @Nullable Staff.ID lastModifiedByStaffId = null;
+        private final ReadonlyUser.@NonNull Id createdByStaffId;
+        private @Nullable ReadonlyUser.Id lastModifiedByStaffId = null;
 
-        private final @NonNull Collection<Patron.ID> borrowingPatronIds = new HashSet<>();
+        private final @NonNull Collection<ReadonlyUser.Id> borrowingPatronIds = new HashSet<>();
 
         private final @NonNull Timestamps timestamps = Timestamps.of();
 
