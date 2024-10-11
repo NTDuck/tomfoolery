@@ -1,7 +1,9 @@
-package org.tomfoolery.core.usecases.interactive.user;
+package org.tomfoolery.core.usecases.external.user.browse;
 
-import lombok.*;
-
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
 
@@ -13,7 +15,7 @@ public class ShowDocumentsUseCase implements Supplier<ShowDocumentsUseCase.Respo
     private final @NonNull DocumentRepository documentRepository;
 
     @Override
-    public Response get() {
+    public @NonNull Response get() {
         val documents = this.documentRepository.show();
         return Response.of(documents);
     }

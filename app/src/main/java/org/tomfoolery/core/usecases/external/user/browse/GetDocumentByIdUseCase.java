@@ -1,7 +1,9 @@
-package org.tomfoolery.core.usecases.interactive.user;
+package org.tomfoolery.core.usecases.external.user.browse;
 
-import lombok.*;
-
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.utils.function.ThrowableFunction;
@@ -11,7 +13,7 @@ public class GetDocumentByIdUseCase implements ThrowableFunction<GetDocumentById
     private final @NonNull DocumentRepository documentRepository;
 
     @Override
-    public Response apply(@NonNull Request request) throws Exception {
+    public @NonNull Response apply(@NonNull Request request) throws Exception {
         val documentId = request.getDocumentId();
 
         val document = this.documentRepository.getById(documentId);
@@ -23,7 +25,7 @@ public class GetDocumentByIdUseCase implements ThrowableFunction<GetDocumentById
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull Document.ID documentId;
+        Document.@NonNull Id documentId;
     }
 
     @Value(staticConstructor = "of")

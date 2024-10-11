@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.interactive.user;
+package org.tomfoolery.core.usecases.external.user.auth;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package org.tomfoolery.core.utils.id;
 
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.BitSet;
 import java.util.Collection;

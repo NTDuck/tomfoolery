@@ -1,8 +1,8 @@
 package org.tomfoolery.core.domain;
 
 import lombok.Data;
-import lombok.NonNull;
 import lombok.Value;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
@@ -14,13 +14,13 @@ import java.util.List;
 
 @Data(staticConstructor = "of")
 public class Document {
-    private final @NonNull ID id;
+    private final @NonNull Id id;
 
     private @NonNull Metadata metadata;
     private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
-    public static class ID {
+    public static class Id {
         @NonNull String value;
     }
 
@@ -35,7 +35,7 @@ public class Document {
 
     @Data(staticConstructor = "of")
     public static class Audit {
-        private final @NonNull Staff.ID createdByStaffId;
+        private final Staff.@NonNull ID createdByStaffId;
         private @Nullable Staff.ID lastModifiedByStaffId = null;
 
         private final @NonNull Collection<Patron.ID> borrowingPatronIds = new HashSet<>();

@@ -1,6 +1,8 @@
 package org.tomfoolery.core.utils.function;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 @FunctionalInterface
 public interface ThrowableFunction<Request, Response> {
-    Response apply(Request request) throws Exception;
+    @NonNull Response apply(@NonNull Request request) throws Exception;
 }

@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.interactive.user;
+package org.tomfoolery.core.usecases.external.user.auth;
 
 import lombok.*;
 
@@ -6,56 +6,76 @@ import org.tomfoolery.core.dataproviders.UserRepository;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.utils.function.ThrowableFunction;
 
+import java.util.Optional;
+import java.util.SequencedCollection;
+
 @RequiredArgsConstructor(staticName = "of")
-public class LogUserInUseCase<User extends ReadonlyUser> implements ThrowableFunction<LogUserInUseCase.Request<User>, LogUserInUseCase.Response<User>> {
-    private final @NonNull UserRepository<User> userRepository;
+public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request, LogUserInUseCase.Response> {
+    private final @NonNull SequencedCollection<UserRepository<?>> userRepositories;
 
     @Override
-    public Response<User> apply(@NonNull Request<User> request)
+    public Response apply(@NonNull Request request)
     throws ValidationException, UserNotFoundException, UserAlreadyLoggedInException {
         val userCredentials = request.getUserCredentials();
 
         if (!isCredentialsValid(userCredentials))
             throw new ValidationException();
 
-        val user = this.userRepository.getByCredentials(userCredentials);
-        if (user == null)
-            throw new UserNotFoundException();
-
-        val audit = user.getAudit();
-        if (audit.isLoggedIn())
-            throw new UserAlreadyLoggedInException();
-
-        audit.setLoggedIn(true);
-        this.userRepository.save(user);
+        ReadonlyUser user = this.userRepositories.stream()
+                .map(userRepository -> )
 
         return Response.of(user);
     }
 
-    private static <User extends ReadonlyUser> boolean isCredentialsValid(@NonNull User.Credentials userCredentials) {
+    private static boolean isCredentialsValid(@NonNull ReadonlyUser.Credentials userCredentials) {
+        return isUsernameValid(userCredentials.getUsername())
+            && isPasswordValid(userCredentials.getPassword());
+    }
+
+    private static boolean isUsernameValid(@NonNull String username) {
+        return username.matches("^(?![0-9])(?!.*_$)[a-z0-9_]{8,16}$");
+    }
+
+    private static boolean isPasswordValid(@NonNull String password) {
         return true;
     }
 
-    @Value(staticConstructor = "of")
-    public static class Request<User extends ReadonlyUser> {
-        @NonNull User.Credentials userCredentials;
+    private static <User extends ReadonlyUser> @NonNull User findAndAuthenticateUserByCredentials(@NonNull UserRepository<User> userRepository, @NonNull User.Credentials userCredentials)
+    throws UserNotFoundException, UserAlreadyLoggedInException {
+        val user = Optional.ofNullable(userRepository.getByCredentials(userCredentials))
+            .orElseThrow(UserNotFoundException::new);
+
+        authenticateUser(user.get());
+        userRepository.save(user);
+
+        return user;
+    }
+
+    private static <User extends ReadonlyUser> void authenticateUser(@NonNull User user)
+    throws UserAlreadyLoggedInException {
+        val audit = user.getAudit();
+
+        if (audit.isLoggedIn())
+            throw new UserAlreadyLoggedInException();
+
+        audit.setLoggedIn(true);
     }
 
     @Value(staticConstructor = "of")
-    public static class Response<User extends ReadonlyUser> {
-        @NonNull User user;
+    public static class Request {
+        @NonNull ReadonlyUser.Credentials userCredentials;
+    }
+
+    @Value(staticConstructor = "of")
+    public static class Response {
+        @NonNull ReadonlyUser user;
     }
 
     public static class ValidationException extends Exception {}
 
     /**
-     * The application does not differentiate between a "user not found" and a "password mismatch" exception,
+     * UserNotFoundException and PasswordMismatchException are not differentiated,
      * as part of Security through Obscurity.
-     * <p>
-     * If the application differentiates between a "user not found" and a "password mismatch" exception,
-     * an attacker can iterate through possible usernames to find which one exists.
-     * They could then focus their attack on a specific username
-     * by e.g. trying out all possible password combinations.
      */
     public static class UserNotFoundException extends Exception {}
     public static class UserAlreadyLoggedInException extends Exception {}

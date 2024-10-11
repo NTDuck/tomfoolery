@@ -1,7 +1,9 @@
-package org.tomfoolery.core.usecases.interactive.staff;
+package org.tomfoolery.core.usecases.external.staff;
 
-import lombok.*;
-
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.utils.function.ThrowableConsumer;
@@ -22,7 +24,7 @@ public class RemoveDocumentUseCase implements ThrowableConsumer<RemoveDocumentUs
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull Document.ID documentId;
+        Document.@NonNull Id documentId;
     }
 
     public static class DocumentNotFoundException extends Exception {}

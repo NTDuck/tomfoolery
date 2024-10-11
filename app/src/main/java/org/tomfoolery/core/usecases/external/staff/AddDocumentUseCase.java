@@ -1,7 +1,9 @@
-package org.tomfoolery.core.usecases.interactive.staff;
+package org.tomfoolery.core.usecases.external.staff;
 
-import lombok.*;
-
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Staff;
@@ -12,8 +14,9 @@ public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.
     private final @NonNull DocumentRepository documentRepository;
 
     @Override
-    public Response apply(@NonNull Request request) throws DocumentAlreadyExistsException {
+    public @NonNull Response apply(@NonNull Request request) throws DocumentAlreadyExistsException {
         val documentId = request.getDocumentId();
+
         if (this.documentRepository.contains(documentId))
             throw new DocumentAlreadyExistsException();
 
@@ -32,13 +35,13 @@ public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.
     @Value(staticConstructor = "of")
     public static class Request {
         @NonNull Staff staff;
-        @NonNull Document.ID documentId;
-        @NonNull Document.Metadata documentMetadata;
+        Document.@NonNull Id documentId;
+        Document.@NonNull Metadata documentMetadata;
     }
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Document.ID documentId;
+        Document.@NonNull Id documentId;
     }
 
     public static class DocumentAlreadyExistsException extends Exception {}
