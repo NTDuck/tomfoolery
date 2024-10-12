@@ -9,6 +9,6 @@ import java.util.Collection;
 public interface DocumentRepository extends Repository<Document, Document.Id> {
     @NonNull Collection<Document> searchByTitle(@NonNull String title);
     @NonNull Collection<Document> searchByAuthor(@NonNull String author);
-    @NonNull Collection<Document> searchByGenres(@NonNull Collection<String> genres);
+    @NonNull Collection<Document> searchByGenre(@NonNull String genres);
     @NonNull Collection<Document> searchByPatron(ReadonlyUser.@NonNull Id patronId);
 }

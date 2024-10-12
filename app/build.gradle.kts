@@ -28,7 +28,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 
     // Uses `Bcrypt` for password hashing (no need to reinvent the wheel)
-     implementation("at.favre.lib:bcrypt:0.10.2")
+    implementation("at.favre.lib:bcrypt:0.10.2")
 
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)

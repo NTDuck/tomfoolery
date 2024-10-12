@@ -19,6 +19,7 @@ public class Document {
     private @NonNull Metadata metadata;
     private final @NonNull Audit audit;
 
+
     @Value(staticConstructor = "of")
     public static class Id {
         @NonNull String value;
@@ -29,7 +30,7 @@ public class Document {
         private @NonNull String title;
         private @NonNull String description;
         private @NonNull List<String> authors = new ArrayList<>();
-
+        private @NonNull List<String> genres = new ArrayList<>();
         private transient @NonNull BufferedImage qrCode;
     }
 
