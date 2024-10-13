@@ -1,0 +1,14 @@
+.categoryBar {
+    -fx-padding: 20 20 20 20;
+    -fx-background-color: transparent;
+}
+
+.headerLabel {
+    -fx-font-family: "Varela Round";
+    -fx-font-size: 20;
+    -fx-font-fill: #7E8A95;
+}
+
+.categoryOption {
+
+}
