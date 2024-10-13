@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.UserRepositories;
 import org.tomfoolery.core.domain.ReadonlyUser;
 
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor(staticName = "of")
@@ -19,21 +20,22 @@ public class LogUserOutUseCase<User extends ReadonlyUser> implements Consumer<Lo
 
         markUserAsLoggedOut(user);
 
-        val userRepository = this.userRepositories.getUserRepository(user);
+        val userRepository = this.userRepositories.getUserRepositoryByUser(user);
+        assert userRepository != null;
 
-        if (userRepository != null)
-            userRepository.save(user);
+        userRepository.save(user);
     }
 
     private static <User extends ReadonlyUser> void markUserAsLoggedOut(@NonNull User user) {
         val audit = user.getAudit();
         audit.setLoggedIn(false);
+
+        val timestamps = audit.getTimestamps();
+        timestamps.setLastLogout(LocalDateTime.now());
     }
 
     @Value(staticConstructor = "of")
     public static class Request<User extends ReadonlyUser> {
         @NonNull User user;
     }
-
-    private static class UserTypeMismatchException extends Exception {}
 }

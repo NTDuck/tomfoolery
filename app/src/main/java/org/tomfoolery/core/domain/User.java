@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 
 public class User extends ReadonlyUser {
-    public User(@NonNull Credentials credentials) {
-        super(credentials);
+    public User(@NonNull Credentials credentials, @NonNull Audit audit) {
+        super(credentials, audit);
     }
 
     @Override

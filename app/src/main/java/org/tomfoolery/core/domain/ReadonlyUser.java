@@ -15,7 +15,7 @@ public class ReadonlyUser {
     private final @NonNull Id id = Id.of();
 
     private final @NonNull Credentials credentials;
-    private final @NonNull Audit audit = Audit.of();
+    private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
     public static class Id {

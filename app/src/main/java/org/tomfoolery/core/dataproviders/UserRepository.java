@@ -5,7 +5,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.ReadonlyUser;
 
 public interface UserRepository<User extends ReadonlyUser> extends Repository<User, ReadonlyUser.Id> {
-    @Nullable User getByCredentials(User.@NonNull Credentials credentials);
+    @Nullable User getByUsername(@NonNull String username);
 
     @NonNull Class<User> getUserClass();
+
+    default boolean contains(@NonNull String username) {
+        return this.getByUsername(username) != null;
+    }
 }

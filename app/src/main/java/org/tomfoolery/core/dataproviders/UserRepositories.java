@@ -1,5 +1,6 @@
 package org.tomfoolery.core.dataproviders;
 
+import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -20,8 +21,8 @@ public interface UserRepositories extends SequencedCollection<UserRepository<?>>
     }
 
     @SuppressWarnings("unchecked")
-    default <User extends ReadonlyUser> @Nullable UserRepository<User> getUserRepositoryByUserCredentials(User.@NonNull Credentials userCredentials) {
-        return (UserRepository<User>) this.getUserRepositoryByPredicate(userRepository -> userRepository.getByCredentials(userCredentials) != null);
+    default <User extends ReadonlyUser> @Nullable UserRepository<User> getUserRepositoryByUsername(@NonNull String username) {
+        return (UserRepository<User>) this.getUserRepositoryByPredicate(userRepository -> userRepository.getByUsername(username) != null);
     }
 
     private @Nullable UserRepository<?> getUserRepositoryByPredicate(@NonNull Predicate<UserRepository<?>> predicate) {

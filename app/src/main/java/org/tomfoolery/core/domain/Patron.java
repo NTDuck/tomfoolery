@@ -13,13 +13,13 @@ import java.util.HashSet;
 public class Patron extends User {
     private final @NonNull Metadata metadata;
 
-    public Patron(@NonNull Credentials credentials, @NonNull Metadata metadata) {
-        super(credentials);
+    public Patron(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
+        super(credentials, audit);
         this.metadata = metadata;
     }
 
-    public static @NonNull Patron of(@NonNull Credentials credentials, @NonNull Metadata metadata) {
-        return new Patron(credentials, metadata);
+    public static @NonNull Patron of(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
+        return new Patron(credentials, audit, metadata);
     }
 
     @Override
