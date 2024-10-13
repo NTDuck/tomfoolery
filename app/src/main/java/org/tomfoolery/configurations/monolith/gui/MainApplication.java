@@ -4,9 +4,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import lombok.NonNull;
 
 public class MainApplication extends Application {
     public static void main(String[] args) {
@@ -16,7 +18,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainMenu.fxml"));
-        Scene scene = new Scene(root, Color.LIGHTBLUE);
+        Scene scene = new Scene(root);
 
         stage.setMinHeight(720);
         stage.setMinWidth(1280);
