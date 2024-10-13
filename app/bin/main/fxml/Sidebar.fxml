@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox
+    xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    minWidth="300" maxWidth="300" styleClass="sidebar" HBox.hgrow="ALWAYS"
+    stylesheets="/css/Sidebar.css">
+
+    <!-- Dashboard option -->
+    <Button prefHeight="35" text="Dashboard" styleClass="sidebar-option">
+        <graphic>
+            <Label text="&#xf015;" styleClass="sidebar-icon"/>
+        </graphic>
+    </Button>
+    <Pane prefHeight="30"/>
+
+    <!-- Explore option -->
+    <Button prefHeight="35" text="Discover" styleClass="sidebar-option">
+        <graphic>
+            <Label text="&#xf002;" styleClass="sidebar-icon"/>
+        </graphic>
+    </Button>
+    <Pane prefHeight="30"/>
+
+    <!-- Favourite option -->
+    <Button prefHeight="35" text="Favourite" styleClass="sidebar-option">
+        <graphic>
+            <Label text="&#xf004;" styleClass="sidebar-icon"/>
+        </graphic>
+    </Button>
+</VBox>

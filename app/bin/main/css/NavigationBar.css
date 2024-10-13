@@ -1,0 +1,56 @@
+/* Style for the navigation bar */
+.nav-bar {
+    -fx-background-color: #F4F6FA;
+    -fx-spacing: 10;
+    -fx-padding: 20 20 20 50;
+    -fx-alignment: center-left;
+}
+
+/* Search bar */
+.search-bar {
+    -fx-padding: 0 20 0 20;
+    -fx-alignment: center-left;
+    -fx-background-color: #E5E9F0;
+    -fx-background-radius: 50;
+}
+
+.search-icon {
+    -fx-font-family: FontAwesome;
+    -fx-font-size: 30;
+    -fx-text-fill: #7E8A95;
+}
+
+.search-text {
+    -fx-background-color: transparent;
+    -fx-prompt-text-fill: #CFD5DB;
+    -fx-text-fill: #7E8A95;
+    -fx-font-family: 'Varela Round';
+    -fx-font-size: 30;
+}
+
+/* Notification and profile buttons */
+.notification-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50;
+}
+
+.notification-icon {
+    -fx-font-family: 'FontAwesome';
+    -fx-font-size: 30;
+    -fx-text-fill: #7E8A95;
+}
+
+.notification-button:hover {
+    -fx-background-color: #7E8A954D;
+    -fx-cursor: hand;
+}
+
+.profile-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50;
+}
+
+.profile-button:hover {
+    -fx-background-color: #7E8A954D;
+    -fx-cursor: hand;
+}
