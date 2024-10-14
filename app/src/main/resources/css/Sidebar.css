@@ -1,26 +1,22 @@
 /* Sidebar styling */
 .sidebar {
-    -fx-padding: 20 0 20 0;
-    -fx-background-color: transparent;
-    -fx-border-width: 0 2 0 0;
-    -fx-border-color: #AEBACE4D;
+    -fx-padding: 20 0 20 20;
+    -fx-background-color: #434C5E4D;
+    -fx-border-width: 4 4 4 4;
+    -fx-border-radius: 15;
+    -fx-border-color: #434C5E;
+    -fx-background-radius: 15;
 }
 
 .sidebar-option {
     -fx-background-radius: 15;
     -fx-background-color: transparent;
-    -fx-text-fill: #7E8A95;
+    -fx-text-fill: #D8DEE9;
     -fx-font-size: 30;
-    -fx-font-family: 'Varela Round';
+    -fx-font-family: 'Segoe UI Variable';
 }
 
 .sidebar-option:hover {
-    -fx-background-color: #E5E9F0;
+    -fx-background-color: #545d77;
     -fx-cursor: hand;
-}
-
-.sidebar-icon {
-    -fx-font-family: 'FontAwesome';
-    -fx-font-size: 35;
-    -fx-text-fill: #7E8A95;
 }

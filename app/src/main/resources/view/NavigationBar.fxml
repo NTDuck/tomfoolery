@@ -8,11 +8,11 @@
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       stylesheets="/css/NavigationBar.css"
-      styleClass="nav-bar" prefHeight="100" prefWidth="1600">
+      styleClass="nav-bar" prefHeight="100" prefWidth="1600" HBox.hgrow="ALWAYS">
 
     <!-- Tomfoolery app logo -->
     <ImageView fitWidth="230" fitHeight="40">
-        <Image url="/menu_logo.png"/>
+        <Image url="/images/menu_logo.png"/>
     </ImageView>
 
     <!-- Spacing between logo and search bar -->
@@ -20,7 +20,9 @@
 
     <!-- Search bar -->
     <HBox styleClass="search-bar" prefHeight="100" prefWidth="600">
-        <Label text="&#xf002;" styleClass="search-icon"/>
+        <ImageView fitWidth="25" fitHeight="25">
+            <Image url="/images/search.png"/>
+        </ImageView>
         <TextField promptText="Search for books" styleClass="search-text"/>
     </HBox>
 
@@ -30,14 +32,16 @@
     <!-- Notification icon -->
     <Button styleClass="notification-button" prefWidth="50" prefHeight="50" fx:id="notificationButton">
         <graphic>
-            <Label text="&#xf0f3;" styleClass="notification-icon"/>
+            <ImageView fitHeight="25" fitWidth="25">
+                <Image url="/images/bell.png"/>
+            </ImageView>
         </graphic>
     </Button>
 
     <MenuButton styleClass="profile-button" prefHeight="50" prefWidth="50" fx:id="profileButton">
         <graphic>
-            <ImageView fitHeight="50" fitWidth="50">
-                <Image url="/profile_icon.png"/>
+            <ImageView fitHeight="35" fitWidth="35">
+                <Image url="/images/user.png"/>
             </ImageView>
         </graphic>
         <items>

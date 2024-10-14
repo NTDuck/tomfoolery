@@ -1,0 +1,6 @@
+.dashboard-main {
+    -fx-spacing: 5;
+    -fx-background-color: #3f4957;
+    -fx-background-radius: 15 15 0 0;
+    -fx-padding: 50 0 0 15;
+}

@@ -1,6 +1,5 @@
-/* Style for the navigation bar */
 .nav-bar {
-    -fx-background-color: #F4F6FA;
+    -fx-background-color: #2E3440;
     -fx-spacing: 10;
     -fx-padding: 20 20 20 50;
     -fx-alignment: center-left;
@@ -10,21 +9,15 @@
 .search-bar {
     -fx-padding: 0 20 0 20;
     -fx-alignment: center-left;
-    -fx-background-color: #E5E9F0;
+    -fx-background-color: #434C5E;
     -fx-background-radius: 50;
-}
-
-.search-icon {
-    -fx-font-family: FontAwesome;
-    -fx-font-size: 30;
-    -fx-text-fill: #7E8A95;
 }
 
 .search-text {
     -fx-background-color: transparent;
-    -fx-prompt-text-fill: #CFD5DB;
-    -fx-text-fill: #7E8A95;
-    -fx-font-family: 'Varela Round';
+    -fx-prompt-text-fill: #D8DEE94D;
+    -fx-text-fill: #D8DEE9;
+    -fx-font-family: 'Segoe UI Variable';
     -fx-font-size: 30;
 }
 
@@ -34,14 +27,8 @@
     -fx-background-radius: 50;
 }
 
-.notification-icon {
-    -fx-font-family: 'FontAwesome';
-    -fx-font-size: 30;
-    -fx-text-fill: #7E8A95;
-}
-
 .notification-button:hover {
-    -fx-background-color: #7E8A954D;
+    -fx-background-color: #434C5E;
     -fx-cursor: hand;
 }
 
@@ -51,6 +38,6 @@
 }
 
 .profile-button:hover {
-    -fx-background-color: #7E8A954D;
+    -fx-background-color: #434C5E;
     -fx-cursor: hand;
 }

@@ -1,11 +1,16 @@
 /*
-Color palette:
-Background: #F4F6FA
-Option labels and icon color: #7E8A95
-Search bar background: #E5E9F0
-Search bar foreground: #CFD5DB
- */
+The color palette:
+Background: #2E3440
+Background-selected: #434C5E
+Foreground: #D8DEE9
+Accent color: #88C0D0
+Foreground-secondary: #81A1C1
+Error: #BF616A
+Success: #A3BE8C
+Border and separator: #4C566A
+*/
+
 .below-navbar {
-    -fx-background-color: #F4F6FA;
-    -fx-padding: 0 20 0 20;
+    -fx-background-color: #2E3440;
+    -fx-padding: 0 10 0 10;
 }
