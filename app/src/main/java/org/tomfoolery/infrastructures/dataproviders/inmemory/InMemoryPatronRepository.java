@@ -1,24 +1,17 @@
 package org.tomfoolery.infrastructures.dataproviders.inmemory;
 
 import lombok.NonNull;
-import org.tomfoolery.core.dataproviders.UserRepository;
+import org.tomfoolery.core.dataproviders.PatronRepository;
 import org.tomfoolery.core.domain.Patron;
 import org.tomfoolery.core.domain.ReadonlyUser;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
 public class InMemoryPatronRepository implements PatronRepository {
     private final HashMap<ReadonlyUser.Id, Patron> patrons = new HashMap<>();
-
-    @Override
-    public @Nullable Patron getByCredentials(ReadonlyUser.Credentials credentials) {
-        return patrons.values().stream()
-                .filter(patron -> patron.getCredentials().equals(credentials))
-                .findFirst()
-                .orElse(null);
-    }
 
     @Override
     public void save(@NonNull Patron patron) {
@@ -38,6 +31,11 @@ public class InMemoryPatronRepository implements PatronRepository {
     @Override
     public @NonNull Collection<Patron> show() {
         return new ArrayList<>(patrons.values());
+    }
+
+    @Override
+    public @org.checkerframework.checker.nullness.qual.Nullable Patron getByUsername(@org.checkerframework.checker.nullness.qual.NonNull String username) {
+        return null;
     }
 
     @Override

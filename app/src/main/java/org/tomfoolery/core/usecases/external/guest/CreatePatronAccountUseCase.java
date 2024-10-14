@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.auth.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.PatronRepository;
 import org.tomfoolery.core.domain.Patron;
+import org.tomfoolery.core.usecases.utils.services.CredentialsVerifier;
 import org.tomfoolery.core.utils.function.ThrowableFunction;
-import org.tomfoolery.core.utils.validators.CredentialsValidator;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreatePatronAccountUseCase implements ThrowableFunction<CreatePatronAccountUseCase.Request, CreatePatronAccountUseCase.Response> {
@@ -18,7 +18,7 @@ public class CreatePatronAccountUseCase implements ThrowableFunction<CreatePatro
     @Override
     public @NonNull Response apply(@NonNull Request request) throws ValidationException, PatronAlreadyExistsException {
         val patronCredentials = request.getPatronCredentials();
-        if (!CredentialsValidator.isCredentialsValid(patronCredentials))
+        if (!CredentialsVerifier.verifyCredentials(patronCredentials))
             throw new ValidationException();
 
         val patronUsername = patronCredentials.getUsername();

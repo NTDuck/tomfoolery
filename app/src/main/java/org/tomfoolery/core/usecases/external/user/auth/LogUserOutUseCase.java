@@ -5,25 +5,41 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.UserRepositories;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.AuthenticationToken;
+import org.tomfoolery.core.usecases.utils.structs.UserAndRepository;
+import org.tomfoolery.core.utils.function.ThrowableConsumer;
 
 import java.time.LocalDateTime;
-import java.util.function.Consumer;
 
 @RequiredArgsConstructor(staticName = "of")
-public class LogUserOutUseCase<User extends ReadonlyUser> implements Consumer<LogUserOutUseCase.Request<User>> {
+public class LogUserOutUseCase implements ThrowableConsumer<LogUserOutUseCase.Request> {
     private final @NonNull UserRepositories userRepositories;
+    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
 
     @Override
-    public void accept(@NonNull Request<User> request) {
-        val user = request.getUser();
+    public void accept(@NonNull Request request) throws AuthenticationTokenInvalidException {
+        val authenticationToken = request.getAuthenticationToken();
+
+        val userAndRepository = this.getUserAndRepositoryFromAuthenticationToken(authenticationToken);
+        val userRepository = userAndRepository.getUserRepository();
+        val user = userAndRepository.getUser();
 
         markUserAsLoggedOut(user);
-
-        val userRepository = this.userRepositories.getUserRepositoryByUser(user);
-        assert userRepository != null;
-
         userRepository.save(user);
+
+        this.invalidateAuthenticationToken(authenticationToken);
+    }
+
+    private <User extends ReadonlyUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
+        val username = this.authenticationTokenGenerator.getUsername(authenticationToken);
+        UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUsername(username);
+
+        if (userAndRepository == null)
+            throw new AuthenticationTokenInvalidException();
+
+        return userAndRepository;
     }
 
     private static <User extends ReadonlyUser> void markUserAsLoggedOut(@NonNull User user) {
@@ -34,8 +50,14 @@ public class LogUserOutUseCase<User extends ReadonlyUser> implements Consumer<Lo
         timestamps.setLastLogout(LocalDateTime.now());
     }
 
-    @Value(staticConstructor = "of")
-    public static class Request<User extends ReadonlyUser> {
-        @NonNull User user;
+    private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        this.authenticationTokenGenerator.invalidateToken(authenticationToken);
     }
+
+    @Value(staticConstructor = "of")
+    public static class Request {
+        @NonNull AuthenticationToken authenticationToken;
+    }
+
+    public static class AuthenticationTokenInvalidException extends Exception {}
 }

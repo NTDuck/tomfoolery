@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.auth.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.StaffRepository;
 import org.tomfoolery.core.domain.Administrator;
 import org.tomfoolery.core.domain.Staff;
+import org.tomfoolery.core.usecases.utils.services.CredentialsVerifier;
 import org.tomfoolery.core.utils.function.ThrowableConsumer;
-import org.tomfoolery.core.utils.validators.CredentialsValidator;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreateStaffAccountUseCase implements ThrowableConsumer<CreateStaffAccountUseCase.Request> {
@@ -20,7 +20,7 @@ public class CreateStaffAccountUseCase implements ThrowableConsumer<CreateStaffA
     public void accept(@NonNull Request request) throws ValidationException, StaffAlreadyExistsException {
         val staffCredentials = request.getStaffCredentials();
         
-        if (!CredentialsValidator.isCredentialsValid(staffCredentials))
+        if (!CredentialsVerifier.verifyCredentials(staffCredentials))
             throw new ValidationException();
 
         val staffUsername = staffCredentials.getUsername();

@@ -1,10 +1,10 @@
 package org.tomfoolery.core.dataproviders;
 
-import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.ReadonlyUser;
+import org.tomfoolery.core.usecases.utils.structs.UserAndRepository;
 
 import java.util.SequencedCollection;
 import java.util.function.Predicate;
@@ -21,8 +21,15 @@ public interface UserRepositories extends SequencedCollection<UserRepository<?>>
     }
 
     @SuppressWarnings("unchecked")
-    default <User extends ReadonlyUser> @Nullable UserRepository<User> getUserRepositoryByUsername(@NonNull String username) {
-        return (UserRepository<User>) this.getUserRepositoryByPredicate(userRepository -> userRepository.getByUsername(username) != null);
+    default <User extends ReadonlyUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUsername(@NonNull String username) {
+        for (val userRepository : this) {
+            val user = userRepository.getByUsername(username);
+
+            if (user != null)
+                return UserAndRepository.of((User) user, (UserRepository<User>) userRepository);
+        }
+
+        return null;
     }
 
     private @Nullable UserRepository<?> getUserRepositoryByPredicate(@NonNull Predicate<UserRepository<?>> predicate) {
@@ -32,4 +39,6 @@ public interface UserRepositories extends SequencedCollection<UserRepository<?>>
 
         return null;
     }
+
+
 }
