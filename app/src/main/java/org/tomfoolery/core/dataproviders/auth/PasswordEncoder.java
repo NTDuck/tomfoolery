@@ -1,4 +1,4 @@
-package org.tomfoolery.core.dataproviders;
+package org.tomfoolery.core.dataproviders.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;

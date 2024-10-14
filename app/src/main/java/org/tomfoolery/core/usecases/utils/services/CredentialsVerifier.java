@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.utils.components;
+package org.tomfoolery.core.usecases.utils.services;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
