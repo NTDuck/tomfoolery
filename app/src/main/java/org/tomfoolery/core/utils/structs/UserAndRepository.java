@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.utils.structs;
+package org.tomfoolery.core.utils.structs;
 
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;

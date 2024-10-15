@@ -9,14 +9,16 @@ import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.UserRepositories;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.domain.auth.AuthenticationToken;
-import org.tomfoolery.core.usecases.utils.services.CredentialsVerifier;
-import org.tomfoolery.core.usecases.utils.structs.UserAndRepository;
-import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.services.CredentialsVerificationService;
+import org.tomfoolery.core.utils.structs.UserAndRepository;
+import org.tomfoolery.core.utils.functional.ThrowableFunction;
 
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor(staticName = "of")
 public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
+    private static final int TOKEN_LIFE_IN_MINUTES = 30;
+
     private final @NonNull UserRepositories userRepositories;
 
     private final @NonNull PasswordService passwordService;
@@ -39,12 +41,12 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         markUserAsLoggedIn(user);
         userRepository.save(user);
 
-        val authenticationToken = generateAuthenticationToken(user);
+        val authenticationToken = generateAuthenticationToken(userAndRepository);
         return Response.of(authenticationToken);
     }
 
     private static <User extends ReadonlyUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(credentials))
+        if (!CredentialsVerificationService.verifyCredentials(credentials))
             throw new CredentialsInvalidException();
     }
 
@@ -77,9 +79,15 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         timestamps.setLastLogin(LocalDateTime.now());
     }
 
-    private <User extends ReadonlyUser> AuthenticationToken generateAuthenticationToken(@NonNull User user) {
+    private <User extends ReadonlyUser> AuthenticationToken generateAuthenticationToken(@NonNull UserAndRepository<User> userAndRepository) {
+        val user = userAndRepository.getUser();
+        val userRepository = userAndRepository.getUserRepository();
+
         val userId = user.getId();
-        return this.authenticationTokenService.generateToken(userId);
+        val userClass = userRepository.getUserClass();
+        val expiryTimestamp = LocalDateTime.now().plusMinutes(TOKEN_LIFE_IN_MINUTES);
+
+        return this.authenticationTokenService.generateToken(userId, userClass, expiryTimestamp);
     }
 
     @Value(staticConstructor = "of")

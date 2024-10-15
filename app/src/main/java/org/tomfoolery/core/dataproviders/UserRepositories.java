@@ -4,13 +4,12 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.ReadonlyUser;
-import org.tomfoolery.core.usecases.utils.structs.UserAndRepository;
+import org.tomfoolery.core.utils.structs.UserAndRepository;
 
-import java.util.SequencedCollection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface UserRepositories extends SequencedCollection<UserRepository<?>> {
+public interface UserRepositories extends Iterable<UserRepository<?>> {
     @SuppressWarnings("unchecked")
     default <User extends ReadonlyUser> @Nullable UserRepository<User> getUserRepositoryByUser(@NonNull User user) {
         return (UserRepository<User>) this.getUserRepositoryByUserClass(user.getClass());
@@ -45,7 +44,7 @@ public interface UserRepositories extends SequencedCollection<UserRepository<?>>
             val user = userFunction.apply(userRepository);
 
             if (user != null)
-                return UserAndRepository.of((User) user, (UserRepository<User>) userRepository);
+                return UserAndRepository.of(user, (UserRepository<User>) userRepository);
         }
 
         return null;

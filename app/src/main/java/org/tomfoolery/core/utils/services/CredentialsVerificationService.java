@@ -1,10 +1,10 @@
-package org.tomfoolery.core.usecases.utils.services;
+package org.tomfoolery.core.utils.services;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.ReadonlyUser;
 
-public interface CredentialsVerifier {
+public interface CredentialsVerificationService {
     static <User extends ReadonlyUser> boolean verifyCredentials(User.@NonNull Credentials credentials) {
         val username = credentials.getUsername();
         val password = credentials.getPassword();

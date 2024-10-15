@@ -1,11 +1,14 @@
 package org.tomfoolery.core.dataproviders.auth;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.domain.auth.AuthenticationToken;
 
+import java.time.LocalDateTime;
+
 public interface AuthenticationTokenService {
-    <User extends ReadonlyUser> @NonNull AuthenticationToken generateToken(User.@NonNull Id userId);
+    <User extends ReadonlyUser> @NonNull AuthenticationToken generateToken(User.@NonNull Id userId, @NonNull Class<User> userClass, @NonNull LocalDateTime expiryTimestamp);
     void invalidateToken(@NonNull AuthenticationToken token);
 
     boolean verifyToken(@NonNull AuthenticationToken token);
@@ -14,6 +17,6 @@ public interface AuthenticationTokenService {
         return userClass.equals(this.getUserClassFromToken(token)) && this.verifyToken(token);
     }
 
-    <User extends ReadonlyUser> User.@NonNull Id getUserIdFromToken(@NonNull AuthenticationToken token);
-    <User extends ReadonlyUser> @NonNull Class<User> getUserClassFromToken(@NonNull AuthenticationToken token);
+    <User extends ReadonlyUser> User.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token);
+    <User extends ReadonlyUser> @Nullable Class<User> getUserClassFromToken(@NonNull AuthenticationToken token);
 }

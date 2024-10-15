@@ -7,8 +7,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.PatronRepository;
 import org.tomfoolery.core.domain.Patron;
-import org.tomfoolery.core.usecases.utils.services.CredentialsVerifier;
-import org.tomfoolery.core.utils.function.ThrowableConsumer;
+import org.tomfoolery.core.utils.services.CredentialsVerificationService;
+import org.tomfoolery.core.utils.functional.ThrowableConsumer;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatronAccountUseCase.Request> {
@@ -29,7 +29,7 @@ public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatro
     }
 
     private static void ensurePatronCredentialsAreValid(Patron.@NonNull Credentials patronCredentials) throws PatronCredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(patronCredentials))
+        if (!CredentialsVerificationService.verifyCredentials(patronCredentials))
             throw new PatronCredentialsInvalidException();
     }
 

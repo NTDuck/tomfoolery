@@ -1,7 +1,5 @@
-package org.tomfoolery.infrastructures.utils;
-import org.tomfoolery.infrastructures.utils.Trie;
+package org.tomfoolery.infrastructures.utils.structs;
 
-import static org.testng.Assert.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

@@ -6,7 +6,7 @@ import lombok.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.ReadonlyUser;
-import org.tomfoolery.infrastructures.utils.Trie;
+import org.tomfoolery.infrastructures.utils.structs.Trie;
 
 import javax.annotation.Nullable;
 

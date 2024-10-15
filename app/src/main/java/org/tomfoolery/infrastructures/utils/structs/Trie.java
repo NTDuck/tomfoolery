@@ -1,5 +1,5 @@
 
-package org.tomfoolery.infrastructures.utils;
+package org.tomfoolery.infrastructures.utils.structs;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

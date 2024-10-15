@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Patron;
 import org.tomfoolery.core.domain.auth.AuthenticationToken;
-import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.functional.ThrowableFunction;
 
 @RequiredArgsConstructor(staticName = "of")
 public class GetBorrowedDocumentUseCase implements ThrowableFunction<GetBorrowedDocumentUseCase.Request, GetBorrowedDocumentUseCase.Response> {

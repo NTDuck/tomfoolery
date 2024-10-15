@@ -6,7 +6,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
-import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.functional.ThrowableFunction;
 
 @RequiredArgsConstructor(staticName = "of")
 public class GetDocumentByIdUseCase implements ThrowableFunction<GetDocumentByIdUseCase.Request, GetDocumentByIdUseCase.Response> {
