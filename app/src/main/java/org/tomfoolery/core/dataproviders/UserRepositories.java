@@ -7,6 +7,7 @@ import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.usecases.utils.structs.UserAndRepository;
 
 import java.util.SequencedCollection;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface UserRepositories extends SequencedCollection<UserRepository<?>> {
@@ -22,14 +23,12 @@ public interface UserRepositories extends SequencedCollection<UserRepository<?>>
 
     @SuppressWarnings("unchecked")
     default <User extends ReadonlyUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUsername(@NonNull String username) {
-        for (val userRepository : this) {
-            val user = userRepository.getByUsername(username);
+        return (UserAndRepository<User>) this.getUserAndRepositoryByUserFunction(userRepository -> userRepository.getByUsername(username));
+    }
 
-            if (user != null)
-                return UserAndRepository.of((User) user, (UserRepository<User>) userRepository);
-        }
-
-        return null;
+    @SuppressWarnings("unchecked")
+    default <User extends ReadonlyUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserId(User.@NonNull Id userId) {
+        return (UserAndRepository<User>) this.getUserAndRepositoryByUserFunction(userRepository -> userRepository.getById(userId));
     }
 
     private @Nullable UserRepository<?> getUserRepositoryByPredicate(@NonNull Predicate<UserRepository<?>> predicate) {
@@ -40,5 +39,15 @@ public interface UserRepositories extends SequencedCollection<UserRepository<?>>
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    private <User extends ReadonlyUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserFunction(@NonNull Function<@NonNull UserRepository<?>, @Nullable User> userFunction) {
+        for (val userRepository : this) {
+            val user = userFunction.apply(userRepository);
 
+            if (user != null)
+                return UserAndRepository.of((User) user, (UserRepository<User>) userRepository);
+        }
+
+        return null;
+    }
 }

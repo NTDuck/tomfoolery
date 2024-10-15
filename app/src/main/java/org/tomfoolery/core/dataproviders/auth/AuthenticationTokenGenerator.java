@@ -11,5 +11,5 @@ public interface AuthenticationTokenGenerator {
     boolean verifyToken(@NonNull AuthenticationToken token);
     <User extends ReadonlyUser> boolean verifyTokenForExactUserType(@NonNull AuthenticationToken token);
 
-    @NonNull String getUsername(@NonNull AuthenticationToken token);
+    <User extends ReadonlyUser> User.@NonNull Id getUserIdFromToken(@NonNull AuthenticationToken token);
 }

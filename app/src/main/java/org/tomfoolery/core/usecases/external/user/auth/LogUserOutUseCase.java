@@ -33,8 +33,8 @@ public class LogUserOutUseCase implements ThrowableConsumer<LogUserOutUseCase.Re
     }
 
     private <User extends ReadonlyUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        val username = this.authenticationTokenGenerator.getUsername(authenticationToken);
-        UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUsername(username);
+        val userId = this.authenticationTokenGenerator.getUserIdFromToken(authenticationToken);
+        UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUserId(userId);
 
         if (userAndRepository == null)
             throw new AuthenticationTokenInvalidException();
