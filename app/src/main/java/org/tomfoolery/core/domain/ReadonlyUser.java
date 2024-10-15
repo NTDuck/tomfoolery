@@ -1,6 +1,10 @@
 package org.tomfoolery.core.domain;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Value;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
@@ -8,13 +12,13 @@ import java.util.UUID;
 
 @Data
 public class ReadonlyUser {
-    private final @NonNull ID id = ID.of();
+    private final @NonNull Id id = Id.of();
 
     private final @NonNull Credentials credentials;
-    private final @NonNull Audit audit = Audit.of();
+    private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
-    public static class ID {
+    public static class Id {
         @NonNull UUID value = UUID.randomUUID();
     }
 
@@ -31,7 +35,7 @@ public class ReadonlyUser {
 
         private final @NonNull Timestamps timestamps = Timestamps.of();
 
-        public static Audit of() {
+        public static @NonNull Audit of() {
             return new Audit();
         }
 
@@ -42,7 +46,7 @@ public class ReadonlyUser {
             private @Nullable LocalDateTime lastLogin = null;
             private @Nullable LocalDateTime lastLogout = null;
 
-            public static Timestamps of() {
+            public static @NonNull Timestamps of() {
                 return new Timestamps();
             }
         }

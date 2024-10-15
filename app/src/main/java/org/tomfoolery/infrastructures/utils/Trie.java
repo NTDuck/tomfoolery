@@ -1,3 +1,4 @@
+
 package org.tomfoolery.infrastructures.utils;
 
 import java.util.AbstractMap;
@@ -37,7 +38,7 @@ public class Trie<T> implements Map<String, T> {
 
     @Override
     public int size() {
-        return size;   
+        return size;
     }
 
     @Override
@@ -79,7 +80,7 @@ public class Trie<T> implements Map<String, T> {
 
     @Override
     public T put(@NonNull String key, T value) {
-        
+
         TrieNode node = root;
         for (char c : key.toCharArray()) {
             node.children.putIfAbsent(c, new TrieNode());
@@ -170,7 +171,7 @@ public class Trie<T> implements Map<String, T> {
             collectValues(child, values);
         }
     }
-    
+
     @Override
     public Collection<T> values() {
         List<T> values = new ArrayList<>();
@@ -199,15 +200,15 @@ public class Trie<T> implements Map<String, T> {
 
     public List<String> prefixSearch(String prefix) {
         List<String> results = new ArrayList<>();
-        
+
         TrieNode node = getNode(prefix);
-        
+
         if (node == null) {
-            return results; 
+            return results;
         }
-        
+
         collectWordsWithPrefix(node, new StringBuilder(prefix), results);
-        
+
         return results;
     }
 
@@ -216,9 +217,9 @@ public class Trie<T> implements Map<String, T> {
         if (node.isEndOfWord) {
             results.add(currentPrefix.toString());
         }
-        
+
         for (Map.Entry<Character, TrieNode> entry : node.children.entrySet()) {
-            currentPrefix.append(entry.getKey()); 
+            currentPrefix.append(entry.getKey());
             collectWordsWithPrefix(entry.getValue(), currentPrefix, results);
             currentPrefix.setLength(currentPrefix.length() - 1); // RETURN
         }
@@ -233,13 +234,13 @@ public class Trie<T> implements Map<String, T> {
         if (node.isEndOfWord && Objects.equals(node.value, value)) {
             return true;
         }
-        
+
         for (TrieNode child : node.children.values()) {
             if (containsValueHelper(child, value)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 }

@@ -1,8 +1,8 @@
 package org.tomfoolery.core.domain;
 
 import lombok.Data;
-import lombok.NonNull;
 import lombok.Value;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
@@ -13,14 +13,14 @@ import java.util.HashSet;
 import java.util.List;
 
 @Data(staticConstructor = "of")
-public class Document {
-    private final @NonNull ID id;
+public final class Document {
+    private final @NonNull Id id;
 
-    private final @NonNull Metadata metadata;
+    private @NonNull Metadata metadata;
     private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
-    public static class ID {
+    public static class Id {
         @NonNull String value;
     }
 
@@ -29,16 +29,16 @@ public class Document {
         private @NonNull String title;
         private @NonNull String description;
         private @NonNull List<String> authors = new ArrayList<>();
-
+        private @NonNull List<String> genres = new ArrayList<>();
         private transient @NonNull BufferedImage qrCode;
     }
 
     @Data(staticConstructor = "of")
     public static class Audit {
-        private final @NonNull Staff.ID createdByStaffId;
-        private @Nullable Staff.ID lastModifiedByStaffId = null;
+        private final ReadonlyUser.@NonNull Id createdByStaffId;
+        private @Nullable ReadonlyUser.Id lastModifiedByStaffId = null;
 
-        private final @NonNull Collection<Patron.ID> borrowingPatronIds = new HashSet<>();
+        private final @NonNull Collection<ReadonlyUser.Id> borrowingPatronIds = new HashSet<>();
 
         private final @NonNull Timestamps timestamps = Timestamps.of();
 

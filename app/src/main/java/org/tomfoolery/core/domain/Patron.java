@@ -1,6 +1,10 @@
 package org.tomfoolery.core.domain;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,13 +13,13 @@ import java.util.HashSet;
 public class Patron extends User {
     private final @NonNull Metadata metadata;
 
-    public Patron(@NonNull Credentials credentials, @NonNull Metadata metadata) {
-        super(credentials);
+    public Patron(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
+        super(credentials, audit);
         this.metadata = metadata;
     }
 
-    public static Patron of(@NonNull Credentials credentials, @NonNull Metadata metadata) {
-        return new Patron(credentials, metadata);
+    public static @NonNull Patron of(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
+        return new Patron(credentials, audit, metadata);
     }
 
     @Override
@@ -34,6 +38,6 @@ public class Patron extends User {
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor(staticName = "of")
     public static class Audit extends User.Audit {
-        private final @NonNull Collection<Document.ID> borrowedDocumentIds = new HashSet<>();
+        private final @NonNull Collection<Document.Id> borrowedDocumentIds = new HashSet<>();
     }
 }

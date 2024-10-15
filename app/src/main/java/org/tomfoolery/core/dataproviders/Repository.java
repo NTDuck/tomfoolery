@@ -1,15 +1,18 @@
 package org.tomfoolery.core.dataproviders;
 
-import lombok.NonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 
-public interface Repository<Entity, EntityID> {
+public interface Repository<Entity, EntityId> {
     void save(@NonNull Entity entity);
-    void delete(@NonNull EntityID entityId);
+    void delete(@NonNull EntityId entityId);
 
-    Entity get(@NonNull EntityID entityId);
-    Collection<Entity> show();
+    @Nullable Entity getById(EntityId entityId);
+    @NonNull Collection<Entity> show();
 
-    boolean contains(@NonNull EntityID entityId);
+    default boolean contains(@NonNull EntityId entityId) {
+        return this.getById(entityId) != null;
+    }
 }
