@@ -4,36 +4,51 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.auth.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.PatronRepository;
 import org.tomfoolery.core.domain.Patron;
 import org.tomfoolery.core.usecases.utils.services.CredentialsVerifier;
-import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.function.ThrowableConsumer;
 
 @RequiredArgsConstructor(staticName = "of")
-public class CreatePatronAccountUseCase implements ThrowableFunction<CreatePatronAccountUseCase.Request, CreatePatronAccountUseCase.Response> {
+public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatronAccountUseCase.Request> {
     private final @NonNull PatronRepository patronRepository;
-    private final @NonNull PasswordEncoder passwordEncoder;
+    private final @NonNull PasswordService passwordService;
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws ValidationException, PatronAlreadyExistsException {
+    public void accept(@NonNull Request request) throws PatronCredentialsInvalidException, PatronAlreadyExistsException {
         val patronCredentials = request.getPatronCredentials();
-        if (!CredentialsVerifier.verifyCredentials(patronCredentials))
-            throw new ValidationException();
-
-        val patronUsername = patronCredentials.getUsername();
-        if (this.patronRepository.contains(patronUsername))
-            throw new PatronAlreadyExistsException();
-
-        this.passwordEncoder.encode(patronCredentials);
-
-        val patronAudit = Patron.Audit.of();
         val patronMetadata = request.getPatronMetadata();
 
-        val patron = Patron.of(patronCredentials, patronAudit, patronMetadata);
-        this.patronRepository.save(patron);
+        ensurePatronCredentialsAreValid(patronCredentials);
+        ensurePatronDoesNotExist(patronCredentials);
+        encodePatronPassword(patronCredentials);
 
-        return Response.of(patron);
+        val patron = createPatron(patronCredentials, patronMetadata);
+        this.patronRepository.save(patron);
+    }
+
+    private static void ensurePatronCredentialsAreValid(Patron.@NonNull Credentials patronCredentials) throws PatronCredentialsInvalidException {
+        if (!CredentialsVerifier.verifyCredentials(patronCredentials))
+            throw new PatronCredentialsInvalidException();
+    }
+
+    private void ensurePatronDoesNotExist(Patron.@NonNull Credentials patronCredentials) throws PatronAlreadyExistsException {
+        val patronUsername = patronCredentials.getUsername();
+
+        if (this.patronRepository.contains(patronUsername))
+            throw new PatronAlreadyExistsException();
+    }
+
+    private void encodePatronPassword(Patron.@NonNull Credentials patronCredentials) {
+        val password = patronCredentials.getPassword();
+        val encodedPassword = this.passwordService.encodePassword(password);
+        patronCredentials.setPassword(encodedPassword);
+    }
+
+    private static @NonNull Patron createPatron(Patron.@NonNull Credentials patronCredentials, Patron.@NonNull Metadata patronMetadata) {
+        val patronAudit = Patron.Audit.of();
+        return Patron.of(patronCredentials, patronAudit, patronMetadata);
     }
 
     @Value(staticConstructor = "of")
@@ -42,11 +57,6 @@ public class CreatePatronAccountUseCase implements ThrowableFunction<CreatePatro
         Patron.@NonNull Metadata patronMetadata;
     }
 
-    @Value(staticConstructor = "of")
-    public static class Response {
-        @NonNull Patron patron;
-    }
-
-    public static class ValidationException extends Exception {}
+    public static class PatronCredentialsInvalidException extends Exception {}
     public static class PatronAlreadyExistsException extends Exception {}
 }

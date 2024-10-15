@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.auth.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
+import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.UserRepositories;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.domain.auth.AuthenticationToken;
@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
     private final @NonNull UserRepositories userRepositories;
 
-    private final @NonNull PasswordEncoder passwordEncoder;
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
+    private final @NonNull PasswordService passwordService;
+    private final @NonNull AuthenticationTokenService authenticationTokenService;
 
     @Override
     public @NonNull Response apply(@NonNull Request<?> request) throws CredentialsInvalidException, UserNotFoundException, PasswordMismatchException, UserAlreadyLoggedInException {
@@ -28,22 +28,22 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         val username = userCredentials.getUsername();
         val password = userCredentials.getPassword();
 
-        verifyUserCredentials(userCredentials);
+        ensureUserCredentialsAreValid(userCredentials);
 
-        val userAndRepository = this.getUserAndRepositoryByUsername(username);
+        val userAndRepository = getUserAndRepositoryByUsername(username);
         val userRepository = userAndRepository.getUserRepository();
         val user = userAndRepository.getUser();
 
-        this.verifyUserPassword(password, user);
+        ensurePasswordsMatch(password, user);
 
         markUserAsLoggedIn(user);
         userRepository.save(user);
 
-        val authenticationToken = this.generateAuthenticationToken(user);
+        val authenticationToken = generateAuthenticationToken(user);
         return Response.of(authenticationToken);
     }
 
-    private static <User extends ReadonlyUser> void verifyUserCredentials(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
+    private static <User extends ReadonlyUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
         if (!CredentialsVerifier.verifyCredentials(credentials))
             throw new CredentialsInvalidException();
     }
@@ -57,11 +57,11 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         return userAndRepository;
     }
 
-    private <User extends ReadonlyUser> void verifyUserPassword(@NonNull String password, @NonNull User user) throws PasswordMismatchException {
+    private <User extends ReadonlyUser> void ensurePasswordsMatch(@NonNull String password, @NonNull User user) throws PasswordMismatchException {
         val credentials = user.getCredentials();
         val encodedPassword = credentials.getPassword();
 
-        if (!this.passwordEncoder.verify(password, encodedPassword))
+        if (!this.passwordService.verifyPassword(password, encodedPassword))
             throw new PasswordMismatchException();
     }
 
@@ -79,7 +79,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
 
     private <User extends ReadonlyUser> AuthenticationToken generateAuthenticationToken(@NonNull User user) {
         val userId = user.getId();
-        return this.authenticationTokenGenerator.generateToken(userId);
+        return this.authenticationTokenService.generateToken(userId);
     }
 
     @Value(staticConstructor = "of")

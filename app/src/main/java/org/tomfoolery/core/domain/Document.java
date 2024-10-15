@@ -13,12 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 
 @Data(staticConstructor = "of")
-public class Document {
+public final class Document {
     private final @NonNull Id id;
 
     private @NonNull Metadata metadata;
     private final @NonNull Audit audit;
-
 
     @Value(staticConstructor = "of")
     public static class Id {

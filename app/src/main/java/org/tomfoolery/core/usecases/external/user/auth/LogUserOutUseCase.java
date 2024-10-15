@@ -5,7 +5,7 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.UserRepositories;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.domain.auth.AuthenticationToken;
 import org.tomfoolery.core.usecases.utils.structs.UserAndRepository;
@@ -16,24 +16,24 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(staticName = "of")
 public class LogUserOutUseCase implements ThrowableConsumer<LogUserOutUseCase.Request> {
     private final @NonNull UserRepositories userRepositories;
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
+    private final @NonNull AuthenticationTokenService authenticationTokenService;
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenInvalidException {
         val authenticationToken = request.getAuthenticationToken();
 
-        val userAndRepository = this.getUserAndRepositoryFromAuthenticationToken(authenticationToken);
+        val userAndRepository = getUserAndRepositoryFromAuthenticationToken(authenticationToken);
         val userRepository = userAndRepository.getUserRepository();
         val user = userAndRepository.getUser();
 
         markUserAsLoggedOut(user);
         userRepository.save(user);
 
-        this.invalidateAuthenticationToken(authenticationToken);
+        invalidateAuthenticationToken(authenticationToken);
     }
 
     private <User extends ReadonlyUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        val userId = this.authenticationTokenGenerator.getUserIdFromToken(authenticationToken);
+        val userId = this.authenticationTokenService.getUserIdFromToken(authenticationToken);
         UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUserId(userId);
 
         if (userAndRepository == null)
@@ -51,7 +51,7 @@ public class LogUserOutUseCase implements ThrowableConsumer<LogUserOutUseCase.Re
     }
 
     private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
-        this.authenticationTokenGenerator.invalidateToken(authenticationToken);
+        this.authenticationTokenService.invalidateToken(authenticationToken);
     }
 
     @Value(staticConstructor = "of")

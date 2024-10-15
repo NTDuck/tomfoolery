@@ -13,14 +13,14 @@ import org.tomfoolery.core.domain.auth.AuthenticationToken;
 import org.tomfoolery.core.utils.function.ThrowableFunction;
 
 @RequiredArgsConstructor(staticName = "of")
-public class BorrowDocumentUseCase implements ThrowableFunction<BorrowDocumentUseCase.Request, BorrowDocumentUseCase.Response> {
+public class GetBorrowedDocumentUseCase implements ThrowableFunction<GetBorrowedDocumentUseCase.Request, GetBorrowedDocumentUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
     private final @NonNull AuthenticationTokenService authenticationTokenService;
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws PatronAuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentAlreadyBorrowedException {
+    public @NonNull Response apply(@NonNull Request request) throws PatronAuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentNotBorrowedException {
         val patronAuthenticationToken = request.getPatronAuthenticationToken();
         val documentId = request.getDocumentId();
 
@@ -29,11 +29,7 @@ public class BorrowDocumentUseCase implements ThrowableFunction<BorrowDocumentUs
         val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
         val document = getDocumentFromId(documentId);
 
-        ensureDocumentIsNotBorrowed(patron, documentId);
-        markDocumentAsBorrowedByPatron(patron, document);
-
-        this.documentRepository.save(document);
-        this.patronRepository.save(patron);
+        ensureDocumentIsBorrowed(patron, documentId);
 
         return Response.of(document);
     }
@@ -62,25 +58,12 @@ public class BorrowDocumentUseCase implements ThrowableFunction<BorrowDocumentUs
         return document;
     }
 
-    private static void ensureDocumentIsNotBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentAlreadyBorrowedException {
+    private static void ensureDocumentIsBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentNotBorrowedException {
         val patronAudit = patron.getAudit();
         val borrowedDocumentIdsOfPatron = patronAudit.getBorrowedDocumentIds();
 
-        if (borrowedDocumentIdsOfPatron.contains(documentId))
-            throw new DocumentAlreadyBorrowedException();
-    }
-
-    private static void markDocumentAsBorrowedByPatron(@NonNull Patron patron, @NonNull Document document) {
-        val patronId = patron.getId();
-        val documentId = document.getId();
-
-        val patronAudit = patron.getAudit();
-        val borrowedDocumentIdsOfPatron = patronAudit.getBorrowedDocumentIds();
-        borrowedDocumentIdsOfPatron.add(documentId);
-
-        val documentAudit = document.getAudit();
-        val borrowingPatronIdsOfDocument = documentAudit.getBorrowingPatronIds();
-        borrowingPatronIdsOfDocument.add(patronId);
+        if (!borrowedDocumentIdsOfPatron.contains(documentId))
+            throw new DocumentNotBorrowedException();
     }
 
     @Value(staticConstructor = "of")
@@ -97,5 +80,5 @@ public class BorrowDocumentUseCase implements ThrowableFunction<BorrowDocumentUs
     public static class PatronAuthenticationTokenInvalidException extends Exception {}
     public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
-    public static class DocumentAlreadyBorrowedException extends Exception {}
+    public static class DocumentNotBorrowedException extends Exception {}
 }

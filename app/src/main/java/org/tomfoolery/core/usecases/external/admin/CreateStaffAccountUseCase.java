@@ -4,44 +4,77 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.auth.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
+import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.StaffRepository;
 import org.tomfoolery.core.domain.Administrator;
 import org.tomfoolery.core.domain.Staff;
+import org.tomfoolery.core.domain.auth.AuthenticationToken;
 import org.tomfoolery.core.usecases.utils.services.CredentialsVerifier;
 import org.tomfoolery.core.utils.function.ThrowableConsumer;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreateStaffAccountUseCase implements ThrowableConsumer<CreateStaffAccountUseCase.Request> {
     private final @NonNull StaffRepository staffRepository;
-    private final @NonNull PasswordEncoder passwordEncoder;
+
+    private final @NonNull PasswordService passwordService;
+    private final @NonNull AuthenticationTokenService authenticationTokenService;
 
     @Override
-    public void accept(@NonNull Request request) throws ValidationException, StaffAlreadyExistsException {
+    public void accept(@NonNull Request request) throws AdminAuthenticationTokenInvalidException, StaffCredentialsInvalidException, StaffAlreadyExistsException {
+        val adminAuthenticationToken = request.getAdminAuthenticationToken();
         val staffCredentials = request.getStaffCredentials();
-        
-        if (!CredentialsVerifier.verifyCredentials(staffCredentials))
-            throw new ValidationException();
 
+        ensureAdminAuthenticationTokenIsValid(adminAuthenticationToken);
+        val administratorId = getAdministratorIdFromAuthenticationToken(adminAuthenticationToken);
+
+        ensureStaffCredentialsAreValid(staffCredentials);
+        ensureStaffDoesNotExist(staffCredentials);
+        encodeStaffPassword(staffCredentials);
+
+        val staff = createStaffAndMarkAsCreatedByAdmin(staffCredentials, administratorId);
+        staffRepository.save(staff);
+    }
+
+    private void ensureAdminAuthenticationTokenIsValid(@NonNull AuthenticationToken adminAuthenticationToken) throws AdminAuthenticationTokenInvalidException {
+        if (!this.authenticationTokenService.verifyToken(adminAuthenticationToken, Administrator.class))
+            throw new AdminAuthenticationTokenInvalidException();
+    }
+
+    private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken adminAuthenticationToken) {
+        return this.authenticationTokenService.getUserIdFromToken(adminAuthenticationToken);
+    }
+
+    private static void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials staffCredentials) throws StaffCredentialsInvalidException {
+        if (!CredentialsVerifier.verifyCredentials(staffCredentials))
+            throw new StaffCredentialsInvalidException();
+    }
+
+    private void ensureStaffDoesNotExist(Staff.@NonNull Credentials staffCredentials) throws StaffAlreadyExistsException {
         val staffUsername = staffCredentials.getUsername();
+
         if (this.staffRepository.contains(staffUsername))
             throw new StaffAlreadyExistsException();
+    }
 
-        this.passwordEncoder.encode(staffCredentials);
+    private void encodeStaffPassword(Staff.@NonNull Credentials staffCredentials) {
+        val password = staffCredentials.getPassword();
+        val encodedPassword = this.passwordService.encodePassword(password);
+        staffCredentials.setPassword(encodedPassword);
+    }
 
-        val adminId = request.getAdmin().getId();
-        val staffAudit = Staff.Audit.of(adminId);
-
-        val staff = Staff.of(staffCredentials, staffAudit);
-        staffRepository.save(staff);
+    private static @NonNull Staff createStaffAndMarkAsCreatedByAdmin(Staff.@NonNull Credentials staffCredentials, Administrator.@NonNull Id administratorId) {
+        val staffAudit = Staff.Audit.of(administratorId);
+        return Staff.of(staffCredentials, staffAudit);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull Administrator admin;
+        @NonNull AuthenticationToken adminAuthenticationToken;
         Staff.@NonNull Credentials staffCredentials;
     }
 
-    public static class ValidationException extends Exception {}
+    public static class AdminAuthenticationTokenInvalidException extends Exception {}
+    public static class StaffCredentialsInvalidException extends Exception {}
     public static class StaffAlreadyExistsException extends Exception {}
 }
