@@ -11,24 +11,23 @@ import java.util.Collection;
 import java.util.function.Function;
 
 @RequiredArgsConstructor(staticName = "of")
-public class SearchDocumentsByGenresUseCase implements Function<SearchDocumentsByGenresUseCase.Request, SearchDocumentsByGenresUseCase.Response> {
+public class SearchDocumentsByGenreUseCase implements Function<SearchDocumentsByGenreUseCase.Request, SearchDocumentsByGenreUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
 
     @Override
     public @NonNull Response apply(@NonNull Request request) {
-        val genres = request.getGenres();
-        val documents = this.documentRepository.searchByGenres(genres);
+        val genre = request.getGenre();
+        val documents = this.documentRepository.searchByGenre(genre);
         return Response.of(documents);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull Collection<String> genres;
+        @NonNull String genre;
     }
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull
-        Collection<Document> documents;
+        @NonNull Collection<Document> documents;
     }
 }
