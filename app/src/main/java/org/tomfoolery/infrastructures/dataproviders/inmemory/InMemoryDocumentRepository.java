@@ -2,19 +2,19 @@ package org.tomfoolery.infrastructures.dataproviders.inmemory;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import lombok.NonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.infrastructures.utils.structs.Trie;
-
-import javax.annotation.Nullable;
 
 public class InMemoryDocumentRepository implements DocumentRepository {
     private final HashMap<Document.Id, Document> documents = new HashMap<>();
     private final Trie<String> titleTrie = Trie.of();
     private final Trie<String> authorTrie = Trie.of();
     private final Trie<String> genreTrie = Trie.of();
+
     @Override
     public void save(@NonNull Document document) {
         Document.Id id = document.getId();
@@ -29,7 +29,7 @@ public class InMemoryDocumentRepository implements DocumentRepository {
     }
 
     @Override
-    public void delete(@NonNull Document.Id entityId) {
+    public void delete(Document.@NonNull Id entityId) {
         Document document = documents.remove(entityId);
         if (document != null) {
             titleTrie.remove(document.getMetadata().getTitle().toLowerCase(), entityId.getValue());
