@@ -1,33 +1,26 @@
 package org.tomfoolery.core.usecases.external.user.browse;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 
 import java.util.Collection;
-import java.util.function.Function;
 
-@RequiredArgsConstructor(staticName = "of")
-public class SearchDocumentsByTitleUseCase implements Function<SearchDocumentsByTitleUseCase.Request, SearchDocumentsByTitleUseCase.Response> {
+public class SearchDocumentsByTitleUseCase extends SearchDocumentsByCriterionUseCase {
     private final @NonNull DocumentRepository documentRepository;
 
+    private SearchDocumentsByTitleUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenService authenticationTokenService) {
+        super(authenticationTokenService);
+        this.documentRepository = documentRepository;
+    }
+
+    public @NonNull SearchDocumentsByTitleUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenService authenticationTokenService) {
+        return new SearchDocumentsByTitleUseCase(documentRepository, authenticationTokenService);
+    }
+
     @Override
-    public @NonNull Response apply(@NonNull Request request) {
-        val title = request.getTitle();
-        val documents = this.documentRepository.searchByTitle(title);
-        return Response.of(documents);
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Request {
-        @NonNull String title;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Response {
-        @NonNull Collection<Document> documents;
+    protected @NonNull Collection<Document> getDocumentsFromCriterion(@NonNull String criterion) {
+        return this.documentRepository.searchByTitle(criterion);
     }
 }

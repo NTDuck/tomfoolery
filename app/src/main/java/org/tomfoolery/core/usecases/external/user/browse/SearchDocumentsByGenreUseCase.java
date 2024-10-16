@@ -1,33 +1,26 @@
 package org.tomfoolery.core.usecases.external.user.browse;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 
 import java.util.Collection;
-import java.util.function.Function;
 
-@RequiredArgsConstructor(staticName = "of")
-public class SearchDocumentsByGenreUseCase implements Function<SearchDocumentsByGenreUseCase.Request, SearchDocumentsByGenreUseCase.Response> {
+public class SearchDocumentsByGenreUseCase extends SearchDocumentsByCriterionUseCase {
     private final @NonNull DocumentRepository documentRepository;
 
+    private SearchDocumentsByGenreUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenService authenticationTokenService) {
+        super(authenticationTokenService);
+        this.documentRepository = documentRepository;
+    }
+
+    public @NonNull SearchDocumentsByGenreUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenService authenticationTokenService) {
+        return new SearchDocumentsByGenreUseCase(documentRepository, authenticationTokenService);
+    }
+
     @Override
-    public @NonNull Response apply(@NonNull Request request) {
-        val genre = request.getGenre();
-        val documents = this.documentRepository.searchByGenre(genre);
-        return Response.of(documents);
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Request {
-        @NonNull String genre;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Response {
-        @NonNull Collection<Document> documents;
+    protected @NonNull Collection<Document> getDocumentsFromCriterion(@NonNull String criterion) {
+        return this.documentRepository.searchByGenre(criterion);
     }
 }
