@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.adapters.guest.auth;
+package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 
 import lombok.Value;
 import lombok.val;
@@ -8,7 +8,7 @@ import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 
 import java.util.function.Function;
 
-public class LogUserInAdapter implements Function<LogUserInAdapter.RequestObject, LogUserInUseCase.Request<?>> {
+public class LogUserInController implements Function<LogUserInController.RequestObject, LogUserInUseCase.Request<?>> {
     @Override
     public LogUserInUseCase.@NonNull Request<?> apply(@NonNull RequestObject requestObject) {
         val username = requestObject.getUsername();

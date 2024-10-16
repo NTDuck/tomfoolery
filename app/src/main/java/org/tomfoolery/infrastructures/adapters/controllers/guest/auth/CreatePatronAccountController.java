@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.adapters.guest.auth;
+package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 
 import lombok.NoArgsConstructor;
 import lombok.Value;
@@ -10,7 +10,7 @@ import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCa
 import java.util.function.Function;
 
 @NoArgsConstructor(staticName = "of")
-public class CreatePatronAccountAdapter implements Function<CreatePatronAccountAdapter.RequestObject, CreatePatronAccountUseCase.Request> {
+public class CreatePatronAccountController implements Function<CreatePatronAccountController.RequestObject, CreatePatronAccountUseCase.Request> {
     @Override
     public CreatePatronAccountUseCase.@NonNull Request apply(@NonNull RequestObject requestObject) {
         val username = requestObject.getUsername();

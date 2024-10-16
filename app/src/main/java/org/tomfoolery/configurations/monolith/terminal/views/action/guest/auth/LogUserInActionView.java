@@ -7,11 +7,11 @@ import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView
 import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.infrastructures.adapters.guest.auth.LogUserInAdapter;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 
 @RequiredArgsConstructor(staticName = "of")
 public class LogUserInActionView implements ActionView {
-    private final @NonNull LogUserInAdapter controller;
+    private final @NonNull LogUserInController controller;
 
     @Override
     public void run() {
@@ -19,7 +19,7 @@ public class LogUserInActionView implements ActionView {
 
     }
 
-    private LogUserInAdapter.@NonNull RequestObject getRequestObject() {
+    private LogUserInController.@NonNull RequestObject getRequestObject() {
         val scanner = ScannerService.getScanner();
 
         System.out.print("Enter username: ");
@@ -28,7 +28,7 @@ public class LogUserInActionView implements ActionView {
         System.out.print("Enter password: ");
         val password = scanner.nextLine();
 
-        return LogUserInAdapter.RequestObject.of(username, password);
+        return LogUserInController.RequestObject.of(username, password);
     }
 
     @Override
