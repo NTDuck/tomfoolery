@@ -19,7 +19,8 @@ public class UpdateDocumentUseCase implements ThrowableFunction<UpdateDocumentUs
     private final @NonNull AuthenticationTokenService authenticationTokenService;
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws StaffAuthenticationTokenInvalidException, DocumentNotFoundException {
+    public @NonNull Response apply(@NonNull Request request)
+            throws StaffAuthenticationTokenInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = request.getStaffAuthenticationToken();
 
         val documentId = request.getDocumentId();
@@ -36,12 +37,14 @@ public class UpdateDocumentUseCase implements ThrowableFunction<UpdateDocumentUs
         return Response.of(documentId);
     }
 
-    private void ensureStaffAuthenticationTokenIsValid(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
+    private void ensureStaffAuthenticationTokenIsValid(@NonNull AuthenticationToken staffAuthenticationToken)
+            throws StaffAuthenticationTokenInvalidException {
         if (!this.authenticationTokenService.verifyToken(staffAuthenticationToken, Staff.class))
             throw new StaffAuthenticationTokenInvalidException();
     }
 
-    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
+    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken)
+            throws StaffAuthenticationTokenInvalidException {
         val staffId = this.authenticationTokenService.getUserIdFromToken(staffAuthenticationToken);
 
         if (staffId == null)
