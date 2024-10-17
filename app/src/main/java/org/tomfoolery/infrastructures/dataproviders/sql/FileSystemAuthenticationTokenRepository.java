@@ -19,8 +19,14 @@ public class FileSystemAuthenticationTokenRepository implements AuthenticationTo
 
     @Override
     public void saveToken(@NonNull AuthenticationToken token) {
-        FileWriter fileWriter = new FileWriter(tokenFile);
-        fileWriter.write(token.toString());
+        FileWriter fileWriter = null;
+
+        try {
+            fileWriter = new FileWriter(tokenFile);
+            fileWriter.write(token.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
