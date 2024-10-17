@@ -14,7 +14,7 @@ import java.util.SequencedMap;
 
 public abstract class SelectionView implements View {
     private final @NonNull Rows rows;
-    private @Nullable Class<? extends View> nextViewClass = null;
+    private @Nullable Class<? extends View> nextViewClass = this.getClass();
 
     public SelectionView(@NonNull Iterable<Row> rows) {
         this.rows = Rows.of(rows);
