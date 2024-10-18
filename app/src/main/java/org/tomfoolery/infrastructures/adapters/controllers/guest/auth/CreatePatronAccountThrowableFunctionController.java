@@ -6,10 +6,10 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.Patron;
 import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
-import org.tomfoolery.infrastructures.utils.contracts.Controller;
+import org.tomfoolery.infrastructures.utils.contracts.ThrowableConsumerController;
 
 @RequiredArgsConstructor(staticName = "of")
-public class CreatePatronAccountController implements Controller<CreatePatronAccountController.RequestObject, CreatePatronAccountUseCase.Request, Void> {
+public class CreatePatronAccountThrowableFunctionController implements ThrowableConsumerController<CreatePatronAccountThrowableFunctionController.RequestObject, CreatePatronAccountUseCase.Request> {
     private final @NonNull CreatePatronAccountUseCase useCase;
 
     @Override
@@ -31,10 +31,9 @@ public class CreatePatronAccountController implements Controller<CreatePatronAcc
     }
 
     @Override
-    public @NonNull Void getResponseModelFromRequestObject(@NonNull RequestObject requestObject) throws Exception {
+    public void accept(@NonNull RequestObject requestObject) throws CreatePatronAccountUseCase.PatronCredentialsInvalidException, CreatePatronAccountUseCase.PatronAlreadyExistsException {
         val requestModel = this.getRequestModelFromRequestObject(requestObject);
         this.useCase.accept(requestModel);
-        return null;
     }
 
     private static @NonNull String getFullName(@NonNull String firstName, @NonNull String lastName) {

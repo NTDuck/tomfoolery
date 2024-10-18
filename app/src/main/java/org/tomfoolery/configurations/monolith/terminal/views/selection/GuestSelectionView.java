@@ -16,6 +16,10 @@ public class GuestSelectionView extends SelectionView {
         ));
     }
 
+    public static @NonNull GuestSelectionView of() {
+        return new GuestSelectionView();
+    }
+
     @Override
     protected @NonNull String getPrompt() {
         return "(Guest Selection)";
