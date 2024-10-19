@@ -1,47 +1,43 @@
 package org.tomfoolery.configurations.monolith.terminal.utils.contract;
 
-import lombok.NoArgsConstructor;
-import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.tomfoolery.configurations.monolith.terminal.adapters.selection.SelectionAdapter;
 import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
 
 import java.util.InputMismatchException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.SequencedMap;
+import java.util.List;
 
 public abstract class SelectionView implements View {
-    private final @NonNull Rows rows;
+    private final @NonNull SelectionAdapter selectionAdapter;
     private @Nullable Class<? extends View> nextViewClass = this.getClass();
 
-    public SelectionView(@NonNull Iterable<Row> rows) {
-        this.rows = Rows.of(rows);
+    protected SelectionView(@NonNull List<SelectionAdapter.Item> items) {
+        this.selectionAdapter = SelectionAdapter.of(items);
     }
 
     @Override
     public void run() {
-        this.displayPrompt();
-        this.displayRows();
+        displayPrompt();
+
+        val viewModel = this.selectionAdapter.get();
+        displayViewModel(viewModel);
 
         try {
-            val selection = getSelectionFromUserInput();
-            val row = this.rows.getRowBySelection(selection);
+            val requestObject = getRequestObject();
+            val responseModel = this.selectionAdapter.apply(requestObject);
 
-            if (row == null)
-                throw new SelectionValueInvalidException();
+            this.nextViewClass = responseModel.getNextViewClass();
+            displayMessageOnSuccess();
 
-            this.nextViewClass = row.getViewClass();
-            this.displaySuccessMessage(row);
-
-        } catch (SelectionFormatInvalidException exception) {
+        } catch (InputMismatchException exception) {
             this.nextViewClass = this.getClass();
-            displayErrorMessageForSelectionFormatInvalidException();
+            displayMessageOnInputMismatchException();
 
-        } catch (SelectionValueInvalidException exception) {
+        } catch (SelectionAdapter.ItemNotFoundException exception) {
             this.nextViewClass = this.getClass();
-            displayErrorMessageForSelectionValueInvalidException();
+            displayMessageOnItemNotFoundException();
         }
     }
 
@@ -51,96 +47,66 @@ public abstract class SelectionView implements View {
     }
 
     private void displayPrompt() {
-        val prompt = this.getPrompt();
-        System.out.println(prompt);
+        System.out.println(this.getPrompt());
     }
 
-    protected abstract @NonNull String getPrompt();
-
-    private void displayRows() {
-        for (val row : this.rows)
-            displayRow(row);
+    protected @NonNull String getPrompt() {
+        return "Welcome to My Application!";
     }
 
-    private static void displayRow(@NonNull Row row) {
-        val rowAsString = getStringFromRow(row);
-        System.out.println(rowAsString);
+    private static void displayViewModel(SelectionAdapter.@NonNull ViewModel viewModel) {
+        val viewonlyItems = viewModel.getViewonlyItems();
+
+        for (val viewonlyItem : viewonlyItems)
+            displayViewonlyItem(viewonlyItem);
     }
 
-    private static @NonNull String getStringFromRow(@NonNull Row row) {
-        val selection = row.getSelection();
-        val label = row.getLabel();
+    private static void displayViewonlyItem(SelectionAdapter.@NonNull ViewonlyItem viewonlyItem) {
+        val index = viewonlyItem.getIndex();
+        val label = viewonlyItem.getLabel();
 
-        return "[" + selection + "] " + label;
+        System.out.println("[" + index + "] " + label);
     }
 
-    private static int getSelectionFromUserInput() throws SelectionFormatInvalidException {
+    private static SelectionAdapter.@NonNull RequestObject getRequestObject() throws InputMismatchException {
         val scanner = ScannerService.getScanner();
 
-        try {
-            val selection = scanner.nextInt();
-            scanner.nextLine();
-            return selection;
-        } catch (InputMismatchException exception) {
-            throw new SelectionFormatInvalidException();
-        }
+        val index = scanner.nextInt();
+        scanner.nextLine();
+
+        return SelectionAdapter.RequestObject.of(index);
     }
 
-    private void displaySuccessMessage(@NonNull Row row) {
-        val message = this.getSuccessMessage(row);
-        System.out.println(message);
+    private void displayMessageOnSuccess() {
+        System.out.println(this.getMessageOnSuccess());
     }
 
-    protected @NonNull String getSuccessMessage(@NonNull Row row) {
-        val selection = row.getSelection();
-
-        return "Success: selected [" + selection + "].";
+    protected @NonNull String getMessageOnSuccess() {
+        return "Success: Redirecting ...";
     }
 
-    private static void displayErrorMessageForSelectionFormatInvalidException() {
-        val message = "Error: inputted selection is not a valid number.";
-        System.out.println(message);
+    private void displayMessageOnInputMismatchException() {
+        System.out.println(this.getMessageOnInputMismatchException());
     }
 
-    private static void displayErrorMessageForSelectionValueInvalidException() {
-        val message = "Error: inputted selection does not match any action.";
-        System.out.println(message);
+    protected @NonNull String getMessageOnInputMismatchException() {
+        return "Error: Input format invalid.";
     }
 
-    @Value(staticConstructor = "of")
-    public static class Row {
-        int selection;
-        @NonNull String label;
-        @Nullable Class<? extends View> viewClass;
+    private void displayMessageOnItemNotFoundException() {
+        System.out.println(this.getMessageOnItemNotFoundException());
     }
 
-    @NoArgsConstructor(staticName = "of")
-    private static class Rows implements Iterable<Row> {
-        private final @NonNull SequencedMap<Integer, Row> selectionToRowMap = new LinkedHashMap<>();
-
-        private Rows(@NonNull Iterable<Row> rows) {
-            for (val row : rows)
-                this.addRow(row);
-        }
-
-        public static @NonNull Rows of(@NonNull Iterable<Row> rows) {
-            return new Rows(rows);
-        }
-
-        public void addRow(@NonNull Row row) {
-            this.selectionToRowMap.put(row.getSelection(), row);
-        }
-
-        public @Nullable Row getRowBySelection(int selection) {
-            return this.selectionToRowMap.get(selection);
-        }
-
-        @Override
-        public @NonNull Iterator<Row> iterator() {
-            return this.selectionToRowMap.sequencedValues().iterator();
-        }
+    protected @NonNull String getMessageOnItemNotFoundException() {
+        return "Error: Item not found.";
     }
-
-    private static class SelectionFormatInvalidException extends Exception {}
-    private static class SelectionValueInvalidException extends Exception {}
 }
+
+/*
+1. View requests from Controller the List of something, each something contains a index (int) and label (String)
+2. View get player input (int) and pass it to Controller (throws FormatInvalidException)
+3. Controller return result (nextViewClass) and pass it to View (throws ItemNotFoundException)
+4. View display message based on success/failure
+5. redirection
+
+ */
