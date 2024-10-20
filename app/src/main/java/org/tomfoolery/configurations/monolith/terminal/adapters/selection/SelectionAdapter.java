@@ -1,7 +1,6 @@
 package org.tomfoolery.configurations.monolith.terminal.adapters.selection;
 
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -35,7 +34,7 @@ public class SelectionAdapter implements Supplier<SelectionAdapter.ViewModel>, T
 
     @Override
     public @NonNull ResponseModel apply(@NonNull RequestObject requestObject) throws ItemNotFoundException {
-        val index = requestObject.getIndex();
+        val index = requestObject.getItemIndex();
         val item = this.items.getItemByIndex(index);
 
         if (item == null)
@@ -100,7 +99,7 @@ public class SelectionAdapter implements Supplier<SelectionAdapter.ViewModel>, T
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        int index;
+        int itemIndex;
     }
 
     @Value(staticConstructor = "of")

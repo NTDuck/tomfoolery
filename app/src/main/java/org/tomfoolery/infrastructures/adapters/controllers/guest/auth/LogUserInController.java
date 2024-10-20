@@ -1,18 +1,28 @@
 package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.dataproviders.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
+import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionController;
 
-@RequiredArgsConstructor(staticName = "of")
-public class LogUserInThrowableFunctionController implements ThrowableFunctionController<LogUserInThrowableFunctionController.RequestObject, LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
+public class LogUserInController implements ThrowableFunctionController<LogUserInController.RequestObject, LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
     private final @NonNull LogUserInUseCase useCase;
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
+
+    private LogUserInController(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.useCase = LogUserInUseCase.of(userRepositories, passwordService, authenticationTokenService);
+        this.authenticationTokenRepository = authenticationTokenRepository;
+    }
+
+    public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new LogUserInController(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+    }
 
     @Override
     public LogUserInUseCase.@NonNull Request<?> getRequestModelFromRequestObject(@NonNull RequestObject requestObject) {

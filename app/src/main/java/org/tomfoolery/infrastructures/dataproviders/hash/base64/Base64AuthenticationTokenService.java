@@ -2,6 +2,7 @@ package org.tomfoolery.infrastructures.dataproviders.hash.base64;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -13,6 +14,7 @@ import org.tomfoolery.infrastructures.utils.services.Base64Service;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor(staticName = "of")
 public class Base64AuthenticationTokenService implements AuthenticationTokenService {
     @Override
     public @NonNull <User extends ReadonlyUser> AuthenticationToken generateToken(User.@NonNull Id userId, @NonNull Class<User> userClass, @NonNull LocalDateTime expiryTimestamp) {

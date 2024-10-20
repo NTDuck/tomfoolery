@@ -2,6 +2,8 @@ package org.tomfoolery.infrastructures.dataproviders.inmemory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
@@ -9,6 +11,7 @@ import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.infrastructures.utils.structs.Trie;
 
+@NoArgsConstructor(staticName = "of")
 public class InMemoryDocumentRepository implements DocumentRepository {
     private final HashMap<Document.Id, Document> documents = new HashMap<>();
     private final Trie<String> titleTrie = Trie.of();

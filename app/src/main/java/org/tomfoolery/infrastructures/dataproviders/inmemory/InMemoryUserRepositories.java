@@ -17,6 +17,10 @@ public class InMemoryUserRepositories implements UserRepositories {
         this.userRepositories = List.of(administratorRepository, staffRepository, patronRepository);
     }
 
+    public static @NonNull InMemoryUserRepositories of(@NonNull AdministratorRepository administratorRepository, @NonNull StaffRepository staffRepository, @NonNull PatronRepository patronRepository) {
+        return new InMemoryUserRepositories(administratorRepository, staffRepository, patronRepository);
+    }
+
     @Override
     public @NonNull Iterator<UserRepository<?>> iterator() {
         return userRepositories.iterator();
