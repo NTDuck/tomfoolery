@@ -35,7 +35,7 @@ public class LoginMenuController {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
         System.out.println("Login attempt with username: " + username);
-        if(authenticate(username, password)) {
+        if (authenticate(username, password)) {
             StageManager.openMainMenu();
         } else {
             errorMessage.setText("Invalid username or password");
@@ -49,11 +49,10 @@ public class LoginMenuController {
     }
 
     private boolean authenticate(String username, String password) {
-        if(username.equals("adnope") && password.equals("a")) {
+        if (username.equals("adnope") && password.equals("a")) {
             System.out.println("Login successful");
             return true;
-        }
-        else {
+        } else {
             System.out.println("Login with " + username + " failed");
             return false;
         }
