@@ -6,7 +6,7 @@ import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView
 import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.core.dataproviders.UserRepositories;
+import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.UserRepositories;
+import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.ReadonlyUser;
 import org.tomfoolery.core.domain.auth.AuthenticationToken;

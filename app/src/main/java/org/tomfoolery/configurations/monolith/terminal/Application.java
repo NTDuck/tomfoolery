@@ -9,15 +9,17 @@ import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerSer
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.CreatePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.LogUserInActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.core.dataproviders.*;
+import org.tomfoolery.core.dataproviders.AdministratorRepository;
+import org.tomfoolery.core.dataproviders.DocumentRepository;
+import org.tomfoolery.core.dataproviders.PatronRepository;
+import org.tomfoolery.core.dataproviders.StaffRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
+import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.dataproviders.hash.base64.Base64AuthenticationTokenService;
 import org.tomfoolery.infrastructures.dataproviders.hash.base64.Base64PasswordService;
 import org.tomfoolery.infrastructures.dataproviders.inmemory.*;
-
-import java.util.Collections;
 
 @NoArgsConstructor(staticName = "of")
 public class Application implements Runnable, AutoCloseable {
@@ -26,7 +28,7 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
 
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
-    private final @NonNull UserRepositories userRepositories = InMemoryUserRepositories.of(this.administratorRepository, this.staffRepository, this.patronRepository);
+    private final @NonNull UserRepositories userRepositories = UserRepositories.of(this.administratorRepository, this.staffRepository, this.patronRepository);
 
     private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService.of();
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();

@@ -29,6 +29,7 @@ public class CreatePatronAccountActionView implements ActionView {
         try {
             val requestObject = getRequestObject();
             this.controller.accept(requestObject);
+            onSuccess();
         } catch (PasswordMismatchException exception) {
             onPasswordMismatchException();
         } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException e) {
@@ -71,6 +72,10 @@ public class CreatePatronAccountActionView implements ActionView {
     @Override
     public @NonNull Class<? extends SelectionView> getNextViewClass() {
         return this.nextViewClass;
+    }
+
+    private void onSuccess() {
+        this.nextViewClass = GuestSelectionView.class;
     }
 
     private void onPasswordMismatchException() {
