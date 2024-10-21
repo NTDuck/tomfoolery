@@ -11,22 +11,17 @@
       styleClass="discover-main" stylesheets="/css/Discover.css">
 
     <!-- The category chooser -->
-    <VBox styleClass="category-chooser" minWidth="120" maxWidth="120">
+    <VBox styleClass="category-chooser" minWidth="120">
         <Label text="Categories" styleClass="category-header"/>
         <Button prefHeight="35" text="Horror" styleClass="category-option"/>
         <Button prefHeight="35" text="Fantasy" styleClass="category-option"/>
         <Button prefHeight="35" text="Romance" styleClass="category-option"/>
-        <Button prefHeight="35" text="Phandong" styleClass="category-option"/>
+        <Button prefHeight="35" text="Viet Tan News" styleClass="category-option"/>
         <Button prefHeight="35" text="CP" styleClass="category-option"/>
     </VBox>
 
-    <VBox style="-fx-background-color: transparent" VBox.vgrow="ALWAYS" alignment="CENTER">
-        <Separator orientation="VERTICAL" styleClass="separator"/>
-    </VBox>
-
     <!-- Books displaying section -->
-    <VBox style="-fx-background-color: transparent" HBox.hgrow="ALWAYS">
-        <Pane minHeight="20" maxHeight="20"/>
+    <VBox style="-fx-background-color: pink; -fx-padding: 10 10 10 10" prefWidth="1100" HBox.hgrow="ALWAYS">
         <Label text="1432 books" styleClass="books-counter"/>
         <ScrollPane prefWidth="1100" VBox.vgrow="ALWAYS" styleClass="book-display">
             <ImageView>

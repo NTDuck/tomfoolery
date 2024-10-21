@@ -11,6 +11,7 @@ Border and separator: #4C566A
 */
 
 .below-navbar {
+    -fx-spacing: 10;
     -fx-background-color: #2E3440;
     -fx-padding: 0 10 0 10;
 }

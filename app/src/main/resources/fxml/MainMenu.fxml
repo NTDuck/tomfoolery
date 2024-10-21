@@ -9,13 +9,12 @@
       fx:controller="org.tomfoolery.configurations.monolith.gui.controller.MainMenuController">
    <!-- Navigation Bar -->
    <HBox fx:id="navigationBar"/>
-<!--   <fx:include source="NavigationBar.fxml"/>-->
+
    <!-- Below navigation bar -->
    <HBox prefWidth="1600" prefHeight="800" VBox.vgrow="ALWAYS" styleClass="below-navbar">
       <!-- The sidebar -->
       <VBox fx:id="sidebar"/>
-<!--      <fx:include source="Sidebar.fxml"/>-->
-      <Pane HBox.hgrow="ALWAYS" maxWidth="10" minWidth="10"/>
+
       <!-- Content area -->
       <HBox fx:id="content"/>
    </HBox>

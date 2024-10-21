@@ -14,6 +14,7 @@
 }
 
 .search-text {
+    -fx-pref-width: 500;
     -fx-background-color: transparent;
     -fx-prompt-text-fill: #D8DEE94D;
     -fx-text-fill: #D8DEE9;

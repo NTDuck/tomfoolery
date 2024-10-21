@@ -8,7 +8,8 @@
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       stylesheets="/css/NavigationBar.css"
-      styleClass="nav-bar" prefHeight="100" prefWidth="1600" HBox.hgrow="ALWAYS">
+      styleClass="nav-bar" prefHeight="100" prefWidth="1600" HBox.hgrow="ALWAYS"
+      fx:controller="org.tomfoolery.configurations.monolith.gui.controller.NavigationBarController">
 
     <!-- Tomfoolery app logo -->
     <ImageView fitWidth="230" fitHeight="40">
@@ -23,14 +24,15 @@
         <ImageView fitWidth="25" fitHeight="25">
             <Image url="/images/search.png"/>
         </ImageView>
-        <TextField promptText="Search for books" styleClass="search-text"/>
+        <TextField fx:id="searchField" promptText="Search for books" styleClass="search-text"/>
     </HBox>
 
     <!-- Spacing between search bar and profile button -->
     <Pane HBox.hgrow="ALWAYS"/>
 
     <!-- Notification icon -->
-    <Button styleClass="notification-button" prefWidth="50" prefHeight="50" fx:id="notificationButton">
+    <Button styleClass="notification-button" prefWidth="50" prefHeight="50"
+            fx:id="notificationButton">
         <graphic>
             <ImageView fitHeight="25" fitWidth="25">
                 <Image url="/images/bell.png"/>
@@ -38,14 +40,15 @@
         </graphic>
     </Button>
 
-    <MenuButton styleClass="profile-button" prefHeight="50" prefWidth="50" fx:id="profileButton">
+    <MenuButton styleClass="profile-button" prefHeight="50" prefWidth="50"
+                fx:id="profileButton">
         <graphic>
             <ImageView fitHeight="35" fitWidth="35">
                 <Image url="/images/user.png"/>
             </ImageView>
         </graphic>
         <items>
-            <MenuItem text="Login"/>
+            <MenuItem text="Login" onAction="#printSomething"/>
             <MenuItem text="Settings"/>
             <MenuItem text="Change Password"/>
         </items>
