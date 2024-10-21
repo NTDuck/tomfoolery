@@ -16,8 +16,6 @@
         <Button prefHeight="35" text="Horror" styleClass="category-option"/>
         <Button prefHeight="35" text="Fantasy" styleClass="category-option"/>
         <Button prefHeight="35" text="Romance" styleClass="category-option"/>
-        <Button prefHeight="35" text="Viet Tan News" styleClass="category-option"/>
-        <Button prefHeight="35" text="CP" styleClass="category-option"/>
     </VBox>
 
     <!-- Books displaying section -->
