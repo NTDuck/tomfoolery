@@ -14,7 +14,7 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.enums.DocumentAttributeName;
 
 @RequiredArgsConstructor(staticName = "of")
-public abstract class SearchDocumentsByCriterionUseCase implements ThrowableFunction<SearchDocumentsByCriterionUseCase.Request, SearchDocumentsByCriterionUseCase.Response> {
+public class SearchDocumentsByCriterionUseCase implements ThrowableFunction<SearchDocumentsByCriterionUseCase.Request, SearchDocumentsByCriterionUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull AuthenticationTokenService authenticationTokenService;
 
