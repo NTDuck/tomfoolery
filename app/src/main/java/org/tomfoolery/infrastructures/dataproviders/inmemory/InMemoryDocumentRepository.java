@@ -1,90 +1,54 @@
 package org.tomfoolery.infrastructures.dataproviders.inmemory;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import lombok.NoArgsConstructor;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
-import org.tomfoolery.core.domain.ReadonlyUser;
-import org.tomfoolery.infrastructures.utils.structs.Trie;
+import org.tomfoolery.core.utils.dataclasses.SearchCriterion;
+import org.tomfoolery.core.utils.enums.DocumentAttributeName;
+import org.tomfoolery.infrastructures.dataproviders.inmemory.abc.BaseInMemorySearchableRepository;
 
-@NoArgsConstructor(staticName = "of")
-public class InMemoryDocumentRepository implements DocumentRepository {
-    private final HashMap<Document.Id, Document> documents = new HashMap<>();
-    private final Trie<String> titleTrie = Trie.of();
-    private final Trie<String> authorTrie = Trie.of();
-    private final Trie<String> genreTrie = Trie.of();
+import java.util.List;
+import java.util.Map;
 
-    @Override
-    public void save(@NonNull Document document) {
-        Document.Id id = document.getId();
-        documents.put(id, document);
-        titleTrie.put(document.getMetadata().getTitle().toLowerCase(), id.getValue());
-        for (String author : document.getMetadata().getAuthors()) {
-            authorTrie.put(author.toLowerCase(), id.getValue());
-        }
-        for (String genre : document.getMetadata().getGenres()) {
-            genreTrie.put(genre.toLowerCase(), id.getValue());
-        }
-    }
+public class InMemoryDocumentRepository extends BaseInMemorySearchableRepository<Document, Document.Id, DocumentAttributeName> implements DocumentRepository {
+    private InMemoryDocumentRepository() {
+        super(Map.of(
+            DocumentAttributeName.TITLE, document -> document.getMetadata().getTitle(),
+            DocumentAttributeName.DESCRIPTION, document -> document.getMetadata().getDescription(),
+            DocumentAttributeName.AUTHOR, document -> document.getMetadata().getAuthors(),
+            DocumentAttributeName.GENRE, document -> document.getMetadata().getGenres()
+        ), Map.of(
+            SearchCriterion.SearchMethod.FULL_TEXT, (attribute, attributeValue) -> {
+                if (!(attribute instanceof List<?> attributes))
+                    return attribute == attributeValue;
 
-    @Override
-    public void delete(Document.@NonNull Id entityId) {
-        Document document = documents.remove(entityId);
-        if (document != null) {
-            titleTrie.remove(document.getMetadata().getTitle().toLowerCase(), entityId.getValue());
-            for (String author : document.getMetadata().getAuthors()) {
-                authorTrie.remove(author.toLowerCase(), entityId.getValue());
+                return attributes.contains(attributeValue);
+            },
+            SearchCriterion.SearchMethod.PREFIX, (attribute, attributeValue) -> {
+                if (!(attribute instanceof List<?> attributes))
+                    return ((String) attribute).startsWith((String) attributeValue);
+
+                for (val attribute_ : attributes)
+                    if (((String) attribute_).startsWith((String) attributeValue))
+                        return true;
+
+                return false;
+            },
+            SearchCriterion.SearchMethod.SUFFIX, (attribute, attributeValue) -> {
+                if (!(attribute instanceof List<?> attributes))
+                    return ((String) attribute).endsWith((String) attributeValue);
+
+                for (val attribute_ : attributes)
+                    if (((String) attribute_).endsWith((String) attributeValue))
+                        return true;
+
+                return false;
             }
-            for (String genre : document.getMetadata().getGenres()) {
-                genreTrie.remove(genre.toLowerCase(), entityId.getValue());
-            }
-        }
+        ));
     }
 
-    @Override
-    public @Nullable Document getById(Document.Id entityId) {
-        return documents.get(entityId);
-    }
-
-    @Override
-    public @NonNull Collection<Document> show() {
-        return new ArrayList<>(documents.values());
-    }
-
-    @Override
-    public @NonNull Collection<Document> searchByTitle(@NonNull String title) {
-        List<String> ids = titleTrie.prefixSearch(title.toLowerCase());
-        return getDocumentsByIds(ids);
-    }
-
-    @Override
-    public @NonNull Collection<Document> searchByAuthor(@NonNull String author) {
-        List<String> ids = authorTrie.prefixSearch(author.toLowerCase());
-        return getDocumentsByIds(ids);
-    }
-
-    @Override
-    public @NonNull Collection<Document> searchByGenre(@NonNull String genre) {
-        List<String> ids = genreTrie.prefixSearch(genre.toLowerCase());
-        return getDocumentsByIds(ids);
-    }
-
-    @Override
-    public @NonNull Collection<Document> searchByPatron(ReadonlyUser.@NonNull Id patronId) {
-        return documents.values().stream()
-                .filter(doc -> doc.getAudit().getBorrowingPatronIds().contains(patronId))
-                .collect(Collectors.toList());
-    }
-
-    private Collection<Document> getDocumentsByIds(List<String> ids) {
-        return ids.stream()
-                .map(Document.Id::of)
-                .map(documents::get)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    public static @NonNull InMemoryDocumentRepository of() {
+        return new InMemoryDocumentRepository();
     }
 }

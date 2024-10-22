@@ -7,11 +7,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.core.domain.ReadonlyUser;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.services.CredentialsVerificationService;
-import org.tomfoolery.core.utils.structs.UserAndRepository;
-import org.tomfoolery.core.utils.functional.ThrowableFunction;
+import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.time.LocalDateTime;
 

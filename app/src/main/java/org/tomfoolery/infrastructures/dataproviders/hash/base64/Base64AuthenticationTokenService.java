@@ -8,8 +8,8 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.domain.ReadonlyUser;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.infrastructures.utils.services.Base64Service;
 
 import java.time.LocalDateTime;

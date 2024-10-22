@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.utils.structs;
+package org.tomfoolery.infrastructures.utils.containers;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

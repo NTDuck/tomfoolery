@@ -8,8 +8,8 @@ import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
-import org.tomfoolery.core.utils.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 @RequiredArgsConstructor(staticName = "of")
 public class RemoveDocumentUseCase implements ThrowableConsumer<RemoveDocumentUseCase.Request> {

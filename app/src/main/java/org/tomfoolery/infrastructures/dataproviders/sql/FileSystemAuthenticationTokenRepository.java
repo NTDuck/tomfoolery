@@ -4,10 +4,9 @@ import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 import java.io.*;
-import java.nio.Buffer;
 
 @NoArgsConstructor(staticName = "of")
 public class FileSystemAuthenticationTokenRepository implements AuthenticationTokenRepository {

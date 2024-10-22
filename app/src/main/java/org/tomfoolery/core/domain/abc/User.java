@@ -1,4 +1,4 @@
-package org.tomfoolery.core.domain;
+package org.tomfoolery.core.domain.abc;
 
 import lombok.AccessLevel;
 import lombok.Data;

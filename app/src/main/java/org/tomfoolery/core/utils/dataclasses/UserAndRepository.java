@@ -1,9 +1,9 @@
-package org.tomfoolery.core.utils.structs;
+package org.tomfoolery.core.utils.dataclasses;
 
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.UserRepository;
-import org.tomfoolery.core.domain.ReadonlyUser;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
 
 @Value(staticConstructor = "of")
 public class UserAndRepository<User extends ReadonlyUser> {

@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.PatronRepository;
 import org.tomfoolery.core.domain.Patron;
 import org.tomfoolery.core.utils.services.CredentialsVerificationService;
-import org.tomfoolery.core.utils.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatronAccountUseCase.Request> {

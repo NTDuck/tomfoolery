@@ -1,17 +1,18 @@
-package org.tomfoolery.core.domain;
+package org.tomfoolery.core.domain.abc;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.utils.contracts.ddd.IEntity;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class ReadonlyUser {
+public class ReadonlyUser implements IEntity<ReadonlyUser.Id> {
     private final @NonNull Id id = Id.of();
 
     private final @NonNull Credentials credentials;

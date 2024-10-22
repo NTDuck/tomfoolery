@@ -7,7 +7,7 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.domain.ReadonlyUser;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
 import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionController;
 

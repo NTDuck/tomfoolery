@@ -11,7 +11,7 @@ import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSele
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Administrator;
 import org.tomfoolery.core.domain.Patron;
-import org.tomfoolery.core.domain.ReadonlyUser;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
 import org.tomfoolery.core.domain.Staff;
 import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.Presenter;

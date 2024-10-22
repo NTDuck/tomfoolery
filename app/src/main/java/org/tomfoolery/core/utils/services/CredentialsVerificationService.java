@@ -2,7 +2,7 @@ package org.tomfoolery.core.utils.services;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.domain.ReadonlyUser;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
 
 public interface CredentialsVerificationService {
     static <User extends ReadonlyUser> boolean verifyCredentials(User.@NonNull Credentials credentials) {

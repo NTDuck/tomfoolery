@@ -6,7 +6,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.configurations.monolith.terminal.utils.contract.View;
-import org.tomfoolery.core.utils.functional.ThrowableFunction;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.util.ArrayList;
 import java.util.Iterator;

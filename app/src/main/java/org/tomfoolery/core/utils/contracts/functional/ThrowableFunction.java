@@ -1,4 +1,4 @@
-package org.tomfoolery.core.utils.functional;
+package org.tomfoolery.core.utils.contracts.functional;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
