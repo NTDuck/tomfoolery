@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.UserRepositories;
+import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.domain.ReadonlyUser;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
-import org.tomfoolery.core.usecases.utils.structs.UserAndRepository;
-import org.tomfoolery.core.utils.function.ThrowableConsumer;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 import java.time.LocalDateTime;
 
@@ -34,6 +34,10 @@ public class LogUserOutUseCase implements ThrowableConsumer<LogUserOutUseCase.Re
 
     private <User extends ReadonlyUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
         val userId = this.authenticationTokenService.getUserIdFromToken(authenticationToken);
+
+        if (userId == null)
+            throw new AuthenticationTokenInvalidException();
+
         UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUserId(userId);
 
         if (userAndRepository == null)

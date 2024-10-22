@@ -2,7 +2,7 @@ package org.tomfoolery.core.dataproviders.auth;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 public interface AuthenticationTokenRepository {
     void saveToken(@NonNull AuthenticationToken token);

@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.domain.abc.User;
 
 import java.util.Collection;
 import java.util.HashSet;

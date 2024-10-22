@@ -8,8 +8,8 @@ import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
-import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,8 @@ public class UpdateDocumentUseCase implements ThrowableFunction<UpdateDocumentUs
     private final @NonNull AuthenticationTokenService authenticationTokenService;
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws StaffAuthenticationTokenInvalidException, DocumentNotFoundException {
+    public @NonNull Response apply(@NonNull Request request)
+            throws StaffAuthenticationTokenInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = request.getStaffAuthenticationToken();
 
         val documentId = request.getDocumentId();
@@ -36,13 +37,20 @@ public class UpdateDocumentUseCase implements ThrowableFunction<UpdateDocumentUs
         return Response.of(documentId);
     }
 
-    private void ensureStaffAuthenticationTokenIsValid(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
+    private void ensureStaffAuthenticationTokenIsValid(@NonNull AuthenticationToken staffAuthenticationToken)
+            throws StaffAuthenticationTokenInvalidException {
         if (!this.authenticationTokenService.verifyToken(staffAuthenticationToken, Staff.class))
             throw new StaffAuthenticationTokenInvalidException();
     }
 
-    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) {
-        return this.authenticationTokenService.getUserIdFromToken(staffAuthenticationToken);
+    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken)
+            throws StaffAuthenticationTokenInvalidException {
+        val staffId = this.authenticationTokenService.getUserIdFromToken(staffAuthenticationToken);
+
+        if (staffId == null)
+            throw new StaffAuthenticationTokenInvalidException();
+
+        return staffId;
     }
 
     private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {

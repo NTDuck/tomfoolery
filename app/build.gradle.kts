@@ -135,6 +135,11 @@ tasks {
 tasks.named<Test>("test") {
     // For unit testing
     useTestNG()
+
+    testLogging {
+        // Enables console output
+        showStandardStreams = true
+    }
     
     // Prevents failing tests from failing builds
     ignoreFailures = true

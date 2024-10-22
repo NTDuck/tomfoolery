@@ -8,8 +8,8 @@ import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
-import org.tomfoolery.core.utils.function.ThrowableFunction;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 @RequiredArgsConstructor(staticName = "of")
 public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.Request, AddDocumentUseCase.Response> {
@@ -39,8 +39,13 @@ public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.
             throw new StaffAuthenticationTokenInvalidException();
     }
 
-    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) {
-        return this.authenticationTokenService.getUserIdFromToken(staffAuthenticationToken);
+    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
+        val staffId = this.authenticationTokenService.getUserIdFromToken(staffAuthenticationToken);
+
+        if (staffId == null)
+            throw new StaffAuthenticationTokenInvalidException();
+
+        return staffId;
     }
 
     private void ensureDocumentDoesNotExist(Document.@NonNull Id documentId) throws DocumentAlreadyExistsException {

@@ -9,9 +9,9 @@ import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.StaffRepository;
 import org.tomfoolery.core.domain.Administrator;
 import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.domain.auth.AuthenticationToken;
-import org.tomfoolery.core.usecases.utils.services.CredentialsVerifier;
-import org.tomfoolery.core.utils.function.ThrowableConsumer;
+import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.services.CredentialsVerificationService;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreateStaffAccountUseCase implements ThrowableConsumer<CreateStaffAccountUseCase.Request> {
@@ -41,12 +41,17 @@ public class CreateStaffAccountUseCase implements ThrowableConsumer<CreateStaffA
             throw new AdminAuthenticationTokenInvalidException();
     }
 
-    private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken adminAuthenticationToken) {
-        return this.authenticationTokenService.getUserIdFromToken(adminAuthenticationToken);
+    private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken adminAuthenticationToken) throws AdminAuthenticationTokenInvalidException {
+        val administratorId = this.authenticationTokenService.getUserIdFromToken(adminAuthenticationToken);
+
+        if (administratorId == null)
+            throw new AdminAuthenticationTokenInvalidException();
+
+        return administratorId;
     }
 
     private static void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials staffCredentials) throws StaffCredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(staffCredentials))
+        if (!CredentialsVerificationService.verifyCredentials(staffCredentials))
             throw new StaffCredentialsInvalidException();
     }
 
