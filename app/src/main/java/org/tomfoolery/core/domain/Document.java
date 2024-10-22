@@ -32,7 +32,8 @@ public final class Document implements IEntity<Document.Id> {
         private @NonNull String description;
         private @NonNull List<String> authors = new ArrayList<>();
         private @NonNull List<String> genres = new ArrayList<>();
-        private transient @NonNull BufferedImage qrCode;
+
+        private transient @Nullable BufferedImage qrCode = null;
     }
 
     @Data(staticConstructor = "of")

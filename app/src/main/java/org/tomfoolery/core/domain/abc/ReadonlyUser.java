@@ -32,7 +32,7 @@ public class ReadonlyUser implements IEntity<ReadonlyUser.Id> {
     @Data
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Audit {
-        private transient boolean isLoggedIn = false;
+        private boolean isLoggedIn = false;
 
         private final @NonNull Timestamps timestamps = Timestamps.of();
 
