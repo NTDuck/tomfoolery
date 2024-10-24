@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.domain.abc.User;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,11 +34,18 @@ public class Patron extends User {
         private @NonNull String address;
         private @NonNull String gmail;
     }
-    
-    @Data
+
+    @Getter
     @EqualsAndHashCode(callSuper = true)
-    @NoArgsConstructor(staticName = "of")
     public static class Audit extends User.Audit {
         private final @NonNull Collection<Document.Id> borrowedDocumentIds = new HashSet<>();
+
+        private Audit(@NonNull Timestamps timestamps) {
+            super(timestamps);
+        }
+
+        public static @NonNull Audit of(@NonNull Timestamps timestamps) {
+            return new Audit(timestamps);
+        }
     }
 }

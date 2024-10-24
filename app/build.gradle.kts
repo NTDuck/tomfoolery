@@ -41,10 +41,10 @@ version = 1.0
 
 application {
     // Terminal version
-    // mainClass = "${group}.configurations.monolith.terminal.Application"
+    mainClass = "${group}.configurations.monolith.terminal.Application"
 
     // JavaFX version
-    mainClass = "${group}.configurations.monolith.gui.MainApplication"
+    // mainClass = "${group}.configurations.monolith.gui.MainApplication"
 }
 
 java {
@@ -135,6 +135,11 @@ tasks {
 tasks.named<Test>("test") {
     // For unit testing
     useTestNG()
+
+    testLogging {
+        // Enables console output
+        showStandardStreams = true
+    }
     
     // Prevents failing tests from failing builds
     ignoreFailures = true
