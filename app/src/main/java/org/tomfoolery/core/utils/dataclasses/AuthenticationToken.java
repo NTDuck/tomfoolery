@@ -5,5 +5,5 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Value(staticConstructor = "of")
 public class AuthenticationToken {
-    @NonNull String content;
+    @NonNull String serializedPayload;
 }

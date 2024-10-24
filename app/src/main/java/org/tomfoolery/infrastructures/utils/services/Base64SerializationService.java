@@ -6,7 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.*;
 import java.util.Base64;
 
-public interface Base64Service {
+public interface Base64SerializationService {
     static @NonNull String serialize(@NonNull Serializable object) throws IOException {
         val byteArrayOutputStream = new ByteArrayOutputStream();
         val objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
