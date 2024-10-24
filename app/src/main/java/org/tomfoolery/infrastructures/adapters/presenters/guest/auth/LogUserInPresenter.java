@@ -34,13 +34,8 @@ public class LogUserInPresenter implements Presenter<LogUserInUseCase.Response, 
 
         val userClass = this.authenticationTokenService.getUserClassFromToken(authenticationToken);
 
-        if (userClass == null)
-            throw new ViewClassNotFoundException();
-
         val nextViewClass = userClassToViewClassMap.get(userClass);
-
-        if (nextViewClass == null)
-            throw new ViewClassNotFoundException();
+        assert nextViewClass != null;
 
         return ViewModel.of(nextViewClass);
     }
@@ -49,6 +44,4 @@ public class LogUserInPresenter implements Presenter<LogUserInUseCase.Response, 
     public static class ViewModel {
         @NonNull Class<? extends SelectionView> nextViewClass;
     }
-
-    public static class ViewClassNotFoundException extends RuntimeException {}
 }

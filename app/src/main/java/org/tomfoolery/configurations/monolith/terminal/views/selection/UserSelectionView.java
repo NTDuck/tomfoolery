@@ -14,9 +14,7 @@ public abstract class UserSelectionView extends SelectionView {
         SelectionAdapter.Item.of(0, "Exit", null),
         SelectionAdapter.Item.of(1, "Log out", LogUserOutActionView.class),
         SelectionAdapter.Item.of(2, "Get Document info", GetDocumentByIdActionView.class),
-        SelectionAdapter.Item.of(3, "Search Documents by Title", SearchDocumentsByTitleActionView.class),
-        SelectionAdapter.Item.of(4, "Search Documents by Author", SearchDocumentsByAuthorActionView.class),
-        SelectionAdapter.Item.of(5, "Search Documents by Genre", SearchDocumentsByGenreActionView.class),
+        SelectionAdapter.Item.of(3, "Search Documents by Criterion", SearchDocumentsByCriterionActionView.class),
         SelectionAdapter.Item.of(6, "Show all Documents", ShowDocumentsActionView.class)
     );
 

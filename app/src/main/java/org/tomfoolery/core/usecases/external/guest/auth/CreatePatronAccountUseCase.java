@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.dataproviders.PatronRepository;
 import org.tomfoolery.core.domain.Patron;
+import org.tomfoolery.core.domain.abc.User;
 import org.tomfoolery.core.utils.services.CredentialsVerificationService;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
@@ -47,7 +48,7 @@ public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatro
     }
 
     private static @NonNull Patron createPatron(Patron.@NonNull Credentials patronCredentials, Patron.@NonNull Metadata patronMetadata) {
-        val patronAudit = Patron.Audit.of();
+        val patronAudit = Patron.Audit.of(Patron.Audit.Timestamps.of());
         return Patron.of(patronCredentials, patronAudit, patronMetadata);
     }
 

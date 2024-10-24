@@ -5,7 +5,7 @@ import org.tomfoolery.core.domain.abc.ReadonlyUser;
 
 public class Administrator extends ReadonlyUser {
     public Administrator(@NonNull Credentials credentials) {
-        super(credentials, Audit.of());
+        super(credentials, Audit.of(Audit.Timestamps.of()));
     }
 
     public static @NonNull Administrator of(@NonNull Credentials credentials) {

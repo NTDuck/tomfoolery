@@ -4,10 +4,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
 import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
 
-public class SearchDocumentsByAuthorActionView implements ActionView {
+public class SearchDocumentsByCriterionActionView implements ActionView {
     @Override
     public void run() {
-
+        // ...
     }
 
     @Override

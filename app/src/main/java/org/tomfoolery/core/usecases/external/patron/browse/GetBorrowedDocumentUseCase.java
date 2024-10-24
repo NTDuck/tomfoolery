@@ -6,6 +6,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.dataproviders.PatronRepository;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Patron;
@@ -18,12 +19,13 @@ public class GetBorrowedDocumentUseCase implements ThrowableFunction<GetBorrowed
     private final @NonNull PatronRepository patronRepository;
 
     private final @NonNull AuthenticationTokenService authenticationTokenService;
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws PatronAuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentNotBorrowedException {
-        val patronAuthenticationToken = request.getPatronAuthenticationToken();
+    public @NonNull Response apply(@NonNull Request request) throws PatronAuthenticationTokenNotFoundException, PatronAuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentNotBorrowedException {
         val documentId = request.getDocumentId();
 
+        val patronAuthenticationToken = getPatronAuthenticationTokenFromRepository();
         ensurePatronAuthenticationTokenIsValid(patronAuthenticationToken);
 
         val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
@@ -32,6 +34,15 @@ public class GetBorrowedDocumentUseCase implements ThrowableFunction<GetBorrowed
         ensureDocumentIsBorrowed(patron, documentId);
 
         return Response.of(document);
+    }
+
+    private @NonNull AuthenticationToken getPatronAuthenticationTokenFromRepository() throws PatronAuthenticationTokenNotFoundException {
+        val patronAuthenticationToken = this.authenticationTokenRepository.getToken();
+
+        if (patronAuthenticationToken == null)
+            throw new PatronAuthenticationTokenNotFoundException();
+
+        return patronAuthenticationToken;
     }
 
     private void ensurePatronAuthenticationTokenIsValid(@NonNull AuthenticationToken patronAuthenticationToken) throws PatronAuthenticationTokenInvalidException {
@@ -68,7 +79,6 @@ public class GetBorrowedDocumentUseCase implements ThrowableFunction<GetBorrowed
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull AuthenticationToken patronAuthenticationToken;
         Document.@NonNull Id documentId;
     }
 
@@ -77,6 +87,7 @@ public class GetBorrowedDocumentUseCase implements ThrowableFunction<GetBorrowed
         @NonNull Document document;
     }
 
+    public static class PatronAuthenticationTokenNotFoundException extends Exception {}
     public static class PatronAuthenticationTokenInvalidException extends Exception {}
     public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}

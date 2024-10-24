@@ -18,6 +18,8 @@ public class LogUserInActionView implements ActionView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
 
+    private @NonNull Class<? extends SelectionView> nextViewClass = GuestSelectionView.class;
+
     private LogUserInActionView(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
         this.presenter = LogUserInPresenter.of(authenticationTokenService);
@@ -26,8 +28,6 @@ public class LogUserInActionView implements ActionView {
     public static @NonNull LogUserInActionView of(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new LogUserInActionView(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
     }
-
-    private @NonNull Class<? extends SelectionView> nextViewClass;
 
     @Override
     public void run() {

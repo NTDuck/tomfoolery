@@ -9,8 +9,6 @@ import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Staff;
 
-import static org.testng.Assert.*;
-
 public class InMemoryDocumentRepositoryTest {
     private DocumentRepository documentRepository;
 
@@ -43,7 +41,7 @@ public class InMemoryDocumentRepositoryTest {
 
     @Test
     public void test() {
-        val paginatedDocuments = this.documentRepository.showPaginatedEntities(1, 6);
-        Reporter.log(paginatedDocuments.toString(), true);
+        val paginatedDocuments = this.documentRepository.showPaginated(1, 6);
+        Reporter.log(paginatedDocuments.toString());
     }
 }

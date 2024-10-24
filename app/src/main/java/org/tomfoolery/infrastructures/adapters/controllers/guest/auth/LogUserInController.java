@@ -13,11 +13,9 @@ import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionControlle
 
 public class LogUserInController implements ThrowableFunctionController<LogUserInController.RequestObject, LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
     private final @NonNull LogUserInUseCase useCase;
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 
     private LogUserInController(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.useCase = LogUserInUseCase.of(userRepositories, passwordService, authenticationTokenService);
-        this.authenticationTokenRepository = authenticationTokenRepository;
+        this.useCase = LogUserInUseCase.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
     }
 
     public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
@@ -38,10 +36,6 @@ public class LogUserInController implements ThrowableFunctionController<LogUserI
     public LogUserInUseCase.@NonNull Response apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException, LogUserInUseCase.UserAlreadyLoggedInException {
         val requestModel = this.getRequestModelFromRequestObject(requestObject);
         val responseModel = this.useCase.apply(requestModel);
-
-        val authenticationToken = responseModel.getAuthenticationToken();
-        this.authenticationTokenRepository.saveToken(authenticationToken);
-
         return responseModel;
     }
 

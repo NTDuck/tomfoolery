@@ -1,8 +1,8 @@
 package org.tomfoolery.core.domain.abc;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -19,14 +19,17 @@ public class User extends ReadonlyUser {
         return (Audit) super.getAudit();
     }
 
-    @Data
+    @Getter
     @EqualsAndHashCode(callSuper = true)
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Audit extends ReadonlyUser.Audit {
-        public static @NonNull Audit of() {
-            return new Audit();
+        protected Audit(@NonNull Timestamps timestamps) {
+            super(timestamps);
         }
-        
+
+        public static @NonNull Audit of(@NonNull Timestamps timestamps) {
+            return new Audit(timestamps);
+        }
+
         @Override
         public @NonNull Timestamps getTimestamps() {
             return (Timestamps) super.getTimestamps();

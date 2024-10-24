@@ -34,8 +34,8 @@ public class SelectionAdapter implements Supplier<SelectionAdapter.ViewModel>, T
 
     @Override
     public @NonNull ResponseModel apply(@NonNull RequestObject requestObject) throws ItemNotFoundException {
-        val index = requestObject.getItemIndex();
-        val item = this.items.getItemByIndex(index);
+        val itemIndex = requestObject.getItemIndex();
+        val item = this.items.getItemByIndex(itemIndex);
 
         if (item == null)
             throw new ItemNotFoundException();

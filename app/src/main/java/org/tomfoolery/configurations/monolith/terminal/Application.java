@@ -8,7 +8,10 @@ import org.tomfoolery.configurations.monolith.terminal.utils.containers.Views;
 import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.CreatePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.LogUserInActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
 import org.tomfoolery.core.dataproviders.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.dataproviders.PatronRepository;
@@ -37,7 +40,11 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull Views views = Views.of(
         GuestSelectionView.of(),
         LogUserInActionView.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository),
-        CreatePatronAccountActionView.of(patronRepository, passwordService)
+        CreatePatronAccountActionView.of(patronRepository, passwordService),
+
+        AdministratorSelectionView.of(),
+        StaffSelectionView.of(),
+        PatronSelectionView.of()
     );
 
     @Override

@@ -7,7 +7,7 @@ import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionV
 public class AddDocumentActionView implements ActionView {
     @Override
     public void run() {
-
+        // ...
     }
 
     @Override

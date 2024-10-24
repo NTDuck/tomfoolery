@@ -5,6 +5,7 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Document;
 import org.tomfoolery.core.domain.Staff;
@@ -14,15 +15,16 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 @RequiredArgsConstructor(staticName = "of")
 public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.Request, AddDocumentUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
+
     private final @NonNull AuthenticationTokenService authenticationTokenService;
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws StaffAuthenticationTokenInvalidException, DocumentAlreadyExistsException {
-        val staffAuthenticationToken = request.getStaffAuthenticationToken();
-
+    public @NonNull Response apply(@NonNull Request request) throws StaffAuthenticationTokenNotFoundException, StaffAuthenticationTokenInvalidException, DocumentAlreadyExistsException {
         val documentId = request.getDocumentId();
         val documentMetadata = request.getDocumentMetadata();
 
+        val staffAuthenticationToken = getStaffAuthenticationTokenFromRepository();
         ensureStaffAuthenticationTokenIsValid(staffAuthenticationToken);
         val staffId = getStaffIdFromAuthenticationToken(staffAuthenticationToken);
 
@@ -32,6 +34,15 @@ public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.
         this.documentRepository.save(document);
 
         return Response.of(documentId);
+    }
+
+    private @NonNull AuthenticationToken getStaffAuthenticationTokenFromRepository() throws StaffAuthenticationTokenNotFoundException {
+        val staffAuthenticationToken = this.authenticationTokenRepository.getToken();
+
+        if (staffAuthenticationToken == null)
+            throw new StaffAuthenticationTokenNotFoundException();
+
+        return staffAuthenticationToken;
     }
 
     private void ensureStaffAuthenticationTokenIsValid(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
@@ -60,8 +71,6 @@ public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull AuthenticationToken staffAuthenticationToken;
-        
         Document.@NonNull Id documentId;
         Document.@NonNull Metadata documentMetadata;
     }
@@ -71,6 +80,7 @@ public class AddDocumentUseCase implements ThrowableFunction<AddDocumentUseCase.
         Document.@NonNull Id documentId;
     }
 
+    public static class StaffAuthenticationTokenNotFoundException extends Exception {}
     public static class StaffAuthenticationTokenInvalidException extends Exception {}
     public static class DocumentAlreadyExistsException extends Exception {}
 }

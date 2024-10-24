@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.utils.containers.UserRepositories;
@@ -23,6 +24,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
 
     private final @NonNull PasswordService passwordService;
     private final @NonNull AuthenticationTokenService authenticationTokenService;
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 
     @Override
     public @NonNull Response apply(@NonNull Request<?> request) throws CredentialsInvalidException, UserNotFoundException, PasswordMismatchException, UserAlreadyLoggedInException {
@@ -42,6 +44,8 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         userRepository.save(user);
 
         val authenticationToken = generateAuthenticationToken(userAndRepository);
+        saveAuthenticationToken(authenticationToken);
+
         return Response.of(authenticationToken);
     }
 
@@ -88,6 +92,10 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         val expiryTimestamp = LocalDateTime.now().plusMinutes(TOKEN_LIFE_IN_MINUTES);
 
         return this.authenticationTokenService.generateToken(userId, userClass, expiryTimestamp);
+    }
+
+    private void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        this.authenticationTokenRepository.saveToken(authenticationToken);
     }
 
     @Value(staticConstructor = "of")

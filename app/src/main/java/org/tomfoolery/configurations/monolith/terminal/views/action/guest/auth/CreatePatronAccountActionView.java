@@ -14,7 +14,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatr
 public class CreatePatronAccountActionView implements ActionView {
     private final @NonNull CreatePatronAccountController controller;
 
-    private @NonNull Class<? extends SelectionView> nextViewClass;
+    private @NonNull Class<? extends SelectionView> nextViewClass = GuestSelectionView.class;
 
     private CreatePatronAccountActionView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
         this.controller = CreatePatronAccountController.of(patronRepository, passwordService);
@@ -37,6 +37,11 @@ public class CreatePatronAccountActionView implements ActionView {
         } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException e) {
             onPatronAlreadyExistsException();
         }
+    }
+
+    @Override
+    public @NonNull Class<? extends SelectionView> getNextViewClass() {
+        return this.nextViewClass;
     }
 
     private static CreatePatronAccountController.@NonNull RequestObject getRequestObject() throws PasswordMismatchException {
@@ -67,11 +72,6 @@ public class CreatePatronAccountActionView implements ActionView {
         val email = scanner.nextLine();
 
         return CreatePatronAccountController.RequestObject.of(username, password, firstName, lastName, address, email);
-    }
-
-    @Override
-    public @NonNull Class<? extends SelectionView> getNextViewClass() {
-        return this.nextViewClass;
     }
 
     private void onSuccess() {

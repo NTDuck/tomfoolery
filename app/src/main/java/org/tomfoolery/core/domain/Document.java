@@ -5,7 +5,7 @@ import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.abc.ReadonlyUser;
-import org.tomfoolery.core.utils.contracts.ddd.IEntity;
+import org.tomfoolery.core.utils.contracts.ddd;
 
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
@@ -15,14 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 
 @Data(staticConstructor = "of")
-public final class Document implements IEntity<Document.Id> {
+public final class Document implements ddd.Entity<Document.Id> {
     private final @NonNull Id id;
 
     private @NonNull Metadata metadata;
     private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
-    public static class Id {
+    public static class Id implements ddd.EntityId {
         @NonNull String value;
     }
 
