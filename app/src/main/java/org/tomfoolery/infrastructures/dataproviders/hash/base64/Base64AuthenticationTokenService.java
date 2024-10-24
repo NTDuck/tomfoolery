@@ -9,7 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.abc.ReadonlyUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.infrastructures.utils.services.Base64Service;
+import org.tomfoolery.infrastructures.utils.services.Base64SerializationService;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ public class Base64AuthenticationTokenService implements AuthenticationTokenServ
     @SneakyThrows
     public @NonNull AuthenticationToken generateToken(ReadonlyUser.@NonNull Id userId, @NonNull Class<? extends ReadonlyUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
         val payload = Payload.of(userId, userClass, expiryTimestamp);
-        val serializedPayload = Base64Service.serialize(payload);
+        val serializedPayload = Base64SerializationService.serialize(payload);
         return AuthenticationToken.of(serializedPayload);
     }
 
@@ -51,8 +51,8 @@ public class Base64AuthenticationTokenService implements AuthenticationTokenServ
 
     @SneakyThrows
     private @NonNull Payload getPayloadFromAuthenticationToken(@NonNull AuthenticationToken token) {
-        val serializedPayload = token.getContent();
-        val payload = (Payload) Base64Service.deserialize(serializedPayload);
+        val serializedPayload = token.getSerializedPayload();
+        val payload = (Payload) Base64SerializationService.deserialize(serializedPayload);
         return payload;
     }
 

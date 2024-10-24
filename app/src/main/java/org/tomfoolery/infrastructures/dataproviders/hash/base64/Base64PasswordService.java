@@ -4,14 +4,14 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.infrastructures.utils.services.Base64Service;
+import org.tomfoolery.infrastructures.utils.services.Base64SerializationService;
 
 @NoArgsConstructor(staticName = "of")
 public class Base64PasswordService implements PasswordService {
     @Override
     @SneakyThrows
     public @NonNull String encodePassword(@NonNull String password) {
-        return Base64Service.serialize(password);
+        return Base64SerializationService.serialize(password);
     }
 
     @Override
