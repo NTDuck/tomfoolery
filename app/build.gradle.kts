@@ -46,11 +46,13 @@ group = "org.tomfoolery"
 version = 1.0
 
 application {
-    // Terminal version
-    mainClass = "${group}.configurations.monolith.terminal.Application"
+    // Terminal version as default
+    mainClass = "${project.group}.configurations.monolith.terminal.Application"
 
-    // JavaFX version
-    // mainClass = "${group}.configurations.monolith.gui.MainApplication"
+    // Prevents non-blocking `java.util.Scanner`
+    tasks.getByName("run", JavaExec::class) {
+        standardInput = System.`in`
+    }
 }
 
 java {
@@ -138,6 +140,21 @@ tasks {
     }
 }
 
+tasks.register<JavaExec>("runTerminal") {
+    mainClass = "${project.group}.configurations.monolith.terminal.Application"
+    classpath = sourceSets["main"].runtimeClasspath
+
+    // Prevents non-blocking `java.util.Scanner`
+    tasks.getByName("runTerminal", JavaExec::class) {
+        standardInput = System.`in`
+    }
+}
+
+tasks.register<JavaExec>("runJavaFX") {
+    mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
+    classpath = sourceSets["main"].runtimeClasspath
+}
+
 tasks.named<Test>("test") {
     // For unit testing
     useTestNG()
@@ -149,9 +166,4 @@ tasks.named<Test>("test") {
     
     // Prevents failing tests from failing builds
     ignoreFailures = true
-}
-
-// Prevents non-blocking `java.util.Scanner`
-tasks.getByName("run", JavaExec::class) {
-    standardInput = System.`in`
 }
