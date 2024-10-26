@@ -52,8 +52,12 @@ public class ReturnDocumentUseCase implements ThrowableConsumer<ReturnDocumentUs
             throw new PatronAuthenticationTokenInvalidException();
     }
 
-    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws PatronNotFoundException {
+    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws PatronAuthenticationTokenInvalidException, PatronNotFoundException {
         val patronId = this.authenticationTokenService.getUserIdFromToken(staffAuthenticationToken);
+
+        if (patronId == null)
+            throw new PatronAuthenticationTokenInvalidException();
+
         val patron = patronRepository.getById(patronId);
 
         if (patron == null)

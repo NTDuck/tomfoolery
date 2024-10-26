@@ -1,27 +1,32 @@
-package org.tomfoolery.infrastructures.dataproviders.hash.base64;
+package org.tomfoolery.infrastructures.dataproviders.hash.jjwt;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.abc.ReadonlyUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.infrastructures.utils.services.Base64SerializationService;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(staticName = "of")
-public class Base64AuthenticationTokenService implements AuthenticationTokenService {
+public class JJWTAuthenticationTokenService implements AuthenticationTokenService {
+    private static final @NonNull String USER_ID_CLAIM_LABEL = "uid";
+    private static final @NonNull String USER_CLASS_CLAIM_LABEL = "type";
+    private static final @NonNull String EXPIRATION_CLAIM_LABEL = "exp";
+
     @Override
-    @SneakyThrows
     public @NonNull AuthenticationToken generateToken(ReadonlyUser.@NonNull Id userId, @NonNull Class<? extends ReadonlyUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
-        val payload = Payload.of(userId, userClass, expiryTimestamp);
-        val serializedPayload = Base64SerializationService.serialize(payload);
+        val serializedPayload = Jwts.builder()
+            .claim(USER_ID_CLAIM_LABEL, userId)
+            .claim(USER_CLASS_CLAIM_LABEL, userClass)
+            .claim(EXPIRATION_CLAIM_LABEL, expiryTimestamp)
+
+            .compact();
+
         return AuthenticationToken.of(serializedPayload);
     }
 
@@ -37,7 +42,7 @@ public class Base64AuthenticationTokenService implements AuthenticationTokenServ
         if (payload == null)
             return false;
 
-        val tokenExpiryTimestamp = payload.getExpiryTimestamp();
+        val tokenExpiryTimestamp = (LocalDateTime) payload.get(EXPIRATION_CLAIM_LABEL);
         return LocalDateTime.now().isBefore(tokenExpiryTimestamp);
     }
 
@@ -46,34 +51,31 @@ public class Base64AuthenticationTokenService implements AuthenticationTokenServ
         val payload = getPayloadFromAuthenticationToken(token);
 
         return payload != null
-             ? payload.getUserId()
+             ? (ReadonlyUser.Id) payload.get(USER_ID_CLAIM_LABEL)
              : null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public @Nullable Class<? extends ReadonlyUser> getUserClassFromToken(@NonNull AuthenticationToken token) {
         val payload = getPayloadFromAuthenticationToken(token);
 
         return payload != null
-             ? payload.getUserClass()
+             ? (Class<? extends ReadonlyUser>) payload.get(USER_CLASS_CLAIM_LABEL)
              : null;
     }
 
-    private @Nullable Payload getPayloadFromAuthenticationToken(@NonNull AuthenticationToken token) {
+    private @Nullable Claims getPayloadFromAuthenticationToken(@NonNull AuthenticationToken token) {
         val serializedPayload = token.getSerializedPayload();
 
         try {
-            return (Payload) Base64SerializationService.deserialize(serializedPayload);
+            return Jwts.parser()
+                .build()
+                .parseUnsecuredClaims(serializedPayload)
+                .getPayload();
+
         } catch (Exception exception) {
             return null;
         }
-    }
-
-    @Data
-    @AllArgsConstructor(staticName = "of")
-    private static class Payload implements Serializable {
-        ReadonlyUser.@NonNull Id userId;
-        Class<? extends ReadonlyUser> userClass;
-        @NonNull LocalDateTime expiryTimestamp;
     }
 }

@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.dataproviders.sql;
+package org.tomfoolery.infrastructures.dataproviders.filesystem;
 
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;

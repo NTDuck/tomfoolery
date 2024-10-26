@@ -29,6 +29,12 @@ dependencies {
     // Uses `Bcrypt` for password hashing (no need to reinvent the wheel)
     implementation("at.favre.lib:bcrypt:0.10.2")
 
+    // Uses `JJWT` for generation and verification of authentication tokens
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    // runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.6")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 

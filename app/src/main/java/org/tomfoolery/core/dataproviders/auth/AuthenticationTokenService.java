@@ -1,6 +1,7 @@
 package org.tomfoolery.core.dataproviders.auth;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.abc.ReadonlyUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
@@ -13,9 +14,10 @@ public interface AuthenticationTokenService {
     boolean verifyToken(@NonNull AuthenticationToken token);
 
     default boolean verifyToken(@NonNull AuthenticationToken token, @NonNull Class<? extends ReadonlyUser> userClass) {
-        return userClass.equals(this.getUserClassFromToken(token)) && this.verifyToken(token);
+        return this.verifyToken(token)
+            && userClass.equals(this.getUserClassFromToken(token));
     }
 
-    ReadonlyUser.@NonNull Id getUserIdFromToken(@NonNull AuthenticationToken token);
-    @NonNull Class<? extends ReadonlyUser> getUserClassFromToken(@NonNull AuthenticationToken token);
+    ReadonlyUser.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token);
+    @Nullable Class<? extends ReadonlyUser> getUserClassFromToken(@NonNull AuthenticationToken token);
 }
