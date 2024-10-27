@@ -5,7 +5,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
 import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
+import org.tomfoolery.core.domain.Administrator;
+import org.tomfoolery.core.domain.Patron;
+import org.tomfoolery.core.domain.Staff;
+import org.tomfoolery.core.domain.abc.ReadonlyUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
@@ -14,11 +21,19 @@ import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
 
+import java.util.Map;
+
 public class LogUserInActionView implements ActionView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
 
     private @NonNull Class<? extends SelectionView> nextViewClass = GuestSelectionView.class;
+
+    private final @NonNull Map<Class<? extends ReadonlyUser>, Class<? extends SelectionView>> userClassToViewClassMap = Map.of(
+        Administrator.class, AdministratorSelectionView.class,
+        Patron.class, PatronSelectionView.class,
+        Staff.class, StaffSelectionView.class
+    );
 
     private LogUserInActionView(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
@@ -35,7 +50,7 @@ public class LogUserInActionView implements ActionView {
 
         try {
             val responseModel = this.controller.apply(requestObject);
-            val viewModel = this.presenter.getViewModelFromResponseModel(responseModel);
+            val viewModel = this.presenter.apply(responseModel);
             onSuccess(viewModel);
         } catch (LogUserInUseCase.CredentialsInvalidException exception) {
             onCredentialsInvalidException();
@@ -61,7 +76,11 @@ public class LogUserInActionView implements ActionView {
     }
 
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
-        this.nextViewClass = viewModel.getNextViewClass();
+        val userClass = viewModel.getUserClass();
+
+        this.nextViewClass = userClassToViewClassMap.get(userClass);
+        assert nextViewClass != null;
+
         System.out.println("Success: User logged in.");
     }
 

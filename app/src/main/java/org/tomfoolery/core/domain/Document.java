@@ -33,7 +33,7 @@ public final class Document implements ddd.Entity<Document.Id> {
         private @NonNull List<String> authors = new ArrayList<>();
         private @NonNull List<String> genres = new ArrayList<>();
 
-        private transient @Nullable BufferedImage qrCode = null;
+        private transient byte @Nullable [] qrCode;
     }
 
     @Data(staticConstructor = "of")
