@@ -11,27 +11,21 @@ public abstract class AuthenticationTokenRepositoryTest {
 
     @Test
     public void testBasic() {
-        val authenticationTokenRepository = getAuthenticationTokenRepository();
-
         val serializedPayload = "eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.";
         val authenticationToken = AuthenticationToken.of(serializedPayload);
 
+        val authenticationTokenRepository = getAuthenticationTokenRepository();
         assertFalse(authenticationTokenRepository.containsToken());
         assertNull(authenticationTokenRepository.getToken());
 
         authenticationTokenRepository.saveToken(authenticationToken);
-
         assertTrue(authenticationTokenRepository.containsToken());
 
         val retrievedAuthenticationToken = authenticationTokenRepository.getToken();
-
         assertNotNull(retrievedAuthenticationToken);
-
-        val retrievedSerializedPayload = retrievedAuthenticationToken.getSerializedPayload();
-        assertEquals(serializedPayload, retrievedSerializedPayload);
+        assertEquals(authenticationToken, retrievedAuthenticationToken);
 
         authenticationTokenRepository.removeToken();
-
         assertFalse(authenticationTokenRepository.containsToken());
         assertNull(authenticationTokenRepository.getToken());
     }

@@ -1,6 +1,5 @@
 package org.tomfoolery.infrastructures.dataproviders.filesystem;
 
-import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -8,33 +7,32 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 
 public class KeyStoreAuthenticationTokenRepository implements AuthenticationTokenRepository {
-    private static final @NonNull String KEYSTORE_NAME = ".tomfoolery";
-    private static final @Nullable String KEYSTORE_PASSWORD = null;
-    private static final @NonNull String KEYSTORE_KEY_ALIAS = "hehe";
-    private static final @NonNull Charset SERIALIZATION_CHARSET = StandardCharsets.UTF_8;
+    private static final @NonNull String KEYSTORE_NAME = ".tomfoolery.p12";
+    private static final @NonNull String KEYSTORE_TYPE = "pkcs12";
+    private static final @NonNull String KEYSTORE_PASSWORD = "lethality-yorick";
+    private static final @NonNull String KEYSTORE_ENTRY_ALIAS = "auth-token";
+
     private static final @NonNull String SECRET_KEY_ALGORITHM = "AES";
 
     private final @NonNull KeyStore keyStore;
 
     @SneakyThrows
     private KeyStoreAuthenticationTokenRepository() {
-        val keyStoreType = KeyStore.getDefaultType();
-        val keyStorePassword = getKeyStorePassword();
+        val passwordCharArray = getPasswordCharArray();
+        this.keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
 
-        @Cleanup
-        val fileInputStream = new FileInputStream(KEYSTORE_NAME);
-
-        this.keyStore = KeyStore.getInstance(keyStoreType);
-        this.keyStore.load(fileInputStream, keyStorePassword);
+        try (val fileInputStream = new FileInputStream(KEYSTORE_NAME)) {
+            this.keyStore.load(fileInputStream, passwordCharArray);
+        } catch (FileNotFoundException exception) {
+            this.keyStore.load(null, passwordCharArray);
+        }
     }
 
     public static @NonNull KeyStoreAuthenticationTokenRepository of() {
@@ -44,56 +42,67 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
     @Override
     @SneakyThrows
     public void saveToken(@NonNull AuthenticationToken token) {
-        val serializedPayload = token.getSerializedPayload();
-        val serializedPayloadBytes = serializedPayload.getBytes(SERIALIZATION_CHARSET);
-        val secretKey = new SecretKeySpec(serializedPayloadBytes, SECRET_KEY_ALGORITHM);
+        val secretKeyEntry = getSecretKeyEntryFromToken(token);
+        val protectionParameter = getProtectionParameter();
 
-        val keyStorePassword = getKeyStorePassword();
+        this.keyStore.setEntry(KEYSTORE_ENTRY_ALIAS, secretKeyEntry, protectionParameter);
 
-        this.keyStore.setKeyEntry(KEYSTORE_KEY_ALIAS, secretKey, keyStorePassword, null);
+        saveToFile();
     }
 
     @Override
     @SneakyThrows
     public void removeToken() {
-        if (this.keyStore.containsAlias(KEYSTORE_KEY_ALIAS))
-            this.keyStore.deleteEntry(KEYSTORE_KEY_ALIAS);
+        this.keyStore.deleteEntry(KEYSTORE_ENTRY_ALIAS);
+
+        saveToFile();
     }
 
     @Override
     @SneakyThrows
     public @Nullable AuthenticationToken getToken() {
-        val keyStorePassword = getKeyStorePassword();
-        val secretKey = (SecretKey) this.keyStore.getKey(KEYSTORE_KEY_ALIAS, keyStorePassword);
+        val protectionParameter = getProtectionParameter();
+        val entry = (KeyStore.SecretKeyEntry) this.keyStore.getEntry(KEYSTORE_ENTRY_ALIAS, protectionParameter);
 
-        if (secretKey == null)
+        if (entry == null)
             return null;
 
-        val serializedPayloadBytes = secretKey.getEncoded();
-        val serializedPayload = new String(serializedPayloadBytes, SERIALIZATION_CHARSET);
-
-        return AuthenticationToken.of(serializedPayload);
+        return getAuthenticationTokenFromEntry(entry);
     }
 
     @Override
     @SneakyThrows
     public boolean containsToken() {
-        return this.keyStore.containsAlias(KEYSTORE_KEY_ALIAS);
+        return this.keyStore.containsAlias(KEYSTORE_ENTRY_ALIAS);
     }
 
-    private static char @Nullable [] getKeyStorePassword() {
-        return KEYSTORE_PASSWORD != null
-            ? KEYSTORE_PASSWORD.toCharArray()
-            : null;
+    private static char @NonNull [] getPasswordCharArray() {
+        return KEYSTORE_PASSWORD.toCharArray();
+    }
+
+    private static KeyStore.@NonNull ProtectionParameter getProtectionParameter() {
+        val passwordCharArray = getPasswordCharArray();
+        return new KeyStore.PasswordProtection(passwordCharArray);
+    }
+
+    private static KeyStore.@NonNull SecretKeyEntry getSecretKeyEntryFromToken(@NonNull AuthenticationToken token) {
+        val serializedPayload = token.getSerializedPayload();
+        val secretKey = new SecretKeySpec(serializedPayload.getBytes(), SECRET_KEY_ALGORITHM);
+        return new KeyStore.SecretKeyEntry(secretKey);
+    }
+
+    private static @NonNull AuthenticationToken getAuthenticationTokenFromEntry(KeyStore.@NonNull SecretKeyEntry secretKeyEntry) {
+        val secretKey = secretKeyEntry.getSecretKey();
+        val serializedPayload = new String(secretKey.getEncoded());
+        return AuthenticationToken.of(serializedPayload);
     }
 
     @SneakyThrows
-    private void saveKeyStore() {
-        val keyStorePassword = getKeyStorePassword();
+    private void saveToFile() {
+        val keyStorePassword = getPasswordCharArray();
 
-        @Cleanup
-        val fileOutputStream = new FileOutputStream(KEYSTORE_NAME);
-
-        this.keyStore.store(fileOutputStream, keyStorePassword);
+        try (val fileOutputStream = new FileOutputStream(KEYSTORE_NAME)) {
+            this.keyStore.store(fileOutputStream, keyStorePassword);
+        }
     }
 }
