@@ -4,24 +4,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.StaffRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.usecases.external.admin.CreateStaffAccountUseCase;
+import org.tomfoolery.core.dataproviders.auth.StaffRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
+import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.usecases.external.admin.auth.CreateStaffAccountUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableConsumerController;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreateStaffAccountController implements ThrowableConsumerController<CreateStaffAccountController.RequestObject, CreateStaffAccountUseCase.Request> {
     private final @NonNull CreateStaffAccountUseCase useCase;
 
-    private CreateStaffAccountController(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.useCase = CreateStaffAccountUseCase.of(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
+    private CreateStaffAccountController(@NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.useCase = CreateStaffAccountUseCase.of(staffRepository, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    public static @NonNull CreateStaffAccountController of(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new CreateStaffAccountController(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
+    public static @NonNull CreateStaffAccountController of(@NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new CreateStaffAccountController(staffRepository, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

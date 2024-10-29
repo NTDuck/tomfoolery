@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.selection;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.adapters.selection.SelectionAdapter;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.auth.LogUserOutActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.browse.*;
 

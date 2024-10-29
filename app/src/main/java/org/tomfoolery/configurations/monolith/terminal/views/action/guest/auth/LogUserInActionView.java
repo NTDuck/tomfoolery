@@ -2,21 +2,21 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.ActionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.ScannerManager;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
-import org.tomfoolery.core.domain.Administrator;
-import org.tomfoolery.core.domain.Patron;
-import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.domain.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.Administrator;
+import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
 import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
@@ -35,13 +35,13 @@ public class LogUserInActionView implements ActionView {
         Staff.class, StaffSelectionView.class
     );
 
-    private LogUserInActionView(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
-        this.presenter = LogUserInPresenter.of(authenticationTokenService);
+    private LogUserInActionView(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.controller = LogUserInController.of(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
+        this.presenter = LogUserInPresenter.of(authenticationTokenGenerator);
     }
 
-    public static @NonNull LogUserInActionView of(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new LogUserInActionView(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+    public static @NonNull LogUserInActionView of(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new LogUserInActionView(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class LogUserInActionView implements ActionView {
     }
 
     private static LogUserInController.@NonNull RequestObject getRequestObject() {
-        val scanner = ScannerService.getScanner();
+        val scanner = ScannerManager.getScanner();
 
         System.out.print("Enter username: ");
         val username = scanner.nextLine();

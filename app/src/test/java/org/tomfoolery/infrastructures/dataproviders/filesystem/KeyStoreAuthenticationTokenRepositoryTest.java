@@ -2,9 +2,10 @@ package org.tomfoolery.infrastructures.dataproviders.filesystem;
 
 import lombok.val;
 import org.testng.annotations.Test;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepositoryTest;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.infrastructures.dataproviders.filesystem.auth.security.KeyStoreAuthenticationTokenRepository;
 
 import static org.testng.Assert.*;
 
@@ -20,27 +21,27 @@ public class KeyStoreAuthenticationTokenRepositoryTest extends AuthenticationTok
         val authenticationToken = AuthenticationToken.of(serializedPayload);
 
         val firstAuthenticationTokenRepository = getAuthenticationTokenRepository();
-        assertFalse(firstAuthenticationTokenRepository.containsToken());
-        assertNull(firstAuthenticationTokenRepository.getToken());
+        assertFalse(firstAuthenticationTokenRepository.contains());
+        assertNull(firstAuthenticationTokenRepository.get());
 
-        firstAuthenticationTokenRepository.saveToken(authenticationToken);
-        assertTrue(firstAuthenticationTokenRepository.containsToken());
+        firstAuthenticationTokenRepository.save(authenticationToken);
+        assertTrue(firstAuthenticationTokenRepository.contains());
 
-        val authenticationTokenRetrievedFromFirst = firstAuthenticationTokenRepository.getToken();
+        val authenticationTokenRetrievedFromFirst = firstAuthenticationTokenRepository.get();
         assertNotNull(authenticationTokenRetrievedFromFirst);
         assertEquals(authenticationToken, authenticationTokenRetrievedFromFirst);
 
         val secondAuthenticationTokenRepository = getAuthenticationTokenRepository();
-        assertTrue(secondAuthenticationTokenRepository.containsToken());
+        assertTrue(secondAuthenticationTokenRepository.contains());
 
-        val authenticationTokenRetrievedFromSecond = secondAuthenticationTokenRepository.getToken();
+        val authenticationTokenRetrievedFromSecond = secondAuthenticationTokenRepository.get();
         assertNotNull(authenticationTokenRetrievedFromSecond);
         assertEquals(authenticationToken, authenticationTokenRetrievedFromSecond);
 
-        firstAuthenticationTokenRepository.removeToken();
-        assertFalse(firstAuthenticationTokenRepository.containsToken());
-        assertNull(firstAuthenticationTokenRepository.getToken());
-        assertFalse(secondAuthenticationTokenRepository.containsToken());
-        assertNull(secondAuthenticationTokenRepository.getToken());
+        firstAuthenticationTokenRepository.delete();
+        assertFalse(firstAuthenticationTokenRepository.contains());
+        assertNull(firstAuthenticationTokenRepository.get());
+        assertFalse(secondAuthenticationTokenRepository.contains());
+        assertNull(secondAuthenticationTokenRepository.get());
     }
 }

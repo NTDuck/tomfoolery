@@ -2,26 +2,26 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.ActionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.ScannerManager;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
-import org.tomfoolery.core.dataproviders.StaffRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.usecases.external.admin.CreateStaffAccountUseCase;
+import org.tomfoolery.core.dataproviders.auth.StaffRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
+import org.tomfoolery.core.usecases.external.admin.auth.CreateStaffAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.CreateStaffAccountController;
 
 public class CreateStaffAccountActionView implements ActionView {
     private final @NonNull CreateStaffAccountController controller;
 
-    private CreateStaffAccountActionView(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.controller = CreateStaffAccountController.of(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
+    private CreateStaffAccountActionView(@NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.controller = CreateStaffAccountController.of(staffRepository, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    public static @NonNull CreateStaffAccountActionView of(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new CreateStaffAccountActionView(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
+    public static @NonNull CreateStaffAccountActionView of(@NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new CreateStaffAccountActionView(staffRepository, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CreateStaffAccountActionView implements ActionView {
     }
 
     private static CreateStaffAccountController.@NonNull RequestObject getRequestObject() {
-        val scanner = ScannerService.getScanner();
+        val scanner = ScannerManager.getScanner();
 
         System.out.print("Enter username: ");
         val username = scanner.nextLine();

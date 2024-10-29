@@ -2,6 +2,7 @@ package org.tomfoolery.core.dataproviders.auth;
 
 import lombok.val;
 import org.testng.annotations.Test;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 import static org.testng.Assert.*;
@@ -15,18 +16,18 @@ public abstract class AuthenticationTokenRepositoryTest {
         val authenticationToken = AuthenticationToken.of(serializedPayload);
 
         val authenticationTokenRepository = getAuthenticationTokenRepository();
-        assertFalse(authenticationTokenRepository.containsToken());
-        assertNull(authenticationTokenRepository.getToken());
+        assertFalse(authenticationTokenRepository.contains());
+        assertNull(authenticationTokenRepository.get());
 
-        authenticationTokenRepository.saveToken(authenticationToken);
-        assertTrue(authenticationTokenRepository.containsToken());
+        authenticationTokenRepository.save(authenticationToken);
+        assertTrue(authenticationTokenRepository.contains());
 
-        val retrievedAuthenticationToken = authenticationTokenRepository.getToken();
+        val retrievedAuthenticationToken = authenticationTokenRepository.get();
         assertNotNull(retrievedAuthenticationToken);
         assertEquals(authenticationToken, retrievedAuthenticationToken);
 
-        authenticationTokenRepository.removeToken();
-        assertFalse(authenticationTokenRepository.containsToken());
-        assertNull(authenticationTokenRepository.getToken());
+        authenticationTokenRepository.delete();
+        assertFalse(authenticationTokenRepository.contains());
+        assertNull(authenticationTokenRepository.get());
     }
 }

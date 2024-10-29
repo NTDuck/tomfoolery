@@ -3,10 +3,10 @@ package org.tomfoolery.core.usecases.external.user.auth;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.domain.abc.ReadonlyUser;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class LogUserOutUseCase implements ThrowableRunnable {
     private final @NonNull UserRepositories userRepositories;
 
-    private final @NonNull AuthenticationTokenService authenticationTokenService;
+    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 
     @Override
@@ -35,7 +35,7 @@ public class LogUserOutUseCase implements ThrowableRunnable {
     }
 
     private @NonNull AuthenticationToken getAuthenticationTokenFromRepository() throws AuthenticationTokenNotFoundException {
-        val authenticationToken = this.authenticationTokenRepository.getToken();
+        val authenticationToken = this.authenticationTokenRepository.get();
 
         if (authenticationToken == null)
             throw new AuthenticationTokenNotFoundException();
@@ -44,7 +44,7 @@ public class LogUserOutUseCase implements ThrowableRunnable {
     }
 
     private <User extends ReadonlyUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        val userId = this.authenticationTokenService.getUserIdFromToken(authenticationToken);
+        val userId = this.authenticationTokenGenerator.getUserIdFromToken(authenticationToken);
 
         if (userId == null)
             throw new AuthenticationTokenInvalidException();
@@ -66,8 +66,8 @@ public class LogUserOutUseCase implements ThrowableRunnable {
     }
 
     private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
-        this.authenticationTokenService.invalidateToken(authenticationToken);
-        this.authenticationTokenRepository.removeToken();
+        this.authenticationTokenGenerator.invalidateToken(authenticationToken);
+        this.authenticationTokenRepository.delete();
     }
 
     public static class AuthenticationTokenNotFoundException extends Exception {}

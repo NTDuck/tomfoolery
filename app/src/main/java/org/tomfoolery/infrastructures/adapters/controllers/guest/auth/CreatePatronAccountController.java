@@ -3,21 +3,21 @@ package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.domain.Patron;
+import org.tomfoolery.core.dataproviders.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
+import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableConsumerController;
 
 public class CreatePatronAccountController implements ThrowableConsumerController<CreatePatronAccountController.RequestObject, CreatePatronAccountUseCase.Request> {
     private final @NonNull CreatePatronAccountUseCase useCase;
 
-    private CreatePatronAccountController(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        this.useCase = CreatePatronAccountUseCase.of(patronRepository, passwordService);
+    private CreatePatronAccountController(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        this.useCase = CreatePatronAccountUseCase.of(patronRepository, passwordEncoder);
     }
 
-    public static @NonNull CreatePatronAccountController of(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        return new CreatePatronAccountController(patronRepository, passwordService);
+    public static @NonNull CreatePatronAccountController of(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreatePatronAccountController(patronRepository, passwordEncoder);
     }
 
     @Override

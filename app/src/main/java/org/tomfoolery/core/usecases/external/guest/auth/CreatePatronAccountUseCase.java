@@ -4,17 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.domain.Patron;
-import org.tomfoolery.core.domain.abc.User;
-import org.tomfoolery.core.utils.services.CredentialsVerificationService;
+import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.auth.PatronRepository;
+import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatronAccountUseCase.Request> {
     private final @NonNull PatronRepository patronRepository;
-    private final @NonNull PasswordService passwordService;
+    private final @NonNull PasswordEncoder passwordEncoder;
 
     @Override
     public void accept(@NonNull Request request) throws PatronCredentialsInvalidException, PatronAlreadyExistsException {
@@ -30,7 +29,7 @@ public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatro
     }
 
     private static void ensurePatronCredentialsAreValid(Patron.@NonNull Credentials patronCredentials) throws PatronCredentialsInvalidException {
-        if (!CredentialsVerificationService.verifyCredentials(patronCredentials))
+        if (!CredentialsVerifier.verify(patronCredentials))
             throw new PatronCredentialsInvalidException();
     }
 
@@ -43,7 +42,7 @@ public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatro
 
     private void encodePatronPassword(Patron.@NonNull Credentials patronCredentials) {
         val password = patronCredentials.getPassword();
-        val encodedPassword = this.passwordService.encodePassword(password);
+        val encodedPassword = this.passwordEncoder.encode(password);
         patronCredentials.setPassword(encodedPassword);
     }
 

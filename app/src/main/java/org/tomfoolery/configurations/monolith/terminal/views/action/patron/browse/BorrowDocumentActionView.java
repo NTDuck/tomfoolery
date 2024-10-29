@@ -2,27 +2,26 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.patron.brow
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.ActionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.ScannerManager;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
-import org.tomfoolery.core.dataproviders.DocumentRepository;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.usecases.external.patron.browse.BorrowDocumentUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.browse.BorrowDocumentController;
+import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.usecases.external.patron.documents.BorrowDocumentUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.BorrowDocumentController;
 
 public class BorrowDocumentActionView implements ActionView {
     private final @NonNull BorrowDocumentController controller;
 
-    private BorrowDocumentActionView(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.controller = BorrowDocumentController.of(documentRepository, patronRepository, authenticationTokenService, authenticationTokenRepository);
+    private BorrowDocumentActionView(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.controller = BorrowDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    public static @NonNull BorrowDocumentActionView of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new BorrowDocumentActionView(documentRepository, patronRepository, authenticationTokenService, authenticationTokenRepository);
+    public static @NonNull BorrowDocumentActionView of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new BorrowDocumentActionView(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -51,7 +50,7 @@ public class BorrowDocumentActionView implements ActionView {
     }
 
     private static BorrowDocumentController.@NonNull RequestObject getRequestObject() {
-        val scanner = ScannerService.getScanner();
+        val scanner = ScannerManager.getScanner();
 
         System.out.print("Enter document ID: ");
         val documentIdAsString = scanner.nextLine();

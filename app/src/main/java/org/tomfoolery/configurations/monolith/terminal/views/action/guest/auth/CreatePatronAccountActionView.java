@@ -2,12 +2,12 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.ActionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.ScannerManager;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
+import org.tomfoolery.core.dataproviders.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
 import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
@@ -16,12 +16,12 @@ public class CreatePatronAccountActionView implements ActionView {
 
     private @NonNull Class<? extends SelectionView> nextViewClass = GuestSelectionView.class;
 
-    private CreatePatronAccountActionView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        this.controller = CreatePatronAccountController.of(patronRepository, passwordService);
+    private CreatePatronAccountActionView(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        this.controller = CreatePatronAccountController.of(patronRepository, passwordEncoder);
     }
 
-    public static @NonNull CreatePatronAccountActionView of(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        return new CreatePatronAccountActionView(patronRepository, passwordService);
+    public static @NonNull CreatePatronAccountActionView of(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreatePatronAccountActionView(patronRepository, passwordEncoder);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class CreatePatronAccountActionView implements ActionView {
     }
 
     private static CreatePatronAccountController.@NonNull RequestObject getRequestObject() throws PasswordMismatchException {
-        val scanner = ScannerService.getScanner();
+        val scanner = ScannerManager.getScanner();
 
         System.out.print("Enter username: ");
         val username = scanner.nextLine();

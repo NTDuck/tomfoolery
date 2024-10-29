@@ -1,8 +1,8 @@
 package org.tomfoolery.configurations.monolith.terminal.views.action.staff;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.ActionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.contracts.SelectionView;
 
 public class UpdateDocumentActionView implements ActionView {
     @Override
