@@ -99,10 +99,10 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @SneakyThrows
     private void saveToFile() {
-        val keyStorePassword = getPasswordCharArray();
+        val passwordCharArray = getPasswordCharArray();
 
         try (val fileOutputStream = new FileOutputStream(KEYSTORE_NAME)) {
-            this.keyStore.store(fileOutputStream, keyStorePassword);
+            this.keyStore.store(fileOutputStream, passwordCharArray);
         }
     }
 }

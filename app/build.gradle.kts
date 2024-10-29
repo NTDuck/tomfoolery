@@ -1,3 +1,5 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     // Implicitly includes `java` and `distribution` plugins
     // Eases Java compilation, testing, and bundling
@@ -35,8 +37,15 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     // runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.6")
 
+    // Os-specific secure storage for persistence of authentication tokens
+    implementation("com.microsoft:credential-secure-storage:1.0.0")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
+
+    // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
+    testImplementation("org.slf4j:slf4j-simple:1.7.36")
+    // testImplementation("ch.qos.logback:logback-classic:1.2.11")
 
     // Used by `application`
     implementation(libs.guava)
@@ -153,6 +162,15 @@ tasks.register<JavaExec>("runTerminal") {
 tasks.register<JavaExec>("runJavaFX") {
     mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
     classpath = sourceSets["main"].runtimeClasspath
+
+    // Prevents "Error: JavaFX runtime components are missing, and are required to run this application"
+    val pathSeparator = if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) ";" else ":"
+    val javafxPath = configurations.runtimeClasspath.get().asFileTree.files.joinToString(separator = pathSeparator) { it.absolutePath }
+
+    jvmArgs = listOf(
+        "--module-path", javafxPath,
+        "--add-modules", "javafx.controls,javafx.fxml"
+    )
 }
 
 tasks.named<Test>("test") {

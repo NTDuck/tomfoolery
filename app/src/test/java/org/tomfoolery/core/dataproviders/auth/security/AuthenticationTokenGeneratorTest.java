@@ -1,8 +1,8 @@
-package org.tomfoolery.core.dataproviders.auth;
+package org.tomfoolery.core.dataproviders.auth.security;
 
 import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.Test;
-import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.auth.Administrator;
 import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
 
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import static org.testng.Assert.*;
 
 public abstract class AuthenticationTokenGeneratorTest {
-    protected abstract AuthenticationTokenGenerator getAuthenticationTokenGenerator();
+    protected abstract @NonNull AuthenticationTokenGenerator getAuthenticationTokenGenerator();
 
     @Test
     public void testBasic() {

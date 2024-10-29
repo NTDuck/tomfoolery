@@ -34,3 +34,6 @@ build
 .idea
 
 !gradle-wrapper.jar
+
+# KEYSTORE_NAME of KeyStoreAuthenticationTokenRepository
+.tomfoolery.p12
