@@ -15,11 +15,6 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
-javafx {
-    version = "21"
-    modules("javafx.controls", "javafx.fxml")
-}
-
 dependencies {
     // Uses `Lombok` for reduced boilerplate
     compileOnly("org.projectlombok:lombok:1.18.34")
@@ -72,6 +67,11 @@ java {
     // Packaging
     withJavadocJar()
     withSourcesJar()
+}
+
+javafx {
+    version = "21"
+    modules("javafx.controls", "javafx.fxml")
 }
 
 repositories {
@@ -164,12 +164,9 @@ tasks.register<JavaExec>("runJavaFX") {
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents "Error: JavaFX runtime components are missing, and are required to run this application"
-    val pathSeparator = if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) ";" else ":"
-    val javafxPath = configurations.runtimeClasspath.get().asFileTree.files.joinToString(separator = pathSeparator) { it.absolutePath }
-
     jvmArgs = listOf(
-        "--module-path", javafxPath,
-        "--add-modules", "javafx.controls,javafx.fxml"
+        "--module-path", classpath.asPath,
+        "--add-modules", javafx.modules.joinToString(",")
     )
 }
 
