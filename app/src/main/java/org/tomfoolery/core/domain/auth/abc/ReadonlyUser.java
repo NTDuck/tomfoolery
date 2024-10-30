@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.utils.contracts.ddd;
+import org.tomfoolery.core.utils.contracts.ddd.ddd;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;

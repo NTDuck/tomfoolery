@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.abc.SearchableRepository;
-import org.tomfoolery.core.utils.contracts.ddd;
+import org.tomfoolery.core.utils.contracts.ddd.ddd;
 import org.tomfoolery.core.utils.dataclasses.SearchCriterion;
 
 import java.util.Collection;

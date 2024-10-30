@@ -4,50 +4,64 @@ import lombok.Data;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
-import org.tomfoolery.core.utils.contracts.ddd;
+import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.utils.contracts.ddd.ddd;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.Instant;
+import java.time.Year;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 @Data(staticConstructor = "of")
 public final class Document implements ddd.Entity<Document.Id> {
     private final @NonNull Id id;
 
-    private @NonNull Metadata metadata;
+    private final @NonNull Content content;
+    private final @NonNull Metadata metadata;
     private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
     public static class Id implements ddd.EntityId {
-        @NonNull String value;
+        @NonNull String ISBN;
+    }
+
+    @Data(staticConstructor = "of")
+    public static class Content {
+        private transient byte @NonNull [] bytes;
     }
 
     @Data(staticConstructor = "of")
     public static class Metadata {
         private @NonNull String title;
         private @NonNull String description;
-        private @NonNull List<String> authors = new ArrayList<>();
-        private @NonNull List<String> genres = new ArrayList<>();
+        private @NonNull List<String> authors;
+        private @NonNull List<String> genres;
 
-        private transient byte @Nullable [] qrCode;
+        private @NonNull Year publishedYear;
+        private @NonNull String publisher;
+
+        private final @NonNull QRCode qrCode;
+
+        @Data(staticConstructor = "of")
+        public static class QRCode {
+            private transient byte @NonNull [] bytes;
+        }
     }
 
     @Data(staticConstructor = "of")
     public static class Audit {
-        private final ReadonlyUser.@NonNull Id createdByStaffId;
-        private ReadonlyUser.@Nullable Id lastModifiedByStaffId = null;
+        private final Staff.@NonNull Id createdByStaffId;
+        private Staff.@Nullable Id lastModifiedByStaffId;
 
-        private final @NonNull Collection<ReadonlyUser.Id> borrowingPatronIds = new HashSet<>();
+        private final @NonNull Collection<Patron.Id> borrowingPatronIds;
 
-        private final @NonNull Timestamps timestamps = Timestamps.of();
+        private final @NonNull Timestamps timestamps;
 
         @Data(staticConstructor = "of")
         public static class Timestamps {
-            private final @NonNull LocalDateTime created = LocalDateTime.now();
-            private @Nullable LocalDateTime lastModified = null;
+            private final @NonNull Instant created;
+            private @Nullable Instant lastModified;
         }
     }
 }

@@ -1,5 +1,3 @@
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
-
 plugins {
     // Implicitly includes `java` and `distribution` plugins
     // Eases Java compilation, testing, and bundling
@@ -154,7 +152,7 @@ tasks.register<JavaExec>("runTerminal") {
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents non-blocking `java.util.Scanner`
-    tasks.getByName("runTerminal", JavaExec::class) {
+    tasks.getByName(this.name, JavaExec::class) {
         standardInput = System.`in`
     }
 }

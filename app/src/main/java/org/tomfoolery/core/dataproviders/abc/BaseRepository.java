@@ -3,7 +3,7 @@ package org.tomfoolery.core.dataproviders.abc;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.utils.contracts.ddd;
+import org.tomfoolery.core.utils.contracts.ddd.ddd;
 import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.Collection;
