@@ -10,8 +10,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      styleClass="signup-menu" stylesheets="/css/SignupMenu.css" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"
-      fx:controller="org.tomfoolery.configurations.monolith.gui.view.SignupView">
+      styleClass="signup-menu" stylesheets="/css/SignupMenu.css" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
     <ImageView styleClass="user-icon">
         <Image url="/images/user.png" />
     </ImageView>
@@ -38,6 +37,11 @@
         <VBox styleClass="wide-textbox">
             <Label text="Address" styleClass="textbox-label" />
             <TextField styleClass="input-field" fx:id="addressTextField" />
+        </VBox>
+
+        <VBox styleClass="wide-textbox">
+            <Label text="Email" styleClass="textbox-label" />
+            <TextField styleClass="input-field" fx:id="emailTextField" />
         </VBox>
 
         <VBox styleClass="wide-textbox">

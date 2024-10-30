@@ -10,8 +10,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
-    styleClass="login-menu" stylesheets="/css/LoginMenu.css" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"
-    fx:controller="org.tomfoolery.configurations.monolith.gui.view.LoginView">
+    styleClass="login-menu" stylesheets="/css/LoginMenu.css" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
     <ImageView styleClass="user-icon">
         <Image url="/images/user.png" />
     </ImageView>

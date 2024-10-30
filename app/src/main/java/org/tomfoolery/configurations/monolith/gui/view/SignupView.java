@@ -3,19 +3,22 @@ package org.tomfoolery.configurations.monolith.gui.view;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.gui.MainApplication;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.core.dataproviders.PatronRepository;
+import org.tomfoolery.core.dataproviders.auth.PasswordService;
 import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
 public class SignupView {
-    private final @NonNull CreatePatronAccountController controller
-            = CreatePatronAccountController.of(MainApplication.getPatronRepository(), MainApplication.getPasswordService());
+    private final @NonNull CreatePatronAccountController controller;
+
+    public SignupView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
+        controller = CreatePatronAccountController.of(patronRepository, passwordService);
+    }
 
     @FXML
     private TextField firstNameTextField;
@@ -30,6 +33,9 @@ public class SignupView {
     private TextField addressTextField;
 
     @FXML
+    private TextField emailTextField;
+
+    @FXML
     private PasswordField passwordTextField;
 
     @FXML
@@ -42,9 +48,6 @@ public class SignupView {
     private Button returnToLoginButton;
 
     @FXML
-    private Label errorMessage;
-
-    @FXML
     public void initialize() {
         signupButton.setOnAction(this::signup);
         returnToLoginButton.setOnAction(this::returnToLogin);
@@ -54,7 +57,7 @@ public class SignupView {
         try {
             val requestObject = getRequestObject();
             this.controller.accept(requestObject);
-            System.out.println("Registered successfully");
+            System.out.println("registered successfully");
         } catch (PasswordMismatchException exception) {
             onPasswordMismatchException();
         } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException e) {
@@ -66,13 +69,13 @@ public class SignupView {
 
     private CreatePatronAccountController.@NonNull RequestObject getRequestObject() throws PasswordMismatchException {
         String firstName = firstNameTextField.getText();
-        String lastName = firstNameTextField.getText();
+        String lastName = lastNameTextField.getText();
         String username = usernameTextField.getText();
-        String address = addressTextField.getText();
         String password = passwordTextField.getText();
-        String passwordRetype = retypePasswordTextField.getText();
+        String retypePassword = retypePasswordTextField.getText();
+        String address = addressTextField.getText();
 
-        if (!password.equals(passwordRetype))
+        if (!password.equals(retypePassword))
             throw new PasswordMismatchException();
 
         return CreatePatronAccountController.RequestObject.of(username, password, firstName, lastName, address, "");

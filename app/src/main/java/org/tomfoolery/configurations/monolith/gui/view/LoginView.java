@@ -6,16 +6,24 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import lombok.NonNull;
 import lombok.val;
-import org.tomfoolery.configurations.monolith.gui.MainApplication;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.presenter.LoginPresenter;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
+import org.tomfoolery.core.dataproviders.auth.PasswordService;
+import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class LoginView {
-    private final @NonNull LogUserInController controller = LogUserInController.of(MainApplication.getUserRepositories(), MainApplication.getPasswordService(), MainApplication.getAuthenticationTokenService(), MainApplication.getAuthenticationTokenRepository());
-    private LoginPresenter presenter;
+    private final @NonNull LogUserInController controller;
+    private final @NonNull LoginPresenter presenter;
+
+    public LoginView(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService,@NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+        this.presenter = LoginPresenter.of(authenticationTokenService);
+    }
 
     @FXML
     private Button loginButton;

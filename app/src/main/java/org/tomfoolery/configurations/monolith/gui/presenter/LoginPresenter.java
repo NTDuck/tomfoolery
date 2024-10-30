@@ -2,7 +2,6 @@ package org.tomfoolery.configurations.monolith.gui.presenter;
 
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.gui.MainApplication;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.domain.Administrator;
 import org.tomfoolery.core.domain.Staff;
@@ -12,7 +11,7 @@ import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 @RequiredArgsConstructor(staticName = "of")
 public class LoginPresenter {
-    private final @NonNull AuthenticationTokenService authenticationTokenService = MainApplication.getAuthenticationTokenService();
+    private @NonNull AuthenticationTokenService authenticationTokenService;
 
     private String userClassToFXMLPath(Class<? extends ReadonlyUser> userCLass) {
         if (userCLass.equals(Administrator.class)) {
