@@ -1,0 +1,17 @@
+/*
+The color palette:
+Background: #2E3440
+Background-selected: #434C5E
+Foreground: #D8DEE9
+Accent color: #88C0D0
+Foreground-secondary: #81A1C1
+Error: #BF616A
+Success: #A3BE8C
+Border and separator: #4C566A
+*/
+
+.below-navbar {
+    -fx-spacing: 10;
+    -fx-background-color: #2E3440;
+    -fx-padding: 0 10 0 10;
+}
