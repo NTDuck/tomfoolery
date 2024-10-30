@@ -31,13 +31,13 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     }
 
     @Override
-    public void invalidateToken(@NonNull AuthenticationToken token) {
+    public void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
 
     }
 
     @Override
-    public boolean verifyToken(@NonNull AuthenticationToken token) {
-        val payload = getPayloadFromAuthenticationToken(token);
+    public boolean verifyAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
         if (payload == null)
             return false;
@@ -47,8 +47,8 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     }
 
     @Override
-    public BaseUser.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token) {
-        val payload = getPayloadFromAuthenticationToken(token);
+    public BaseUser.@Nullable Id getUserIdFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
         return payload != null
              ? (BaseUser.Id) payload.get(USER_ID_CLAIM_LABEL)
@@ -57,8 +57,8 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
 
     @SuppressWarnings("unchecked")
     @Override
-    public @Nullable Class<? extends BaseUser> getUserClassFromToken(@NonNull AuthenticationToken token) {
-        val payload = getPayloadFromAuthenticationToken(token);
+    public @Nullable Class<? extends BaseUser> getUserClassFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
         return payload != null
              ? (Class<? extends BaseUser>) payload.get(USER_CLASS_CLAIM_LABEL)

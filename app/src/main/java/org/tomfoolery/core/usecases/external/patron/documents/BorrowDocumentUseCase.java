@@ -50,12 +50,12 @@ public class BorrowDocumentUseCase implements ThrowableFunction<BorrowDocumentUs
     }
 
     private void ensurePatronAuthenticationTokenIsValid(@NonNull AuthenticationToken patronAuthenticationToken) throws PatronAuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyToken(patronAuthenticationToken, Patron.class))
+        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(patronAuthenticationToken, Patron.class))
             throw new PatronAuthenticationTokenInvalidException();
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws PatronAuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromToken(staffAuthenticationToken);
+        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
         if (patronId == null)
             throw new PatronAuthenticationTokenInvalidException();

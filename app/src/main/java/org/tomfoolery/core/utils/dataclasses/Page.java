@@ -1,6 +1,10 @@
 package org.tomfoolery.core.utils.dataclasses;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+import lombok.Value;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

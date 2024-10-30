@@ -17,8 +17,8 @@ import java.util.List;
 public final class Document implements ddd.Entity<Document.Id> {
     private final @NonNull Id id;
 
-    private final @NonNull Content content;
-    private final @NonNull Metadata metadata;
+    private @NonNull Content content;
+    private @NonNull Metadata metadata;
     private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
@@ -27,12 +27,12 @@ public final class Document implements ddd.Entity<Document.Id> {
     }
 
     @Data(staticConstructor = "of")
-    public static class Content {
+    public static class Content implements ddd.ValueObject {
         private transient byte @NonNull [] bytes;
     }
 
     @Data(staticConstructor = "of")
-    public static class Metadata {
+    public static class Metadata implements ddd.ValueObject {
         private @NonNull String title;
         private @NonNull String description;
         private @NonNull List<String> authors;
@@ -44,13 +44,13 @@ public final class Document implements ddd.Entity<Document.Id> {
         private final @NonNull QRCode qrCode;
 
         @Data(staticConstructor = "of")
-        public static class QRCode {
+        public static class QRCode implements ddd.ValueObject {
             private transient byte @NonNull [] bytes;
         }
     }
 
     @Data(staticConstructor = "of")
-    public static class Audit {
+    public static class Audit implements ddd.ValueObject {
         private final Staff.@NonNull Id createdByStaffId;
         private Staff.@Nullable Id lastModifiedByStaffId;
 
@@ -59,7 +59,7 @@ public final class Document implements ddd.Entity<Document.Id> {
         private final @NonNull Timestamps timestamps;
 
         @Data(staticConstructor = "of")
-        public static class Timestamps {
+        public static class Timestamps implements ddd.ValueObject {
             private final @NonNull Instant created;
             private @Nullable Instant lastModified;
         }

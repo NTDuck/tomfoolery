@@ -15,7 +15,7 @@ import java.util.UUID;
 public class BaseUser implements ddd.Entity<BaseUser.Id> {
     private final @NonNull Id id;
 
-    private final @NonNull Credentials credentials;
+    private @NonNull Credentials credentials;
     private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
@@ -24,13 +24,13 @@ public class BaseUser implements ddd.Entity<BaseUser.Id> {
     }
 
     @Data(staticConstructor = "of")
-    public static class Credentials {
+    public static class Credentials implements ddd.ValueObject{
         private @NonNull String username;
         private @NonNull String password;
     }
 
     @Getter @Setter
-    public static class Audit {
+    public static class Audit implements ddd.ValueObject {
         private boolean isLoggedIn;
 
         private final @NonNull Timestamps timestamps;
@@ -45,7 +45,7 @@ public class BaseUser implements ddd.Entity<BaseUser.Id> {
         }
 
         @Getter @Setter
-        public static class Timestamps {
+        public static class Timestamps implements ddd.ValueObject {
             private final @NonNull Instant created;
             private @Nullable Instant lastLogin;
             private @Nullable Instant lastLogout;

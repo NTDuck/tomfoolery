@@ -5,19 +5,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public interface AuthenticationTokenGenerator {
-    @NonNull AuthenticationToken generateToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull LocalDateTime expiryTimestamp);
-    void invalidateToken(@NonNull AuthenticationToken token);
+    @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp);
 
-    boolean verifyToken(@NonNull AuthenticationToken token);
+    void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken);
+    boolean verifyAuthenticationToken(@NonNull AuthenticationToken authenticationToken);
 
-    default boolean verifyToken(@NonNull AuthenticationToken token, @NonNull Class<? extends BaseUser> userClass) {
-        return this.verifyToken(token)
-            && userClass.equals(this.getUserClassFromToken(token));
-    }
-
-    BaseUser.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token);
-    @Nullable Class<? extends BaseUser> getUserClassFromToken(@NonNull AuthenticationToken token);
+    BaseUser.@Nullable Id getUserIdFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken);
+    @Nullable Class<? extends BaseUser> getUserClassFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken);
 }

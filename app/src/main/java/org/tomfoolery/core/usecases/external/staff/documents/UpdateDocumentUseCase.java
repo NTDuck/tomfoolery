@@ -48,12 +48,12 @@ public class UpdateDocumentUseCase implements ThrowableFunction<UpdateDocumentUs
     }
 
     private void ensureStaffAuthenticationTokenIsValid(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyToken(staffAuthenticationToken, Staff.class))
+        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(staffAuthenticationToken, Staff.class))
             throw new StaffAuthenticationTokenInvalidException();
     }
 
     private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
-        val staffId = this.authenticationTokenGenerator.getUserIdFromToken(staffAuthenticationToken);
+        val staffId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
         if (staffId == null)
             throw new StaffAuthenticationTokenInvalidException();

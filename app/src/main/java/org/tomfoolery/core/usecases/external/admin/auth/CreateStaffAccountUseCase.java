@@ -48,12 +48,12 @@ public class CreateStaffAccountUseCase implements ThrowableConsumer<CreateStaffA
     }
 
     private void ensureAdminAuthenticationTokenIsValid(@NonNull AuthenticationToken adminAuthenticationToken) throws AdminAuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyToken(adminAuthenticationToken, Administrator.class))
+        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(adminAuthenticationToken, Administrator.class))
             throw new AdminAuthenticationTokenInvalidException();
     }
 
     private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken adminAuthenticationToken) throws AdminAuthenticationTokenInvalidException {
-        val administratorId = this.authenticationTokenGenerator.getUserIdFromToken(adminAuthenticationToken);
+        val administratorId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(adminAuthenticationToken);
 
         if (administratorId == null)
             throw new AdminAuthenticationTokenInvalidException();

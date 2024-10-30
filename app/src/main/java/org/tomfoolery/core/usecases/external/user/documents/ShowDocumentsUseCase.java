@@ -41,7 +41,7 @@ public class ShowDocumentsUseCase implements ThrowableFunction<ShowDocumentsUseC
     }
 
     private void ensureAuthenticationTokenIsValid(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyToken(authenticationToken))
+        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(authenticationToken))
             throw new AuthenticationTokenInvalidException();
     }
 

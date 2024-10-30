@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.utils.contracts.ddd.ddd;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +14,7 @@ import java.util.HashSet;
 
 @Getter @Setter
 public final class Patron extends ModifiableUser {
-    private final @NonNull Metadata metadata;
+    private @NonNull Metadata metadata;
 
     public static @NonNull Patron of(@NonNull Id id, @NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
         return new Patron(id, credentials, audit, metadata);
@@ -30,7 +31,7 @@ public final class Patron extends ModifiableUser {
     }
 
     @Data(staticConstructor = "of")
-    public static class Metadata {
+    public static class Metadata implements ddd.ValueObject {
         private @NonNull String fullName;
         private @NonNull String address;
         private @NonNull String gmail;

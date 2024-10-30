@@ -41,7 +41,7 @@ public class RemoveDocumentUseCase implements ThrowableConsumer<RemoveDocumentUs
     }
 
     private void ensureStaffAuthenticationTokenIsValid(@NonNull AuthenticationToken staffAuthenticationToken) throws StaffAuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyToken(staffAuthenticationToken, Staff.class))
+        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(staffAuthenticationToken, Staff.class))
             throw new StaffAuthenticationTokenInvalidException();
     }
 

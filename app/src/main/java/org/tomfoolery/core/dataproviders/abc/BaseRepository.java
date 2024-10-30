@@ -8,7 +8,7 @@ import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.Collection;
 
-public interface BaseRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> {
+public interface BaseRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends ddd.Repository<Entity, EntityId> {
     void save(@NonNull Entity entity);
     void delete(@NonNull EntityId entityId);
 

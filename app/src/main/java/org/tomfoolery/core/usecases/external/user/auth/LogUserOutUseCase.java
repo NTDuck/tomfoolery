@@ -44,7 +44,7 @@ public class LogUserOutUseCase implements ThrowableRunnable {
     }
 
     private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        val userId = this.authenticationTokenGenerator.getUserIdFromToken(authenticationToken);
+        val userId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(authenticationToken);
 
         if (userId == null)
             throw new AuthenticationTokenInvalidException();
@@ -66,7 +66,7 @@ public class LogUserOutUseCase implements ThrowableRunnable {
     }
 
     private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
-        this.authenticationTokenGenerator.invalidateToken(authenticationToken);
+        this.authenticationTokenGenerator.invalidateAuthenticationToken(authenticationToken);
         this.authenticationTokenRepository.delete();
     }
 

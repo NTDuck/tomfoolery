@@ -17,7 +17,7 @@ public class LogUserInPresenter implements Presenter<LogUserInUseCase.Response, 
     public @NonNull ViewModel apply(LogUserInUseCase.@NonNull Response responseModel) {
         val authenticationToken = responseModel.getAuthenticationToken();
 
-        val userClass = this.authenticationTokenGenerator.getUserClassFromToken(authenticationToken);
+        val userClass = this.authenticationTokenGenerator.getUserClassFromAuthenticationToken(authenticationToken);
         assert userClass != null;
 
         return ViewModel.of(userClass);

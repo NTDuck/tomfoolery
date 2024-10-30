@@ -91,7 +91,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         val userClass = userRepository.getUserClass();
         val expiryTimestamp = LocalDateTime.now().plusMinutes(TOKEN_LIFE_IN_MINUTES);
 
-        return this.authenticationTokenGenerator.generateToken(userId, userClass, expiryTimestamp);
+        return this.authenticationTokenGenerator.generateAuthenticationToken(userId, userClass, expiryTimestamp);
     }
 
     private void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {

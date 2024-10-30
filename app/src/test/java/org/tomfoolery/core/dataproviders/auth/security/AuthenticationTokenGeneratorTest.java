@@ -21,15 +21,15 @@ public abstract class AuthenticationTokenGeneratorTest {
         val userClass = Administrator.class;
         val expiryTimestamp = LocalDateTime.now().plusDays(1);
 
-        val token = authenticationTokenGenerator.generateToken(userId, userClass, expiryTimestamp);
+        val token = authenticationTokenGenerator.generateAuthenticationToken(userId, userClass, expiryTimestamp);
 
-        val isTokenValid = authenticationTokenGenerator.verifyToken(token);
+        val isTokenValid = authenticationTokenGenerator.verifyAuthenticationToken(token);
         assertTrue(isTokenValid);
 
-        val extractedUserId = authenticationTokenGenerator.getUserIdFromToken(token);
+        val extractedUserId = authenticationTokenGenerator.getUserIdFromAuthenticationToken(token);
         assertEquals(extractedUserId, userId);
 
-        val extractedUserClass = authenticationTokenGenerator.getUserClassFromToken(token);
+        val extractedUserClass = authenticationTokenGenerator.getUserClassFromAuthenticationToken(token);
         assertEquals(extractedUserClass, userClass);
     }
 }
