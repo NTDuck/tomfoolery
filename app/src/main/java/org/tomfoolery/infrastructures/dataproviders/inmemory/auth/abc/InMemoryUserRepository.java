@@ -4,12 +4,12 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.abc.UserRepository;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class InMemoryUserRepository<User extends ReadonlyUser> extends BaseInMemoryRepository<User, ReadonlyUser.Id> implements UserRepository<User> {
+public abstract class InMemoryUserRepository<User extends BaseUser> extends BaseInMemoryRepository<User, BaseUser.Id> implements UserRepository<User> {
     private final @NonNull Map<String, User> userNameToUserMap = new HashMap<>();
 
     @Override

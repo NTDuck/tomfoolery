@@ -6,7 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
@@ -43,7 +43,7 @@ public class LogUserOutUseCase implements ThrowableRunnable {
         return authenticationToken;
     }
 
-    private <User extends ReadonlyUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
+    private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
         val userId = this.authenticationTokenGenerator.getUserIdFromToken(authenticationToken);
 
         if (userId == null)
@@ -57,7 +57,7 @@ public class LogUserOutUseCase implements ThrowableRunnable {
         return userAndRepository;
     }
 
-    private static <User extends ReadonlyUser> void markUserAsLoggedOut(@NonNull User user) {
+    private static <User extends BaseUser> void markUserAsLoggedOut(@NonNull User user) {
         val audit = user.getAudit();
         audit.setLoggedIn(false);
 

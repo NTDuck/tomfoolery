@@ -4,7 +4,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.abc.UserRepository;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
 
 import java.util.Iterator;
@@ -29,22 +29,22 @@ public class UserRepositories implements Iterable<UserRepository<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    public <User extends ReadonlyUser> @Nullable UserRepository<User> getUserRepositoryByUser(@NonNull User user) {
+    public <User extends BaseUser> @Nullable UserRepository<User> getUserRepositoryByUser(@NonNull User user) {
         return (UserRepository<User>) this.getUserRepositoryByUserClass(user.getClass());
     }
 
     @SuppressWarnings("unchecked")
-    public <User extends ReadonlyUser> @Nullable UserRepository<User> getUserRepositoryByUserClass(@NonNull Class<User> userClass) {
+    public <User extends BaseUser> @Nullable UserRepository<User> getUserRepositoryByUserClass(@NonNull Class<User> userClass) {
         return (UserRepository<User>) this.getUserRepositoryByPredicate(userRepository -> userRepository.getUserClass().equals(userClass));
     }
 
     @SuppressWarnings("unchecked")
-    public <User extends ReadonlyUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUsername(@NonNull String username) {
+    public <User extends BaseUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUsername(@NonNull String username) {
         return (UserAndRepository<User>) this.getUserAndRepositoryByUserFunction(userRepository -> userRepository.getByUsername(username));
     }
 
     @SuppressWarnings("unchecked")
-    public <User extends ReadonlyUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserId(User.@NonNull Id userId) {
+    public <User extends BaseUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserId(User.@NonNull Id userId) {
         return (UserAndRepository<User>) this.getUserAndRepositoryByUserFunction(userRepository -> userRepository.getById(userId));
     }
 
@@ -57,7 +57,7 @@ public class UserRepositories implements Iterable<UserRepository<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    private <User extends ReadonlyUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserFunction(@NonNull Function<@NonNull UserRepository<?>, @Nullable User> userFunction) {
+    private <User extends BaseUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserFunction(@NonNull Function<@NonNull UserRepository<?>, @Nullable User> userFunction) {
         for (val userRepository : this) {
             val user = userFunction.apply(userRepository);
 

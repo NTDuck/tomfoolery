@@ -1,26 +1,27 @@
 package org.tomfoolery.core.domain.auth;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.domain.auth.abc.User;
+import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.domain.documents.Document;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
-@Getter
-public class Patron extends User {
+@Getter @Setter
+public final class Patron extends ModifiableUser {
     private final @NonNull Metadata metadata;
 
-    public Patron(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
-        super(credentials, audit);
-        this.metadata = metadata;
+    public static @NonNull Patron of(@NonNull Id id, @NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
+        return new Patron(id, credentials, audit, metadata);
     }
 
-    public static @NonNull Patron of(@NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
-        return new Patron(credentials, audit, metadata);
+    private Patron(@NonNull Id id, @NonNull Credentials credentials, @NonNull Audit audit, @NonNull Metadata metadata) {
+        super(id, credentials, audit);
+        this.metadata = metadata;
     }
 
     @Override
@@ -35,17 +36,16 @@ public class Patron extends User {
         private @NonNull String gmail;
     }
 
-    @Getter
-    @EqualsAndHashCode(callSuper = true)
-    public static class Audit extends User.Audit {
-        private final @NonNull Collection<Document.Id> borrowedDocumentIds = new HashSet<>();
+    @Getter @Setter
+    public static class Audit extends ModifiableUser.Audit {
+        private final @NonNull Collection<Document.Id> borrowedDocumentIds = Collections.synchronizedSet(new HashSet<>());
 
-        private Audit(@NonNull Timestamps timestamps) {
-            super(timestamps);
+        public static @NonNull Audit of(boolean isLoggedIn, @NonNull Timestamps timestamps) {
+            return new Audit(isLoggedIn, timestamps);
         }
 
-        public static @NonNull Audit of(@NonNull Timestamps timestamps) {
-            return new Audit(timestamps);
+        protected Audit(boolean isLoggedIn, @NonNull Timestamps timestamps) {
+            super(isLoggedIn, timestamps);
         }
     }
 }

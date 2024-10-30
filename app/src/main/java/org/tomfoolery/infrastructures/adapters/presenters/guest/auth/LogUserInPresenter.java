@@ -5,7 +5,7 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.Presenter;
 
@@ -25,6 +25,6 @@ public class LogUserInPresenter implements Presenter<LogUserInUseCase.Response, 
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull Class<? extends ReadonlyUser> userClass;
+        @NonNull Class<? extends BaseUser> userClass;
     }
 }

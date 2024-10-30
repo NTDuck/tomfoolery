@@ -12,7 +12,7 @@ import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSele
 import org.tomfoolery.core.domain.auth.Administrator;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
@@ -29,7 +29,7 @@ public class LogUserInActionView implements ActionView {
 
     private @NonNull Class<? extends SelectionView> nextViewClass = GuestSelectionView.class;
 
-    private final @NonNull Map<Class<? extends ReadonlyUser>, Class<? extends SelectionView>> userClassToViewClassMap = Map.of(
+    private final @NonNull Map<Class<? extends BaseUser>, Class<? extends SelectionView>> userClassToViewClassMap = Map.of(
         Administrator.class, AdministratorSelectionView.class,
         Patron.class, PatronSelectionView.class,
         Staff.class, StaffSelectionView.class

@@ -8,7 +8,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.infrastructures.utils.helpers.Base64Encoder;
 
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGenerator {
     @Override
     @SneakyThrows
-    public @NonNull AuthenticationToken generateToken(ReadonlyUser.@NonNull Id userId, @NonNull Class<? extends ReadonlyUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
+    public @NonNull AuthenticationToken generateToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
         val payload = Payload.of(userId, userClass, expiryTimestamp);
         val serializedPayload = Base64Encoder.encode(payload);
         return AuthenticationToken.of(serializedPayload);
@@ -42,7 +42,7 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
     }
 
     @Override
-    public ReadonlyUser.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token) {
+    public BaseUser.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token) {
         val payload = getPayloadFromAuthenticationToken(token);
 
         return payload != null
@@ -51,7 +51,7 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
     }
 
     @Override
-    public @Nullable Class<? extends ReadonlyUser> getUserClassFromToken(@NonNull AuthenticationToken token) {
+    public @Nullable Class<? extends BaseUser> getUserClassFromToken(@NonNull AuthenticationToken token) {
         val payload = getPayloadFromAuthenticationToken(token);
 
         return payload != null
@@ -72,8 +72,8 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
     @Data
     @AllArgsConstructor(staticName = "of")
     private static class Payload implements Serializable {
-        ReadonlyUser.@NonNull Id userId;
-        Class<? extends ReadonlyUser> userClass;
+        BaseUser.@NonNull Id userId;
+        Class<? extends BaseUser> userClass;
         @NonNull LocalDateTime expiryTimestamp;
     }
 }

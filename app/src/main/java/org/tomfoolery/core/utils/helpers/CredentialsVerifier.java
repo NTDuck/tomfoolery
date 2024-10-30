@@ -4,11 +4,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class CredentialsVerifier {
-    public static <User extends ReadonlyUser> boolean verify(User.@NonNull Credentials credentials) {
+    public static <User extends BaseUser> boolean verify(User.@NonNull Credentials credentials) {
         val username = credentials.getUsername();
         val password = credentials.getPassword();
 

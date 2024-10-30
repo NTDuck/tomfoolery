@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenReposi
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
@@ -49,12 +49,12 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         return Response.of(authenticationToken);
     }
 
-    private static <User extends ReadonlyUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
+    private static <User extends BaseUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
         if (!CredentialsVerifier.verify(credentials))
             throw new CredentialsInvalidException();
     }
 
-    private <User extends ReadonlyUser> UserAndRepository<User> getUserAndRepositoryByUsername(@NonNull String username) throws UserNotFoundException {
+    private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryByUsername(@NonNull String username) throws UserNotFoundException {
         UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUsername(username);
 
         if (userAndRepository == null)
@@ -63,7 +63,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         return userAndRepository;
     }
 
-    private <User extends ReadonlyUser> void ensurePasswordsMatch(@NonNull String password, @NonNull User user) throws PasswordMismatchException {
+    private <User extends BaseUser> void ensurePasswordsMatch(@NonNull String password, @NonNull User user) throws PasswordMismatchException {
         val credentials = user.getCredentials();
         val encodedPassword = credentials.getPassword();
 
@@ -71,7 +71,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
             throw new PasswordMismatchException();
     }
 
-    private static <User extends ReadonlyUser> void markUserAsLoggedIn(@NonNull User user) throws UserAlreadyLoggedInException {
+    private static <User extends BaseUser> void markUserAsLoggedIn(@NonNull User user) throws UserAlreadyLoggedInException {
         val audit = user.getAudit();
 
         if (audit.isLoggedIn())
@@ -83,7 +83,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         timestamps.setLastLogin(LocalDateTime.now());
     }
 
-    private <User extends ReadonlyUser> AuthenticationToken generateAuthenticationToken(@NonNull UserAndRepository<User> userAndRepository) {
+    private <User extends BaseUser> AuthenticationToken generateAuthenticationToken(@NonNull UserAndRepository<User> userAndRepository) {
         val user = userAndRepository.getUser();
         val userRepository = userAndRepository.getUserRepository();
 
@@ -99,7 +99,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
     }
 
     @Value(staticConstructor = "of")
-    public static class Request<User extends ReadonlyUser> {
+    public static class Request<User extends BaseUser> {
         User.@NonNull Credentials userCredentials;
     }
 

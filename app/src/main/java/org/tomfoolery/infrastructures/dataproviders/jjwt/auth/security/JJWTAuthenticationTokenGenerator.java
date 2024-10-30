@@ -7,7 +7,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     private static final @NonNull String EXPIRATION_CLAIM_LABEL = "exp";
 
     @Override
-    public @NonNull AuthenticationToken generateToken(ReadonlyUser.@NonNull Id userId, @NonNull Class<? extends ReadonlyUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
+    public @NonNull AuthenticationToken generateToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
         val serializedPayload = Jwts.builder()
             .claim(USER_ID_CLAIM_LABEL, userId)
             .claim(USER_CLASS_CLAIM_LABEL, userClass)
@@ -47,21 +47,21 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     }
 
     @Override
-    public ReadonlyUser.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token) {
+    public BaseUser.@Nullable Id getUserIdFromToken(@NonNull AuthenticationToken token) {
         val payload = getPayloadFromAuthenticationToken(token);
 
         return payload != null
-             ? (ReadonlyUser.Id) payload.get(USER_ID_CLAIM_LABEL)
+             ? (BaseUser.Id) payload.get(USER_ID_CLAIM_LABEL)
              : null;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public @Nullable Class<? extends ReadonlyUser> getUserClassFromToken(@NonNull AuthenticationToken token) {
+    public @Nullable Class<? extends BaseUser> getUserClassFromToken(@NonNull AuthenticationToken token) {
         val payload = getPayloadFromAuthenticationToken(token);
 
         return payload != null
-             ? (Class<? extends ReadonlyUser>) payload.get(USER_CLASS_CLAIM_LABEL)
+             ? (Class<? extends BaseUser>) payload.get(USER_CLASS_CLAIM_LABEL)
              : null;
     }
 

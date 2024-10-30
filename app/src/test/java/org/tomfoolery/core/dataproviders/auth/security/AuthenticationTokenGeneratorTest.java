@@ -4,7 +4,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.Test;
 import org.tomfoolery.core.domain.auth.Administrator;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ public abstract class AuthenticationTokenGeneratorTest {
     public void testBasic() {
         val authenticationTokenGenerator = getAuthenticationTokenGenerator();
 
-        val userId = ReadonlyUser.Id.of();
+        val userId = BaseUser.Id.of();
         val userClass = Administrator.class;
         val expiryTimestamp = LocalDateTime.now().plusDays(1);
 

@@ -7,7 +7,7 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
-import org.tomfoolery.core.domain.auth.abc.ReadonlyUser;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionController;
 
@@ -27,7 +27,7 @@ public class LogUserInController implements ThrowableFunctionController<LogUserI
         val username = requestObject.getUsername();
         val password = requestObject.getPassword();
 
-        val credentials = ReadonlyUser.Credentials.of(username, password);
+        val credentials = BaseUser.Credentials.of(username, password);
 
         return LogUserInUseCase.Request.of(credentials);
     }
