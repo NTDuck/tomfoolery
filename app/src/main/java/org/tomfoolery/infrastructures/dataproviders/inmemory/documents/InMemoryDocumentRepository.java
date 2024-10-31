@@ -4,7 +4,6 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.utils.dataclasses.SearchCriterion;
 import org.tomfoolery.core.utils.enums.DocumentAttributeName;
 import org.tomfoolery.infrastructures.dataproviders.inmemory.auth.abc.BaseInMemorySearchableRepository;
 

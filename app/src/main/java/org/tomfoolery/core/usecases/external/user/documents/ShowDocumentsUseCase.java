@@ -1,6 +1,5 @@
 package org.tomfoolery.core.usecases.external.user.documents;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -8,45 +7,42 @@ import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.Page;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
-@RequiredArgsConstructor(staticName = "of")
-public class ShowDocumentsUseCase implements ThrowableFunction<ShowDocumentsUseCase.Request, ShowDocumentsUseCase.Response> {
+public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ShowDocumentsUseCase.Request, ShowDocumentsUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
 
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
+    public static @NonNull ShowDocumentsUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
+        return new ShowDocumentsUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    }
+
+    private ShowDocumentsUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
+        super(authenticationTokenGenerator, authenticationTokenRepository);
+        this.documentRepository = documentRepository;
+    }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenInvalidException, AuthenticationTokenNotFoundException {
-        val pageIndex = request.getPageIndex();
-        val pageSize = request.getPageSize();
-
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenInvalidException, AuthenticationTokenNotFoundException, DocumentsNotFoundException {
         val authenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(authenticationToken);
 
+        val pageIndex = request.getPageIndex();
+        val pageSize = request.getPageSize();
+
         val paginatedDocuments = getPaginatedDocuments(pageIndex, pageSize);
+
         return Response.of(paginatedDocuments);
     }
 
-    private @NonNull AuthenticationToken getAuthenticationTokenFromRepository() throws AuthenticationTokenNotFoundException {
-        val authenticationToken = this.authenticationTokenRepository.get();
+    private @NonNull Page<Document> getPaginatedDocuments(int pageIndex, int pageSize) throws DocumentsNotFoundException {
+        val paginatedDocuments = this.documentRepository.showPaginated(pageIndex, pageSize);
 
-        if (authenticationToken == null)
-            throw new AuthenticationTokenNotFoundException();
+        if (paginatedDocuments == null)
+            throw new DocumentsNotFoundException();
 
-        return authenticationToken;
-    }
-
-    private void ensureAuthenticationTokenIsValid(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(authenticationToken))
-            throw new AuthenticationTokenInvalidException();
-    }
-
-    private @NonNull Page<Document> getPaginatedDocuments(int pageIndex, int pageSize) {
-        return this.documentRepository.showPaginated(pageIndex, pageSize);
+        return paginatedDocuments;
     }
 
     @Value(staticConstructor = "of")
@@ -60,6 +56,5 @@ public class ShowDocumentsUseCase implements ThrowableFunction<ShowDocumentsUseC
         @NonNull Page<Document> paginatedDocuments;
     }
 
-    public static class AuthenticationTokenNotFoundException extends Exception {}
-    public static class AuthenticationTokenInvalidException extends Exception {}
+    public static class DocumentsNotFoundException extends Exception {}
 }
