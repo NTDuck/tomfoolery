@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="signup-menu" stylesheets="/css/SignupMenu.css" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"
+      fx:controller="org.tomfoolery.configurations.monolith.gui.view.SignupView">
+    <ImageView styleClass="user-icon">
+        <Image url="/images/user.png" />
+    </ImageView>
+
+    <Pane prefHeight="30" />
+
+    <VBox style="-fx-background-color: transparent; -fx-spacing: 15; -fx-alignment: CENTER" prefHeight="520">
+        <HBox styleClass="name-box">
+            <VBox styleClass="short-textbox">
+                <Label text="First Name" styleClass="textbox-label" />
+                <TextField styleClass="input-field" fx:id="firstNameTextField" />
+            </VBox>
+            <VBox styleClass="short-textbox">
+                <Label text="Last Name" styleClass="textbox-label" />
+                <TextField styleClass="input-field" fx:id="lastNameTextField" />
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="wide-textbox">
+            <Label text="Username" styleClass="textbox-label" />
+            <TextField styleClass="input-field" fx:id="usernameTextField" />
+        </VBox>
+
+        <VBox styleClass="wide-textbox">
+            <Label text="Address" styleClass="textbox-label" />
+            <TextField styleClass="input-field" fx:id="addressTextField" />
+        </VBox>
+
+        <VBox styleClass="wide-textbox">
+            <Label text="Password" styleClass="textbox-label" />
+            <PasswordField styleClass="input-field" fx:id="passwordTextField" />
+        </VBox>
+
+        <VBox styleClass="wide-textbox">
+            <Label text="Retype Password" styleClass="textbox-label" />
+            <PasswordField styleClass="input-field" fx:id="retypePasswordTextField" />
+            <Label visible="false"
+                   style="-fx-label-padding: 0 0 0 10; -fx-text-fill: #BF616A; -fx-font-size: 15;
+        -fx-background-color: transparent; -fx-font-family: 'Segoe UI Variable'"
+                   fx:id="errorMessage" />
+        </VBox>
+    </VBox>
+
+    <Button text="SIGN UP" styleClass="signup-button" fx:id="signupButton" />
+
+    <Pane prefHeight="20" />
+
+    <Button text="Return to Login" styleClass="returntologin-button" fx:id="returnToLoginButton" />
+</VBox>
