@@ -10,7 +10,6 @@ import org.tomfoolery.core.dataproviders.auth.StaffRepository;
 import org.tomfoolery.core.domain.auth.Administrator;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
-import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;

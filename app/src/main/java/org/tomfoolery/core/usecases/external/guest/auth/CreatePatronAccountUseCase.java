@@ -10,8 +10,11 @@ import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
 
+import java.time.Instant;
+import java.util.UUID;
+
 @RequiredArgsConstructor(staticName = "of")
-public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatronAccountUseCase.Request> {
+public final class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatronAccountUseCase.Request> {
     private final @NonNull PatronRepository patronRepository;
     private final @NonNull PasswordEncoder passwordEncoder;
 
@@ -25,6 +28,7 @@ public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatro
         encodePatronPassword(patronCredentials);
 
         val patron = createPatron(patronCredentials, patronMetadata);
+
         this.patronRepository.save(patron);
     }
 
@@ -47,8 +51,11 @@ public class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatro
     }
 
     private static @NonNull Patron createPatron(Patron.@NonNull Credentials patronCredentials, Patron.@NonNull Metadata patronMetadata) {
-        val patronAudit = Patron.Audit.of(Patron.Audit.Timestamps.of());
-        return Patron.of(patronCredentials, patronAudit, patronMetadata);
+        val patronId = Patron.Id.of(UUID.randomUUID());
+        val patronAuditTimestamps = Patron.Audit.Timestamps.of(Instant.now());
+        val patronAudit = Patron.Audit.of(false, patronAuditTimestamps);
+
+        return Patron.of(patronId, patronCredentials, patronAudit, patronMetadata);
     }
 
     @Value(staticConstructor = "of")

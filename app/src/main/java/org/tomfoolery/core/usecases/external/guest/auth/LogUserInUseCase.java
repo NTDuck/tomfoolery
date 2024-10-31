@@ -14,10 +14,10 @@ import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @RequiredArgsConstructor(staticName = "of")
-public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
+public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
     private static final int TOKEN_LIFE_IN_MINUTES = 30;
 
     private final @NonNull UserRepositories userRepositories;
@@ -80,7 +80,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
         audit.setLoggedIn(true);
 
         val timestamps = audit.getTimestamps();
-        timestamps.setLastLogin(LocalDateTime.now());
+        timestamps.setLastLogin(Instant.now());
     }
 
     private <User extends BaseUser> AuthenticationToken generateAuthenticationToken(@NonNull UserAndRepository<User> userAndRepository) {
@@ -89,7 +89,7 @@ public class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Requ
 
         val userId = user.getId();
         val userClass = userRepository.getUserClass();
-        val expiryTimestamp = LocalDateTime.now().plusMinutes(TOKEN_LIFE_IN_MINUTES);
+        val expiryTimestamp = Instant.now().plusSeconds(TOKEN_LIFE_IN_MINUTES * 60);
 
         return this.authenticationTokenGenerator.generateAuthenticationToken(userId, userClass, expiryTimestamp);
     }
