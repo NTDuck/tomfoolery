@@ -86,7 +86,7 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
         return staff;
     }
 
-    private void updateStaffCredentialsAndMarkAsLastModifiedByAdministrator(@NonNull Staff staff, Staff.@NonNull Credentials newStaffCredentials, Administrator.@NonNull Id administratorId) {
+    private static void updateStaffCredentialsAndMarkAsLastModifiedByAdministrator(@NonNull Staff staff, Staff.@NonNull Credentials newStaffCredentials, Administrator.@NonNull Id administratorId) {
         staff.setCredentials(newStaffCredentials);
 
         val staffAudit = staff.getAudit();
