@@ -7,11 +7,15 @@ import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+
+import java.util.Collection;
+import java.util.List;
 
 public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<ReturnDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
@@ -26,6 +30,11 @@ public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implem
 
         this.documentRepository = documentRepository;
         this.patronRepository = patronRepository;
+    }
+
+    @Override
+    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return List.of(Patron.class);
     }
 
     @Override

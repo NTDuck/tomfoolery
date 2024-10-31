@@ -1,9 +1,9 @@
 package org.tomfoolery.core.usecases.external.user.auth;
 
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
@@ -11,14 +11,19 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-@RequiredArgsConstructor(staticName = "of")
-public class LogUserOutUseCase implements ThrowableRunnable {
+public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements ThrowableRunnable {
     private final @NonNull UserRepositories userRepositories;
 
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
+    public static @NonNull LogUserOutUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
+        return new LogUserOutUseCase(authenticationTokenGenerator, authenticationTokenRepository, userRepositories);
+    }
+
+    private LogUserOutUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
+        super(authenticationTokenGenerator, authenticationTokenRepository);
+        this.userRepositories = userRepositories;
+    }
 
     @Override
     public void run() throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException {
@@ -32,15 +37,6 @@ public class LogUserOutUseCase implements ThrowableRunnable {
         userRepository.save(user);
 
         invalidateAuthenticationToken(authenticationToken);
-    }
-
-    private @NonNull AuthenticationToken getAuthenticationTokenFromRepository() throws AuthenticationTokenNotFoundException {
-        val authenticationToken = this.authenticationTokenRepository.get();
-
-        if (authenticationToken == null)
-            throw new AuthenticationTokenNotFoundException();
-
-        return authenticationToken;
     }
 
     private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
@@ -58,18 +54,15 @@ public class LogUserOutUseCase implements ThrowableRunnable {
     }
 
     private static <User extends BaseUser> void markUserAsLoggedOut(@NonNull User user) {
-        val audit = user.getAudit();
-        audit.setLoggedIn(false);
+        val userAudit = user.getAudit();
+        val userAuditTimestamps = userAudit.getTimestamps();
 
-        val timestamps = audit.getTimestamps();
-        timestamps.setLastLogout(LocalDateTime.now());
+        userAudit.setLoggedIn(false);
+        userAuditTimestamps.setLastLogout(Instant.now());
     }
 
     private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         this.authenticationTokenGenerator.invalidateAuthenticationToken(authenticationToken);
         this.authenticationTokenRepository.delete();
     }
-
-    public static class AuthenticationTokenNotFoundException extends Exception {}
-    public static class AuthenticationTokenInvalidException extends Exception {}
 }

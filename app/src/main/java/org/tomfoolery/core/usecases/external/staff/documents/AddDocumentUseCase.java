@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
@@ -13,6 +14,8 @@ import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 public final class AddDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<AddDocumentUseCase.Request, AddDocumentUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
@@ -24,6 +27,11 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
     private AddDocumentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
         this.documentRepository = documentRepository;
+    }
+
+    @Override
+    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return List.of(Staff.class);
     }
 
     @Override

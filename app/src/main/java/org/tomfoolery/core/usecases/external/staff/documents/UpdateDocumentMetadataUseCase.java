@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
@@ -13,6 +14,8 @@ import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<UpdateDocumentMetadataUseCase.Request, UpdateDocumentMetadataUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
@@ -26,6 +29,11 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
         this.documentRepository = documentRepository;
     }
 
+    @Override
+    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return List.of(Staff.class);
+    }
+    
     @Override
     public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = getAuthenticationTokenFromRepository();
