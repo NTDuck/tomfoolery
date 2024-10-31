@@ -1,6 +1,5 @@
 package org.tomfoolery.core.usecases.external.patron.documents;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -10,53 +9,46 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenReposi
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
-@RequiredArgsConstructor(staticName = "of")
-public class ReturnDocumentUseCase implements ThrowableConsumer<ReturnDocumentUseCase.Request> {
+public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<ReturnDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
-    
+    public static @NonNull ReturnDocumentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
+        return new ReturnDocumentUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    }
+
+    private ReturnDocumentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
+        super(authenticationTokenGenerator, authenticationTokenRepository);
+
+        this.documentRepository = documentRepository;
+        this.patronRepository = patronRepository;
+    }
+
     @Override
-    public void accept(@NonNull Request request) throws PatronAuthenticationTokenNotFoundException, PatronAuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentNotBorrowedException {
-        val documentId = request.getDocumentId();
-
-        val patronAuthenticationToken = getPatronAuthenticationTokenFromRepository();
-        ensurePatronAuthenticationTokenIsValid(patronAuthenticationToken);
-
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentNotBorrowedException {
+        val patronAuthenticationToken = getAuthenticationTokenFromRepository();
+        ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
+
+        val documentId = request.getDocumentId();
         val document = getDocumentFromId(documentId);
 
-        ensureDocumentIsBorrowed(patron, documentId);
+        ensureDocumentIsAlreadyBorrowed(patron, documentId);
         markDocumentAsReturnedByPatron(patron, document);
 
         this.documentRepository.save(document);
         this.patronRepository.save(patron);
     }
 
-    private @NonNull AuthenticationToken getPatronAuthenticationTokenFromRepository() throws PatronAuthenticationTokenNotFoundException {
-        val patronAuthenticationToken = this.authenticationTokenRepository.get();
-
-        if (patronAuthenticationToken == null)
-            throw new PatronAuthenticationTokenNotFoundException();
-
-        return patronAuthenticationToken;
-    }
-
-    private void ensurePatronAuthenticationTokenIsValid(@NonNull AuthenticationToken patronAuthenticationToken) throws PatronAuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(patronAuthenticationToken, Patron.class))
-            throw new PatronAuthenticationTokenInvalidException();
-    }
-
-    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws PatronAuthenticationTokenInvalidException, PatronNotFoundException {
+    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
         val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
         if (patronId == null)
-            throw new PatronAuthenticationTokenInvalidException();
+            throw new AuthenticationTokenInvalidException();
 
         val patron = patronRepository.getById(patronId);
 
@@ -75,7 +67,7 @@ public class ReturnDocumentUseCase implements ThrowableConsumer<ReturnDocumentUs
         return document;
     }
 
-    private static void ensureDocumentIsBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentNotBorrowedException {
+    private static void ensureDocumentIsAlreadyBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentNotBorrowedException {
         val patronAudit = patron.getAudit();
         val borrowedDocumentIdsOfPatron = patronAudit.getBorrowedDocumentIds();
 
@@ -101,8 +93,6 @@ public class ReturnDocumentUseCase implements ThrowableConsumer<ReturnDocumentUs
         Document.@NonNull Id documentId;
     }
 
-    public static class PatronAuthenticationTokenNotFoundException extends Exception {}
-    public static class PatronAuthenticationTokenInvalidException extends Exception {}
     public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
     public static class DocumentNotBorrowedException extends Exception {}
