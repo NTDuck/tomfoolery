@@ -42,13 +42,6 @@ public final class Document implements ddd.Entity<Document.Id> {
 
         private @NonNull Year publishedYear;
         private @NonNull String publisher;
-
-        private final @NonNull QRCode qrCode;
-
-        @Data(staticConstructor = "of")
-        public static class QRCode implements ddd.ValueObject {
-            private transient byte @NonNull [] bytes;
-        }
     }
 
     @Data(staticConstructor = "of")
@@ -66,5 +59,10 @@ public final class Document implements ddd.Entity<Document.Id> {
             private final @NonNull Instant created;
             private @Nullable Instant lastModified;
         }
+    }
+
+    @Value(staticConstructor = "of")
+    public static class QrCode implements ddd.ValueObject {
+        byte @NonNull [] buffer;
     }
 }
