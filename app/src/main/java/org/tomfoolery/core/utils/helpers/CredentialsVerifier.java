@@ -8,7 +8,7 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class CredentialsVerifier {
-    public static <User extends BaseUser> boolean verify(User.@NonNull Credentials credentials) {
+    public static <User extends BaseUser> boolean verifyCredentials(User.@NonNull Credentials credentials) {
         val username = credentials.getUsername();
         val password = credentials.getPassword();
 
@@ -16,11 +16,11 @@ public final class CredentialsVerifier {
             && verifyPassword(password);
     }
 
-    private static boolean verifyUsername(@NonNull String username) {
+    public static boolean verifyUsername(@NonNull String username) {
         return username.matches("^(?![0-9])(?!.*_$)[a-z0-9_]{8,16}$");
     }
 
-    private static boolean verifyPassword(@NonNull String password) {
+    public static boolean verifyPassword(@NonNull String password) {
         return password.matches("^\\w{8,32}$");
     }
 }

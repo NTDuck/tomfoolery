@@ -33,7 +33,7 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
     }
 
     private static void ensurePatronCredentialsAreValid(Patron.@NonNull Credentials patronCredentials) throws PatronCredentialsInvalidException {
-        if (!CredentialsVerifier.verify(patronCredentials))
+        if (!CredentialsVerifier.verifyCredentials(patronCredentials))
             throw new PatronCredentialsInvalidException();
     }
 

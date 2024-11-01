@@ -67,7 +67,7 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
     }
 
     private static void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials staffCredentials) throws StaffCredentialsInvalidException {
-        if (!CredentialsVerifier.verify(staffCredentials))
+        if (!CredentialsVerifier.verifyCredentials(staffCredentials))
             throw new StaffCredentialsInvalidException();
     }
 

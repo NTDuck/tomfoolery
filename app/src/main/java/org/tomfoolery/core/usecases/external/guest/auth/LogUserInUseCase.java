@@ -50,7 +50,7 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
     }
 
     private static <User extends BaseUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
-        if (!CredentialsVerifier.verify(credentials))
+        if (!CredentialsVerifier.verifyCredentials(credentials))
             throw new CredentialsInvalidException();
     }
 
@@ -72,15 +72,15 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
     }
 
     private static <User extends BaseUser> void markUserAsLoggedIn(@NonNull User user) throws UserAlreadyLoggedInException {
-        val audit = user.getAudit();
+        val userAudit = user.getAudit();
 
-        if (audit.isLoggedIn())
+        if (userAudit.isLoggedIn())
             throw new UserAlreadyLoggedInException();
 
-        audit.setLoggedIn(true);
+        userAudit.setLoggedIn(true);
 
-        val timestamps = audit.getTimestamps();
-        timestamps.setLastLogin(Instant.now());
+        val userAuditTimestamps = userAudit.getTimestamps();
+        userAuditTimestamps.setLastLogin(Instant.now());
     }
 
     private <User extends BaseUser> AuthenticationToken generateAuthenticationToken(@NonNull UserAndRepository<User> userAndRepository) {
