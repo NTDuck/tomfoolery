@@ -11,17 +11,17 @@ public class InMemoryAuthenticationTokenRepository implements AuthenticationToke
     private @Nullable AuthenticationToken authenticationToken = null;
 
     @Override
-    public void save(@NonNull AuthenticationToken token) {
-        this.authenticationToken = token;
+    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        this.authenticationToken = authenticationToken;
     }
 
     @Override
-    public void delete() {
+    public void deleteAuthenticationToken() {
         this.authenticationToken = null;
     }
 
     @Override
-    public @Nullable AuthenticationToken get() {
+    public @Nullable AuthenticationToken getAuthenticationToken() {
         return this.authenticationToken;
     }
 }

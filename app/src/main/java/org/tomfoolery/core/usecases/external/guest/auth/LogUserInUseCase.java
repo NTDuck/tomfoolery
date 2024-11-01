@@ -67,7 +67,7 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
         val credentials = user.getCredentials();
         val encodedPassword = credentials.getPassword();
 
-        if (!this.passwordEncoder.verify(password, encodedPassword))
+        if (!this.passwordEncoder.verifyPassword(password, encodedPassword))
             throw new PasswordMismatchException();
     }
 
@@ -95,7 +95,7 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
     }
 
     private void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
-        this.authenticationTokenRepository.save(authenticationToken);
+        this.authenticationTokenRepository.saveAuthenticationToken(authenticationToken);
     }
 
     @Value(staticConstructor = "of")

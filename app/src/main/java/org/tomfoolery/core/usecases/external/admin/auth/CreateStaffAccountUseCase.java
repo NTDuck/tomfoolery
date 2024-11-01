@@ -80,7 +80,7 @@ public final class CreateStaffAccountUseCase extends AuthenticatedUserUseCase im
 
     private void encodeStaffPassword(Staff.@NonNull Credentials staffCredentials) {
         val password = staffCredentials.getPassword();
-        val encodedPassword = this.passwordEncoder.encode(password);
+        val encodedPassword = this.passwordEncoder.encodePassword(password);
         staffCredentials.setPassword(encodedPassword);
     }
 

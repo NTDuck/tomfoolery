@@ -7,7 +7,7 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenReposi
 
 public class SecretStoreAuthenticationTokenRepositoryTest extends AuthenticationTokenRepositoryTest {
     @Override
-    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenRepository() {
+    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenAuthenticationTokenRepository() {
         return SecretStoreAuthenticationTokenRepository.of();
     }
 

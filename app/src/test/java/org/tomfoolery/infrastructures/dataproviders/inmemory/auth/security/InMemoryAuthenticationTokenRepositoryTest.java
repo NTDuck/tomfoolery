@@ -9,7 +9,7 @@ import static org.testng.Assert.*;
 
 public class InMemoryAuthenticationTokenRepositoryTest extends AuthenticationTokenRepositoryTest {
     @Override
-    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenRepository() {
+    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenAuthenticationTokenRepository() {
         return InMemoryAuthenticationTokenRepository.of();
     }
 

@@ -7,8 +7,7 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenReposi
 import static org.testng.Assert.*;
 
 public class KeyStoreAuthenticationTokenRepositoryTest extends AuthenticationTokenRepositoryTest {
-    @Override
-    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenRepository() {
+    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenAuthenticationTokenRepository() {
         return KeyStoreAuthenticationTokenRepository.of();
     }
 }

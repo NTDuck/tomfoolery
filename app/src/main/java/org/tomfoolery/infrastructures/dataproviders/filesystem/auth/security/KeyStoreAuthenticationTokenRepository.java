@@ -26,7 +26,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
     public static @NonNull KeyStoreAuthenticationTokenRepository of() {
         return new KeyStoreAuthenticationTokenRepository();
     }
-    
+
     @SneakyThrows
     private KeyStoreAuthenticationTokenRepository() {
         val passwordCharArray = getPasswordCharArray();

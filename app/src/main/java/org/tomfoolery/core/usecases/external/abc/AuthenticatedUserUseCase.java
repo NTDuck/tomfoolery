@@ -24,7 +24,7 @@ public abstract class AuthenticatedUserUseCase {
     }
 
     protected @NonNull AuthenticationToken getAuthenticationTokenFromRepository() throws AuthenticationTokenNotFoundException {
-        val authenticationToken = this.authenticationTokenRepository.get();
+        val authenticationToken = this.authenticationTokenRepository.getAuthenticationToken();
 
         if (authenticationToken == null)
             throw new AuthenticationTokenNotFoundException();

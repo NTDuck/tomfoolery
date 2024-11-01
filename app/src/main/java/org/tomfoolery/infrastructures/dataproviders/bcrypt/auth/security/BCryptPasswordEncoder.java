@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
 public class BCryptPasswordEncoder implements PasswordEncoder {
     private static final BCrypt.@NonNull Hasher encoder = BCrypt.withDefaults();
     private static final BCrypt.@NonNull Verifyer verifyer = BCrypt.verifyer();
-    
+
     private static final int COST = 12;
 
     @Override

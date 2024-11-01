@@ -46,7 +46,7 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
 
     private void encodePatronPassword(Patron.@NonNull Credentials patronCredentials) {
         val password = patronCredentials.getPassword();
-        val encodedPassword = this.passwordEncoder.encode(password);
+        val encodedPassword = this.passwordEncoder.encodePassword(password);
         patronCredentials.setPassword(encodedPassword);
     }
 

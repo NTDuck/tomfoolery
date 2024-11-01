@@ -63,6 +63,6 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
 
     private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         this.authenticationTokenGenerator.invalidateAuthenticationToken(authenticationToken);
-        this.authenticationTokenRepository.delete();
+        this.authenticationTokenRepository.deleteAuthenticationToken();
     }
 }

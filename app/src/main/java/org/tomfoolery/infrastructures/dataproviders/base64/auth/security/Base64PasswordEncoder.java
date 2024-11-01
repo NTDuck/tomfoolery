@@ -10,13 +10,13 @@ import org.tomfoolery.infrastructures.utils.helpers.Base64Encoder;
 public class Base64PasswordEncoder implements PasswordEncoder {
     @Override
     @SneakyThrows
-    public @NonNull String encode(@NonNull String password) {
+    public @NonNull String encodePassword(@NonNull String password) {
         return Base64Encoder.encode(password);
     }
 
     @Override
     @SneakyThrows
-    public boolean verify(@NonNull String password, @NonNull String encodedPassword) {
-        return this.encode(password).equals(encodedPassword);
+    public boolean verifyPassword(@NonNull String password, @NonNull String encodedPassword) {
+        return this.encodePassword(password).equals(encodedPassword);
     }
 }
