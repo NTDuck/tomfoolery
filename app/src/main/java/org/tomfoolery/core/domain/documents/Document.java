@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.dataclasses.AverageRating;
 
 import java.time.Instant;
 import java.time.Year;
@@ -56,6 +57,7 @@ public final class Document implements ddd.Entity<Document.Id> {
         private Staff.@Nullable Id lastModifiedByStaffId;
 
         private final @NonNull Collection<Patron.Id> borrowingPatronIds = new HashSet<>();
+        private final @NonNull AverageRating rating;
 
         private final @NonNull Timestamps timestamps;
 

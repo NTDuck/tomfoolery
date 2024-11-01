@@ -10,7 +10,9 @@ import org.tomfoolery.core.utils.contracts.ddd.ddd;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 @Getter @Setter
 public final class Patron extends ModifiableUser {
@@ -40,6 +42,7 @@ public final class Patron extends ModifiableUser {
     @Getter @Setter
     public static class Audit extends ModifiableUser.Audit {
         private final @NonNull Collection<Document.Id> borrowedDocumentIds = Collections.synchronizedSet(new HashSet<>());
+        private final @NonNull Map<Document.Id, Double> ratingValues = Collections.synchronizedMap(new HashMap<>());
 
         public static @NonNull Audit of(boolean isLoggedIn, @NonNull Timestamps timestamps) {
             return new Audit(isLoggedIn, timestamps);

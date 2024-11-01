@@ -51,7 +51,7 @@ public final class UpdatePatronMetadataUseCase extends AuthenticatedUserUseCase 
         if (patronId == null)
             throw new AuthenticationTokenInvalidException();
 
-        val patron = patronRepository.getById(patronId);
+        val patron = this.patronRepository.getById(patronId);
 
         if (patron == null)
             throw new PatronNotFoundException();
