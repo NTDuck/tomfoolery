@@ -31,7 +31,7 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
     protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
         return List.of(Staff.class);
     }
-    
+
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = getAuthenticationTokenFromRepository();

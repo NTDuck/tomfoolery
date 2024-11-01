@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenera
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @NoArgsConstructor(staticName = "of")
 public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGenerator {
@@ -19,13 +19,13 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     private static final @NonNull String EXPIRATION_CLAIM_LABEL = "exp";
 
     @Override
-    public @NonNull AuthenticationToken generateToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
+    public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val serializedPayload = Jwts.builder()
-            .claim(USER_ID_CLAIM_LABEL, userId)
-            .claim(USER_CLASS_CLAIM_LABEL, userClass)
-            .claim(EXPIRATION_CLAIM_LABEL, expiryTimestamp)
+                .claim(USER_ID_CLAIM_LABEL, userId)
+                .claim(USER_CLASS_CLAIM_LABEL, userClass)
+                .claim(EXPIRATION_CLAIM_LABEL, expiryTimestamp)
 
-            .compact();
+                .compact();
 
         return AuthenticationToken.of(serializedPayload);
     }
@@ -42,8 +42,8 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
         if (payload == null)
             return false;
 
-        val tokenExpiryTimestamp = (LocalDateTime) payload.get(EXPIRATION_CLAIM_LABEL);
-        return LocalDateTime.now().isBefore(tokenExpiryTimestamp);
+        val tokenExpiryTimestamp = (Instant) payload.get(EXPIRATION_CLAIM_LABEL);
+        return Instant.now().isBefore(tokenExpiryTimestamp);
     }
 
     @Override

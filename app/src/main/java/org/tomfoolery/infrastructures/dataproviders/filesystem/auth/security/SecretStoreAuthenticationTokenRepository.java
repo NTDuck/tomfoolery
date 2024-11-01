@@ -19,6 +19,10 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
 
     private final @NonNull SecretStore<StoredToken> secretStore;
 
+    public static @NonNull SecretStoreAuthenticationTokenRepository of() {
+        return new SecretStoreAuthenticationTokenRepository();
+    }
+
     private SecretStoreAuthenticationTokenRepository() {
         this.secretStore = StorageProvider.getTokenStorage(PERSIST, SECURE_OPTION);
 
@@ -26,24 +30,20 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
             throw new RuntimeException("No secure credentials storage available");
     }
 
-    public static @NonNull SecretStoreAuthenticationTokenRepository of() {
-        return new SecretStoreAuthenticationTokenRepository();
-    }
-
     @Override
-    public void save(@NonNull AuthenticationToken authenticationToken) {
+    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         val storedToken = getStoredTokenFromAuthenticationToken(authenticationToken);
         this.secretStore.add(ENTRY_ALIAS, storedToken);
         storedToken.clear();
     }
 
     @Override
-    public void delete() {
+    public void deleteAuthenticationToken() {
         this.secretStore.delete(ENTRY_ALIAS);
     }
 
     @Override
-    public @Nullable AuthenticationToken get() {
+    public @Nullable AuthenticationToken getAuthenticationToken() {
         val storedToken = this.secretStore.get(ENTRY_ALIAS);
 
         if (storedToken == null)

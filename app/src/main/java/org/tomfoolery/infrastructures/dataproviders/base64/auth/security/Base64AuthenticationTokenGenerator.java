@@ -13,13 +13,13 @@ import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.infrastructures.utils.helpers.Base64Encoder;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @NoArgsConstructor(staticName = "of")
 public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGenerator {
     @Override
     @SneakyThrows
-    public @NonNull AuthenticationToken generateToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull LocalDateTime expiryTimestamp) {
+    public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val payload = Payload.of(userId, userClass, expiryTimestamp);
         val serializedPayload = Base64Encoder.encode(payload);
         return AuthenticationToken.of(serializedPayload);
@@ -38,7 +38,7 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
             return false;
 
         val tokenExpiryTimestamp = payload.getExpiryTimestamp();
-        return LocalDateTime.now().isBefore(tokenExpiryTimestamp);
+        return Instant.now().isBefore(tokenExpiryTimestamp);
     }
 
     @Override
@@ -74,6 +74,6 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
     private static class Payload implements Serializable {
         BaseUser.@NonNull Id userId;
         Class<? extends BaseUser> userClass;
-        @NonNull LocalDateTime expiryTimestamp;
+        @NonNull Instant expiryTimestamp;
     }
 }

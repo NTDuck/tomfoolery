@@ -33,7 +33,7 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
     protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
         return List.of(Staff.class);
     }
-    
+
     @Override
     public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = getAuthenticationTokenFromRepository();

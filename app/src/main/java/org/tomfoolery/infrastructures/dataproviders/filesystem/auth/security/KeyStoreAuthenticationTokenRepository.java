@@ -23,6 +23,10 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     private final @NonNull KeyStore keyStore;
 
+    public static @NonNull KeyStoreAuthenticationTokenRepository of() {
+        return new KeyStoreAuthenticationTokenRepository();
+    }
+    
     @SneakyThrows
     private KeyStoreAuthenticationTokenRepository() {
         val passwordCharArray = getPasswordCharArray();
@@ -35,14 +39,10 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
         }
     }
 
-    public static @NonNull KeyStoreAuthenticationTokenRepository of() {
-        return new KeyStoreAuthenticationTokenRepository();
-    }
-
     @Override
     @SneakyThrows
-    public void save(@NonNull AuthenticationToken token) {
-        val secretKeyEntry = getSecretKeyEntryFromToken(token);
+    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        val secretKeyEntry = getSecretKeyEntryFromToken(authenticationToken);
         val protectionParameter = getProtectionParameter();
 
         this.keyStore.setEntry(KEYSTORE_ENTRY_ALIAS, secretKeyEntry, protectionParameter);
@@ -52,7 +52,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public void delete() {
+    public void deleteAuthenticationToken() {
         this.keyStore.deleteEntry(KEYSTORE_ENTRY_ALIAS);
 
         saveToFile();
@@ -60,7 +60,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public @Nullable AuthenticationToken get() {
+    public @Nullable AuthenticationToken getAuthenticationToken() {
         val protectionParameter = getProtectionParameter();
         val entry = (KeyStore.SecretKeyEntry) this.keyStore.getEntry(KEYSTORE_ENTRY_ALIAS, protectionParameter);
 
@@ -72,7 +72,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public boolean contains() {
+    public boolean containsAuthenticationToken() {
         return this.keyStore.containsAlias(KEYSTORE_ENTRY_ALIAS);
     }
 

@@ -5,12 +5,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 public interface AuthenticationTokenRepository {
-    void save(@NonNull AuthenticationToken token);
-    void delete();
+    void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken);
+    void deleteAuthenticationToken();
     
-    @Nullable AuthenticationToken get();
+    @Nullable AuthenticationToken getAuthenticationToken();
 
-    default boolean contains() {
-        return this.get() != null;
+    default boolean containsAuthenticationToken() {
+        return this.getAuthenticationToken() != null;
     }
 }
