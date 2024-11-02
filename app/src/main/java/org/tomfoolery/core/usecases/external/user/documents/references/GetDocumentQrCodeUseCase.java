@@ -7,7 +7,6 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenera
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.documents.references.DocumentQrCodeGenerator;
-import org.tomfoolery.core.dataproviders.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
@@ -15,18 +14,16 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<GetDocumentQrCodeUseCase.Request, GetDocumentQrCodeUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator;
-    private final @NonNull DocumentUrlGenerator documentUrlGenerator;
 
-    public static @NonNull GetDocumentQrCodeUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator) {
-        return new GetDocumentQrCodeUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, documentQrCodeGenerator, documentUrlGenerator);
+    public static @NonNull GetDocumentQrCodeUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator) {
+        return new GetDocumentQrCodeUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, documentQrCodeGenerator);
     }
 
-    private GetDocumentQrCodeUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator) {
+    private GetDocumentQrCodeUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
         this.documentQrCodeGenerator = documentQrCodeGenerator;
-        this.documentUrlGenerator = documentUrlGenerator;
     }
 
     @Override
@@ -37,8 +34,7 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
         val documentId = request.getDocumentId();
         val document = getDocumentFromId(documentId);
 
-        val documentUrl = this.documentUrlGenerator.generateUrl(document);
-        val documentQrCode = this.documentQrCodeGenerator.generateQrCodeFromUrl(documentUrl);
+        val documentQrCode = this.documentQrCodeGenerator.generateQrCodeFromDocument(document);
 
         return Response.of(documentQrCode);
     }
