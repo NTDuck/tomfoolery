@@ -2,9 +2,8 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contracts.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contracts.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.ScannerManager;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.ActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
 import org.tomfoolery.core.dataproviders.auth.StaffRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;

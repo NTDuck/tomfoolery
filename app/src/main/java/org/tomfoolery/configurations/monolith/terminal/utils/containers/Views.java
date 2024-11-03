@@ -3,7 +3,7 @@ package org.tomfoolery.configurations.monolith.terminal.utils.containers;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.configurations.monolith.terminal.utils.contracts.View;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.View;
 
 import java.util.HashMap;
 import java.util.Map;

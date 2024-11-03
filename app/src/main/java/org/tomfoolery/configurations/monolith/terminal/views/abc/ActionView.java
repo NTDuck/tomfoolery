@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.terminal.utils.contracts;
+package org.tomfoolery.configurations.monolith.terminal.views.abc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
