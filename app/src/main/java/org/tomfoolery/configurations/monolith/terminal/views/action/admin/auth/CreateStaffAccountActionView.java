@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.auth.StaffRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
-import org.tomfoolery.core.usecases.external.admin.auth.CreateStaffAccountUseCase;
+import org.tomfoolery.core.usecases.admin.auth.CreateStaffAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.CreateStaffAccountController;
 
 public class CreateStaffAccountActionView implements ActionView {

@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenReposi
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
 import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.usecases.external.admin.auth.CreateStaffAccountUseCase;
+import org.tomfoolery.core.usecases.admin.auth.CreateStaffAccountUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableConsumerController;
 
 @RequiredArgsConstructor(staticName = "of")

@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.usecases.external.patron.documents.BorrowDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.BorrowDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.BorrowDocumentController;
 
 public class BorrowDocumentActionView implements ActionView {

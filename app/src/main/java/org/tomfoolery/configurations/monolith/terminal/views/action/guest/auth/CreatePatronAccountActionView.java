@@ -8,7 +8,7 @@ import org.tomfoolery.configurations.monolith.terminal.utils.helpers.ScannerMana
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
-import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
 public class CreatePatronAccountActionView implements ActionView {

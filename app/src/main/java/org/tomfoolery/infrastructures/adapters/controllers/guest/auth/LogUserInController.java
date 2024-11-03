@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenReposi
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
-import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
+import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionController;
 
 public class LogUserInController implements ThrowableFunctionController<LogUserInController.RequestObject, LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {

@@ -6,7 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
 import org.tomfoolery.core.domain.auth.Patron;
-import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableConsumerController;
 
 public class CreatePatronAccountController implements ThrowableConsumerController<CreatePatronAccountController.RequestObject, CreatePatronAccountUseCase.Request> {

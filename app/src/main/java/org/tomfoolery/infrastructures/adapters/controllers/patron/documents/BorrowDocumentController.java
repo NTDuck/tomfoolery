@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.usecases.external.patron.documents.BorrowDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.BorrowDocumentUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionController;
 
 public class BorrowDocumentController implements ThrowableFunctionController<BorrowDocumentController.RequestObject, BorrowDocumentUseCase.Request, BorrowDocumentUseCase.Response> {

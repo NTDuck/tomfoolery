@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.usecases.external.patron.documents.ReturnDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.ReturnDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReturnDocumentController;
 
 public class ReturnDocumentActionView implements ActionView {
