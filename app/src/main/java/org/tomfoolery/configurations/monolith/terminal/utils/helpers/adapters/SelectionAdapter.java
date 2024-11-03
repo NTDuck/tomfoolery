@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.terminal.infrastructures.adapters.selection;
+package org.tomfoolery.configurations.monolith.terminal.utils.helpers.adapters;
 
 import lombok.NoArgsConstructor;
 import lombok.Value;

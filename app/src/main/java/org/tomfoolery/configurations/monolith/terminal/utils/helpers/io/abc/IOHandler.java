@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.terminal.infrastructures.dataproviders.abc;
+package org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 

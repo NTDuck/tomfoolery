@@ -1,8 +1,8 @@
 package org.tomfoolery.configurations.monolith.terminal.views.selection;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.infrastructures.adapters.selection.SelectionAdapter;
-import org.tomfoolery.configurations.monolith.terminal.infrastructures.dataproviders.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.adapters.SelectionAdapter;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth.DeletePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth.UpdatePatronMetadataActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth.UpdatePatronPasswordActionView;

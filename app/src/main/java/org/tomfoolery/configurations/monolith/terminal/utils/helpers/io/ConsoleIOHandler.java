@@ -1,11 +1,11 @@
-package org.tomfoolery.configurations.monolith.terminal.infrastructures.dataproviders;
+package org.tomfoolery.configurations.monolith.terminal.utils.helpers.io;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.configurations.monolith.terminal.infrastructures.dataproviders.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
 
 import java.io.Console;
 
