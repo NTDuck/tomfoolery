@@ -34,6 +34,10 @@ bin/
 .vscode
 .idea
 
+# Credentials
+src/main/resources/credentials.json
+*.json
+
 !gradle-wrapper.jar
 
 # KEYSTORE_NAME of KeyStoreAuthenticationTokenRepository
