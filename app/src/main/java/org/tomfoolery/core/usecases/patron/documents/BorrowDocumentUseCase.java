@@ -52,7 +52,8 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
         this.documentRepository.save(document);
         this.patronRepository.save(patron);
 
-        return Response.of(document);
+        val documentPreview = Document.Preview.of(document);
+        return Response.of(documentPreview);
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
@@ -106,7 +107,7 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Document document;
+        Document.@NonNull Preview documentPreview;
     }
 
     public static class PatronNotFoundException extends Exception {}

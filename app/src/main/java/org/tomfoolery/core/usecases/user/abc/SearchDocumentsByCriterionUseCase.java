@@ -32,8 +32,9 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
         val pageSize = request.getPageSize();
 
         val paginatedDocuments = getPaginatedDocuments(criterion, pageIndex, pageSize);
+        val paginatedDocumentPreviews = Page.of(paginatedDocuments, Document.Preview::of);
 
-        return Response.of(paginatedDocuments);
+        return Response.of(paginatedDocumentPreviews);
     }
 
     private @NonNull Page<Document> getPaginatedDocuments(@NonNull String criterion, int pageIndex, int pageSize) throws DocumentsNotFoundException {
@@ -54,7 +55,7 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document> paginatedDocuments;
+        @NonNull Page<Document.Preview> paginatedDocumentPreviews;
     }
 
     public static class DocumentsNotFoundException extends Exception {}

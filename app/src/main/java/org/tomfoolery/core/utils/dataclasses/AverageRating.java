@@ -3,16 +3,29 @@ package org.tomfoolery.core.utils.dataclasses;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-@Data(staticConstructor = "of")
+@Data
 public class AverageRating {
     public static final double MIN_RATING_VALUE = 0;
     public static final double MAX_RATING_VALUE = 5;
 
-    private double ratingValue = MIN_RATING_VALUE;
+    private double ratingValue;
 
     @Setter(value = AccessLevel.NONE)
     private int ratingCount = 0;
+
+    public static @NonNull AverageRating of() {
+        return new AverageRating(MIN_RATING_VALUE);
+    }
+
+    public static @NonNull AverageRating of(double ratingValue) {
+        return new AverageRating(ratingValue);
+    }
+
+    private AverageRating(double ratingValue) {
+        this.ratingValue = ratingValue;
+    }
 
     public static boolean isRatingValueValid(double ratingValue) {
         return ratingValue >= MIN_RATING_VALUE

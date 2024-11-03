@@ -48,7 +48,9 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
         updateDocumentMetadataAndMarkAsLastModifiedByStaff(document, newDocumentMetadata, staffId);
 
         this.documentRepository.save(document);
-        return Response.of(documentId);
+
+        val documentPreview = Document.Preview.of(document);
+        return Response.of(documentPreview);
     }
 
     private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
@@ -87,7 +89,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
 
     @Value(staticConstructor = "of")
     public static class Response {
-        Document.@NonNull Id documentId;
+        Document.@NonNull Preview documentPreview;
     }
 
     public static class DocumentNotFoundException extends Exception {}

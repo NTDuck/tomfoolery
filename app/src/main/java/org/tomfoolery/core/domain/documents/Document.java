@@ -1,7 +1,6 @@
 package org.tomfoolery.core.domain.documents;
 
-import lombok.Data;
-import lombok.Value;
+import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.auth.Patron;
@@ -42,6 +41,13 @@ public final class Document implements ddd.Entity<Document.Id> {
 
         private @NonNull Year publishedYear;
         private @NonNull String publisher;
+
+        private @NonNull CoverImage coverImage;
+
+        @Data(staticConstructor = "of")
+        public static class CoverImage implements ddd.ValueObject {
+            private byte @NonNull [] buffer;
+        }
     }
 
     @Data(staticConstructor = "of")
@@ -64,5 +70,35 @@ public final class Document implements ddd.Entity<Document.Id> {
     @Value(staticConstructor = "of")
     public static class QrCode implements ddd.ValueObject {
         byte @NonNull [] buffer;
+    }
+
+    @Value
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Preview implements ddd.Entity<Document.Id> {
+        @NonNull Id id;
+        @NonNull Metadata metadata;
+        @NonNull Audit audit;
+
+        public static @NonNull Preview of(@NonNull Document document) {
+            val id = document.getId();
+            val metadata = document.getMetadata();
+            val audit = Audit.of(document.getAudit());
+
+            return new Preview(id, metadata, audit);
+        }
+
+        @Value
+        @AllArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class Audit {
+            int borrowingPatronCount;
+            @NonNull AverageRating rating;
+
+            public static @NonNull Audit of(Document.@NonNull Audit documentAudit) {
+                val borrowingPatronCount = documentAudit.getBorrowingPatronIds().size();
+                val averageRating = documentAudit.getRating();
+
+                return new Audit(borrowingPatronCount, averageRating);
+            }
+        }
     }
 }

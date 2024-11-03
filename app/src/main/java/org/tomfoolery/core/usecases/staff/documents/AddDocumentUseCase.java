@@ -12,6 +12,7 @@ import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.core.utils.dataclasses.AverageRating;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -49,7 +50,9 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         val document = createDocumentAndMarkAsCreatedByStaff(documentId, documentContent, documentMetadata, staffId);
 
         this.documentRepository.save(document);
-        return Response.of(documentId);
+
+        val documentPreview = Document.Preview.of(document);
+        return Response.of(documentPreview);
     }
 
     private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
@@ -68,7 +71,8 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
 
     private static @NonNull Document createDocumentAndMarkAsCreatedByStaff(Document.@NonNull Id documentId, Document.@NonNull Content documentContent, Document.@NonNull Metadata documentMetadata, Staff.@NonNull Id staffId) {
         val documentAuditTimestamps = Document.Audit.Timestamps.of(Instant.now());
-        val documentAudit = Document.Audit.of(staffId, documentAuditTimestamps);
+        val documentAverageRating = AverageRating.of();
+        val documentAudit = Document.Audit.of(staffId, documentAverageRating, documentAuditTimestamps);
 
         return Document.of(documentId, documentContent, documentMetadata, documentAudit);
     }
@@ -82,7 +86,7 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
 
     @Value(staticConstructor = "of")
     public static class Response {
-        Document.@NonNull Id documentId;
+        Document.@NonNull Preview documentPreview;
     }
 
     public static class DocumentAlreadyExistsException extends Exception {}

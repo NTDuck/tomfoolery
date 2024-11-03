@@ -28,11 +28,19 @@ public abstract class GetRecommendedDocumentsUseCase extends AuthenticatedUserUs
         ensureAuthenticationTokenIsValid(userAuthenticationToken);
 
         val recommendedDocuments = getRecommendedDocuments();
+        val recommendedDocumentPreviews = getRecommendedDocumentPreviews(recommendedDocuments);
+
         return Response.of(recommendedDocuments);
+    }
+
+    private static @NonNull Collection<Document.Preview> getRecommendedDocumentPreviews(@NonNull Collection<Document> recommendedDocuments) {
+        return recommendedDocuments.stream()
+            .map(Document.Preview::of)
+            .toList();
     }
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Collection<Document> recommendedDocuments;
+        @NonNull Collection<Document> recommendedDocumentPreviews;
     }
 }

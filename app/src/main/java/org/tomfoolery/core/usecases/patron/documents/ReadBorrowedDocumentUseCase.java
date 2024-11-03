@@ -17,15 +17,15 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import java.util.Collection;
 import java.util.List;
 
-public final class GetBorrowedDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<GetBorrowedDocumentUseCase.Request, GetBorrowedDocumentUseCase.Response> {
+public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ReadBorrowedDocumentUseCase.Request, ReadBorrowedDocumentUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
-    public static @NonNull GetBorrowedDocumentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new GetBorrowedDocumentUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull ReadBorrowedDocumentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
+        return new ReadBorrowedDocumentUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
     }
 
-    private GetBorrowedDocumentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
+    private ReadBorrowedDocumentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
@@ -48,7 +48,8 @@ public final class GetBorrowedDocumentUseCase extends AuthenticatedUserUseCase i
 
         ensureDocumentIsAlreadyBorrowed(patron, documentId);
 
-        return Response.of(document);
+        val documentContent = document.getContent();
+        return Response.of(documentContent);
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
@@ -89,7 +90,7 @@ public final class GetBorrowedDocumentUseCase extends AuthenticatedUserUseCase i
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Document document;
+        Document.@NonNull Content documentContent;
     }
 
     public static class PatronNotFoundException extends Exception {}
