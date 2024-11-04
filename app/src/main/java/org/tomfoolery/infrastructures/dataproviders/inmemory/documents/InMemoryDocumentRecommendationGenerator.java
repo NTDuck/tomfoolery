@@ -87,17 +87,12 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
                 futureOfHighestRatingDocuments,
                 futureOfMostBorrowedDocuments
             ).thenRun(() -> {
-                try {
-                    this.randomDocuments = futureOfRandomDocuments.get();
-                    this.mostRecentDocuments = futureOfMostRecentDocuments.get();
-                    this.highestRatingDocuments = futureOfHighestRatingDocuments.get();
-                    this.mostBorrowedDocuments = futureOfMostBorrowedDocuments.get();
+                this.randomDocuments = futureOfRandomDocuments.join();
+                this.mostRecentDocuments = futureOfMostRecentDocuments.join();
+                this.highestRatingDocuments = futureOfHighestRatingDocuments.join();
+                this.mostBorrowedDocuments = futureOfMostBorrowedDocuments.join();
 
-                    this.lastGenerated = Instant.now();
-
-                } catch (InterruptedException | ExecutionException exception) {
-                    throw new RuntimeException(exception);
-                }
+                this.lastGenerated = Instant.now();
             });
         });
     }
