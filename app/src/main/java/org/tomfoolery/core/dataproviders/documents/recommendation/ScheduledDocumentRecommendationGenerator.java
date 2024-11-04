@@ -1,98 +1,83 @@
-package org.tomfoolery.infrastructures.dataproviders.inmemory.documents;
+package org.tomfoolery.core.dataproviders.documents.recommendation;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.documents.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class InMemoryDocumentRecommendationGenerator implements DocumentRecommendationGenerator {
-    private static int DAYS_BETWEEN_GENERATION = 1;
-    private static int DOCUMENTS_PER_RECOMMENDATION = 10;
+public abstract class ScheduledDocumentRecommendationGenerator implements DocumentRecommendationGenerator {
+    private static final @NonNull Duration GENERATION_INTERVAL = Duration.ofDays(1);
+    private static final int DOCUMENTS_PER_RECOMMENDATION = 10;
 
-    private final @NonNull DocumentRepository documentRepository;
-    private @NonNull Instant lastGenerated = Instant.EPOCH;
+    protected final @NonNull DocumentRepository documentRepository;
 
-    private @NonNull Collection<Document> randomDocuments = List.of();
-    private @NonNull Collection<Document> mostRecentDocuments = List.of();
-    private @NonNull Collection<Document> highestRatingDocuments = List.of();
-    private @NonNull Collection<Document> mostBorrowedDocuments = List.of();
-
-    public static @NonNull InMemoryDocumentRecommendationGenerator of(@NonNull DocumentRepository documentRepository) {
-        return new InMemoryDocumentRecommendationGenerator(documentRepository);
-    }
-
-    private InMemoryDocumentRecommendationGenerator(@NonNull DocumentRepository documentRepository) {
+    protected ScheduledDocumentRecommendationGenerator(@NonNull DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
-        generateDocumentRecommendations();
     }
 
     @Override
-    public @NonNull Collection<Document> getRandomDocuments() {
-        if (isDocumentGenerationExpired())
+    public final @NonNull Collection<Document> getRandomDocuments() {
+        if (isGenerationIntervalElapsed())
             generateDocumentRecommendations();
 
-        return this.randomDocuments;
+        return this.generateRandomDocuments();
     }
 
     @Override
-    public @NonNull Collection<Document> getMostRecentDocuments() {
-        if (isDocumentGenerationExpired())
+    public final @NonNull Collection<Document> getMostRecentDocuments() {
+        if (isGenerationIntervalElapsed())
             generateDocumentRecommendations();
 
-        return this.mostRecentDocuments;
+        return this.getGeneratedMostRecentDocuments();
     }
 
     @Override
-    public @NonNull Collection<Document> getHighestRatingDocuments() {
-        if (isDocumentGenerationExpired())
+    public final @NonNull Collection<Document> getHighestRatingDocuments() {
+        if (isGenerationIntervalElapsed())
             generateDocumentRecommendations();
 
-        return this.highestRatingDocuments;
+        return this.getGeneratedHighestRatingDocuments();
     }
 
     @Override
-    public @NonNull Collection<Document> getMostBorrowedDocuments() {
-        if (isDocumentGenerationExpired())
+    public final @NonNull Collection<Document> getMostBorrowedDocuments() {
+        if (isGenerationIntervalElapsed())
             generateDocumentRecommendations();
 
-        return this.mostBorrowedDocuments;
+        return this.getGeneratedMostBorrowedDocuments();
     }
 
-    private boolean isDocumentGenerationExpired() {
-        return Instant.now()
-            .minus(DAYS_BETWEEN_GENERATION, ChronoUnit.DAYS)
-            .isAfter(this.lastGenerated);
+    private boolean isGenerationIntervalElapsed() {
+        val lastGenerated = getLastGeneratedTimestamp();
+
+        return Duration.between(lastGenerated, Instant.now())
+            .compareTo(GENERATION_INTERVAL) > 0;
     }
 
     private void generateDocumentRecommendations() {
         CompletableFuture.runAsync(() -> {
-            val futureOfRandomDocuments = CompletableFuture.supplyAsync(this::generateRandomDocuments);
             val futureOfMostRecentDocuments = CompletableFuture.supplyAsync(this::generateMostRecentDocuments);
             val futureOfHighestRatingDocuments = CompletableFuture.supplyAsync(this::generateHighestRatingDocuments);
             val futureOfMostBorrowedDocuments = CompletableFuture.supplyAsync(this::generateMostBorrowedDocuments);
 
             CompletableFuture.allOf(
-                futureOfRandomDocuments,
                 futureOfMostRecentDocuments,
                 futureOfHighestRatingDocuments,
                 futureOfMostBorrowedDocuments
             ).thenRun(() -> {
-                this.randomDocuments = futureOfRandomDocuments.join();
-                this.mostRecentDocuments = futureOfMostRecentDocuments.join();
-                this.highestRatingDocuments = futureOfHighestRatingDocuments.join();
-                this.mostBorrowedDocuments = futureOfMostBorrowedDocuments.join();
+                setGeneratedMostRecentDocuments(futureOfMostRecentDocuments.join());
+                setGeneratedHighestRatingDocuments(futureOfHighestRatingDocuments.join());
+                setGeneratedMostBorrowedDocuments(futureOfMostBorrowedDocuments.join());
 
-                this.lastGenerated = Instant.now();
+                setLastGeneratedTimestamp(Instant.now());
             });
         });
     }
@@ -122,4 +107,15 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
             .limit(DOCUMENTS_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());
     }
+
+    protected abstract @NonNull Collection<Document> getGeneratedMostRecentDocuments();
+    protected abstract @NonNull Collection<Document> getGeneratedHighestRatingDocuments();
+    protected abstract @NonNull Collection<Document> getGeneratedMostBorrowedDocuments();
+
+    protected abstract void setGeneratedMostRecentDocuments(@NonNull Collection<Document> documents);
+    protected abstract void setGeneratedHighestRatingDocuments(@NonNull Collection<Document> documents);
+    protected abstract void setGeneratedMostBorrowedDocuments(@NonNull Collection<Document> documents);
+
+    protected abstract @NonNull Instant getLastGeneratedTimestamp();
+    protected abstract void setLastGeneratedTimestamp(@NonNull Instant timestamp);
 }
