@@ -29,8 +29,9 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
 
         val documentId = request.getDocumentId();
         val document = getDocumentFromId(documentId);
+        val documentPreview = Document.Preview.of(document);
 
-        return Response.of(document);
+        return Response.of(documentPreview);
     }
 
     private @NonNull Document getDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
@@ -49,7 +50,7 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Document document;
+        Document.@NonNull Preview documentPreview;
     }
 
     public static class DocumentNotFoundException extends Exception {}

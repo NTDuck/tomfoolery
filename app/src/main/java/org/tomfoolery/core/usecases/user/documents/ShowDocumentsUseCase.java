@@ -1,5 +1,6 @@
 package org.tomfoolery.core.usecases.user.documents;
 
+import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -32,8 +33,9 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
         val pageSize = request.getPageSize();
 
         val paginatedDocuments = getPaginatedDocuments(pageIndex, pageSize);
+        val paginatedDocumentPreviews = getPaginatedDocumentPreviewsFromPaginatedDocuments(paginatedDocuments);
 
-        return Response.of(paginatedDocuments);
+        return Response.of(paginatedDocumentPreviews);
     }
 
     private @NonNull Page<Document> getPaginatedDocuments(int pageIndex, int pageSize) throws DocumentsNotFoundException {
@@ -45,6 +47,11 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
         return paginatedDocuments;
     }
 
+    @SneakyThrows
+    private @NonNull Page<Document.Preview> getPaginatedDocumentPreviewsFromPaginatedDocuments(@NonNull Page<Document> paginatedDocuments) {
+        return Page.of(paginatedDocuments, Document.Preview::of);
+    }
+
     @Value(staticConstructor = "of")
     public static class Request {
         int pageIndex;
@@ -53,7 +60,7 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document> paginatedDocuments;
+        @NonNull Page<Document.Preview> paginatedDocumentPreviews;
     }
 
     public static class DocumentsNotFoundException extends Exception {}

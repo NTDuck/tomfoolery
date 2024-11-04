@@ -30,7 +30,7 @@ public abstract class GetRecommendedDocumentsUseCase extends AuthenticatedUserUs
         val recommendedDocuments = getRecommendedDocuments();
         val recommendedDocumentPreviews = getRecommendedDocumentPreviews(recommendedDocuments);
 
-        return Response.of(recommendedDocuments);
+        return Response.of(recommendedDocumentPreviews);
     }
 
     private static @NonNull Collection<Document.Preview> getRecommendedDocumentPreviews(@NonNull Collection<Document> recommendedDocuments) {
@@ -41,6 +41,6 @@ public abstract class GetRecommendedDocumentsUseCase extends AuthenticatedUserUs
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Collection<Document> recommendedDocumentPreviews;
+        @NonNull Collection<Document.Preview> recommendedDocumentPreviews;
     }
 }
