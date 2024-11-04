@@ -76,10 +76,10 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
 
     private void generateDocumentRecommendations() {
         CompletableFuture.runAsync(() -> {
-            val futureOfRandomDocuments = CompletableFuture.supplyAsync(() -> generateRandomDocuments());
-            val futureOfMostRecentDocuments = CompletableFuture.supplyAsync(() -> generateMostRecentDocuments());
-            val futureOfHighestRatingDocuments = CompletableFuture.supplyAsync(() -> generateHighestRatingDocuments());
-            val futureOfMostBorrowedDocuments = CompletableFuture.supplyAsync(() -> generateMostBorrowedDocuments());
+            val futureOfRandomDocuments = CompletableFuture.supplyAsync(this::generateRandomDocuments);
+            val futureOfMostRecentDocuments = CompletableFuture.supplyAsync(this::generateMostRecentDocuments);
+            val futureOfHighestRatingDocuments = CompletableFuture.supplyAsync(this::generateHighestRatingDocuments);
+            val futureOfMostBorrowedDocuments = CompletableFuture.supplyAsync(this::generateMostBorrowedDocuments);
 
             CompletableFuture.allOf(
                 futureOfRandomDocuments,
@@ -95,9 +95,7 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
 
                     this.lastGenerated = Instant.now();
 
-                } catch (InterruptedException exception) {
-                    throw new RuntimeException(exception);
-                } catch (ExecutionException exception) {
+                } catch (InterruptedException | ExecutionException exception) {
                     throw new RuntimeException(exception);
                 }
             });
