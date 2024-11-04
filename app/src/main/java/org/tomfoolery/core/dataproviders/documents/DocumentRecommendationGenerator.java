@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public interface DocumentRecommendationGenerator {
     @NonNull Collection<Document> getRandomDocuments();
-    @NonNull Collection<Document> getMostRecentlyArrivedDocuments();
+    @NonNull Collection<Document> getMostRecentDocuments();
     @NonNull Collection<Document> getHighestRatingDocuments();
     @NonNull Collection<Document> getMostBorrowedDocuments();
 }
