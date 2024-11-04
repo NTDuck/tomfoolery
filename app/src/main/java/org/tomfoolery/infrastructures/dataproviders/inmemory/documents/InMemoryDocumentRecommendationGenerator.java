@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.inmemory.documents;
 
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.documents.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
@@ -10,6 +11,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class InMemoryDocumentRecommendationGenerator implements DocumentRecommendationGenerator {
@@ -72,12 +75,52 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
     }
 
     private void generateDocumentRecommendations() {
-        this.randomDocuments = List.of();
-        this.mostRecentDocuments = generateDocumentRecommendationByComparator(Comparator.<Document, Instant>comparing(document -> document.getAudit().getTimestamps().getCreated()).reversed());
-        this.highestRatingDocuments = generateDocumentRecommendationByComparator(Comparator.<Document, Double>comparing(document -> document.getAudit().getRating().getRatingValue()).reversed());
-        this.mostBorrowedDocuments = generateDocumentRecommendationByComparator(Comparator.<Document, Integer>comparing(document -> document.getAudit().getBorrowingPatronIds().size()).reversed());
+        CompletableFuture.runAsync(() -> {
+            val futureOfRandomDocuments = CompletableFuture.supplyAsync(() -> generateRandomDocuments());
+            val futureOfMostRecentDocuments = CompletableFuture.supplyAsync(() -> generateMostRecentDocuments());
+            val futureOfHighestRatingDocuments = CompletableFuture.supplyAsync(() -> generateHighestRatingDocuments());
+            val futureOfMostBorrowedDocuments = CompletableFuture.supplyAsync(() -> generateMostBorrowedDocuments());
 
-        this.lastGenerated = Instant.now();
+            CompletableFuture.allOf(
+                futureOfRandomDocuments,
+                futureOfMostRecentDocuments,
+                futureOfHighestRatingDocuments,
+                futureOfMostBorrowedDocuments
+            ).thenRun(() -> {
+                try {
+                    this.randomDocuments = futureOfRandomDocuments.get();
+                    this.mostRecentDocuments = futureOfMostRecentDocuments.get();
+                    this.highestRatingDocuments = futureOfHighestRatingDocuments.get();
+                    this.mostBorrowedDocuments = futureOfMostBorrowedDocuments.get();
+
+                    this.lastGenerated = Instant.now();
+
+                } catch (InterruptedException exception) {
+                    throw new RuntimeException(exception);
+                } catch (ExecutionException exception) {
+                    throw new RuntimeException(exception);
+                }
+            });
+        });
+    }
+
+    private @NonNull Collection<Document> generateRandomDocuments() {
+        return List.of();
+    }
+
+    private @NonNull Collection<Document> generateMostRecentDocuments() {
+        val documentComparator = Comparator.<Document, Instant>comparing(document -> document.getAudit().getTimestamps().getCreated()).reversed();
+        return generateDocumentRecommendationByComparator(documentComparator);
+    }
+
+    private @NonNull Collection<Document> generateHighestRatingDocuments() {
+        val documentComparator = Comparator.<Document, Double>comparing(document -> document.getAudit().getRating().getRatingValue()).reversed();
+        return generateDocumentRecommendationByComparator(documentComparator);
+    }
+
+    private @NonNull Collection<Document> generateMostBorrowedDocuments() {
+        val documentComparator = Comparator.<Document, Integer>comparing(document -> document.getAudit().getBorrowingPatronIds().size()).reversed();
+        return generateDocumentRecommendationByComparator(documentComparator);
     }
 
     private @NonNull Collection<Document> generateDocumentRecommendationByComparator(@NonNull Comparator<Document> documentComparator) {
