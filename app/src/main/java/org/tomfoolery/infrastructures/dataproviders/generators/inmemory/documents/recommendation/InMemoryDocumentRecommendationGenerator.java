@@ -1,6 +1,5 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -19,8 +18,7 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
 
     private final @NonNull DocumentRepository documentRepository;
 
-    @Getter(value = AccessLevel.PROTECTED)
-    @Setter(value = AccessLevel.PROTECTED)
+    @Getter @Setter
     private @NonNull Instant lastGeneratedTimestamp = Instant.EPOCH;
 
     public static @NonNull InMemoryDocumentRecommendationGenerator of(@NonNull DocumentRepository documentRepository) {

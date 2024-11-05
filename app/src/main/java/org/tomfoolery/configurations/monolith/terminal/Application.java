@@ -1,12 +1,14 @@
 package org.tomfoolery.configurations.monolith.terminal;
 
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.ConsoleIOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.DefaultIOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.View;
 import org.tomfoolery.configurations.monolith.terminal.utils.containers.Views;
-import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.CreatePatronAccountActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.LogUserInActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
@@ -40,14 +42,14 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
     private final @NonNull PasswordEncoder passwordEncoder = Base64PasswordEncoder.of();
 
-    private final @NonNull Views views = Views.of(
-        GuestSelectionView.of(),
-        LogUserInActionView.of(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository),
-        CreatePatronAccountActionView.of(patronRepository, passwordEncoder),
+    private final @NonNull IOHandler ioHandler = getIOHandler();
 
-        AdministratorSelectionView.of(),
-        StaffSelectionView.of(),
-        PatronSelectionView.of()
+    private final @NonNull Views views = Views.of(
+        GuestSelectionView.of(ioHandler),
+
+        AdministratorSelectionView.of(ioHandler),
+        PatronSelectionView.of(ioHandler),
+        StaffSelectionView.of(ioHandler)
     );
 
     @Override
@@ -66,14 +68,26 @@ public class Application implements Runnable, AutoCloseable {
     }
 
     @Override
+    @SneakyThrows
     public void close() {
-        ScannerManager.close();
+        this.ioHandler.close();
+    }
+
+    private static @NonNull IOHandler getIOHandler() {
+        val consoleIOHandler = ConsoleIOHandler.of();
+
+        if (consoleIOHandler != null)
+            return consoleIOHandler;
+
+        return DefaultIOHandler.of();
     }
 
     public static void main(String[] args) {
         val application = Application.of();
 
-        application.run();
+//        application.run();
+
+        application.ioHandler.writeLine("Hello from %s :3", "tomfoolery");
         application.close();
     }
 }

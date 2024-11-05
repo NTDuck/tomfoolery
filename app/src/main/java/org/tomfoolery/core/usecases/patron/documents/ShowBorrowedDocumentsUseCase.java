@@ -83,11 +83,9 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
         return Page.fromPage(paginatedBorrowedDocumentIds, this::getPaginatedDocumentPreviewFromDocumentId);
     }
 
-    private Document.@NonNull Preview getPaginatedDocumentPreviewFromDocumentId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+    private Document.@NonNull Preview getPaginatedDocumentPreviewFromDocumentId(Document.@NonNull Id documentId) {
         val document = this.documentRepository.getById(documentId);
-
-        if (document == null)
-            throw new DocumentNotFoundException();
+        assert document != null;
 
         return Document.Preview.of(document);
     }
@@ -105,5 +103,4 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
 
     public static class PatronNotFoundException extends Exception {}
     public static class DocumentsNotFoundException extends Exception {}
-    private static class DocumentNotFoundException extends Exception {}
 }

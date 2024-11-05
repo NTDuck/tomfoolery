@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public interface IOHandler {
+public interface IOHandler extends AutoCloseable {
     void write(@NonNull String format, Object... args);
     @NonNull String readLine();
 
@@ -24,4 +24,7 @@ public interface IOHandler {
         this.write(format, args);
         return this.readPassword();
     }
+
+    @Override
+    default void close() throws Exception {}
 }

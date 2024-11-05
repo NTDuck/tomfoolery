@@ -1,6 +1,5 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.recommendation;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.DocumentRecommendationRepository;
@@ -9,7 +8,7 @@ import org.tomfoolery.core.domain.documents.Document;
 import java.util.Collection;
 import java.util.List;
 
-@Getter(value = AccessLevel.PROTECTED)
+@Getter
 public class InMemoryDocumentRecommendationRepository implements DocumentRecommendationRepository {
     private @NonNull Collection<Document> latestDocumentRecommendation = List.of();
     private @NonNull Collection<Document> popularDocumentRecommendation = List.of();
