@@ -2,6 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.utils.helpers.io;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -13,11 +14,12 @@ import java.io.Console;
 public class ConsoleIOHandler implements IOHandler {
     private final @NonNull Console console;
 
-    public static @Nullable ConsoleIOHandler of() {
+    @SneakyThrows
+    public static @NonNull ConsoleIOHandler of() {
         val console = System.console();
 
         if (console == null)
-            return null;
+            throw new InstantiationException();
 
         return new ConsoleIOHandler(console);
     }

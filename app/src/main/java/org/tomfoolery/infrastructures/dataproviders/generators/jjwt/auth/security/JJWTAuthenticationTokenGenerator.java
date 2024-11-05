@@ -21,11 +21,11 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     @Override
     public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val serializedPayload = Jwts.builder()
-                .claim(USER_ID_CLAIM_LABEL, userId)
-                .claim(USER_CLASS_CLAIM_LABEL, userClass)
-                .claim(EXPIRATION_CLAIM_LABEL, expiryTimestamp)
+            .claim(USER_ID_CLAIM_LABEL, userId)
+            .claim(USER_CLASS_CLAIM_LABEL, userClass)
+            .claim(EXPIRATION_CLAIM_LABEL, expiryTimestamp)
 
-                .compact();
+            .compact();
 
         return AuthenticationToken.of(serializedPayload);
     }
@@ -42,17 +42,18 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
         if (payload == null)
             return false;
 
-        val tokenExpiryTimestamp = (Instant) payload.get(EXPIRATION_CLAIM_LABEL);
-        return Instant.now().isBefore(tokenExpiryTimestamp);
+        val authenticationTokenExpiryTimestamp = (Instant) payload.get(EXPIRATION_CLAIM_LABEL);
+        return Instant.now().isBefore(authenticationTokenExpiryTimestamp);
     }
 
     @Override
     public BaseUser.@Nullable Id getUserIdFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
-        return payload != null
-             ? (BaseUser.Id) payload.get(USER_ID_CLAIM_LABEL)
-             : null;
+        if (payload == null)
+            return null;
+
+        return (BaseUser.Id) payload.get(USER_ID_CLAIM_LABEL);
     }
 
     @SuppressWarnings("unchecked")
@@ -60,13 +61,14 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     public @Nullable Class<? extends BaseUser> getUserClassFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
-        return payload != null
-             ? (Class<? extends BaseUser>) payload.get(USER_CLASS_CLAIM_LABEL)
-             : null;
+        if (payload == null)
+            return null;
+
+        return (Class<? extends BaseUser>) payload.get(USER_CLASS_CLAIM_LABEL);
     }
 
-    private @Nullable Claims getPayloadFromAuthenticationToken(@NonNull AuthenticationToken token) {
-        val serializedPayload = token.getSerializedPayload();
+    private @Nullable Claims getPayloadFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+        val serializedPayload = authenticationToken.getSerializedPayload();
 
         try {
             return Jwts.parser()

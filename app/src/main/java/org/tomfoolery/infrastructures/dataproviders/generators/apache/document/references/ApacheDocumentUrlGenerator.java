@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.apache.document.references;
 
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
@@ -14,6 +15,7 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@NoArgsConstructor(staticName = "of")
 public class ApacheDocumentUrlGenerator implements DocumentUrlGenerator {
     private static final @NonNull String URL_HOST = "";
 

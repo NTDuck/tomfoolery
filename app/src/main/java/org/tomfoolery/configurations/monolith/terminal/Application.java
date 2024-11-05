@@ -29,6 +29,8 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.I
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 
+import java.util.function.Supplier;
+
 @NoArgsConstructor(staticName = "of")
 public class Application implements Runnable, AutoCloseable {
     private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
@@ -42,7 +44,7 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
     private final @NonNull PasswordEncoder passwordEncoder = Base64PasswordEncoder.of();
 
-    private final @NonNull IOHandler ioHandler = getIOHandler();
+    private final @NonNull IOHandler ioHandler = ConsoleIOHandler.of();
 
     private final @NonNull Views views = Views.of(
         GuestSelectionView.of(ioHandler),
@@ -73,20 +75,11 @@ public class Application implements Runnable, AutoCloseable {
         this.ioHandler.close();
     }
 
-    private static @NonNull IOHandler getIOHandler() {
-        val consoleIOHandler = ConsoleIOHandler.of();
-
-        if (consoleIOHandler != null)
-            return consoleIOHandler;
-
-        return DefaultIOHandler.of();
-    }
-
     public static void main(String[] args) {
         val application = Application.of();
 
 //        application.run();
-
+        
         application.ioHandler.writeLine("Hello from %s :3", "tomfoolery");
         application.close();
     }

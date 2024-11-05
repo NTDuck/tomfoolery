@@ -11,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.security.KeyStore;
 
 public class KeyStoreAuthenticationTokenRepository implements AuthenticationTokenRepository {
@@ -29,13 +30,12 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @SneakyThrows
     private KeyStoreAuthenticationTokenRepository() {
-        val passwordCharArray = getPasswordCharArray();
         this.keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
 
         try (val fileInputStream = new FileInputStream(KEYSTORE_NAME)) {
-            this.keyStore.load(fileInputStream, passwordCharArray);
+            loadKeystoreFromInputStream(fileInputStream);
         } catch (FileNotFoundException exception) {
-            this.keyStore.load(null, passwordCharArray);
+            createEmptyKeystore();
         }
     }
 
@@ -74,6 +74,18 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
     @SneakyThrows
     public boolean containsAuthenticationToken() {
         return this.keyStore.containsAlias(KEYSTORE_ENTRY_ALIAS);
+    }
+
+    @SneakyThrows
+    private void loadKeystoreFromInputStream(@NonNull InputStream inputStream) {
+        val passwordCharArray = getPasswordCharArray();
+        this.keyStore.load(inputStream, passwordCharArray);
+    }
+
+    @SneakyThrows
+    private void createEmptyKeystore() {
+        val passwordCharArray = getPasswordCharArray();
+        this.keyStore.load(null, passwordCharArray);
     }
 
     private static char @NonNull [] getPasswordCharArray() {

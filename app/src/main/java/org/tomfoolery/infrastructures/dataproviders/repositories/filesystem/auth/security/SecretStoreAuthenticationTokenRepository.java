@@ -25,9 +25,6 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
 
     private SecretStoreAuthenticationTokenRepository() {
         this.secretStore = StorageProvider.getTokenStorage(PERSIST, SECURE_OPTION);
-
-        if (this.secretStore == null)
-            throw new RuntimeException("No secure credentials storage available");
     }
 
     @Override
