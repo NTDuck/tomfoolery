@@ -9,6 +9,7 @@ import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public interface DocumentRepository extends BaseRepository<Document, Document.Id> {
     default @NonNull Collection<Document> searchDocumentsByTitle(@NonNull String title) {
@@ -41,7 +42,7 @@ public interface DocumentRepository extends BaseRepository<Document, Document.Id
     private @NonNull Collection<Document> searchDocumentsByPredicate(@NonNull Predicate<? super Document> predicate) {
         return this.show().stream()
             .filter(predicate)
-            .toList();
+            .collect(Collectors.toUnmodifiableList());
     }
 
     private static boolean isSubsequence(@NonNull CharSequence subsequence, @NonNull CharSequence sequence) {

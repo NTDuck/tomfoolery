@@ -1,11 +1,12 @@
 package org.tomfoolery.configurations.monolith.terminal.views.selection;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.adapters.SelectionAdapter;
+import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth.CreateStaffAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth.DeleteStaffAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth.UpdateStaffCredentialsActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;
 
 import java.util.List;
 
@@ -16,9 +17,9 @@ public class AdministratorSelectionView extends UserSelectionView {
 
     private AdministratorSelectionView(@NonNull IOHandler ioHandler) {
         super(ioHandler, List.of(
-            SelectionAdapter.Item.of(7, "Create Staff account", CreateStaffAccountActionView.class),
-            SelectionAdapter.Item.of(8, "Update Staff credentials", UpdateStaffCredentialsActionView.class),
-            SelectionAdapter.Item.of(9, "Delete Staff account", DeleteStaffAccountActionView.class)
+            SelectionItem.of(7, "Create Staff account", CreateStaffAccountActionView.class),
+            SelectionItem.of(8, "Update Staff credentials", UpdateStaffCredentialsActionView.class),
+            SelectionItem.of(9, "Delete Staff account", DeleteStaffAccountActionView.class)
         ));
     }
 

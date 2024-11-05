@@ -1,7 +1,7 @@
 package org.tomfoolery.configurations.monolith.terminal.views.selection;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.adapters.SelectionAdapter;
+import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.CreatePatronAccountActionView;
@@ -16,9 +16,9 @@ public class GuestSelectionView extends SelectionView {
 
     private GuestSelectionView(@NonNull IOHandler ioHandler) {
         super(ioHandler, List.of(
-            SelectionAdapter.Item.of(0, "Exit", null),
-            SelectionAdapter.Item.of(1, "Login", LogUserInActionView.class),
-            SelectionAdapter.Item.of(2, "Create Patron account", CreatePatronAccountActionView.class)
+            SelectionItem.of(0, "Exit", null),
+            SelectionItem.of(1, "Login", LogUserInActionView.class),
+            SelectionItem.of(2, "Create Patron account", CreatePatronAccountActionView.class)
         ));
     }
 

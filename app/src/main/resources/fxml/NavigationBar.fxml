@@ -47,10 +47,10 @@
                 <Image url="/images/user.png"/>
             </ImageView>
         </graphic>
-        <items>
+        <selectionItems>
             <MenuItem text="Login" onAction="#printSomething"/>
             <MenuItem text="Settings"/>
             <MenuItem text="Change Password"/>
-        </items>
+        </selectionItems>
     </MenuButton>
 </HBox>

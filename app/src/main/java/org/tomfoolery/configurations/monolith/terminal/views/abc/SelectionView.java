@@ -3,6 +3,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.abc;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.adapters.SelectionAdapter;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
 
@@ -15,14 +16,14 @@ public abstract class SelectionView implements View {
 
     private @Nullable Class<? extends View> nextViewClass = this.getClass();
 
-    protected SelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionAdapter.Item> items) {
+    protected SelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionItem> selectionItems) {
         this.ioHandler = ioHandler;
-        this.selectionAdapter = SelectionAdapter.of(items);
+        this.selectionAdapter = SelectionAdapter.of(selectionItems);
     }
 
     @Override
     public void run() {
-        this.ioHandler.writeLine(getPrompt());
+        displayPrompt();
 
         val viewModel = this.selectionAdapter.get();
         displayViewModel(viewModel);
@@ -31,16 +32,12 @@ public abstract class SelectionView implements View {
             val requestObject = getRequestObject();
             val responseModel = this.selectionAdapter.apply(requestObject);
 
-            this.nextViewClass = responseModel.getNextViewClass();
-            this.ioHandler.writeLine(getMessageOnSuccess());
+            onSuccess(responseModel);
 
         } catch (InputMismatchException exception) {
-            this.nextViewClass = this.getClass();
-            this.ioHandler.writeLine(getMessageOnInputMismatchException());
-
-        } catch (SelectionAdapter.ItemNotFoundException exception) {
-            this.nextViewClass = this.getClass();
-            this.ioHandler.writeLine(getMessageOnItemNotFoundException());
+            onInputMismatchException();
+        } catch (SelectionAdapter.SelectionItemNotFoundException exception) {
+            onSelectionItemNotFoundException();
         }
     }
 
@@ -49,20 +46,25 @@ public abstract class SelectionView implements View {
         return this.nextViewClass;
     }
 
-    protected @NonNull String getPrompt() {
-        return "Welcome to My Application!";
+    private void displayPrompt() {
+        val prompt = getPrompt();
+
+        if (prompt.isEmpty() || prompt.isBlank())
+            return;
+
+        this.ioHandler.writeLine(prompt);
     }
 
     private void displayViewModel(SelectionAdapter.@NonNull ViewModel viewModel) {
-        val viewonlyItems = viewModel.getViewonlyItems();
+        val viewonlySelectionItems = viewModel.getViewonlySelectionItems();
 
-        for (val viewonlyItem : viewonlyItems)
-            displayViewonlyItem(viewonlyItem);
+        for (val viewonlySelectionItem : viewonlySelectionItems)
+            displayViewonlySelectionItem(viewonlySelectionItem);
     }
 
-    private void displayViewonlyItem(SelectionAdapter.@NonNull ViewonlyItem viewonlyItem) {
-        val index = viewonlyItem.getIndex();
-        val label = viewonlyItem.getLabel();
+    private void displayViewonlySelectionItem(SelectionAdapter.@NonNull ViewonlySelectionItem viewonlySelectionItem) {
+        val index = viewonlySelectionItem.getIndex();
+        val label = viewonlySelectionItem.getLabel();
 
         this.ioHandler.writeLine("[%d] %s", index, label);
     }
@@ -72,6 +74,31 @@ public abstract class SelectionView implements View {
         val itemIndex = Integer.parseInt(rawItemIndex);
 
         return SelectionAdapter.RequestObject.of(itemIndex);
+    }
+
+    private void onSuccess(SelectionAdapter.@NonNull ResponseModel responseModel) {
+        this.nextViewClass = responseModel.getNextViewClass();
+
+        val message = getMessageOnSuccess();
+        this.ioHandler.writeLine(message);
+    }
+
+    private void onInputMismatchException() {
+        this.nextViewClass = this.getClass();
+
+        val message = getMessageOnInputMismatchException();
+        this.ioHandler.writeLine(message);
+    }
+
+    private void onSelectionItemNotFoundException() {
+        this.nextViewClass = this.getClass();
+
+        val message = getMessageOnInputMismatchException();
+        this.ioHandler.writeLine(message);
+    }
+
+    protected @NonNull String getPrompt() {
+        return "Welcome to My Application!";
     }
 
     protected @NonNull String getMessageOnSuccess() {
@@ -86,12 +113,3 @@ public abstract class SelectionView implements View {
         return "Error: Item not found.";
     }
 }
-
-/*
-1. View requests from Controller the List of something, each something contains a index (int) and label (String)
-2. View get player input (int) and pass it to Controller (throws FormatInvalidException)
-3. Controller return result (nextViewClass) and pass it to View (throws ItemNotFoundException)
-4. View display message based on success/failure
-5. redirection
-
- */
