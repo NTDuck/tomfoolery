@@ -1,9 +1,9 @@
 package org.tomfoolery.core.usecases.user.documents.recommendation;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.documents.recommendation.DocumentRecommendationGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.user.abc.GetRecommendedDocumentsUseCase;
 

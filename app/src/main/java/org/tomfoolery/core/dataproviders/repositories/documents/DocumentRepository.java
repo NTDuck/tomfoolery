@@ -1,9 +1,9 @@
-package org.tomfoolery.core.dataproviders.documents;
+package org.tomfoolery.core.dataproviders.repositories.documents;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.dataproviders.abc.BaseRepository;
+import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.utils.dataclasses.Page;
 

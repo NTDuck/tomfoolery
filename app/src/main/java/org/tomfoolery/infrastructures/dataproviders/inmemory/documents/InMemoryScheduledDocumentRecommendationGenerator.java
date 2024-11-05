@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.documents.recommendation.ScheduledDocumentRecommendationGenerator;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.generators.documents.recommendation.ScheduledDocumentRecommendationGenerator;
 import org.tomfoolery.core.domain.documents.Document;
 
 import java.time.Instant;

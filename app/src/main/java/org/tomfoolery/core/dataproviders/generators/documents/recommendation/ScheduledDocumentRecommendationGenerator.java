@@ -1,8 +1,8 @@
-package org.tomfoolery.core.dataproviders.documents.recommendation;
+package org.tomfoolery.core.dataproviders.generators.documents.recommendation;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
 
 import java.time.Duration;

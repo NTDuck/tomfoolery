@@ -5,10 +5,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.ActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
-import org.tomfoolery.core.dataproviders.auth.StaffRepository;
-import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.usecases.admin.auth.CreateStaffAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.CreateStaffAccountController;
 

@@ -3,7 +3,7 @@ package org.tomfoolery.infrastructures.dataproviders.inmemory.auth.abc;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.dataproviders.abc.BaseRepository;
+import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.utils.contracts.ddd.ddd;
 
 import java.util.Collection;

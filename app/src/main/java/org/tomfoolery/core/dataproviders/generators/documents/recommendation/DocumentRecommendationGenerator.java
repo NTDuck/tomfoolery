@@ -1,4 +1,4 @@
-package org.tomfoolery.core.dataproviders.documents.recommendation;
+package org.tomfoolery.core.dataproviders.generators.documents.recommendation;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.documents.Document;

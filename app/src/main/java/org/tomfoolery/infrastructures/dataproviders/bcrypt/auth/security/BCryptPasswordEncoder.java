@@ -3,7 +3,7 @@ package org.tomfoolery.infrastructures.dataproviders.bcrypt.auth.security;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 
 @NoArgsConstructor(staticName = "of")
 public class BCryptPasswordEncoder implements PasswordEncoder {

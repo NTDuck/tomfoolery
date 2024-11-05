@@ -1,4 +1,4 @@
-package org.tomfoolery.core.dataproviders.documents.references;
+package org.tomfoolery.core.dataproviders.generators.documents.references;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.documents.Document;

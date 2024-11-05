@@ -5,10 +5,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.ActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.SelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
-import org.tomfoolery.core.dataproviders.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.auth.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.usecases.patron.documents.ReturnDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReturnDocumentController;
 

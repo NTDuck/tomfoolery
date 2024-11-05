@@ -3,7 +3,7 @@ package org.tomfoolery.core.utils.containers;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.dataproviders.auth.abc.UserRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.abc.UserRepository;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
 
