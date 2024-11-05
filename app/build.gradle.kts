@@ -40,9 +40,6 @@ dependencies {
     // Uses `QRGen` for simplified QR Code generation
     implementation("com.github.kenglxn.QRGen:javase:3.0.1")
 
-    // Uses Apache's `URIBuilder` for clean and lightweight URI construction
-//    implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
-
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
