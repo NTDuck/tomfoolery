@@ -49,7 +49,7 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
 
     @SneakyThrows
     private @NonNull Page<Document.Preview> getPaginatedDocumentPreviewsFromPaginatedDocuments(@NonNull Page<Document> paginatedDocuments) {
-        return Page.of(paginatedDocuments, Document.Preview::of);
+        return Page.fromPage(paginatedDocuments, Document.Preview::of);
     }
 
     @Value(staticConstructor = "of")

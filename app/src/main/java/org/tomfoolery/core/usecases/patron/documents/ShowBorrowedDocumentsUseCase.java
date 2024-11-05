@@ -70,7 +70,7 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
 
     private @NonNull Page<Document.Id> getPaginatedBorrowedDocumentIds(@NonNull Patron patron, int pageIndex, int maxPageSize) throws DocumentsNotFoundException {
         val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
-        val paginatedBorrowedDocumentIds = Page.of(borrowedDocumentIds, pageIndex, maxPageSize);
+        val paginatedBorrowedDocumentIds = Page.fromUnpaginated(borrowedDocumentIds, pageIndex, maxPageSize);
 
         if (paginatedBorrowedDocumentIds == null)
             throw new DocumentsNotFoundException();
@@ -80,7 +80,7 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
 
     @SneakyThrows
     private @NonNull Page<Document.Preview> getPaginatedBorrowedDocumentPreviews(@NonNull Page<Document.Id> paginatedBorrowedDocumentIds) {
-        return Page.of(paginatedBorrowedDocumentIds, this::getPaginatedDocumentPreviewFromDocumentId);
+        return Page.fromPage(paginatedBorrowedDocumentIds, this::getPaginatedDocumentPreviewFromDocumentId);
     }
 
     private Document.@NonNull Preview getPaginatedDocumentPreviewFromDocumentId(Document.@NonNull Id documentId) throws DocumentNotFoundException {

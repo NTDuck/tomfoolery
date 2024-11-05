@@ -25,17 +25,17 @@ public interface DocumentRepository extends BaseRepository<Document, Document.Id
 
     default @Nullable Page<Document> searchPaginatedDocumentsByTitle(@NonNull String title, int pageIndex, int maxPageSize) {
         val unpaginatedDocuments = this.searchDocumentsByTitle(title);
-        return Page.of(unpaginatedDocuments, pageIndex, maxPageSize);
+        return Page.fromUnpaginated(unpaginatedDocuments, pageIndex, maxPageSize);
     }
 
     default @Nullable Page<Document> searchPaginatedDocumentsByAuthor(@NonNull String author, int pageIndex, int maxPageSize) {
         val unpaginatedDocuments = this.searchDocumentsByAuthor(author);
-        return Page.of(unpaginatedDocuments, pageIndex, maxPageSize);
+        return Page.fromUnpaginated(unpaginatedDocuments, pageIndex, maxPageSize);
     }
 
     default @Nullable Page<Document> searchPaginatedDocumentsByGenre(@NonNull String genre, int pageIndex, int maxPageSize) {
         val unpaginatedDocuments = this.searchDocumentsByGenre(genre);
-        return Page.of(unpaginatedDocuments, pageIndex, maxPageSize);
+        return Page.fromUnpaginated(unpaginatedDocuments, pageIndex, maxPageSize);
     }
 
     private @NonNull Collection<Document> searchDocumentsByPredicate(@NonNull Predicate<? super Document> predicate) {

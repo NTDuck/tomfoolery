@@ -33,7 +33,7 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
         val pageSize = request.getPageSize();
 
         val paginatedDocuments = getPaginatedDocuments(criterion, pageIndex, pageSize);
-        val paginatedDocumentPreviews = Page.of(paginatedDocuments, Document.Preview::of);
+        val paginatedDocumentPreviews = Page.fromPage(paginatedDocuments, Document.Preview::of);
 
         return Response.of(paginatedDocumentPreviews);
     }

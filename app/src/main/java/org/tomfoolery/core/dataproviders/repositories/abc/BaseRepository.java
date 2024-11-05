@@ -21,6 +21,6 @@ public interface BaseRepository<Entity extends ddd.Entity<EntityId>, EntityId ex
 
     default @Nullable Page<Entity> showPaginated(int pageIndex, int maxPageSize) {
         val unpaginatedEntities = this.show();
-        return Page.of(unpaginatedEntities, pageIndex, maxPageSize);
+        return Page.fromUnpaginated(unpaginatedEntities, pageIndex, maxPageSize);
     }
 }
