@@ -93,23 +93,23 @@ public abstract class SelectionView implements View {
     private void onSelectionItemNotFoundException() {
         this.nextViewClass = this.getClass();
 
-        val message = getMessageOnInputMismatchException();
+        val message = getMessageOnItemNotFoundException();
         this.ioHandler.writeLine(message);
     }
 
     protected @NonNull String getPrompt() {
-        return "Welcome to My Application!";
+        return "Please select something";
     }
 
     protected @NonNull String getMessageOnSuccess() {
-        return "Success: Redirecting ...";
+        return String.format(SUCCESS_MESSAGE_FORMAT, "Redirecting ~");
     }
 
     protected @NonNull String getMessageOnInputMismatchException() {
-        return "Error: Input format invalid.";
+        return String.format(ERROR_MESSAGE_FORMAT, "Invalid input format");
     }
 
     protected @NonNull String getMessageOnItemNotFoundException() {
-        return "Error: Item not found.";
+        return String.format(ERROR_MESSAGE_FORMAT, "Selection not found");
     }
 }
