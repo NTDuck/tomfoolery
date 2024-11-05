@@ -33,12 +33,18 @@ dependencies {
     // Os-specific secure storage for persistence of authentication tokens
     implementation("com.microsoft:credential-secure-storage:1.0.0")
 
-    // Uses `TestNG` framework, also requires calling test.useTestNG() below
-    testImplementation(libs.testng)
-
     // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
     testImplementation("org.slf4j:slf4j-simple:1.7.36")
     // testImplementation("ch.qos.logback:logback-classic:1.2.11")
+
+    // Uses `QRGen` for simplified QR Code generation
+    implementation("com.github.kenglxn.QRGen:javase:3.0.1")
+
+    // Uses Apache's `URIBuilder` for clean and lightweight URI construction
+//    implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
+
+    // Uses `TestNG` framework, also requires calling test.useTestNG() below
+    testImplementation(libs.testng)
 
     // Used by `application`
     implementation(libs.guava)
@@ -50,6 +56,14 @@ dependencies {
     implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
     implementation("com.google.http-client:google-http-client-jackson2:1.43.3")
     implementation("com.google.oauth-client:google-oauth-client:1.34.1")
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url = uri("https://jitpack.io")
+    }
 }
 
 group = "org.tomfoolery"
@@ -78,10 +92,6 @@ java {
 javafx {
     version = "21"
     modules("javafx.controls", "javafx.fxml")
-}
-
-repositories {
-    mavenCentral()
 }
 
 publishing {
