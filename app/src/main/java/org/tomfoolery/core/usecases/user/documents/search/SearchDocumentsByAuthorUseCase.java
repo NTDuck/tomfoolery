@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.user.documents;
+package org.tomfoolery.core.usecases.user.documents.search;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -7,6 +7,7 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.user.abc.SearchDocumentsByCriterionUseCase;
+import org.tomfoolery.core.utils.contracts.functional.TriFunction;
 import org.tomfoolery.core.utils.dataclasses.Page;
 
 public final class SearchDocumentsByAuthorUseCase extends SearchDocumentsByCriterionUseCase {
@@ -19,7 +20,7 @@ public final class SearchDocumentsByAuthorUseCase extends SearchDocumentsByCrite
     }
 
     @Override
-    protected @Nullable Page<Document> getPaginatedDocumentsFromCriterion(@NonNull String criterion, int pageIndex, int pageSize) {
-        return this.documentRepository.searchPaginatedDocumentsByAuthor(criterion, pageIndex, pageSize);
+    protected @NonNull TriFunction<@NonNull String, @NonNull Integer, @NonNull Integer, @Nullable Page<Document>> getPaginatedDocumentsFunction() {
+        return this.documentRepository::searchPaginatedDocumentsByAuthor;
     }
 }

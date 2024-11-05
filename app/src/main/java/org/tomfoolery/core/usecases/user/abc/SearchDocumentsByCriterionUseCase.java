@@ -10,6 +10,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.core.utils.contracts.functional.TriFunction;
 import org.tomfoolery.core.utils.dataclasses.Page;
 
 public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<SearchDocumentsByCriterionUseCase.Request, SearchDocumentsByCriterionUseCase.Response> {
@@ -20,7 +21,7 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
         this.documentRepository = documentRepository;
     }
 
-    protected abstract @Nullable Page<Document> getPaginatedDocumentsFromCriterion(@NonNull String criterion, int pageIndex, int pageSize);
+    protected abstract @NonNull TriFunction<@NonNull String, @NonNull Integer, @NonNull Integer, @Nullable Page<Document>> getPaginatedDocumentsFunction();
 
     @Override
     public final @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentsNotFoundException {
@@ -38,7 +39,8 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
     }
 
     private @NonNull Page<Document> getPaginatedDocuments(@NonNull String criterion, int pageIndex, int pageSize) throws DocumentsNotFoundException {
-        val paginatedDocuments = getPaginatedDocumentsFromCriterion(criterion, pageIndex, pageSize);
+        val paginatedDocumentsFunction = getPaginatedDocumentsFunction();
+        val paginatedDocuments = paginatedDocumentsFunction.apply(criterion, pageIndex, pageSize);
 
         if (paginatedDocuments == null)
             throw new DocumentsNotFoundException();
