@@ -19,13 +19,13 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.dataproviders.base64.auth.security.Base64AuthenticationTokenGenerator;
-import org.tomfoolery.infrastructures.dataproviders.base64.auth.security.Base64PasswordEncoder;
-import org.tomfoolery.infrastructures.dataproviders.inmemory.auth.InMemoryAdministratorRepository;
-import org.tomfoolery.infrastructures.dataproviders.inmemory.auth.security.InMemoryAuthenticationTokenRepository;
-import org.tomfoolery.infrastructures.dataproviders.inmemory.auth.InMemoryPatronRepository;
-import org.tomfoolery.infrastructures.dataproviders.inmemory.auth.InMemoryStaffRepository;
-import org.tomfoolery.infrastructures.dataproviders.inmemory.documents.InMemoryDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.generators.base64.auth.security.Base64AuthenticationTokenGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.base64.auth.security.Base64PasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryAdministratorRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.security.InMemoryAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryPatronRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryStaffRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 
 @NoArgsConstructor(staticName = "of")
 public class Application implements Runnable, AutoCloseable {
