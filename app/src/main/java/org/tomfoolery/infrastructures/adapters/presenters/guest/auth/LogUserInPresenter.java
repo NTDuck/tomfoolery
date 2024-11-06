@@ -10,7 +10,7 @@ import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.Presenter;
 
 @RequiredArgsConstructor(staticName = "of")
-public class LogUserInPresenter implements Presenter<LogUserInUseCase.Response, LogUserInPresenter.ViewModel> {
+public final class LogUserInPresenter implements Presenter<LogUserInUseCase.Response, LogUserInPresenter.ViewModel> {
     private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
 
     @Override

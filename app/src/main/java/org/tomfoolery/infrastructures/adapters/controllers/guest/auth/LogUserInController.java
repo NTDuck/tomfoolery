@@ -11,7 +11,7 @@ import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionController;
 
-public class LogUserInController implements ThrowableFunctionController<LogUserInController.Request, LogUserInUseCase.Response> {
+public final class LogUserInController implements ThrowableFunctionController<LogUserInController.Request, LogUserInUseCase.Response> {
     private final @NonNull LogUserInUseCase useCase;
 
     public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {

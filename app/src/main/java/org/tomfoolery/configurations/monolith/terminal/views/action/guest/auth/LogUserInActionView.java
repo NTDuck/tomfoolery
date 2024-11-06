@@ -23,7 +23,7 @@ import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPr
 
 import java.util.Map;
 
-public class LogUserInActionView implements ActionView {
+public final class LogUserInActionView implements ActionView {
     private static final @NonNull Map<Class<? extends BaseUser>, Class<? extends SelectionView>> USER_CLASS_TO_VIEW_CLASS_MAP = Map.of(
         Administrator.class, AdministratorSelectionView.class,
         Patron.class, PatronSelectionView.class,

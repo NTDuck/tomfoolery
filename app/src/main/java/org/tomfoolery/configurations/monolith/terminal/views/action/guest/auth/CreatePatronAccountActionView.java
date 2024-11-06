@@ -11,9 +11,7 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
-import java.util.Arrays;
-
-public class CreatePatronAccountActionView implements ActionView {
+public final class CreatePatronAccountActionView implements ActionView {
     private final @NonNull IOHandler ioHandler;
 
     private final @NonNull CreatePatronAccountController controller;

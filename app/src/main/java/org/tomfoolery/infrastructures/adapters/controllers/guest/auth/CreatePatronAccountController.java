@@ -10,7 +10,7 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
-public class CreatePatronAccountController implements ThrowableConsumer<CreatePatronAccountController.Request> {
+public final class CreatePatronAccountController implements ThrowableConsumer<CreatePatronAccountController.Request> {
     private final @NonNull CreatePatronAccountUseCase useCase;
 
     public static @NonNull CreatePatronAccountController of(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
