@@ -13,6 +13,7 @@ import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 @NoArgsConstructor(staticName = "of")
 public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGenerator {
@@ -23,7 +24,7 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     @Override
     public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val serializedPayload = Jwts.builder()
-            .claim(USER_ID_CLAIM_LABEL, userId)   // BaseUser.Id is serializable by default
+            .claim(USER_ID_CLAIM_LABEL, generateSerializableFromUserId(userId))
             .claim(USER_CLASS_CLAIM_LABEL, generateSerializableFromUserClass(userClass))
             .claim(EXPIRATION_CLAIM_LABEL, generateSerializableFromExpiryTimestamp(expiryTimestamp))
 
@@ -45,6 +46,7 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
             return false;
 
         val authenticationTokenExpiryTimestamp = getExpiryTimestampFromSerializable(payload.get(EXPIRATION_CLAIM_LABEL));
+
         return Instant.now().isBefore(authenticationTokenExpiryTimestamp);
     }
 
@@ -55,7 +57,7 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
         if (payload == null)
             return null;
 
-        return (BaseUser.Id) payload.get(USER_ID_CLAIM_LABEL);
+        return getUserIdFromSerializable(payload.get(USER_ID_CLAIM_LABEL));
     }
 
     @Override
@@ -77,6 +79,14 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
             .build()
             .parseUnsecuredClaims(serializedPayload)
             .getPayload();
+    }
+
+    private static @NonNull Serializable generateSerializableFromUserId(BaseUser.@NonNull Id userId) {
+        return userId.getValue().toString();
+    }
+
+    private static BaseUser.@NonNull Id getUserIdFromSerializable(@NonNull Object serializable) {
+        return BaseUser.Id.of(UUID.fromString((String) serializable));
     }
 
     private static @NonNull Serializable generateSerializableFromUserClass(@NonNull Class<? extends BaseUser> userClass) {

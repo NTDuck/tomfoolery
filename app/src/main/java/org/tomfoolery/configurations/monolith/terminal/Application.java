@@ -10,6 +10,7 @@ import org.tomfoolery.configurations.monolith.terminal.views.abc.View;
 import org.tomfoolery.configurations.monolith.terminal.utils.containers.Views;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.CreatePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.LogUserInActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.action.user.auth.LogUserOutActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
@@ -74,11 +75,14 @@ public class Application implements Runnable, AutoCloseable {
         StaffSelectionView.of(ioHandler),
 
         CreatePatronAccountActionView.of(ioHandler, patronRepository, passwordEncoder),
-        LogUserInActionView.of(ioHandler, userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository)
+        LogUserInActionView.of(ioHandler, userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository),
+
+        LogUserOutActionView.of(ioHandler, authenticationTokenGenerator, authenticationTokenRepository, userRepositories)
     );
 
     @Override
     public void run() {
+        // Decoy
         this.patronRepository.save(Patron.of(
             BaseUser.Id.of(UUID.randomUUID()),
             BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword("Root_123")),
