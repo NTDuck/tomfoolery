@@ -3,6 +3,7 @@ package org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.securi
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -10,20 +11,21 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @NoArgsConstructor(staticName = "of")
 public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGenerator {
     private static final @NonNull String USER_ID_CLAIM_LABEL = "uid";
     private static final @NonNull String USER_CLASS_CLAIM_LABEL = "type";
-    private static final @NonNull String EXPIRATION_CLAIM_LABEL = "exp";
+    private static final @NonNull String EXPIRATION_CLAIM_LABEL = "expl";
 
     @Override
     public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val serializedPayload = Jwts.builder()
-            .claim(USER_ID_CLAIM_LABEL, userId)
-            .claim(USER_CLASS_CLAIM_LABEL, userClass)
-            .claim(EXPIRATION_CLAIM_LABEL, expiryTimestamp)
+            .claim(USER_ID_CLAIM_LABEL, userId)   // BaseUser.Id is serializable by default
+            .claim(USER_CLASS_CLAIM_LABEL, generateSerializableFromUserClass(userClass))
+            .claim(EXPIRATION_CLAIM_LABEL, generateSerializableFromExpiryTimestamp(expiryTimestamp))
 
             .compact();
 
@@ -42,7 +44,7 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
         if (payload == null)
             return false;
 
-        val authenticationTokenExpiryTimestamp = (Instant) payload.get(EXPIRATION_CLAIM_LABEL);
+        val authenticationTokenExpiryTimestamp = getExpiryTimestampFromSerializable(payload.get(EXPIRATION_CLAIM_LABEL));
         return Instant.now().isBefore(authenticationTokenExpiryTimestamp);
     }
 
@@ -56,28 +58,41 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
         return (BaseUser.Id) payload.get(USER_ID_CLAIM_LABEL);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
+    @SneakyThrows
     public @Nullable Class<? extends BaseUser> getUserClassFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
         if (payload == null)
             return null;
 
-        return (Class<? extends BaseUser>) payload.get(USER_CLASS_CLAIM_LABEL);
+        return getUserClassFromSerializable(payload.get(USER_CLASS_CLAIM_LABEL));
     }
 
-    private @Nullable Claims getPayloadFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    private static @Nullable Claims getPayloadFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         val serializedPayload = authenticationToken.getSerializedPayload();
 
-        try {
-            return Jwts.parser()
-                .build()
-                .parseUnsecuredClaims(serializedPayload)
-                .getPayload();
+        return Jwts.parser()
+            .unsecured()
+            .build()
+            .parseUnsecuredClaims(serializedPayload)
+            .getPayload();
+    }
 
-        } catch (Exception exception) {
-            return null;
-        }
+    private static @NonNull Serializable generateSerializableFromUserClass(@NonNull Class<? extends BaseUser> userClass) {
+        return userClass.getName();
+    }
+
+    @SneakyThrows
+    private static @NonNull Class<? extends BaseUser> getUserClassFromSerializable(@NonNull Object serializable) {
+        return Class.forName((String) serializable).asSubclass(BaseUser.class);
+    }
+
+    private static @NonNull Serializable generateSerializableFromExpiryTimestamp(@NonNull Instant expiryTimestamp) {
+        return expiryTimestamp.toEpochMilli();
+    }
+
+    private static @NonNull Instant getExpiryTimestampFromSerializable(@NonNull Object serializable) {
+        return Instant.ofEpochMilli((long) serializable);
     }
 }

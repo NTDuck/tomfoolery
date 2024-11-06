@@ -21,7 +21,6 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
 
-import java.util.Arrays;
 import java.util.Map;
 
 public class LogUserInActionView implements ActionView {
@@ -85,6 +84,7 @@ public class LogUserInActionView implements ActionView {
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
         val userClass = viewModel.getUserClass();
         this.nextViewClass = USER_CLASS_TO_VIEW_CLASS_MAP.get(userClass);
+        assert this.nextViewClass != null;
 
         this.ioHandler.writeLine(SUCCESS_MESSAGE_FORMAT, "User logged in");
     }

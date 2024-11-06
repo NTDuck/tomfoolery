@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.ConsoleIOHandler;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.DefaultIOHandler;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.View;
 import org.tomfoolery.configurations.monolith.terminal.utils.containers.Views;
@@ -26,6 +25,9 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.DocumentRecommendationRepository;
+import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.document.references.ApacheDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
@@ -39,7 +41,8 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.I
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.recommendation.InMemoryDocumentRecommendationRepository;
 
-import java.util.function.Supplier;
+import java.time.Instant;
+import java.util.UUID;
 
 @NoArgsConstructor(staticName = "of")
 public class Application implements Runnable, AutoCloseable {
@@ -61,7 +64,7 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
     private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
-    private final @NonNull IOHandler ioHandler = selectFirstAvailableResource(ConsoleIOHandler::of, DefaultIOHandler::of);
+    private final @NonNull IOHandler ioHandler = ConsoleIOHandler.of();
 
     private final @NonNull Views views = Views.of(
         GuestSelectionView.of(ioHandler),
@@ -76,7 +79,12 @@ public class Application implements Runnable, AutoCloseable {
 
     @Override
     public void run() {
-        assert (ioHandler instanceof ConsoleIOHandler);
+        this.patronRepository.save(Patron.of(
+            BaseUser.Id.of(UUID.randomUUID()),
+            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword("Root_123")),
+            Patron.Audit.of(false, ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
+            Patron.Metadata.of("", "", "")
+        ));
 
         Class<? extends View> viewClass = GuestSelectionView.class;
         View view;
@@ -100,22 +108,6 @@ public class Application implements Runnable, AutoCloseable {
             if (resource instanceof AutoCloseable autoCloseableResource)
                 autoCloseableResource.close();
         }
-    }
-
-    @SafeVarargs
-    @SneakyThrows
-    private static <T> @NonNull T selectFirstAvailableResource(@NonNull Supplier<T>... resourceSuppliers) {
-        for (val resourceSupplier : resourceSuppliers) {
-            try {
-                val resource = resourceSupplier.get();
-
-                if (resource != null)
-                    return resource;
-
-            } catch (Exception exception) {}
-        }
-
-        throw new InstantiationException();
     }
 
     public static void main(String[] args) {
