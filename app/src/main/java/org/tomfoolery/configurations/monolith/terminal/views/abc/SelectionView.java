@@ -102,7 +102,7 @@ public abstract class SelectionView implements View {
     }
 
     protected @NonNull String getMessageOnSuccess() {
-        return String.format(SUCCESS_MESSAGE_FORMAT, "Redirecting ~");
+        return String.format(SUCCESS_MESSAGE_FORMAT, "Redirecting (●'◡'●)");
     }
 
     protected @NonNull String getMessageOnInputMismatchException() {

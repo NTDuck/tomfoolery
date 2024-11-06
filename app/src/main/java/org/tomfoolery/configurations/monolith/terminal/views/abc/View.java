@@ -9,6 +9,7 @@ public interface View extends Runnable {
 
     @Nullable Class<? extends View> getNextViewClass();
 
-    @NonNull String SUCCESS_MESSAGE_FORMAT = "Success: %s";
-    @NonNull String ERROR_MESSAGE_FORMAT = "Error: %s";
+    @NonNull String SUCCESS_MESSAGE_FORMAT = "Success: %s.";
+    @NonNull String ERROR_MESSAGE_FORMAT = "Error: %s.";
+    @NonNull String PROMPT_MESSAGE_FORMAT = "Enter %s: ";
 }

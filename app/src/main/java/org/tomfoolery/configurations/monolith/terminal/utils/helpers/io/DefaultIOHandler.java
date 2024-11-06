@@ -7,7 +7,7 @@ import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHa
 import java.util.Scanner;
 
 @NoArgsConstructor(staticName = "of")
-public class DefaultIOHandler implements IOHandler {
+public class DefaultIOHandler implements IOHandler, AutoCloseable {
     private final @NonNull Scanner scanner = new Scanner(System.in);
 
     @Override

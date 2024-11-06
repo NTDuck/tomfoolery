@@ -36,7 +36,7 @@ public final class Patron extends ModifiableUser {
     public static class Metadata implements ddd.ValueObject {
         private @NonNull String fullName;
         private @NonNull String address;
-        private @NonNull String gmail;
+        private @NonNull String email;
     }
 
     @Getter @Setter
