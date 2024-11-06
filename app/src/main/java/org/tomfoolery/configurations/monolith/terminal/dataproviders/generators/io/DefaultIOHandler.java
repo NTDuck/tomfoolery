@@ -1,8 +1,8 @@
-package org.tomfoolery.configurations.monolith.terminal.utils.helpers.io;
+package org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io;
 
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 
 import java.util.Scanner;
 

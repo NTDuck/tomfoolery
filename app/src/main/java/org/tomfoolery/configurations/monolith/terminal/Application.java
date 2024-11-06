@@ -4,9 +4,9 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.ConsoleIOHandler;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.View;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.ConsoleIOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.utils.containers.Views;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.CreatePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth.LogUserInActionView;
@@ -90,8 +90,8 @@ public class Application implements Runnable, AutoCloseable {
             Patron.Metadata.of("", "", "")
         ));
 
-        Class<? extends View> viewClass = GuestSelectionView.class;
-        View view;
+        Class<? extends BaseView> viewClass = GuestSelectionView.class;
+        BaseView view;
 
         do {
             view = this.views.getViewByClass(viewClass);

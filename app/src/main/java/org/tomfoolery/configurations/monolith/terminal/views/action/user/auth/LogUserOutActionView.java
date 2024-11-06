@@ -1,18 +1,16 @@
 package org.tomfoolery.configurations.monolith.terminal.views.action.user.auth;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.BaseSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.user.auth.LogUserOutUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 
-public final class LogUserOutActionView implements ActionView {
-    private final @NonNull IOHandler ioHandler;
-
+public final class LogUserOutActionView extends BaseView {
     private final @NonNull LogUserOutUseCase useCase;
 
     public static @NonNull LogUserOutActionView of(@NonNull IOHandler ioHandler, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
@@ -20,7 +18,8 @@ public final class LogUserOutActionView implements ActionView {
     }
 
     private LogUserOutActionView(@NonNull IOHandler ioHandler, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
-        this.ioHandler = ioHandler;
+        super(ioHandler);
+
         this.useCase = LogUserOutUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, userRepositories);
     }
 
@@ -36,7 +35,7 @@ public final class LogUserOutActionView implements ActionView {
     }
 
     @Override
-    public @NonNull Class<? extends SelectionView> getNextViewClass() {
+    public @NonNull Class<? extends BaseSelectionView> getNextViewClass() {
         return GuestSelectionView.class;
     }
 

@@ -15,21 +15,21 @@ import java.util.SequencedMap;
 public class SelectionItems implements Iterable<SelectionItem> {
     private final @NonNull SequencedMap<Integer, SelectionItem> itemIndexToItemMap = new LinkedHashMap<>();
 
-    public static @NonNull SelectionItems of(@NonNull Iterable<SelectionItem> rows) {
-        return new SelectionItems(rows);
+    public static @NonNull SelectionItems of(@NonNull Iterable<SelectionItem> selectionItems) {
+        return new SelectionItems(selectionItems);
     }
 
-    private SelectionItems(@NonNull Iterable<SelectionItem> items) {
-        for (val item : items)
-            this.addItem(item);
+    private SelectionItems(@NonNull Iterable<SelectionItem> selectionItems) {
+        for (val selectionItem : selectionItems)
+            this.addItem(selectionItem);
     }
 
     private void addItem(@NonNull SelectionItem selectionItem) {
         this.itemIndexToItemMap.put(selectionItem.getIndex(), selectionItem);
     }
 
-    public @Nullable SelectionItem getItemByIndex(int index) {
-        return this.itemIndexToItemMap.get(index);
+    public @Nullable SelectionItem getItemByIndex(int selectionItemIndex) {
+        return this.itemIndexToItemMap.get(selectionItemIndex);
     }
 
     @Override

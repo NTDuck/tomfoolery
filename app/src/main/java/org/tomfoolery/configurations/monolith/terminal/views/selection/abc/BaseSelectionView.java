@@ -1,28 +1,28 @@
-package org.tomfoolery.configurations.monolith.terminal.views.abc;
+package org.tomfoolery.configurations.monolith.terminal.views.selection.abc;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.adapters.SelectionAdapter;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.adapters.selection.SelectionAdapter;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 
 import java.util.InputMismatchException;
 import java.util.List;
 
-public abstract class SelectionView implements View {
-    private final @NonNull IOHandler ioHandler;
+public abstract class BaseSelectionView extends BaseView {
     private final @NonNull SelectionAdapter selectionAdapter;
 
-    private @Nullable Class<? extends View> nextViewClass = this.getClass();
+    private @Nullable Class<? extends BaseView> nextViewClass;
 
-    protected SelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionItem> selectionItems) {
-        this.ioHandler = ioHandler;
+    protected BaseSelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionItem> selectionItems) {
+        super(ioHandler);
         this.selectionAdapter = SelectionAdapter.of(selectionItems);
     }
 
     @Override
-    public void run() {
+    public final void run() {
         displayPrompt();
 
         val viewModel = this.selectionAdapter.get();
@@ -42,7 +42,7 @@ public abstract class SelectionView implements View {
     }
 
     @Override
-    public final @Nullable Class<? extends View> getNextViewClass() {
+    public final @Nullable Class<? extends BaseView> getNextViewClass() {
         return this.nextViewClass;
     }
 
@@ -66,7 +66,7 @@ public abstract class SelectionView implements View {
         val index = viewonlySelectionItem.getIndex();
         val label = viewonlySelectionItem.getLabel();
 
-        this.ioHandler.writeLine("[%d] %s", index, label);
+        this.ioHandler.writeLine("[%2d] %s", index, label);
     }
 
     private SelectionAdapter.@NonNull RequestObject getRequestObject() throws InputMismatchException {

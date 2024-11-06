@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.terminal.utils.helpers.adapters;
+package org.tomfoolery.configurations.monolith.terminal.adapters.selection;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.configurations.monolith.terminal.utils.containers.SelectionItems;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.View;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.util.List;
@@ -57,7 +57,7 @@ public class SelectionAdapter implements Supplier<SelectionAdapter.ViewModel>, T
 
     @Value(staticConstructor = "of")
     public static class ResponseModel {
-        @Nullable Class<? extends View> nextViewClass;
+        @Nullable Class<? extends BaseView> nextViewClass;
     }
 
     @Value(staticConstructor = "of")

@@ -2,18 +2,16 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.BaseSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
-public final class CreatePatronAccountActionView implements ActionView {
-    private final @NonNull IOHandler ioHandler;
-
+public final class CreatePatronAccountActionView extends BaseView {
     private final @NonNull CreatePatronAccountController controller;
 
     public static @NonNull CreatePatronAccountActionView of(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
@@ -21,7 +19,7 @@ public final class CreatePatronAccountActionView implements ActionView {
     }
 
     private CreatePatronAccountActionView(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
-        this.ioHandler = ioHandler;
+        super(ioHandler);
         this.controller = CreatePatronAccountController.of(patronRepository, passwordEncoder);
     }
 
@@ -41,7 +39,7 @@ public final class CreatePatronAccountActionView implements ActionView {
     }
 
     @Override
-    public @NonNull Class<? extends SelectionView> getNextViewClass() {
+    public @NonNull Class<? extends BaseSelectionView> getNextViewClass() {
         return GuestSelectionView.class;
     }
 
@@ -62,8 +60,8 @@ public final class CreatePatronAccountActionView implements ActionView {
 
     private void onPatronCredentialsInvalidException() {
         this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Invalid username or password");
-        this.ioHandler.writeLine("Username must be 8-16 characters long; contains only lowercase letters, digits, and underscores; must not start with a digit or end with an underscore.");
-        this.ioHandler.writeLine("Password must be 8-32 characters long; contains only letters, digits, and underscores.");
+        this.ioHandler.writeLine("(%s)", USERNAME_CONSTRAINT_MESSAGE);
+        this.ioHandler.writeLine("(%s)", PASSWORD_CONSTRAINT_MESSAGE);
     }
 
     private void onPatronAlreadyExistsException() {

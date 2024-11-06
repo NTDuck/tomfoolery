@@ -2,8 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.selection.abc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.SelectionView;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.auth.LogUserOutActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.GetDocumentByIdActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.ShowDocumentsActionView;
@@ -14,7 +13,7 @@ import org.tomfoolery.configurations.monolith.terminal.views.action.user.documen
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class UserSelectionView extends SelectionView {
+public abstract class UserSelectionView extends BaseSelectionView {
     private static final List<SelectionItem> DEFAULT_SELECTION_ITEMS = List.of(
         SelectionItem.of(0, "Exit", null),
         SelectionItem.of(1, "Log out", LogUserOutActionView.class),

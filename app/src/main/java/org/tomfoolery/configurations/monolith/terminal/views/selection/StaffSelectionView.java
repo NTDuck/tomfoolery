@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.selection;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.AddDocumentActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.RemoveDocumentActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.UpdateDocumentContentActionView;
