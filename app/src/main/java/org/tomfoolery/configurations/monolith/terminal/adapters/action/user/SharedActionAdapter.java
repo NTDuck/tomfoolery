@@ -11,7 +11,7 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor(staticName = "of")
-public final class SharedActionViewAdapter implements Supplier<SharedActionViewAdapter.ViewModel> {
+public final class SharedActionAdapter implements Supplier<SharedActionAdapter.ViewModel> {
     private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 

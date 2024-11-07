@@ -3,9 +3,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
-import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedUserActionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
@@ -14,11 +12,9 @@ import org.tomfoolery.core.usecases.user.documents.GetDocumentByIdUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.presenters.user.documents.GetDocumentByIdPresenter;
 
-public final class GetDocumentByIdActionView extends SharedActionView {
+public final class GetDocumentByIdActionView extends SharedUserActionView {
     private final @NonNull GetDocumentByIdController controller;
     private final @NonNull GetDocumentByIdPresenter presenter;
-
-    private @NonNull Class<? extends BaseView> nextViewClass = GuestSelectionView.class;
 
     public static @NonNull GetDocumentByIdActionView of(@NonNull IOHandler ioHandler, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
         return new GetDocumentByIdActionView(ioHandler, authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
@@ -42,11 +38,11 @@ public final class GetDocumentByIdActionView extends SharedActionView {
             onSuccess(viewModel);
 
         } catch (AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
-            throw new RuntimeException(e);
+            onAuthenticationTokenInvalidException();
         } catch (AuthenticatedUserUseCase.AuthenticationTokenNotFoundException exception) {
-            throw new RuntimeException(e);
+            onAuthenticationTokenNotFoundException();
         } catch (GetDocumentByIdUseCase.DocumentNotFoundException exception) {
-            throw new RuntimeException(e);
+            onDocumentNotFoundException();
         }
     }
 
@@ -60,23 +56,16 @@ public final class GetDocumentByIdActionView extends SharedActionView {
         displayViewModel(viewModel);
     }
 
-    private void onAuthenticationTokenInvalidException() {
-        this.nextViewClass = GuestSelectionView.class;
-        displayViewModel();
+    private void onDocumentNotFoundException() {
+        this.nextViewClass = getCurrentUserSelectionViewClassFromUserClass();
+        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Document not found");
     }
 
     private void displayViewModel(GetDocumentByIdPresenter.@NonNull ViewModel viewModel) {
-        this.ioHandler.writeLine("ISBN: %s", viewModel.getISBN());
+        val viewonlyDocumentPreview = viewModel.getViewonlyDocumentPreview();
 
-        this.ioHandler.writeLine("Title: %s", viewModel.getTitle());
-        this.ioHandler.writeLine("Description: %s", viewModel.getDescription());
-        this.ioHandler.writeLine("Authors: %s", String.join(", ", viewModel.getAuthors()));
-        this.ioHandler.writeLine("Genres: %s", String.join(", ", viewModel.getGenres()));
-
-        this.ioHandler.writeLine("Published year: %d", viewModel.getPublishedYear());
-        this.ioHandler.writeLine("Publisher: %s", viewModel.getPublisher());
-
-        this.ioHandler.writeLine("Rating: %f (%d rated, %d currently borrowing)", viewModel.getRating(), viewModel.getRatingCount(), viewModel.getBorrowingPatronCount());
+        this.ioHandler.writeLine("Here is your document:");
+        displayViewonlyDocumentPreview(viewonlyDocumentPreview);
         this.ioHandler.writeLine("There's also a cover image which is not displayed in console env");
     }
 }

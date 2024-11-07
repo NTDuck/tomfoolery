@@ -3,9 +3,9 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.BaseSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -14,18 +14,16 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
 
-public final class LogUserInActionView extends SharedActionView {
+public final class LogUserInActionView extends BaseView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
-
-    private @NonNull Class<? extends BaseSelectionView> nextViewClass = GuestSelectionView.class;
 
     public static @NonNull LogUserInActionView of(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new LogUserInActionView(ioHandler, userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     private LogUserInActionView(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler, authenticationTokenGenerator, authenticationTokenRepository);
+        super(ioHandler);
 
         this.controller = LogUserInController.of(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
         this.presenter = LogUserInPresenter.of(authenticationTokenGenerator);
@@ -52,11 +50,6 @@ public final class LogUserInActionView extends SharedActionView {
         }
     }
 
-    @Override
-    public @NonNull Class<? extends BaseSelectionView> getNextViewClass() {
-        return this.nextViewClass;
-    }
-
     private LogUserInController.@NonNull Request collectRequestObject() {
         val username = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "username");
         val password = this.ioHandler.readPassword(PROMPT_MESSAGE_FORMAT, "password");
@@ -66,7 +59,7 @@ public final class LogUserInActionView extends SharedActionView {
 
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
         val userClass = viewModel.getUserClass();
-        this.nextViewClass = getSelectionViewClassFromUserClass(userClass);
+        this.nextViewClass = UserSelectionView.getUserSelectionViewClassFromUserClass(userClass);
 
         this.ioHandler.writeLine(SUCCESS_MESSAGE_FORMAT, "User logged in");
     }

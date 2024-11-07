@@ -14,8 +14,6 @@ import java.util.List;
 public abstract class BaseSelectionView extends BaseView {
     private final @NonNull SelectionAdapter selectionAdapter;
 
-    private @Nullable Class<? extends BaseView> nextViewClass;
-
     protected BaseSelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionItem> selectionItems) {
         super(ioHandler);
         this.selectionAdapter = SelectionAdapter.of(selectionItems);
@@ -39,11 +37,6 @@ public abstract class BaseSelectionView extends BaseView {
         } catch (SelectionAdapter.SelectionItemNotFoundException exception) {
             onSelectionItemNotFoundException();
         }
-    }
-
-    @Override
-    public final @Nullable Class<? extends BaseView> getNextViewClass() {
-        return this.nextViewClass;
     }
 
     private void displayPrompt() {

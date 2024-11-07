@@ -20,6 +20,8 @@ public final class CreatePatronAccountActionView extends BaseView {
 
     private CreatePatronAccountActionView(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
         super(ioHandler);
+
+        this.nextViewClass = GuestSelectionView.class;
         this.controller = CreatePatronAccountController.of(patronRepository, passwordEncoder);
     }
 
@@ -36,11 +38,6 @@ public final class CreatePatronAccountActionView extends BaseView {
         } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException exception) {
             onPatronAlreadyExistsException();
         }
-    }
-
-    @Override
-    public @NonNull Class<? extends BaseSelectionView> getNextViewClass() {
-        return GuestSelectionView.class;
     }
 
     private CreatePatronAccountController.@NonNull Request collectRequestObject() {

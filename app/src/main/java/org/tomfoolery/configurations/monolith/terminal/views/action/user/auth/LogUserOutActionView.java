@@ -20,6 +20,7 @@ public final class LogUserOutActionView extends BaseView {
     private LogUserOutActionView(@NonNull IOHandler ioHandler, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
         super(ioHandler);
 
+        this.nextViewClass = GuestSelectionView.class;
         this.useCase = LogUserOutUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, userRepositories);
     }
 
@@ -32,11 +33,6 @@ public final class LogUserOutActionView extends BaseView {
         } catch (Exception exception) {
             onException();
         }
-    }
-
-    @Override
-    public @NonNull Class<? extends BaseSelectionView> getNextViewClass() {
-        return GuestSelectionView.class;
     }
 
     private void onSuccess() {
