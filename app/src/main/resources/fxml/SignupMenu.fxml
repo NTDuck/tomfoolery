@@ -59,9 +59,11 @@
         </VBox>
     </VBox>
 
+    <Label styleClass="message" fx:id="message"/>
+
     <Button text="SIGN UP" styleClass="signup-button" fx:id="signupButton" />
 
     <Pane prefHeight="20" />
 
-    <Button text="Return to Login" styleClass="returntologin-button" fx:id="returnToLoginButton" />
+    <Button text="Return to Login" styleClass="return-button" fx:id="returnButton" />
 </VBox>

@@ -9,8 +9,6 @@ import org.tomfoolery.core.domain.abc.ReadonlyUser;
 import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.Presenter;
 
-import java.util.Map;
-
 @RequiredArgsConstructor(staticName = "of")
 public class LogUserInPresenter implements Presenter<LogUserInUseCase.Response, LogUserInPresenter.ViewModel> {
     private final @NonNull AuthenticationTokenService authenticationTokenService;

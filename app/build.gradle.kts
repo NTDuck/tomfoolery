@@ -47,7 +47,7 @@ version = 1.0
 
 application {
     // Terminal version as default
-    mainClass = "${project.group}.configurations.monolith.terminal.Application"
+    mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
 
     // Prevents non-blocking `java.util.Scanner`
     tasks.getByName("run", JavaExec::class) {

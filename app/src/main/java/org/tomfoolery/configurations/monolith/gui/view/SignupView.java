@@ -1,10 +1,13 @@
 package org.tomfoolery.configurations.monolith.gui.view;
 
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.util.Duration;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
@@ -45,19 +48,30 @@ public class SignupView {
     private Button signupButton;
 
     @FXML
-    private Button returnToLoginButton;
+    private Button returnButton;
+
+    @FXML
+    private Label message;
 
     @FXML
     public void initialize() {
+        message.setVisible(false);
         signupButton.setOnAction(this::signup);
-        returnToLoginButton.setOnAction(this::returnToLogin);
+        returnButton.setOnAction(this::returnToLogin);
     }
 
     private void signup(ActionEvent event) {
         try {
             val requestObject = getRequestObject();
             this.controller.accept(requestObject);
-            System.out.println("registered successfully");
+
+            message.setText("Registered Successfully");
+            message.setStyle("-fx-text-fill: #9dcc65");
+            message.setVisible(true);
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+            pause.setOnFinished(e -> StageManager.openLoginMenu());
+            pause.play();
         } catch (PasswordMismatchException exception) {
             onPasswordMismatchException();
         } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException e) {
@@ -83,14 +97,23 @@ public class SignupView {
 
     private void onPasswordMismatchException() {
         System.out.println("Error: Password does not match.");
+        message.setText("Password does not match.");
+        message.setStyle("-fx-text-fill: #f7768e");
+        message.setVisible(true);
     }
 
     private void onPatronCredentialsInvalidException() {
         System.out.println("Error: Provided credentials are invalid.");
+        message.setText("Provided credentials are invalid.");
+        message.setStyle("-fx-text-fill: #f7768e");
+        message.setVisible(true);
     }
 
     private void onPatronAlreadyExistsException() {
         System.out.println("Error: Patron already exists.");
+        message.setText("Patron already exists.");
+        message.setStyle("-fx-text-fill: #f7768e");
+        message.setVisible(true);
     }
 
     private static class PasswordMismatchException extends Exception {}

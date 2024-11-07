@@ -8,21 +8,23 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import lombok.val;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.configurations.monolith.gui.presenter.LoginPresenter;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
 import org.tomfoolery.core.dataproviders.auth.PasswordService;
+import org.tomfoolery.core.domain.Administrator;
+import org.tomfoolery.core.domain.Staff;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
+import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class LoginView {
     private final @NonNull LogUserInController controller;
-    private final @NonNull LoginPresenter presenter;
+    private final @NonNull LogUserInPresenter presenter;
 
     public LoginView(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService,@NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
-        this.presenter = LoginPresenter.of(authenticationTokenService);
+        this.presenter = LogUserInPresenter.of(authenticationTokenService);
     }
 
     @FXML
@@ -55,20 +57,12 @@ public class LoginView {
 
         try {
             val responseModel = this.controller.apply(requestObject);
-            String mainMenuFxmlPath = this.presenter.getMainMenuPathFromResponseModel(responseModel);
-            StageManager.openMainMenu(mainMenuFxmlPath);
+            val viewModel = this.presenter.apply(responseModel);
+            StageManager.openMainMenu(getFXMLPathFromViewModel(viewModel));
         } catch (Exception exception) {
             errorMessage.setText("Invalid username or password");
             errorMessage.setVisible(true);
         }
-
-//        System.out.println("Login attempt with username: " + username);
-//        if (authenticate(username, password)) {
-//            StageManager.openMainMenu();
-//        } else {
-//            errorMessage.setText("Invalid username or password");
-//            errorMessage.setVisible(true);
-//        }
     }
 
     @FXML
@@ -76,13 +70,13 @@ public class LoginView {
         StageManager.openSignupMenu();
     }
 
-    private boolean authenticate(String username, String password) {
-        if (username.equals("adnope") && password.equals("a")) {
-            System.out.println("Login successful");
-            return true;
-        } else {
-            System.out.println("Login with " + username + " failed");
-            return false;
-        }
+    private @NonNull String getFXMLPathFromViewModel(LogUserInPresenter.@NonNull ViewModel viewModel) {
+        val userClass = viewModel.getUserClass();
+
+        if (userClass.equals(Administrator.class)) {
+            return "/fxml/Admin/MainMenu.fxml";
+        } else if (userClass.equals(Staff.class)) {
+            return "/fxml/Staff/MainMenu.fxml";
+        } else return "/fxml/Patron/MainMenu.fxml";
     }
 }

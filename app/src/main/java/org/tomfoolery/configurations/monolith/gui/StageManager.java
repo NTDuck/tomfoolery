@@ -25,24 +25,39 @@ import org.tomfoolery.infrastructures.dataproviders.inmemory.*;
 import java.io.IOException;
 
 public class StageManager {
+    private static final double LOGIN_MENU_WIDTH = 600;
+    private static final double LOGIN_MENU_HEIGHT = 800;
+    private static final double MAIN_STAGE_WIDTH = 1600;
+    private static final double MAIN_STAGE_HEIGHT = 900;
+
     private static @Getter Stage primaryStage;
 
-    private static final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
-    private static final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
-    private static final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
+    private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
+    private final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
+    private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
 
-    private static final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
-    private static final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
+    private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
+    private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
 
-    private static final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService.of();
-    private static final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
-    private static final @NonNull PasswordService passwordService = Base64PasswordService.of();
+    private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService.of();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
+    private final @NonNull PasswordService passwordService = Base64PasswordService.of();
 
     private StageManager() {
     }
 
     public static void setPrimaryStage(Stage stage) {
         StageManager.primaryStage = stage;
+    }
+
+    private static void setSize(double width, double height) {
+        primaryStage.setWidth(width);
+        primaryStage.setHeight(height);
+    }
+
+    private static void setIcon(String path) {
+        Image icon = new Image(StageManager.class.getResourceAsStream(path));
+        primaryStage.getIcons().add(icon);
     }
 
     public static void openLoginMenu() {
@@ -53,11 +68,9 @@ public class StageManager {
             VBox root = loader.load();
 
             Scene scene = new Scene(root);
-            primaryStage.setHeight(800);
-            primaryStage.setWidth(600);
+            setSize(LOGIN_MENU_WIDTH, LOGIN_MENU_HEIGHT);
+            setIcon("/images/logo.png");
             primaryStage.setResizable(false);
-            Image icon = new Image(StageManager.class.getResourceAsStream("/images/logo.png"));
-            primaryStage.getIcons().add(icon);
             primaryStage.setTitle("Tomfoolery - Login");
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -70,12 +83,8 @@ public class StageManager {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource(fxmlPath));
 
-            primaryStage.setMinHeight(720);
-            primaryStage.setMinWidth(1280);
-            primaryStage.setWidth(1600);
-            primaryStage.setHeight(900);
-            Image icon = new Image(StageManager.class.getResourceAsStream("/images/logo.png"));
-            primaryStage.getIcons().add(icon);
+            setSize(MAIN_STAGE_WIDTH, MAIN_STAGE_HEIGHT);
+            setIcon("/images/logo.png");
             primaryStage.setTitle("Tomfoolery - Library Management App");
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
@@ -92,11 +101,10 @@ public class StageManager {
             VBox root = loader.load();
 
             Scene scene = new Scene(root);
-            primaryStage.setHeight(800);
-            primaryStage.setWidth(600);
+
+            setSize(LOGIN_MENU_WIDTH, LOGIN_MENU_HEIGHT);
+            setIcon("/images/logo.png");
             primaryStage.setResizable(false);
-            Image icon = new Image(StageManager.class.getResourceAsStream("/images/logo.png"));
-            primaryStage.getIcons().add(icon);
             primaryStage.setTitle("Tomfoolery - Sign up");
             primaryStage.setScene(scene);
             primaryStage.show();
