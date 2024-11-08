@@ -32,10 +32,6 @@ Border and separator: #4C566A
     -fx-cursor: hand;
 }
 
-.dashboard {
-    -fx-background-color: #E7ECEF;
-}
-
 .welcome-text {
     -fx-background-color: white;
     -fx-pref-width: infinity;
@@ -84,7 +80,7 @@ Border and separator: #4C566A
 }
 
 .book-image-view {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.5, 0, 5); /* Adds a shadow */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 5, 5);
     -fx-border-width: 2;
     -fx-border-color: #ccc;
     -fx-background-color: white;
