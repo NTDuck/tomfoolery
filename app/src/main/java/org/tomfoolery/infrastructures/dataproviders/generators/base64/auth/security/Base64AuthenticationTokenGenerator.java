@@ -10,7 +10,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.infrastructures.utils.helpers.Base64Encoder;
+import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Encoder;
 
 import java.io.Serializable;
 import java.time.Instant;

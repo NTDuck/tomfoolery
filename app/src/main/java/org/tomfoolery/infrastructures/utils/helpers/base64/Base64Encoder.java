@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.utils.helpers;
+package org.tomfoolery.infrastructures.utils.helpers.base64;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

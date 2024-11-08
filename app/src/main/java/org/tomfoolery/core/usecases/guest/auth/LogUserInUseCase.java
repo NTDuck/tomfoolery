@@ -17,7 +17,7 @@ import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
 import java.time.Instant;
 
 @RequiredArgsConstructor(staticName = "of")
-public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
+public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request, LogUserInUseCase.Response> {
     private static final int TOKEN_LIFE_IN_MINUTES = 30;
 
     private final @NonNull UserRepositories userRepositories;
@@ -27,7 +27,7 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 
     @Override
-    public @NonNull Response apply(@NonNull Request<?> request) throws CredentialsInvalidException, UserNotFoundException, PasswordMismatchException, UserAlreadyLoggedInException {
+    public @NonNull Response apply(@NonNull Request request) throws CredentialsInvalidException, UserNotFoundException, PasswordMismatchException, UserAlreadyLoggedInException {
         val userCredentials = request.getUserCredentials();
         val username = userCredentials.getUsername();
         val password = userCredentials.getPassword();
@@ -100,8 +100,8 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
     }
 
     @Value(staticConstructor = "of")
-    public static class Request<User extends BaseUser> {
-        User.@NonNull Credentials userCredentials;
+    public static class Request {
+        BaseUser.@NonNull Credentials userCredentials;
     }
 
     @Value(staticConstructor = "of")

@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
-import org.tomfoolery.infrastructures.utils.helpers.Base64Encoder;
+import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Encoder;
 
 @NoArgsConstructor(staticName = "of")
 public class Base64PasswordEncoder implements PasswordEncoder {
