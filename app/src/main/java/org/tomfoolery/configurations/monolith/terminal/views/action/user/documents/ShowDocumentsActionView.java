@@ -37,7 +37,7 @@ public final class ShowDocumentsActionView extends SharedUserActionView {
             onAuthenticationTokenNotFoundException();
         } catch (AuthenticatedUserUseCase.AuthenticationTokenInvalidException e) {
             onAuthenticationTokenInvalidException();
-        } catch (ShowDocumentsUseCase.DocumentsNotFoundException e) {
+        } catch (ShowDocumentsUseCase.PaginationInvalidException e) {
             onDocumentsNotFoundException();
         }
     }
@@ -71,7 +71,7 @@ public final class ShowDocumentsActionView extends SharedUserActionView {
     private void displayViewModel(ShowDocumentsPresenter.@NonNull ViewModel viewModel) {
         this.ioHandler.writeLine("Page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        for (val viewonlyDocumentPreview : viewModel.getViewonlyDocumentPreviews()) {
+        for (val viewonlyDocumentPreview : viewModel.getViewableDocumentPreviews()) {
             displayViewonlyDocumentPreview(viewonlyDocumentPreview);
             this.ioHandler.writeLine("");
         }

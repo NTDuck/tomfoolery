@@ -10,15 +10,15 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.dataclasses.AverageRating;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
-public final class AddDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<AddDocumentUseCase.Request, AddDocumentUseCase.Response> {
+public final class AddDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<AddDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
 
     public static @NonNull AddDocumentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
@@ -36,7 +36,7 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentAlreadyExistsException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentAlreadyExistsException {
         val staffAuthenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(staffAuthenticationToken);
         val staffId = getStaffIdFromAuthenticationToken(staffAuthenticationToken);
@@ -50,9 +50,6 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         val document = createDocumentAndMarkAsCreatedByStaff(documentId, documentContent, documentMetadata, staffId);
 
         this.documentRepository.save(document);
-
-        val documentPreview = Document.Preview.of(document);
-        return Response.of(documentPreview);
     }
 
     private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
@@ -82,11 +79,6 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         Document.@NonNull Id documentId;
         Document.@NonNull Content documentContent;
         Document.@NonNull Metadata documentMetadata;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Response {
-        Document.@NonNull Preview documentPreview;
     }
 
     public static class DocumentAlreadyExistsException extends Exception {}

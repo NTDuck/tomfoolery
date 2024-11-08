@@ -9,15 +9,16 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
-public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<UpdateDocumentMetadataUseCase.Request, UpdateDocumentMetadataUseCase.Response> {
+public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdateDocumentMetadataUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
 
     public static @NonNull UpdateDocumentMetadataUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
@@ -35,7 +36,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(staffAuthenticationToken);
         val staffId = getStaffIdFromAuthenticationToken(staffAuthenticationToken);
@@ -43,14 +44,11 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
         val documentId = request.getDocumentId();
         val newDocumentMetadata = request.getNewDocumentMetadata();
 
-        val document = getDocumentById(documentId);
+        val fragmentaryDocument = getFragmentaryDocumentById(documentId);
 
-        updateDocumentMetadataAndMarkAsLastModifiedByStaff(document, newDocumentMetadata, staffId);
+        updateDocumentMetadataAndMarkAsLastModifiedByStaff(fragmentaryDocument, newDocumentMetadata, staffId);
 
-        this.documentRepository.save(document);
-
-        val documentPreview = Document.Preview.of(document);
-        return Response.of(documentPreview);
+        this.documentRepository.save(fragmentaryDocument);
     }
 
     private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
@@ -62,19 +60,19 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
         return staffId;
     }
 
-    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+    private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
 
-        if (document == null)
+        if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();
 
-        return document;
+        return fragmentaryDocument;
     }
 
-    private static void updateDocumentMetadataAndMarkAsLastModifiedByStaff(@NonNull Document document, Document.@NonNull Metadata newDocumentMetadata, Staff.@NonNull Id staffId) {
-        document.setMetadata(newDocumentMetadata);
+    private static void updateDocumentMetadataAndMarkAsLastModifiedByStaff(@NonNull FragmentaryDocument fragmentaryDocument, Document.@NonNull Metadata newDocumentMetadata, Staff.@NonNull Id staffId) {
+        fragmentaryDocument.setMetadata(newDocumentMetadata);
 
-        val documentAudit = document.getAudit();
+        val documentAudit = fragmentaryDocument.getAudit();
         val documentAuditTimestamps = documentAudit.getTimestamps();
 
         documentAudit.setLastModifiedByStaffId(staffId);
@@ -85,11 +83,6 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
     public static class Request {
         Document.@NonNull Id documentId;
         Document.@NonNull Metadata newDocumentMetadata;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Response {
-        Document.@NonNull Preview documentPreview;
     }
 
     public static class DocumentNotFoundException extends Exception {}

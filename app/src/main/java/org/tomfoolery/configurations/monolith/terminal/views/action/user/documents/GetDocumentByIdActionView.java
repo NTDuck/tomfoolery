@@ -9,7 +9,6 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.user.documents.GetDocumentByIdUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.presenters.user.documents.GetDocumentByIdPresenter;
 
 public final class GetDocumentByIdActionView extends SharedUserActionView {
@@ -62,7 +61,7 @@ public final class GetDocumentByIdActionView extends SharedUserActionView {
     }
 
     private void displayViewModel(GetDocumentByIdPresenter.@NonNull ViewModel viewModel) {
-        val viewonlyDocumentPreview = viewModel.getViewonlyDocumentPreview();
+        val viewonlyDocumentPreview = viewModel.getViewableDocumentPreview();
 
         this.ioHandler.writeLine("Here is your document:");
         displayViewonlyDocumentPreview(viewonlyDocumentPreview);

@@ -7,7 +7,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.DocumentRecommendationRepository;
-import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
 
@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public abstract class GetScheduledDocumentRecommendationUseCase extends AuthenticatedUserUseCase implements ThrowableSupplier<GetScheduledDocumentRecommendationUseCase.Response> {
     private static final @NonNull Duration GENERATION_INTERVAL = Duration.ofDays(1);
@@ -31,7 +30,7 @@ public abstract class GetScheduledDocumentRecommendationUseCase extends Authenti
         this.documentRecommendationRepository = documentRecommendationRepository;
     }
 
-    protected abstract @NonNull Supplier<Collection<Document>> getDocumentRecommendationSupplier();
+    protected abstract @NonNull Supplier<Collection<FragmentaryDocument>> getDocumentRecommendationSupplier();
 
     @Override
     public @NonNull Response get() throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException {
@@ -43,9 +42,8 @@ public abstract class GetScheduledDocumentRecommendationUseCase extends Authenti
 
         val documentRecommendationSupplier = getDocumentRecommendationSupplier();
         val documentRecommendation = documentRecommendationSupplier.get();
-        val documentRecommendationPreview = getDocumentRecommendationPreviewFromDocumentRecommendation(documentRecommendation);
 
-        return Response.of(documentRecommendationPreview);
+        return Response.of(documentRecommendation);
     }
 
     private boolean isGenerationIntervalElapsed() {
@@ -77,14 +75,8 @@ public abstract class GetScheduledDocumentRecommendationUseCase extends Authenti
         });
     }
 
-    private static @NonNull Collection<Document.Preview> getDocumentRecommendationPreviewFromDocumentRecommendation(@NonNull Collection<Document> documentRecommendation) {
-        return documentRecommendation.stream()
-            .map(Document.Preview::of)
-            .collect(Collectors.toUnmodifiableList());
-    }
-
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Collection<Document.Preview> documentRecommendationPreview;
+        @NonNull Collection<FragmentaryDocument> documentRecommendation;
     }
 }

@@ -7,6 +7,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
@@ -28,19 +29,18 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
         ensureAuthenticationTokenIsValid(authenticationToken);
 
         val documentId = request.getDocumentId();
-        val document = getDocumentFromId(documentId);
-        val documentPreview = Document.Preview.of(document);
+        val fragmentaryDocument = getFragmentaryDocumentFromId(documentId);
 
-        return Response.of(documentPreview);
+        return Response.of(fragmentaryDocument);
     }
 
-    private @NonNull Document getDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+    private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
 
-        if (document == null)
+        if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();
 
-        return document;
+        return fragmentaryDocument;
     }
 
     @Value(staticConstructor = "of")
@@ -50,7 +50,7 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
 
     @Value(staticConstructor = "of")
     public static class Response {
-        Document.@NonNull Preview documentPreview;
+        @NonNull FragmentaryDocument fragmentaryDocument;
     }
 
     public static class DocumentNotFoundException extends Exception {}

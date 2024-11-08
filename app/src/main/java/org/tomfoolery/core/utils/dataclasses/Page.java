@@ -32,6 +32,20 @@ public class Page<T> implements Iterable<T> {
         return new Page<>(paginatedItems, pageIndex, maxPageIndex);
     }
 
+    public static <T, U> @NonNull Page<U> fromPaginated(@NonNull Page<T> sourcePage, @NonNull Function<T, U> mapper) {
+        val paginatedItems = StreamSupport.stream(sourcePage.spliterator(), true)
+                .map(mapper)
+                .toList();
+
+        val pageIndex = sourcePage.getPageIndex();
+        val maxPageIndex = sourcePage.getMaxPageIndex();
+
+        val page = Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
+        assert page != null;
+
+        return page;
+    }
+    
     public static <T> @Nullable Page<T> fromUnpaginated(@NonNull Collection<T> unpaginatedItems, int pageIndex, int maxPageSize) {
         if (pageIndex < 0)
             return null;
@@ -48,20 +62,6 @@ public class Page<T> implements Iterable<T> {
             .toList();
 
         return Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
-    }
-
-    public static <T, U> @NonNull Page<U> fromPage(@NonNull Page<T> sourcePage, @NonNull Function<T, U> mapper) {
-        val paginatedItems = StreamSupport.stream(sourcePage.spliterator(), true)
-            .map(mapper)
-            .toList();
-
-        val pageIndex = sourcePage.getPageIndex();
-        val maxPageIndex = sourcePage.getMaxPageIndex();
-
-        val page = Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
-        assert page != null;
-
-        return page;
     }
 
     public static int getOffset(int pageIndex, int maxPageSize) {

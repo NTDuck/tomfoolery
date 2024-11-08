@@ -1,13 +1,12 @@
 package org.tomfoolery.core.usecases.user.documents;
 
-import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.Page;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
@@ -25,31 +24,25 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenInvalidException, AuthenticationTokenNotFoundException, DocumentsNotFoundException {
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenInvalidException, AuthenticationTokenNotFoundException, PaginationInvalidException {
         val authenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(authenticationToken);
 
         val pageIndex = request.getPageIndex();
         val pageSize = request.getPageSize();
 
-        val paginatedDocuments = getPaginatedDocuments(pageIndex, pageSize);
-        val paginatedDocumentPreviews = getPaginatedDocumentPreviewsFromPaginatedDocuments(paginatedDocuments);
+        val paginatedFragmentaryDocuments = getPaginatedFragmentaryDocuments(pageIndex, pageSize);
 
-        return Response.of(paginatedDocumentPreviews);
+        return Response.of(paginatedFragmentaryDocuments);
     }
 
-    private @NonNull Page<Document> getPaginatedDocuments(int pageIndex, int pageSize) throws DocumentsNotFoundException {
-        val paginatedDocuments = this.documentRepository.showPaginated(pageIndex, pageSize);
+    private @NonNull Page<FragmentaryDocument> getPaginatedFragmentaryDocuments(int pageIndex, int pageSize) throws PaginationInvalidException {
+        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedFragmentary(pageIndex, pageSize);
 
-        if (paginatedDocuments == null)
-            throw new DocumentsNotFoundException();
+        if (paginatedFragmentaryDocuments == null)
+            throw new PaginationInvalidException();
 
-        return paginatedDocuments;
-    }
-
-    @SneakyThrows
-    private @NonNull Page<Document.Preview> getPaginatedDocumentPreviewsFromPaginatedDocuments(@NonNull Page<Document> paginatedDocuments) {
-        return Page.fromPage(paginatedDocuments, Document.Preview::of);
+        return paginatedFragmentaryDocuments;
     }
 
     @Value(staticConstructor = "of")
@@ -60,8 +53,8 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document.Preview> paginatedDocumentPreviews;
+        @NonNull Page<FragmentaryDocument> paginatedFragmentaryDocuments;
     }
 
-    public static class DocumentsNotFoundException extends Exception {}
+    public static class PaginationInvalidException extends Exception {}
 }

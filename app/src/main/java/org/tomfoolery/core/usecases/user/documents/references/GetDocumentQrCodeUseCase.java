@@ -9,6 +9,7 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
@@ -37,21 +38,21 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
         ensureAuthenticationTokenIsValid(authenticationToken);
 
         val documentId = request.getDocumentId();
-        val documentPreview = getDocumentPreviewFromDocumentId(documentId);
+        val fragmentaryDocument = getFragmentaryDocumentFromId(documentId);
 
-        val documentUrl = this.documentUrlGenerator.generateUrlFromDocumentPreview(documentPreview);
+        val documentUrl = this.documentUrlGenerator.generateUrlFromFragmentaryDocument(fragmentaryDocument);
         val documentQrCode = this.documentQrCodeGenerator.generateQrCodeFromUrl(documentUrl);
 
         return Response.of(documentQrCode);
     }
 
-    private Document.@NonNull Preview getDocumentPreviewFromDocumentId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+    private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
 
-        if (document == null)
+        if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();
 
-        return Document.Preview.of(document);
+        return fragmentaryDocument;
     }
 
     @Value(staticConstructor = "of")

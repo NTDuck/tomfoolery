@@ -4,7 +4,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.infrastructures.utils.dataclasses.ViewonlyDocumentPreview;
 
 public abstract class UserActionView extends BaseView {
     protected UserActionView(@NonNull IOHandler ioHandler) {
@@ -21,17 +20,17 @@ public abstract class UserActionView extends BaseView {
         this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Your session has expired, please log in again");
     }
 
-    protected void displayViewonlyDocumentPreview(@NonNull ViewonlyDocumentPreview viewonlyDocumentPreview) {
-        this.ioHandler.writeLine("ISBN: %s", viewonlyDocumentPreview.getISBN());
+    protected void displayViewonlyDocumentPreview(@NonNull ViewableDocumentPreview viewableDocumentPreview) {
+        this.ioHandler.writeLine("ISBN: %s", viewableDocumentPreview.getISBN());
 
-        this.ioHandler.writeLine("Title: %s", viewonlyDocumentPreview.getTitle());
-        this.ioHandler.writeLine("Description: %s", viewonlyDocumentPreview.getDescription());
-        this.ioHandler.writeLine("Authors: %s", String.join(", ", viewonlyDocumentPreview.getAuthors()));
-        this.ioHandler.writeLine("Genres: %s", String.join(", ", viewonlyDocumentPreview.getGenres()));
+        this.ioHandler.writeLine("Title: %s", viewableDocumentPreview.getTitle());
+        this.ioHandler.writeLine("Description: %s", viewableDocumentPreview.getDescription());
+        this.ioHandler.writeLine("Authors: %s", String.join(", ", viewableDocumentPreview.getAuthors()));
+        this.ioHandler.writeLine("Genres: %s", String.join(", ", viewableDocumentPreview.getGenres()));
 
-        this.ioHandler.writeLine("Published year: %d", viewonlyDocumentPreview.getPublishedYear());
-        this.ioHandler.writeLine("Publisher: %s", viewonlyDocumentPreview.getPublisher());
+        this.ioHandler.writeLine("Published year: %d", viewableDocumentPreview.getPublishedYear());
+        this.ioHandler.writeLine("Publisher: %s", viewableDocumentPreview.getPublisher());
 
-        this.ioHandler.writeLine("Rating: %f (%d rated, %d currently borrowing)", viewonlyDocumentPreview.getRating(), viewonlyDocumentPreview.getRatingCount(), viewonlyDocumentPreview.getBorrowingPatronCount());
+        this.ioHandler.writeLine("Rating: %f (%d rated, %d currently borrowing)", viewableDocumentPreview.getRating(), viewableDocumentPreview.getRatingCount(), viewableDocumentPreview.getBorrowingPatronCount());
     }
 }

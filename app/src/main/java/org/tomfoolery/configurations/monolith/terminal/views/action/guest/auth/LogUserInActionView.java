@@ -11,7 +11,6 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncode
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
 
 public final class LogUserInActionView extends BaseView {

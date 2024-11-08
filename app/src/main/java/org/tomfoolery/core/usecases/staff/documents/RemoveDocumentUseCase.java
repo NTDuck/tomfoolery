@@ -11,6 +11,7 @@ import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
@@ -27,6 +28,7 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
 
     private RemoveDocumentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+        
         this.documentRepository = documentRepository;
         this.patronRepository = patronRepository;
     }
@@ -42,25 +44,25 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
         ensureAuthenticationTokenIsValid(staffAuthenticationToken);
 
         val documentId = request.getDocumentId();
-        val document = getDocumentById(documentId);
+        val fragmentaryDocument = getFragmentaryDocumentById(documentId);
 
-        removeDocumentFromBorrowingPatrons(document);
+        removeDocumentFromBorrowingPatrons(fragmentaryDocument);
 
         this.documentRepository.delete(documentId);
     }
 
-    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+    private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
 
-        if (document == null)
+        if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();
 
-        return document;
+        return fragmentaryDocument;
     }
 
-    private void removeDocumentFromBorrowingPatrons(@NonNull Document document) {
-        val documentId = document.getId();
-        val borrowingPatronIds = document.getAudit().getBorrowingPatronIds();
+    private void removeDocumentFromBorrowingPatrons(@NonNull FragmentaryDocument fragmentaryDocument) {
+        val documentId = fragmentaryDocument.getId();
+        val borrowingPatronIds = fragmentaryDocument.getAudit().getBorrowingPatronIds();
 
         for (val borrowingPatronId : borrowingPatronIds)
             removeDocumentFromBorrowingPatron(documentId, borrowingPatronId);

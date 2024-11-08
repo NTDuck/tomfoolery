@@ -10,14 +10,14 @@ import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
-public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<UpdateDocumentContentUseCase.Request, UpdateDocumentContentUseCase.Response> {
+public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdateDocumentContentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
 
     public static @NonNull UpdateDocumentContentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
@@ -35,7 +35,7 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(staffAuthenticationToken);
         val staffId = getStaffIdFromAuthenticationToken(staffAuthenticationToken);
@@ -48,7 +48,6 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
         updateDocumentContentAndMarkAsLastModifiedByStaff(document, newDocumentContent, staffId);
 
         this.documentRepository.save(document);
-        return Response.of(documentId);
     }
 
     private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
@@ -83,11 +82,6 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
     public static class Request {
         Document.@NonNull Id documentId;
         Document.@NonNull Content newDocumentContent;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Response {
-        Document.@NonNull Id documentId;
     }
 
     public static class DocumentNotFoundException extends Exception {}

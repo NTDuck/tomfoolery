@@ -10,14 +10,15 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.util.Collection;
 import java.util.List;
 
-public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<BorrowDocumentUseCase.Request, BorrowDocumentUseCase.Response> {
+public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<BorrowDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
@@ -38,22 +39,19 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentAlreadyBorrowedException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentAlreadyBorrowedException {
         val patronAuthenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
 
         val documentId = request.getDocumentId();
-        val document = getDocumentFromId(documentId);
+        val fragmentaryDocument = getFragmentaryDocumentFromId(documentId);
 
         ensureDocumentIsNotBorrowed(patron, documentId);
-        markDocumentAsBorrowedByPatron(patron, document);
+        markDocumentAsBorrowedByPatron(patron, fragmentaryDocument);
 
-        this.documentRepository.save(document);
+        this.documentRepository.save(fragmentaryDocument);
         this.patronRepository.save(patron);
-
-        val documentPreview = Document.Preview.of(document);
-        return Response.of(documentPreview);
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
@@ -70,13 +68,13 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
         return patron;
     }
 
-    private @NonNull Document getDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+    private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
 
-        if (document == null)
+        if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();
 
-        return document;
+        return fragmentaryDocument;
     }
 
     private static void ensureDocumentIsNotBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentAlreadyBorrowedException {
@@ -87,15 +85,15 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
             throw new DocumentAlreadyBorrowedException();
     }
 
-    private static void markDocumentAsBorrowedByPatron(@NonNull Patron patron, @NonNull Document document) {
+    private static void markDocumentAsBorrowedByPatron(@NonNull Patron patron, @NonNull FragmentaryDocument fragmentaryDocument) {
         val patronId = patron.getId();
-        val documentId = document.getId();
+        val documentId = fragmentaryDocument.getId();
 
         val patronAudit = patron.getAudit();
         val borrowedDocumentIdsOfPatron = patronAudit.getBorrowedDocumentIds();
         borrowedDocumentIdsOfPatron.add(documentId);
 
-        val documentAudit = document.getAudit();
+        val documentAudit = fragmentaryDocument.getAudit();
         val borrowingPatronIdsOfDocument = documentAudit.getBorrowingPatronIds();
         borrowingPatronIdsOfDocument.add(patronId);
     }
@@ -103,11 +101,6 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     @Value(staticConstructor = "of")
     public static class Request {
         Document.@NonNull Id documentId;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Response {
-        Document.@NonNull Preview documentPreview;
     }
 
     public static class PatronNotFoundException extends Exception {}

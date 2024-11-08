@@ -6,7 +6,6 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.usecases.user.abc.SearchDocumentsByCriterionUseCase;
 import org.tomfoolery.infrastructures.utils.contracts.Presenter;
-import org.tomfoolery.infrastructures.utils.dataclasses.ViewonlyDocumentPreview;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +22,7 @@ public final class SearchDocumentsByCriterionPresenter implements Presenter<Sear
 
         val viewonlyDocumentPreviews = StreamSupport
                 .stream(paginatedDocumentPreviews.spliterator(), false)
-                .map(ViewonlyDocumentPreview::of)
+                .map(ViewableDocumentPreview::of)
                 .collect(Collectors.toUnmodifiableList());
 
         return ViewModel.of(pageIndex, maxPageIndex, viewonlyDocumentPreviews);
@@ -34,7 +33,7 @@ public final class SearchDocumentsByCriterionPresenter implements Presenter<Sear
         int pageIndex;
         int maxPageIndex;
 
-        List<ViewonlyDocumentPreview> viewonlyDocumentPreviews;
+        List<ViewableDocumentPreview> viewableDocumentPreviews;
     }
 }
 

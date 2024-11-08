@@ -5,7 +5,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.DocumentRecommendationRepository;
-import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.user.abc.GetScheduledDocumentRecommendationUseCase;
 
 import java.util.Collection;
@@ -21,7 +21,7 @@ public final class GetTopRatedDocumentRecommendationUseCase extends GetScheduled
     }
 
     @Override
-    protected @NonNull Supplier<Collection<Document>> getDocumentRecommendationSupplier() {
+    protected @NonNull Supplier<Collection<FragmentaryDocument>> getDocumentRecommendationSupplier() {
         return this.documentRecommendationRepository::getTopRatedDocumentRecommendation;
     }
 }

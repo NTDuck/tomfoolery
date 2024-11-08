@@ -8,6 +8,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.contracts.functional.TriFunction;
@@ -21,10 +22,10 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
         this.documentRepository = documentRepository;
     }
 
-    protected abstract @NonNull TriFunction<@NonNull String, @NonNull Integer, @NonNull Integer, @Nullable Page<Document>> getPaginatedDocumentsFunction();
+    protected abstract @NonNull TriFunction<@NonNull String, @NonNull Integer, @NonNull Integer, @Nullable Page<FragmentaryDocument>> getPaginatedFragmentaryDocumentsFunction();
 
     @Override
-    public final @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentsNotFoundException {
+    public final @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PaginationInvalidException {
         val userAuthenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(userAuthenticationToken);
 
@@ -32,20 +33,19 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
         val pageIndex = request.getPageIndex();
         val pageSize = request.getPageSize();
 
-        val paginatedDocuments = getPaginatedDocuments(criterion, pageIndex, pageSize);
-        val paginatedDocumentPreviews = Page.fromPage(paginatedDocuments, Document.Preview::of);
+        val paginatedFragmentaryDocuments = getPaginatedFragmentaryDocumentsByCriterion(criterion, pageIndex, pageSize);
 
-        return Response.of(paginatedDocumentPreviews);
+        return Response.of(paginatedFragmentaryDocuments);
     }
 
-    private @NonNull Page<Document> getPaginatedDocuments(@NonNull String criterion, int pageIndex, int pageSize) throws DocumentsNotFoundException {
-        val paginatedDocumentsFunction = getPaginatedDocumentsFunction();
-        val paginatedDocuments = paginatedDocumentsFunction.apply(criterion, pageIndex, pageSize);
+    private @NonNull Page<FragmentaryDocument> getPaginatedFragmentaryDocumentsByCriterion(@NonNull String criterion, int pageIndex, int pageSize) throws PaginationInvalidException {
+        val paginatedFragmentaryDocumentsFunction = getPaginatedFragmentaryDocumentsFunction();
+        val paginatedFragmentaryDocuments = paginatedFragmentaryDocumentsFunction.apply(criterion, pageIndex, pageSize);
 
-        if (paginatedDocuments == null)
-            throw new DocumentsNotFoundException();
+        if (paginatedFragmentaryDocuments == null)
+            throw new PaginationInvalidException();
 
-        return paginatedDocuments;
+        return paginatedFragmentaryDocuments;
     }
 
     @Value(staticConstructor = "of")
@@ -57,8 +57,8 @@ public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUse
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document.Preview> paginatedDocumentPreviews;
+        @NonNull Page<FragmentaryDocument> paginatedFragmentaryDocuments;
     }
 
-    public static class DocumentsNotFoundException extends Exception {}
+    public static class PaginationInvalidException extends Exception {}
 }

@@ -46,7 +46,8 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
         val authenticationToken = generateAuthenticationToken(userAndRepository);
         saveAuthenticationToken(authenticationToken);
 
-        return Response.of(authenticationToken);
+        val userClass = user.getClass();
+        return Response.of(userClass);
     }
 
     private static <User extends BaseUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
@@ -105,7 +106,7 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull AuthenticationToken authenticationToken;
+        @NonNull Class<? extends BaseUser> userClass;
     }
 
     public static class CredentialsInvalidException extends Exception {}
