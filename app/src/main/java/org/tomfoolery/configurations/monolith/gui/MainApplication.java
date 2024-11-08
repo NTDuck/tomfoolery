@@ -10,7 +10,7 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        StageManager.setPrimaryStage(primaryStage);
-        StageManager.openLoginMenu();
+        StageManager stageManager = new StageManager(primaryStage);
+        stageManager.openMenu("/fxml/Patron/Dashboard.fxml", );
     }
 }

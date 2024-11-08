@@ -18,9 +18,11 @@ import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatr
 
 public class SignupView {
     private final @NonNull CreatePatronAccountController controller;
+    private final @NonNull StageManager stageManager;
 
-    public SignupView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
+    public SignupView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService, StageManager stageManager) {
         controller = CreatePatronAccountController.of(patronRepository, passwordService);
+        this.stageManager = stageManager;
     }
 
     @FXML
@@ -70,7 +72,7 @@ public class SignupView {
             message.setVisible(true);
 
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
-            pause.setOnFinished(e -> StageManager.openLoginMenu());
+            pause.setOnFinished(e -> returnToLogin(e));
             pause.play();
         } catch (PasswordMismatchException exception) {
             onPasswordMismatchException();
@@ -118,8 +120,7 @@ public class SignupView {
 
     private static class PasswordMismatchException extends Exception {}
 
-    @FXML
     private void returnToLogin(ActionEvent event) {
-        StageManager.openLoginMenu();
+        stageManager.openLoginMenu();
     }
 }

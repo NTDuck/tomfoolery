@@ -7,8 +7,10 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
+import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
+import org.tomfoolery.configurations.monolith.gui.view.Patron.DashboardView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
 import org.tomfoolery.core.dataproviders.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
@@ -30,39 +32,41 @@ public class StageManager {
     private static final double MAIN_STAGE_WIDTH = 1600;
     private static final double MAIN_STAGE_HEIGHT = 900;
 
-    private static @Getter Stage primaryStage;
+    @Setter
+    private @Getter Stage primaryStage;
 
     private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
     private final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
     private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
 
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
-    private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
+    private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository,
+            staffRepository, patronRepository);
 
-    private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService.of();
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
+    private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService
+            .of();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository
+            .of();
     private final @NonNull PasswordService passwordService = Base64PasswordService.of();
 
-    private StageManager() {
+    public StageManager(Stage stage) {
+        primaryStage = stage;
     }
 
-    public static void setPrimaryStage(Stage stage) {
-        StageManager.primaryStage = stage;
-    }
-
-    private static void setSize(double width, double height) {
+    private void setSize(double width, double height) {
         primaryStage.setWidth(width);
         primaryStage.setHeight(height);
     }
 
-    private static void setIcon(String path) {
+    private void setIcon(String path) {
         Image icon = new Image(StageManager.class.getResourceAsStream(path));
         primaryStage.getIcons().add(icon);
     }
 
-    public static void openLoginMenu() {
+    public void openLoginMenu() {
         try {
-            LoginView controller = new LoginView(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+            LoginView controller = new LoginView(userRepositories, passwordService, authenticationTokenService,
+                    authenticationTokenRepository, this);
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/LoginMenu.fxml"));
             loader.setController(controller);
             VBox root = loader.load();
@@ -79,9 +83,23 @@ public class StageManager {
         }
     }
 
-    public static void openMainMenu(String fxmlPath) {
+    public void openMenu(String fxmlPath, String menuType) {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource(fxmlPath));
+            FXMLLoader loader = FXMLLoader.load(StageManager.class.getResource(fxmlPath));
+
+            switch (menuType) {
+                case "Dashboard":
+                    DashboardView dashboardController = new DashboardView(this);
+                    loader.setController(dashboardController);
+                    break;
+                case "Discover":
+                    System.out.println("discover");
+                    break;
+                default:
+                    System.out.println("wtf");
+            }
+
+            Parent root = loader.load();
 
             setSize(MAIN_STAGE_WIDTH, MAIN_STAGE_HEIGHT);
             setIcon("/images/logo.png");
@@ -93,9 +111,9 @@ public class StageManager {
         }
     }
 
-    public static void openSignupMenu() {
+    public void openSignupMenu() {
         try {
-            SignupView signUpController = new SignupView(patronRepository, passwordService);
+            SignupView signUpController = new SignupView(patronRepository, passwordService, this);
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/SignupMenu.fxml"));
             loader.setController(signUpController);
             VBox root = loader.load();

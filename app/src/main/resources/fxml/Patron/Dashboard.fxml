@@ -7,10 +7,10 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 
+<?import javafx.scene.control.Label?>
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
       prefWidth="1600" prefHeight="900"
-      stylesheets="/css/Patron/Dashboard.css" styleClass="main"
-      fx:controller="org.tomfoolery.configurations.monolith.gui.view.Patron.DashboardView">
+      stylesheets="/css/Patron/Dashboard.css" styleClass="main">
 
    <!-- SIDEBAR -->
    <VBox alignment="TOP_CENTER" prefHeight="900.0" prefWidth="100" styleClass="main"

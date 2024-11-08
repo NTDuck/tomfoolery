@@ -1,14 +1,20 @@
 package org.tomfoolery.configurations.monolith.gui.view.Patron;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import java.io.IOException;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.gui.StageManager;
 
-public class MainMenuView {
+public class DashboardView {
+    private final @NonNull StageManager stageManager;
+
+    public DashboardView(@NonNull StageManager stageManager) {
+        this.stageManager = stageManager;
+    }
+
     @FXML
     private Pane content = new Pane();
 
@@ -29,25 +35,11 @@ public class MainMenuView {
 
     @FXML
     public void initialize() {
-        goToDashboard();
-    }
 
-    private void loadContent(String fxmlFile) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-            content = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @FXML
-    private void goToDashboard() {
-        loadContent("/fxml/Patron/Dashboard.fxml");
     }
 
     @FXML
     private void goToDiscover() {
-        loadContent("/fxml/Patron/Discover.fxml");
+        stageManager.openMenu("/fxml/Patron/Discover.fxml", );
     }
 }
