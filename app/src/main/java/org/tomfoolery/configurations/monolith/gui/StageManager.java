@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -85,7 +86,7 @@ public class StageManager {
 
     public void openMenu(String fxmlPath, String menuType) {
         try {
-            FXMLLoader loader = FXMLLoader.load(StageManager.class.getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(StageManager.class.getResource(fxmlPath));
 
             switch (menuType) {
                 case "Dashboard":
@@ -99,7 +100,7 @@ public class StageManager {
                     System.out.println("wtf");
             }
 
-            Parent root = loader.load();
+            HBox root = loader.load();
 
             setSize(MAIN_STAGE_WIDTH, MAIN_STAGE_HEIGHT);
             setIcon("/images/logo.png");

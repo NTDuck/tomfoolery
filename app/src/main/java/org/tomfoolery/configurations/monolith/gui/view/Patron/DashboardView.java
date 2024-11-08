@@ -40,6 +40,6 @@ public class DashboardView {
 
     @FXML
     private void goToDiscover() {
-        stageManager.openMenu("/fxml/Patron/Discover.fxml", );
+        stageManager.openMenu("/fxml/Patron/Discover.fxml", "Discover");
     }
 }

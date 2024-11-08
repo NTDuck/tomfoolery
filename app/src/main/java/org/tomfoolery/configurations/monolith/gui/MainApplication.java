@@ -11,6 +11,6 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         StageManager stageManager = new StageManager(primaryStage);
-        stageManager.openMenu("/fxml/Patron/Dashboard.fxml", );
+        stageManager.openMenu("/fxml/Patron/Dashboard.fxml", "Dashboard");
     }
 }
