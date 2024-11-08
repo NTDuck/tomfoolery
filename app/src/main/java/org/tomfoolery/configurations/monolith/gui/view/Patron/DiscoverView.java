@@ -4,14 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 
-public class DashboardView {
+public class DiscoverView {
     private final @NonNull StageManager stageManager;
 
-    public DashboardView(@NonNull StageManager stageManager) {
+    public DiscoverView(@NonNull StageManager stageManager) {
         this.stageManager = stageManager;
     }
 
@@ -22,21 +21,15 @@ public class DashboardView {
     private Button sidebarDiscoverButton;
 
     @FXML
-    private Button sidebarNotificationButton;
-
-    @FXML
-    private Button sidebarProfileButton;
-
-    @FXML
-    private TextField searchField;
+    private Button notificationButton;
 
     @FXML
     public void initialize() {
-        sidebarDiscoverButton.setOnAction(event -> {goToDiscover();});
+        sidebarDashboardButton.setOnAction(event -> {goToDashboard();});
     }
 
     @FXML
-    private void goToDiscover() {
-        stageManager.openMenu("/fxml/Patron/Discover.fxml", "Discover");
+    private void goToDashboard() {
+        stageManager.openMenu("/fxml/Patron/Dashboard.fxml", "Dashboard");
     }
 }

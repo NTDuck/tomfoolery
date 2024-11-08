@@ -1,7 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -12,6 +11,7 @@ import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.Patron.DashboardView;
+import org.tomfoolery.configurations.monolith.gui.view.Patron.DiscoverView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
 import org.tomfoolery.core.dataproviders.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
@@ -26,12 +26,13 @@ import org.tomfoolery.infrastructures.dataproviders.hash.base64.Base64PasswordSe
 import org.tomfoolery.infrastructures.dataproviders.inmemory.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class StageManager {
     private static final double LOGIN_MENU_WIDTH = 600;
     private static final double LOGIN_MENU_HEIGHT = 800;
-    private static final double MAIN_STAGE_WIDTH = 1600;
-    private static final double MAIN_STAGE_HEIGHT = 900;
+    private static final double MAIN_STAGE_WIDTH = 1280;
+    private static final double MAIN_STAGE_HEIGHT = 720;
 
     @Setter
     private @Getter Stage primaryStage;
@@ -59,8 +60,8 @@ public class StageManager {
         primaryStage.setHeight(height);
     }
 
-    private void setIcon(String path) {
-        Image icon = new Image(StageManager.class.getResourceAsStream(path));
+    private void setIcon() {
+        Image icon = new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("/images/logo.png")));
         primaryStage.getIcons().add(icon);
     }
 
@@ -74,7 +75,7 @@ public class StageManager {
 
             Scene scene = new Scene(root);
             setSize(LOGIN_MENU_WIDTH, LOGIN_MENU_HEIGHT);
-            setIcon("/images/logo.png");
+            setIcon();
             primaryStage.setResizable(false);
             primaryStage.setTitle("Tomfoolery - Login");
             primaryStage.setScene(scene);
@@ -94,7 +95,8 @@ public class StageManager {
                     loader.setController(dashboardController);
                     break;
                 case "Discover":
-                    System.out.println("discover");
+                    DiscoverView discoverView = new DiscoverView(this);
+                    loader.setController(discoverView);
                     break;
                 default:
                     System.out.println("wtf");
@@ -103,7 +105,9 @@ public class StageManager {
             HBox root = loader.load();
 
             setSize(MAIN_STAGE_WIDTH, MAIN_STAGE_HEIGHT);
-            setIcon("/images/logo.png");
+            setIcon();
+            primaryStage.setMinHeight(720);
+            primaryStage.setMinWidth(1280);
             primaryStage.setTitle("Tomfoolery - Library Management App");
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
@@ -122,7 +126,7 @@ public class StageManager {
             Scene scene = new Scene(root);
 
             setSize(LOGIN_MENU_WIDTH, LOGIN_MENU_HEIGHT);
-            setIcon("/images/logo.png");
+            setIcon();
             primaryStage.setResizable(false);
             primaryStage.setTitle("Tomfoolery - Sign up");
             primaryStage.setScene(scene);
