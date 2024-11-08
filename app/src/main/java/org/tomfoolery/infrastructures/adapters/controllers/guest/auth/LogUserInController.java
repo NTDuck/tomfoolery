@@ -1,17 +1,15 @@
-package org.tomfoolery.infrastructures.adapters.guest.auth;
+package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 
-import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.helpers.reflection.Cloner;
 
 public final class LogUserInController implements ThrowableFunction<LogUserInController.RequestObject, LogUserInUseCase.Response> {
     private final @NonNull LogUserInUseCase logUserInUseCase;
@@ -26,19 +24,21 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
 
     @Override
     public LogUserInUseCase.@NonNull Response apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException, LogUserInUseCase.UserAlreadyLoggedInException {
-        val requestModel = generateRequestModelFromRequestObject(requestObject);
+        val requestModel = requestObject.toRequestModel();
         val responseModel = this.logUserInUseCase.apply(requestModel);
 
         return responseModel;
     }
 
-    @SneakyThrows
-    private static LogUserInUseCase.@NonNull Request generateRequestModelFromRequestObject(@NonNull RequestObject requestObject) {
-        return Cloner.cloneFrom(requestObject, LogUserInUseCase.Request.class);
-    }
-
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        BaseUser.@NonNull Credentials userCredentials;
+        @NonNull String username;
+        @NonNull String password;
+
+        private LogUserInUseCase.@NonNull Request toRequestModel() {
+            val credentials = Staff.Credentials.of(username, password);
+
+            return LogUserInUseCase.Request.of(credentials);
+        }
     }
 }

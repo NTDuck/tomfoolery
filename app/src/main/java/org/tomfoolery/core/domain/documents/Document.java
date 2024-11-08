@@ -1,5 +1,6 @@
 package org.tomfoolery.core.domain.documents;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -28,9 +29,10 @@ public final class Document implements ddd.Entity<Document.Id> {
         @NonNull String ISBN;
     }
 
-    @Data(staticConstructor = "of")
+    @Data
+    @AllArgsConstructor(staticName = "of")
     public static class Content implements ddd.ValueObject {
-        private transient byte @NonNull [] bytes;
+        private byte @NonNull [] bytes;
     }
 
     @Data(staticConstructor = "of")
@@ -45,9 +47,10 @@ public final class Document implements ddd.Entity<Document.Id> {
 
         private @NonNull CoverImage coverImage;
 
-        @Data(staticConstructor = "of")
+        @Data
+        @AllArgsConstructor(staticName = "of")
         public static class CoverImage implements ddd.ValueObject {
-            private byte @NonNull [] buffer;
+            private byte @NonNull [] bytes;
         }
     }
 

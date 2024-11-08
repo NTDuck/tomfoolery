@@ -1,6 +1,5 @@
-package org.tomfoolery.infrastructures.adapters.guest.auth;
+package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 
-import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -9,7 +8,6 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.infrastructures.utils.helpers.reflection.Cloner;
 
 public final class CreatePatronAccountController implements ThrowableConsumer<CreatePatronAccountController.RequestObject> {
     private final @NonNull CreatePatronAccountUseCase createPatronAccountUseCase;
@@ -24,18 +22,24 @@ public final class CreatePatronAccountController implements ThrowableConsumer<Cr
 
     @Override
     public void accept(@NonNull RequestObject requestObject) throws CreatePatronAccountUseCase.PatronCredentialsInvalidException, CreatePatronAccountUseCase.PatronAlreadyExistsException {
-        val requestModel = generateRequestModelFromRequestObject(requestObject);
+        val requestModel = requestObject.toRequestModel();
         this.createPatronAccountUseCase.accept(requestModel);
-    }
-
-    @SneakyThrows
-    private static CreatePatronAccountUseCase.@NonNull Request generateRequestModelFromRequestObject(@NonNull RequestObject requestObject) {
-        return Cloner.cloneFrom(requestObject, CreatePatronAccountUseCase.Request.class);
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        Patron.@NonNull Credentials patronCredentials;
-        Patron.@NonNull Metadata patronMetadata;
+        @NonNull String patronUsername;
+        @NonNull String patronPassword;
+
+        @NonNull String patronFullName;
+        @NonNull String patronAddress;
+        @NonNull String patronEmail;
+
+        private CreatePatronAccountUseCase.@NonNull Request toRequestModel() {
+            val patronCredentials = Patron.Credentials.of(patronUsername, patronPassword);
+            val patronMetadata = Patron.Metadata.of(patronFullName, patronAddress, patronEmail);
+
+            return CreatePatronAccountUseCase.Request.of(patronCredentials, patronMetadata);
+        }
     }
 }
