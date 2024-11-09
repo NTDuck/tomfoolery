@@ -1,4 +1,4 @@
-package org.tomfoolery.core.utils.dataclasses;
+package org.tomfoolery.core.utils.dataclasses.common;
 
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;

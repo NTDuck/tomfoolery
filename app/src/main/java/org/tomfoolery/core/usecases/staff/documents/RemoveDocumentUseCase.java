@@ -52,7 +52,7 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
+        val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
 
         if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();

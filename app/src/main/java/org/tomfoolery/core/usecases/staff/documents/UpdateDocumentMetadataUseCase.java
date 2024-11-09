@@ -12,7 +12,7 @@ import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -61,7 +61,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
+        val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
 
         if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();

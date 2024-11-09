@@ -12,7 +12,7 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 import java.util.Collection;
@@ -69,7 +69,7 @@ public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
+        val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
 
         if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();

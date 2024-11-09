@@ -12,7 +12,7 @@ import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.contracts.functional.TriFunction;
-import org.tomfoolery.core.utils.dataclasses.Page;
+import org.tomfoolery.core.utils.dataclasses.common.Page;
 
 public abstract class SearchDocumentsByCriterionUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<SearchDocumentsByCriterionUseCase.Request, SearchDocumentsByCriterionUseCase.Response> {
     protected final @NonNull DocumentRepository documentRepository;

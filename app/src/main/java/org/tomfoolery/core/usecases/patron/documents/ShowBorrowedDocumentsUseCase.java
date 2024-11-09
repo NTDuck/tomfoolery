@@ -14,8 +14,8 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.Page;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.common.Page;
 
 import java.util.Collection;
 import java.util.List;
@@ -84,7 +84,7 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) {
-        val fragmentaryDocument = this.documentRepository.getFragmentaryById(documentId);
+        val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
         assert fragmentaryDocument != null;
         return fragmentaryDocument;
     }

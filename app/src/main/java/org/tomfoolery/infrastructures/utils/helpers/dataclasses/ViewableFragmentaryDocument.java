@@ -46,8 +46,8 @@ public class ViewableFragmentaryDocument {
             .setDocumentPublisher(documentMetadata.getPublisher())
 
             .setNumberOfBorrowingPatrons(documentAudit.getBorrowingPatronIds().size())
-            .setNumberOfRatings(documentAudit.getRating().getRatingCount())
-            .setAverageRating(documentAudit.getRating().getRatingValue())
+            .setNumberOfRatings(documentAudit.getRating().getNumberOfRatings())
+            .setAverageRating(documentAudit.getRating().getValue())
 
             .build();
     }

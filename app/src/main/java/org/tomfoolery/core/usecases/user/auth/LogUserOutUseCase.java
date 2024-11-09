@@ -8,8 +8,8 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.common.UserAndRepository;
 
 import java.time.Instant;
 
@@ -63,6 +63,6 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
 
     private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         this.authenticationTokenGenerator.invalidateAuthenticationToken(authenticationToken);
-        this.authenticationTokenRepository.deleteAuthenticationToken();
+        this.authenticationTokenRepository.removeAuthenticationToken();
     }
 }

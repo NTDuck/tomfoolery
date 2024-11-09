@@ -5,7 +5,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.auth.abc.UserRepository;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
-import org.tomfoolery.core.utils.dataclasses.UserAndRepository;
+import org.tomfoolery.core.utils.dataclasses.common.UserAndRepository;
 
 import java.util.Iterator;
 import java.util.List;
@@ -57,9 +57,9 @@ public class UserRepositories implements Iterable<UserRepository<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    private <User extends BaseUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserFunction(@NonNull Function<@NonNull UserRepository<?>, @Nullable User> userFunction) {
+    private <User extends BaseUser> @Nullable UserAndRepository<User> getUserAndRepositoryByUserFunction(@NonNull Function<@NonNull UserRepository<?>, @Nullable User> userRepositoryToUser) {
         for (val userRepository : this) {
-            val user = userFunction.apply(userRepository);
+            val user = userRepositoryToUser.apply(userRepository);
 
             if (user != null)
                 return UserAndRepository.of(user, (UserRepository<User>) userRepository);

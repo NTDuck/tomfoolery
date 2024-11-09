@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.user.abc.SearchDocumentsByCriterionUseCase;
 import org.tomfoolery.core.utils.contracts.functional.TriFunction;
-import org.tomfoolery.core.utils.dataclasses.Page;
+import org.tomfoolery.core.utils.dataclasses.common.Page;
 
 public final class SearchDocumentsByTitleUseCase extends SearchDocumentsByCriterionUseCase {
     public static @NonNull SearchDocumentsByTitleUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {

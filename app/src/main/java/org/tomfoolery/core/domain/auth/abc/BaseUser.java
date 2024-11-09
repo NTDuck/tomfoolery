@@ -7,6 +7,7 @@ import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class BaseUser implements ddd.Entity<BaseUser.Id> {
     @Data(staticConstructor = "of")
     public static class Credentials implements ddd.ValueObject{
         private @NonNull String username;
-        private @NonNull String password;
+        private @NonNull SecureString password;
     }
 
     @Getter @Setter

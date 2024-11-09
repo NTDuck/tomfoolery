@@ -11,8 +11,8 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.AverageRating;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
 import java.time.Instant;
 import java.util.Collection;

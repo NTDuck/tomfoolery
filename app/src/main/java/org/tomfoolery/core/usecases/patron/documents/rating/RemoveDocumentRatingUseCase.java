@@ -13,7 +13,7 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.util.Collection;
 import java.util.List;

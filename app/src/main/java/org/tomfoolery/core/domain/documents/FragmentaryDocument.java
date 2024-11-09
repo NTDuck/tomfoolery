@@ -4,7 +4,7 @@ import lombok.Data;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Data
-public class FragmentaryDocument {
+public final class FragmentaryDocument {
     private final Document.@NonNull Id id;
     private Document.@NonNull Metadata metadata;
     private Document.@NonNull Audit audit;

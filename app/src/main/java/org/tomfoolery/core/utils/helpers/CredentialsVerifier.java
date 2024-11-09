@@ -8,7 +8,7 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class CredentialsVerifier {
-    public static <User extends BaseUser> boolean verifyCredentials(User.@NonNull Credentials credentials) {
+    public static boolean verifyCredentials(BaseUser.@NonNull Credentials credentials) {
         val username = credentials.getUsername();
         val password = credentials.getPassword();
 

@@ -4,15 +4,7 @@ import lombok.*;
 import org.tomfoolery.core.domain.documents.Document;
 
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ValueRange;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
-import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.utils.dataclasses.AverageRating;
 
-import java.io.IOException;
-import java.time.*;
 import java.util.*;
 
 @Data(staticConstructor = "of")

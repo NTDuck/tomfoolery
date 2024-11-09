@@ -9,7 +9,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.utils.dataclasses.AverageRating;
+import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -97,7 +97,7 @@ public class ApacheDocumentUrlGenerator implements DocumentUrlGenerator {
     }
 
     private static @NonNull ParameterPair generateParameterPairFromDocumentRating(@NonNull AverageRating rating) {
-        val stringifiedRating = Double.valueOf(rating.getRatingValue()).toString();
+        val stringifiedRating = Double.valueOf(rating.getValue()).toString();
         return ParameterPair.of(URL_PARAMETER_RATING, stringifiedRating);
     }
 

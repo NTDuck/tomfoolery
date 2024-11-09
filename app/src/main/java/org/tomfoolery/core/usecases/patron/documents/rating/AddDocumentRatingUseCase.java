@@ -13,8 +13,8 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.AverageRating;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
 import java.util.Collection;
 import java.util.List;
@@ -73,7 +73,7 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
     }
 
     private void ensureRatingValueIsValid(double ratingValue) throws RatingValueInvalidException {
-        if (!AverageRating.isRatingValueValid(ratingValue))
+        if (!AverageRating.isValid(ratingValue))
             throw new RatingValueInvalidException();
     }
 

@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 @NoArgsConstructor(staticName = "of")
 public class InMemoryAuthenticationTokenRepository implements AuthenticationTokenRepository {
@@ -16,7 +16,7 @@ public class InMemoryAuthenticationTokenRepository implements AuthenticationToke
     }
 
     @Override
-    public void deleteAuthenticationToken() {
+    public void removeAuthenticationToken() {
         this.authenticationToken = null;
     }
 

@@ -5,8 +5,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.Serializable;
 
 /**
- * Explicitly express pseudo-DDD concepts,
- * not as strict as <a href="https://github.com/xmolecules/jmolecules">jmolecules-ddd</a>.
+ * Expresses explicitly pseudo-DDD concepts.
  *
  * @see <a href="https://github.com/xmolecules/jmolecules">jmolecules-ddd</a>
  */

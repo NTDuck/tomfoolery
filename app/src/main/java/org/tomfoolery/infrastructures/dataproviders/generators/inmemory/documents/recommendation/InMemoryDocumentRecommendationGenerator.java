@@ -43,7 +43,7 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
 
     @Override
     public @NonNull Collection<Document> generateTopRatedDocumentRecommendation() {
-        val documentComparator = Comparator.<Document, Double>comparing(document -> document.getAudit().getRating().getRatingValue()).reversed();
+        val documentComparator = Comparator.<Document, Double>comparing(document -> document.getAudit().getRating().getValue()).reversed();
         return generateDocumentRecommendationByComparator(documentComparator);
     }
 

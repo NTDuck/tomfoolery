@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.utils.dataclasses.Page;
+import org.tomfoolery.core.utils.dataclasses.common.Page;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ShowDocumentsUseCase.Request, ShowDocumentsUseCase.Response> {
@@ -38,7 +38,7 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
     }
 
     private @NonNull Page<FragmentaryDocument> getPaginatedFragmentaryDocuments(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedFragmentary(pageIndex, maxPageSize);
+        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedFragmentaryDocuments(pageIndex, maxPageSize);
 
         if (paginatedFragmentaryDocuments == null)
             throw new PaginationInvalidException();

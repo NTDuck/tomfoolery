@@ -3,7 +3,7 @@ package org.tomfoolery.core.dataproviders.repositories.auth.security;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.Test;
-import org.tomfoolery.core.utils.dataclasses.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import static org.testng.Assert.*;
 
@@ -27,7 +27,7 @@ public abstract class AuthenticationTokenRepositoryTest {
         assertNotNull(retrievedAuthenticationToken);
         assertEquals(authenticationToken, retrievedAuthenticationToken);
 
-        authenticationTokenRepository.deleteAuthenticationToken();
+        authenticationTokenRepository.removeAuthenticationToken();
         assertFalse(authenticationTokenRepository.containsAuthenticationToken());
         assertNull(authenticationTokenRepository.getAuthenticationToken());
     }
@@ -54,7 +54,7 @@ public abstract class AuthenticationTokenRepositoryTest {
         assertNotNull(authenticationTokenRetrievedFromSecond);
         assertEquals(authenticationToken, authenticationTokenRetrievedFromSecond);
 
-        firstAuthenticationTokenRepository.deleteAuthenticationToken();
+        firstAuthenticationTokenRepository.removeAuthenticationToken();
         assertFalse(firstAuthenticationTokenRepository.containsAuthenticationToken());
         assertNull(firstAuthenticationTokenRepository.getAuthenticationToken());
         assertFalse(secondAuthenticationTokenRepository.containsAuthenticationToken());

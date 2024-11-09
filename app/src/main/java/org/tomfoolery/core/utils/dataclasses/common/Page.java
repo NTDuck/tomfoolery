@@ -1,4 +1,4 @@
-package org.tomfoolery.core.utils.dataclasses;
+package org.tomfoolery.core.utils.dataclasses.common;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -24,7 +23,7 @@ public class Page<T> implements Iterable<T> {
     @Unsigned int pageIndex;   // 1-indexed
     @Unsigned int maxPageIndex;
 
-    public static <T> @Nullable Page<T> fromPaginated(@NonNull List<T> paginatedItems, int pageIndex, int maxPageIndex) {
+    public static <T> @Nullable Page<T> fromPaginated(@NonNull List<T> paginatedItems, @Unsigned int pageIndex, @Unsigned int maxPageIndex) {
         if (pageIndex < 0 || maxPageIndex < pageIndex)
             return null;
 
@@ -45,17 +44,17 @@ public class Page<T> implements Iterable<T> {
         return page;
     }
     
-    public static <T> @Nullable Page<T> fromUnpaginated(@NonNull Collection<T> unpaginatedItems, int pageIndex, int maxPageSize) {
+    public static <T> @Nullable Page<T> fromUnpaginated(@NonNull List<T> unpaginatedItems, int pageIndex, int maxPageSize) {
         if (pageIndex < 0)
             return null;
 
-        val pageOffset = getOffset(pageIndex, maxPageSize);
+        val pageOffset = (pageIndex - 1) * maxPageSize;
         val maxPageIndex = unpaginatedItems.size() / maxPageSize;
 
         if (maxPageIndex < pageIndex)
             return null;
 
-        val paginatedItems = unpaginatedItems.stream()
+        val paginatedItems = unpaginatedItems.parallelStream()
             .skip(pageOffset)
             .limit(maxPageSize)
             .toList();
@@ -63,16 +62,8 @@ public class Page<T> implements Iterable<T> {
         return Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
     }
 
-    public static int getOffset(int pageIndex, int maxPageSize) {
-        return (pageIndex - 1) * maxPageSize;
-    }
-
     public int getPageSize() {
         return this.paginatedItems.size();
-    }
-
-    public int getOffset() {
-        return Page.getOffset(this.pageIndex, this.getPageSize());
     }
 
     @Override
