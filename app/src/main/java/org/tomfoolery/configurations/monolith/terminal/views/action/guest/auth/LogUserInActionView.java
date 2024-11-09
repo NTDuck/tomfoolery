@@ -2,56 +2,42 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
-import org.tomfoolery.core.domain.Administrator;
-import org.tomfoolery.core.domain.Patron;
-import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.domain.abc.ReadonlyUser;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
 
-import java.util.Map;
-
-public class LogUserInActionView implements ActionView {
+public final class LogUserInActionView extends BaseView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
 
-    private @NonNull Class<? extends SelectionView> nextViewClass = GuestSelectionView.class;
-
-    private final @NonNull Map<Class<? extends ReadonlyUser>, Class<? extends SelectionView>> userClassToViewClassMap = Map.of(
-        Administrator.class, AdministratorSelectionView.class,
-        Patron.class, PatronSelectionView.class,
-        Staff.class, StaffSelectionView.class
-    );
-
-    private LogUserInActionView(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
-        this.presenter = LogUserInPresenter.of(authenticationTokenService);
+    public static @NonNull LogUserInActionView of(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new LogUserInActionView(ioHandler, userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    public static @NonNull LogUserInActionView of(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new LogUserInActionView(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+    private LogUserInActionView(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioHandler);
+
+        this.controller = LogUserInController.of(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
+        this.presenter = LogUserInPresenter.of(authenticationTokenGenerator);
     }
 
     @Override
     public void run() {
-        val requestObject = getRequestObject();
+        val requestObject = collectRequestObject();
 
         try {
             val responseModel = this.controller.apply(requestObject);
             val viewModel = this.presenter.apply(responseModel);
+
             onSuccess(viewModel);
+
         } catch (LogUserInUseCase.CredentialsInvalidException exception) {
             onCredentialsInvalidException();
         } catch (LogUserInUseCase.UserNotFoundException exception) {
@@ -63,49 +49,40 @@ public class LogUserInActionView implements ActionView {
         }
     }
 
-    private static LogUserInController.@NonNull RequestObject getRequestObject() {
-        val scanner = ScannerService.getScanner();
+    private LogUserInController.@NonNull Request collectRequestObject() {
+        val username = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "username");
+        val password = this.ioHandler.readPassword(PROMPT_MESSAGE_FORMAT, "password");
 
-        System.out.print("Enter username: ");
-        val username = scanner.nextLine();
-
-        System.out.print("Enter password: ");
-        val password = scanner.nextLine();
-
-        return LogUserInController.RequestObject.of(username, password);
+        return LogUserInController.Request.of(username, new String(password));
     }
 
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
         val userClass = viewModel.getUserClass();
+        this.nextViewClass = UserSelectionView.getUserSelectionViewClassFromUserClass(userClass);
 
-        this.nextViewClass = userClassToViewClassMap.get(userClass);
-        assert nextViewClass != null;
-
-        System.out.println("Success: User logged in.");
+        this.ioHandler.writeLine(SUCCESS_MESSAGE_FORMAT, "User logged in");
     }
 
     private void onCredentialsInvalidException() {
         this.nextViewClass = GuestSelectionView.class;
-        System.out.println("Error: Provided credentials are invalid.");
+
+        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Invalid username or password");
+        this.ioHandler.writeLine("(%s)", USERNAME_CONSTRAINT_MESSAGE);
+        this.ioHandler.writeLine("(%s)", PASSWORD_CONSTRAINT_MESSAGE);
     }
 
     private void onUserNotFoundException() {
         this.nextViewClass = GuestSelectionView.class;
-        System.out.println("Error: Found no user with matching username.");
+        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Username not found");
     }
 
     private void onPasswordMismatchException() {
         this.nextViewClass = GuestSelectionView.class;
-        System.out.println("Error: Password does not match.");
+        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Wrong password");
     }
 
     private void onUserAlreadyLoggedInException() {
         this.nextViewClass = GuestSelectionView.class;
-        System.out.println("Error: User already logged in on another device.");
-    }
-
-    @Override
-    public @NonNull Class<? extends SelectionView> getNextViewClass() {
-        return this.nextViewClass;
+        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "User already logged in on another device");
     }
 }

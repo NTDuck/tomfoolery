@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      stylesheets="/css/NavigationBar.css"
+      styleClass="nav-bar" prefHeight="100" prefWidth="1600" HBox.hgrow="ALWAYS"
+      fx:controller="org.tomfoolery.configurations.monolith.gui.controller.NavigationBarController">
+
+    <!-- Tomfoolery app logo -->
+    <ImageView fitWidth="230" fitHeight="40">
+        <Image url="/images/menu_logo.png"/>
+    </ImageView>
+
+    <!-- Spacing between logo and search bar -->
+    <Pane HBox.hgrow="ALWAYS"/>
+
+    <!-- Search bar -->
+    <HBox styleClass="search-bar" prefHeight="100" prefWidth="600">
+        <ImageView fitWidth="25" fitHeight="25">
+            <Image url="/images/search.png"/>
+        </ImageView>
+        <TextField fx:id="searchField" promptText="Search for books" styleClass="search-text"/>
+    </HBox>
+
+    <!-- Spacing between search bar and profile button -->
+    <Pane HBox.hgrow="ALWAYS"/>
+
+    <!-- Notification icon -->
+    <Button styleClass="notification-button" prefWidth="50" prefHeight="50"
+            fx:id="notificationButton">
+        <graphic>
+            <ImageView fitHeight="25" fitWidth="25">
+                <Image url="/images/bell.png"/>
+            </ImageView>
+        </graphic>
+    </Button>
+
+    <MenuButton styleClass="profile-button" prefHeight="50" prefWidth="50"
+                fx:id="profileButton">
+        <graphic>
+            <ImageView fitHeight="35" fitWidth="35">
+                <Image url="/images/user.png"/>
+            </ImageView>
+        </graphic>
+        <selectionItems>
+            <MenuItem text="Login" onAction="#printSomething"/>
+            <MenuItem text="Settings"/>
+            <MenuItem text="Change Password"/>
+        </selectionItems>
+    </MenuButton>
+</HBox>

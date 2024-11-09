@@ -1,116 +1,83 @@
 package org.tomfoolery.configurations.monolith.terminal.adapters.selection;
 
-import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.View;
+import org.tomfoolery.configurations.monolith.terminal.utils.containers.SelectionItems;
+import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.SequencedMap;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class SelectionAdapter implements Supplier<SelectionAdapter.ViewModel>, ThrowableFunction<SelectionAdapter.RequestObject, SelectionAdapter.ResponseModel> {
-    private final @NonNull Items items;
+    private final @NonNull SelectionItems selectionItems;
 
-    private SelectionAdapter(@NonNull List<Item> items) {
-        this.items = Items.of(items);
+    public static @NonNull SelectionAdapter of(@NonNull List<SelectionItem> selectionItems) {
+        return new SelectionAdapter(selectionItems);
     }
 
-    public static @NonNull SelectionAdapter of(@NonNull List<Item> items) {
-        return new SelectionAdapter(items);
+    private SelectionAdapter(@NonNull List<SelectionItem> selectionItems) {
+        this.selectionItems = SelectionItems.of(selectionItems);
     }
 
     @Override
     public @NonNull ViewModel get() {
-        val viewonlyItems = getViewonlyItems();
-        return ViewModel.of(viewonlyItems);
+        val viewonlySelectionItems = getViewonlySelectionItems();
+        return ViewModel.of(viewonlySelectionItems);
     }
 
     @Override
-    public @NonNull ResponseModel apply(@NonNull RequestObject requestObject) throws ItemNotFoundException {
-        val itemIndex = requestObject.getItemIndex();
-        val item = this.items.getItemByIndex(itemIndex);
+    public @NonNull ResponseModel apply(@NonNull RequestObject requestObject) throws SelectionItemNotFoundException {
+        val selectionItemIndex = requestObject.getSelectionItemIndex();
+        val selectionItem = this.selectionItems.getItemByIndex(selectionItemIndex);
 
-        if (item == null)
-            throw new ItemNotFoundException();
+        if (selectionItem == null)
+            throw new SelectionItemNotFoundException();
 
-        val viewClass = item.getViewClass();
+        val viewClass = selectionItem.getViewClass();
         return ResponseModel.of(viewClass);
     }
 
-    private @NonNull List<ViewonlyItem> getViewonlyItems() {
-        List<ViewonlyItem> viewonlyItems = new ArrayList<>();
-
-        for (val item : this.items) {
-            val index = item.getIndex();
-            val label = item.getLabel();
-            val viewonlyItem = ViewonlyItem.of(index, label);
-            viewonlyItems.add(viewonlyItem);
-        }
-
-        return viewonlyItems;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class Item {
-        int index;
-        @NonNull String label;
-        @Nullable Class<? extends View> viewClass;
-    }
-
-    @Value(staticConstructor = "of")
-    public static class ViewonlyItem {
-        int index;
-        @NonNull String label;
-    }
-
-    @NoArgsConstructor(staticName = "of")
-    private static class Items implements Iterable<Item> {
-        private final @NonNull SequencedMap<Integer, Item> itemIndexToItemMap = new LinkedHashMap<>();
-
-        private Items(@NonNull Iterable<Item> items) {
-            for (val item : items)
-                this.addItem(item);
-        }
-
-        public static @NonNull Items of(@NonNull Iterable<Item> rows) {
-            return new Items(rows);
-        }
-
-        private void addItem(@NonNull Item item) {
-            this.itemIndexToItemMap.put(item.getIndex(), item);
-        }
-
-        public @Nullable Item getItemByIndex(int index) {
-            return this.itemIndexToItemMap.get(index);
-        }
-
-        @Override
-        public @NonNull Iterator<Item> iterator() {
-            return this.itemIndexToItemMap.sequencedValues().iterator();
-        }
+    private @NonNull List<ViewonlySelectionItem> getViewonlySelectionItems() {
+        return this.selectionItems.showItems().stream()
+            .map(ViewonlySelectionItem::of)
+            .collect(Collectors.toUnmodifiableList());
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        int itemIndex;
+        int selectionItemIndex;
     }
 
     @Value(staticConstructor = "of")
     public static class ResponseModel {
-        @Nullable Class<? extends View> nextViewClass;
+        @Nullable Class<? extends BaseView> nextViewClass;
     }
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<SelectionAdapter.ViewonlyItem> viewonlyItems;
+        @NonNull List<ViewonlySelectionItem> viewonlySelectionItems;
     }
 
-    public static class ItemNotFoundException extends Exception {}
+    public static class SelectionItemNotFoundException extends Exception {}
+
+    @Value
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class ViewonlySelectionItem {
+        int index;
+        @NonNull String label;
+
+        public static @NonNull ViewonlySelectionItem of(@NonNull SelectionItem selectionItem) {
+            val index = selectionItem.getIndex();
+            val label = selectionItem.getLabel();
+
+            return new ViewonlySelectionItem(index, label);
+        }
+    }
 }

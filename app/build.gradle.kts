@@ -13,11 +13,6 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
-javafx {
-    version = "21"
-    modules("javafx.controls", "javafx.fxml")
-}
-
 dependencies {
     // Uses `Lombok` for reduced boilerplate
     compileOnly("org.projectlombok:lombok:1.18.34")
@@ -35,11 +30,37 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     // runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.6")
 
+    // Os-specific secure storage for persistence of authentication tokens
+    implementation("com.microsoft:credential-secure-storage:1.0.0")
+
+    // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
+    testImplementation("org.slf4j:slf4j-simple:1.7.36")
+    // testImplementation("ch.qos.logback:logback-classic:1.2.11")
+
+    // Uses `QRGen` for simplified QR Code generation
+    implementation("com.github.kenglxn.QRGen:javase:3.0.1")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
     // Used by `application`
     implementation(libs.guava)
+
+    // Used for Google Sheets API and Authentication
+    implementation("com.google.apis:google-api-services-sheets:v4-rev20220927-2.0.0")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation("com.google.api-client:google-api-client:2.0.0")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
+    implementation("com.google.http-client:google-http-client-jackson2:1.43.3")
+    implementation("com.google.oauth-client:google-oauth-client:1.34.1")
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url = uri("https://jitpack.io")
+    }
 }
 
 group = "org.tomfoolery"
@@ -65,8 +86,9 @@ java {
     withSourcesJar()
 }
 
-repositories {
-    mavenCentral()
+javafx {
+    version = "21"
+    modules("javafx.controls", "javafx.fxml")
 }
 
 publishing {
@@ -145,7 +167,7 @@ tasks.register<JavaExec>("runTerminal") {
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents non-blocking `java.util.Scanner`
-    tasks.getByName("runTerminal", JavaExec::class) {
+    tasks.getByName(this.name, JavaExec::class) {
         standardInput = System.`in`
     }
 }
@@ -153,6 +175,12 @@ tasks.register<JavaExec>("runTerminal") {
 tasks.register<JavaExec>("runJavaFX") {
     mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
     classpath = sourceSets["main"].runtimeClasspath
+
+    // Prevents "Error: JavaFX runtime components are missing, and are required to run this application"
+    jvmArgs = listOf(
+        "--module-path", classpath.asPath,
+        "--add-modules", javafx.modules.joinToString(",")
+    )
 }
 
 tasks.named<Test>("test") {

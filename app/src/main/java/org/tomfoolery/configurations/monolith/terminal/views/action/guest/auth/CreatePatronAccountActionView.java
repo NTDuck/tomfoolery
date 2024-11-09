@@ -2,96 +2,64 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 
-public class CreatePatronAccountActionView implements ActionView {
+public final class CreatePatronAccountActionView extends BaseView {
     private final @NonNull CreatePatronAccountController controller;
 
-    private @NonNull Class<? extends SelectionView> nextViewClass = GuestSelectionView.class;
-
-    private CreatePatronAccountActionView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        this.controller = CreatePatronAccountController.of(patronRepository, passwordService);
+    public static @NonNull CreatePatronAccountActionView of(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreatePatronAccountActionView(ioHandler, patronRepository, passwordEncoder);
     }
 
-    public static @NonNull CreatePatronAccountActionView of(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        return new CreatePatronAccountActionView(patronRepository, passwordService);
+    private CreatePatronAccountActionView(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        super(ioHandler);
+
+        this.nextViewClass = GuestSelectionView.class;
+        this.controller = CreatePatronAccountController.of(patronRepository, passwordEncoder);
     }
 
     @Override
     public void run() {
+        val requestObject = collectRequestObject();
+
         try {
-            val requestObject = getRequestObject();
             this.controller.accept(requestObject);
             onSuccess();
-        } catch (PasswordMismatchException exception) {
-            onPasswordMismatchException();
-        } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException e) {
+
+        } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException exception) {
             onPatronCredentialsInvalidException();
-        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException e) {
+        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException exception) {
             onPatronAlreadyExistsException();
         }
     }
 
-    @Override
-    public @NonNull Class<? extends SelectionView> getNextViewClass() {
-        return this.nextViewClass;
-    }
+    private CreatePatronAccountController.@NonNull Request collectRequestObject() {
+        val username = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "username");
+        val password = this.ioHandler.readPassword(PROMPT_MESSAGE_FORMAT, "password");
 
-    private static CreatePatronAccountController.@NonNull RequestObject getRequestObject() throws PasswordMismatchException {
-        val scanner = ScannerService.getScanner();
+        val fullName = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "full name");
+        val address = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "address");
+        val email = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "email");
 
-        System.out.print("Enter username: ");
-        val username = scanner.nextLine();
-
-        System.out.print("Enter password: ");
-        val password = scanner.nextLine();
-
-        System.out.print("Re-enter password: ");
-        val passwordAgain = scanner.nextLine();
-
-        if (!password.equals(passwordAgain))
-            throw new PasswordMismatchException();
-
-        System.out.print("Enter first name: ");
-        val firstName = scanner.nextLine();
-
-        System.out.print("Enter last name: ");
-        val lastName = scanner.nextLine();
-
-        System.out.print("Enter address: ");
-        val address = scanner.nextLine();
-
-        System.out.print("Enter email: ");
-        val email = scanner.nextLine();
-
-        return CreatePatronAccountController.RequestObject.of(username, password, firstName, lastName, address, email);
+        return CreatePatronAccountController.Request.of(username, new String(password), fullName, address, email);
     }
 
     private void onSuccess() {
-        this.nextViewClass = GuestSelectionView.class;
-    }
-
-    private void onPasswordMismatchException() {
-        this.nextViewClass = GuestSelectionView.class;
-        System.out.println("Error: Password does not match.");
+        this.ioHandler.writeLine(SUCCESS_MESSAGE_FORMAT, "Patron account created");
     }
 
     private void onPatronCredentialsInvalidException() {
-        this.nextViewClass = GuestSelectionView.class;
-        System.out.println("Error: Provided credentials are invalid.");
+        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Invalid username or password");
+        this.ioHandler.writeLine("(%s)", USERNAME_CONSTRAINT_MESSAGE);
+        this.ioHandler.writeLine("(%s)", PASSWORD_CONSTRAINT_MESSAGE);
     }
 
     private void onPatronAlreadyExistsException() {
-        this.nextViewClass = GuestSelectionView.class;
-        System.out.println("Error: Patron already exists.");
+        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Username already exists");
     }
-
-    private static class PasswordMismatchException extends Exception {}
 }

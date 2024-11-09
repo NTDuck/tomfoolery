@@ -1,47 +1,60 @@
 package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.domain.abc.ReadonlyUser;
-import org.tomfoolery.core.usecases.external.guest.auth.LogUserInUseCase;
-import org.tomfoolery.infrastructures.utils.contracts.ThrowableFunctionController;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
-public class LogUserInController implements ThrowableFunctionController<LogUserInController.RequestObject, LogUserInUseCase.Request<?>, LogUserInUseCase.Response> {
-    private final @NonNull LogUserInUseCase useCase;
+public final class LogUserInController implements ThrowableFunction<LogUserInController.RequestObject, LogUserInController.ViewModel> {
+    private final @NonNull LogUserInUseCase logUserInUseCase;
 
-    private LogUserInController(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.useCase = LogUserInUseCase.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+    public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new LogUserInController(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new LogUserInController(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+    private LogUserInController(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.logUserInUseCase = LogUserInUseCase.of(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
-    public LogUserInUseCase.@NonNull Request<?> getRequestModelFromRequestObject(@NonNull RequestObject requestObject) {
-        val username = requestObject.getUsername();
-        val password = requestObject.getPassword();
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException, LogUserInUseCase.UserAlreadyLoggedInException {
+        val requestModel = requestObject.toRequestModel();
+        val responseModel = this.logUserInUseCase.apply(requestModel);
+        val viewModel = ViewModel.fromResponseModel(responseModel);
 
-        val credentials = ReadonlyUser.Credentials.of(username, password);
-
-        return LogUserInUseCase.Request.of(credentials);
-    }
-
-    @Override
-    public LogUserInUseCase.@NonNull Response apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException, LogUserInUseCase.UserAlreadyLoggedInException {
-        val requestModel = this.getRequestModelFromRequestObject(requestObject);
-        val responseModel = this.useCase.apply(requestModel);
-        return responseModel;
+        return viewModel;
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @NonNull String username;
         @NonNull String password;
+
+        private LogUserInUseCase.@NonNull Request toRequestModel() {
+            val credentials = Staff.Credentials.of(username, password);
+
+            return LogUserInUseCase.Request.of(credentials);
+        }
+    }
+
+    @Value
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class ViewModel {
+        @NonNull Class<? extends BaseUser> userClass;
+
+        private static @NonNull ViewModel fromResponseModel(LogUserInUseCase.@NonNull Response responseModel) {
+            val userClass = responseModel.getUserClass();
+
+            return new ViewModel(userClass);
+        }
     }
 }
