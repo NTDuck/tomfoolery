@@ -3,6 +3,7 @@ package org.tomfoolery.core.usecases.patron.documents.rating;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -87,7 +88,7 @@ public final class RemoveDocumentRatingUseCase extends AuthenticatedUserUseCase 
         return document;
     }
 
-    private static void removePatronRatingFromDocument(@NonNull Document document, @NonNull Patron patron, double ratingValue) {
+    private static void removePatronRatingFromDocument(@NonNull Document document, @NonNull Patron patron, @Unsigned double ratingValue) {
         val patronAudit = patron.getAudit();
         val patronRatingValues = patronAudit.getRatingValues();
 

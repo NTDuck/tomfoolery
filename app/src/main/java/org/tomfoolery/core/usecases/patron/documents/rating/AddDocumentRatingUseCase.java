@@ -3,6 +3,7 @@ package org.tomfoolery.core.usecases.patron.documents.rating;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -108,7 +109,7 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
     @Value(staticConstructor = "of")
     public static class Request {
         Document.@NonNull Id documentId;
-        double ratingValue;
+        @Unsigned double ratingValue;
     }
 
     public static class PatronNotFoundException extends Exception {}
