@@ -3,6 +3,7 @@ package org.tomfoolery.core.dataproviders.repositories.documents;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
@@ -43,7 +44,7 @@ public interface DocumentRepository extends BaseRepository<Document, Document.Id
             .collect(Collectors.toUnmodifiableList());
     }
 
-    default @Nullable Page<FragmentaryDocument> showPaginatedFragmentary(int pageIndex, int maxPageSize) {
+    default @Nullable Page<FragmentaryDocument> showPaginatedFragmentary(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val unpaginatedFragmentaryDocuments = this.showFragmentary();
         return Page.fromUnpaginated(unpaginatedFragmentaryDocuments, pageIndex, maxPageSize);
     }

@@ -1,13 +1,13 @@
 package org.tomfoolery.core.utils.dataclasses;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,14 +16,13 @@ import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 @Value
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Page<T> implements Iterable<T> {
     @Getter(value = AccessLevel.NONE)
     @Setter(value = AccessLevel.NONE)
     @NonNull List<T> paginatedItems;
 
-    int pageIndex;   // 1-indexed
-    int maxPageIndex;
+    @Unsigned int pageIndex;   // 1-indexed
+    @Unsigned int maxPageIndex;
 
     public static <T> @Nullable Page<T> fromPaginated(@NonNull List<T> paginatedItems, int pageIndex, int maxPageIndex) {
         if (pageIndex < 0 || maxPageIndex < pageIndex)
@@ -34,8 +33,8 @@ public class Page<T> implements Iterable<T> {
 
     public static <T, U> @NonNull Page<U> fromPaginated(@NonNull Page<T> sourcePage, @NonNull Function<T, U> mapper) {
         val paginatedItems = StreamSupport.stream(sourcePage.spliterator(), true)
-                .map(mapper)
-                .toList();
+            .map(mapper)
+            .toList();
 
         val pageIndex = sourcePage.getPageIndex();
         val maxPageIndex = sourcePage.getMaxPageIndex();

@@ -3,6 +3,7 @@ package org.tomfoolery.core.usecases.user.documents;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -29,15 +30,15 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
         ensureAuthenticationTokenIsValid(authenticationToken);
 
         val pageIndex = request.getPageIndex();
-        val pageSize = request.getPageSize();
+        val maxPageSize = request.getMaxPageSize();
 
-        val paginatedFragmentaryDocuments = getPaginatedFragmentaryDocuments(pageIndex, pageSize);
+        val paginatedFragmentaryDocuments = getPaginatedFragmentaryDocuments(pageIndex, maxPageSize);
 
         return Response.of(paginatedFragmentaryDocuments);
     }
 
-    private @NonNull Page<FragmentaryDocument> getPaginatedFragmentaryDocuments(int pageIndex, int pageSize) throws PaginationInvalidException {
-        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedFragmentary(pageIndex, pageSize);
+    private @NonNull Page<FragmentaryDocument> getPaginatedFragmentaryDocuments(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedFragmentary(pageIndex, maxPageSize);
 
         if (paginatedFragmentaryDocuments == null)
             throw new PaginationInvalidException();
@@ -47,8 +48,8 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
 
     @Value(staticConstructor = "of")
     public static class Request {
-        int pageIndex;
-        int pageSize;
+        @Unsigned int pageIndex;
+        @Unsigned int maxPageSize;
     }
 
     @Value(staticConstructor = "of")

@@ -1,19 +1,15 @@
 package org.tomfoolery.infrastructures.adapters.controllers.user.documents;
 
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.user.documents.GetDocumentByIdUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-
-import java.util.List;
+import org.tomfoolery.infrastructures.utils.helpers.dataclasses.ViewableFragmentaryDocument;
 
 public final class GetDocumentByIdController implements ThrowableFunction<GetDocumentByIdController.RequestObject, GetDocumentByIdController.ViewModel> {
     private final @NonNull GetDocumentByIdUseCase getDocumentByIdUseCase;
@@ -27,7 +23,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws Exception {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws GetDocumentByIdUseCase.AuthenticationTokenNotFoundException, GetDocumentByIdUseCase.AuthenticationTokenInvalidException, GetDocumentByIdUseCase.DocumentNotFoundException {
         val requestModel = requestObject.toRequestModel();
         val responseModel = this.getDocumentByIdUseCase.apply(requestModel);
         val viewModel = ViewModel.fromResponseModel(responseModel);
@@ -47,47 +43,14 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
     }
 
     @Value(staticConstructor = "of")
-    @Builder(access = AccessLevel.PRIVATE)
     public static class ViewModel {
-        @NonNull String ISBN;
-
-        @NonNull String documentTitle;
-        @NonNull String documentDescription;
-        @NonNull List<String> documentAuthors;
-        @NonNull List<String> documentGenres;
-
-        @Unsigned short documentPublishedYear;
-        @NonNull String documentPublisher;
-
-        byte @NonNull [] rawDocumentCoverImage;
-
-        @Unsigned long numberOfBorrowingPatrons;
-        @Unsigned long numberOfRatings;
-        @Unsigned double averageRating;
+        @NonNull ViewableFragmentaryDocument fragmentaryDocument;
 
         private static @NonNull ViewModel fromResponseModel(GetDocumentByIdUseCase.@NonNull Response responseModel) {
             val fragmentaryDocument = responseModel.getFragmentaryDocument();
+            val viewableFragmentaryDocument = ViewableFragmentaryDocument.of(fragmentaryDocument);
 
-            val documentId = fragmentaryDocument.getId();
-            val documentMetadata = fragmentaryDocument.getMetadata();
-            val documentAudit = fragmentaryDocument.getAudit();
-
-            return ViewModel.builder()
-                .ISBN(documentId.getISBN())
-
-                .documentTitle(documentMetadata.getTitle())
-                .documentDescription(documentMetadata.getDescription())
-                .documentAuthors(documentMetadata.getAuthors())
-                .documentGenres(documentMetadata.getGenres())
-
-                .documentPublishedYear((short) documentMetadata.getPublishedYear().getValue())
-                .documentPublisher(documentMetadata.getPublisher())
-
-                .numberOfBorrowingPatrons(documentAudit.getBorrowingPatronIds().size())
-                .numberOfRatings(documentAudit.getRating().getRatingCount())
-                .averageRating(documentAudit.getRating().getRatingValue())
-
-                .build();
+            return new ViewModel(viewableFragmentaryDocument);
         }
     }
 }
