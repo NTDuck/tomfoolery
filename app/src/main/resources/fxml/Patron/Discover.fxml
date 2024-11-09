@@ -56,6 +56,7 @@
     <!-- DISCOVER -->
     <HBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" styleClass="discover">
         <VBox prefWidth="200" prefHeight="Infinity" alignment="TOP_CENTER" styleClass="categories">
+            <Label text="Categories" styleClass="categories-header"/>
             <Label text="Horror" styleClass="category-option"/>
             <Label text="Fantasy" styleClass="category-option"/>
             <Label text="Science" styleClass="category-option"/>
@@ -63,13 +64,12 @@
 
         <VBox spacing="20" HBox.hgrow="ALWAYS">
             <HBox maxWidth="800" minHeight="80" styleClass="search-container">
-                <TextField HBox.hgrow="ALWAYS" prefHeight="60" promptText="Search for books..." styleClass="search-field"/>
+                <TextField HBox.hgrow="ALWAYS" prefHeight="60" promptText="Search for books..."
+                           styleClass="search-field"/>
             </HBox>
 
-            <ScrollPane fitToWidth="true" fitToHeight="true" fx:id="scrollPane"
-                        styleClass="books-scroll-pane" VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scrollPane" styleClass="books-scroll-pane" VBox.vgrow="ALWAYS">
                 <FlowPane styleClass="books-container" hgap="20" vgap="20" fx:id="booksContainer" prefWrapLength="800">
-                    <!-- Book tiles will be added here programmatically -->
                 </FlowPane>
             </ScrollPane>
         </VBox>

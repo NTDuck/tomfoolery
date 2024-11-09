@@ -10,60 +10,58 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      styleClass="signup-menu" stylesheets="/css/SignupMenu.css" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-    <ImageView styleClass="user-icon">
-        <Image url="/images/user.png" />
+      styleClass="signup-menu" stylesheets="/css/SignupMenu.css"
+      prefWidth="600" prefHeight="800" alignment="TOP_CENTER">
+    <ImageView styleClass="user-icon" fitWidth="60" fitHeight="60">
+        <Image url="/images/user.png"/>
     </ImageView>
 
-    <Pane prefHeight="30" />
-
-    <VBox style="-fx-background-color: transparent; -fx-spacing: 15; -fx-alignment: CENTER" prefHeight="520">
+    <VBox style="-fx-background-color: transparent; -fx-spacing: 10; -fx-alignment: CENTER" prefHeight="500"
+          VBox.vgrow="ALWAYS">
         <HBox styleClass="name-box">
             <VBox styleClass="short-textbox">
-                <Label text="First Name" styleClass="textbox-label" />
-                <TextField styleClass="input-field" fx:id="firstNameTextField" />
+                <Label text="First Name" styleClass="textbox-label"/>
+                <TextField styleClass="input-field" fx:id="firstNameTextField"/>
             </VBox>
             <VBox styleClass="short-textbox">
-                <Label text="Last Name" styleClass="textbox-label" />
-                <TextField styleClass="input-field" fx:id="lastNameTextField" />
+                <Label text="Last Name" styleClass="textbox-label"/>
+                <TextField styleClass="input-field" fx:id="lastNameTextField"/>
             </VBox>
         </HBox>
 
         <VBox styleClass="wide-textbox">
-            <Label text="Username" styleClass="textbox-label" />
-            <TextField styleClass="input-field" fx:id="usernameTextField" />
+            <Label text="Username" styleClass="textbox-label"/>
+            <TextField styleClass="input-field" fx:id="usernameTextField"/>
         </VBox>
 
         <VBox styleClass="wide-textbox">
-            <Label text="Address" styleClass="textbox-label" />
-            <TextField styleClass="input-field" fx:id="addressTextField" />
+            <Label text="Address" styleClass="textbox-label"/>
+            <TextField styleClass="input-field" fx:id="addressTextField"/>
         </VBox>
 
         <VBox styleClass="wide-textbox">
-            <Label text="Email" styleClass="textbox-label" />
-            <TextField styleClass="input-field" fx:id="emailTextField" />
+            <Label text="Email" styleClass="textbox-label"/>
+            <TextField styleClass="input-field" fx:id="emailTextField"/>
         </VBox>
 
         <VBox styleClass="wide-textbox">
-            <Label text="Password" styleClass="textbox-label" />
-            <PasswordField styleClass="input-field" fx:id="passwordTextField" />
+            <Label text="Password" styleClass="textbox-label"/>
+            <PasswordField styleClass="input-field" fx:id="passwordTextField"/>
         </VBox>
 
         <VBox styleClass="wide-textbox">
-            <Label text="Retype Password" styleClass="textbox-label" />
-            <PasswordField styleClass="input-field" fx:id="retypePasswordTextField" />
+            <Label text="Retype Password" styleClass="textbox-label"/>
+            <PasswordField styleClass="input-field" fx:id="retypePasswordTextField"/>
             <Label visible="false"
                    style="-fx-label-padding: 0 0 0 10; -fx-text-fill: #BF616A; -fx-font-size: 15;
         -fx-background-color: transparent; -fx-font-family: 'Segoe UI Variable'"
-                   fx:id="errorMessage" />
+                   fx:id="errorMessage"/>
         </VBox>
     </VBox>
 
     <Label styleClass="message" fx:id="message"/>
 
-    <Button text="SIGN UP" styleClass="signup-button" fx:id="signupButton" />
+    <Button text="SIGN UP" styleClass="signup-button" fx:id="signupButton"/>
 
-    <Pane prefHeight="20" />
-
-    <Button text="Return to Login" styleClass="return-button" fx:id="returnButton" />
+    <Button text="Return to Login" styleClass="return-button" fx:id="returnButton"/>
 </VBox>

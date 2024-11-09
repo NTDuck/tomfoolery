@@ -2,7 +2,6 @@ package org.tomfoolery.configurations.monolith.gui.view.Patron;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -71,7 +70,6 @@ public class DiscoverView {
             tile.getChildren().add(coverImage);
         } catch (Exception e) {
             Rectangle placeholder = new Rectangle(160, 240);
-            placeholder.setFill(Color.LIGHTGRAY);
             tile.getChildren().add(placeholder);
         }
 
