@@ -34,7 +34,7 @@ public final class UpdatePatronMetadataUseCase extends AuthenticatedUserUseCase 
     }
 
     @Override
-    public void accept(@NonNull Request request) throws Exception {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException {
         val patronAuthenticationToken = getAuthenticationTokenFromRepository();
         ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
