@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui.view;
 
+import io.jsonwebtoken.security.Password;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,16 +12,16 @@ import javafx.util.Duration;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
 public class SignupView {
     private final @NonNull CreatePatronAccountController controller;
     private final @NonNull StageManager stageManager;
 
-    public SignupView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService, StageManager stageManager) {
+    public SignupView(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordService, StageManager stageManager) {
         controller = CreatePatronAccountController.of(patronRepository, passwordService);
         this.stageManager = stageManager;
     }
@@ -72,13 +73,13 @@ public class SignupView {
             message.setVisible(true);
 
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
-            pause.setOnFinished(e -> returnToLogin(e));
+            pause.setOnFinished(this::returnToLogin);
             pause.play();
-        } catch (PasswordMismatchException exception) {
-            onPasswordMismatchException();
-        } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException e) {
+        } catch (PasswordMismatchException e) {
+            throw new RuntimeException(e);
+        } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException exception) {
             onPatronCredentialsInvalidException();
-        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException e) {
+        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException exception) {
             onPatronAlreadyExistsException();
         }
     }
@@ -94,7 +95,7 @@ public class SignupView {
         if (!password.equals(retypePassword))
             throw new PasswordMismatchException();
 
-        return CreatePatronAccountController.RequestObject.of(username, password, firstName, lastName, address, "");
+        return CreatePatronAccountController.RequestObject.of(username, password, firstName + " " + lastName, address, "");
     }
 
     private void onPasswordMismatchException() {
@@ -118,7 +119,8 @@ public class SignupView {
         message.setVisible(true);
     }
 
-    private static class PasswordMismatchException extends Exception {}
+    private static class PasswordMismatchException extends Exception {
+    }
 
     private void returnToLogin(ActionEvent event) {
         stageManager.openLoginMenu();

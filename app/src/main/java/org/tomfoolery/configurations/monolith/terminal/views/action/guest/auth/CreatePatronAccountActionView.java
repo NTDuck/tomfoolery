@@ -8,6 +8,7 @@ import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSele
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
 public final class CreatePatronAccountActionView extends BaseView {
     private final @NonNull CreatePatronAccountController controller;
@@ -38,7 +39,7 @@ public final class CreatePatronAccountActionView extends BaseView {
         }
     }
 
-    private CreatePatronAccountController.@NonNull Request collectRequestObject() {
+    private CreatePatronAccountController.@NonNull RequestObject collectRequestObject() {
         val username = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "username");
         val password = this.ioHandler.readPassword(PROMPT_MESSAGE_FORMAT, "password");
 
@@ -46,7 +47,7 @@ public final class CreatePatronAccountActionView extends BaseView {
         val address = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "address");
         val email = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "email");
 
-        return CreatePatronAccountController.Request.of(username, new String(password), fullName, address, email);
+        return CreatePatronAccountController.RequestObject.of(username, new String(password), fullName, address, email);
     }
 
     private void onSuccess() {
