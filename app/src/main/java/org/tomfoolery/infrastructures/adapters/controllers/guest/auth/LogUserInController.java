@@ -1,5 +1,7 @@
 package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -7,11 +9,12 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
-public final class LogUserInController implements ThrowableFunction<LogUserInController.RequestObject, LogUserInUseCase.Response> {
+public final class LogUserInController implements ThrowableFunction<LogUserInController.RequestObject, LogUserInController.ViewModel> {
     private final @NonNull LogUserInUseCase logUserInUseCase;
 
     public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
@@ -23,11 +26,12 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
     }
 
     @Override
-    public LogUserInUseCase.@NonNull Response apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException, LogUserInUseCase.UserAlreadyLoggedInException {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException, LogUserInUseCase.UserAlreadyLoggedInException {
         val requestModel = requestObject.toRequestModel();
         val responseModel = this.logUserInUseCase.apply(requestModel);
+        val viewModel = ViewModel.fromResponseModel(responseModel);
 
-        return responseModel;
+        return viewModel;
     }
 
     @Value(staticConstructor = "of")
@@ -39,6 +43,18 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
             val credentials = Staff.Credentials.of(username, password);
 
             return LogUserInUseCase.Request.of(credentials);
+        }
+    }
+
+    @Value
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class ViewModel {
+        @NonNull Class<? extends BaseUser> userClass;
+
+        private static @NonNull ViewModel fromResponseModel(LogUserInUseCase.@NonNull Response responseModel) {
+            val userClass = responseModel.getUserClass();
+
+            return new ViewModel(userClass);
         }
     }
 }

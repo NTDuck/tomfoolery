@@ -28,14 +28,9 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws Exception {
-        val requestModel = generateRequestModelFromRequestObject(requestObject);
+    public void accept(@NonNull RequestObject requestObject) throws AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException {
+        val requestModel = requestObject.toRequestModel();
         this.addDocumentUseCase.accept(requestModel);
-    }
-
-    @SneakyThrows
-    private static AddDocumentUseCase.@NonNull Request generateRequestModelFromRequestObject(@NonNull RequestObject requestObject) {
-        return Cloner.cloneFrom(requestObject, AddDocumentUseCase.Request.class);
     }
 
     @Value(staticConstructor = "of")
@@ -56,7 +51,6 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
         private AddDocumentUseCase.@NonNull Request toRequestModel() {
             val documentId = Document.Id.of(ISBN);
             val documentContent = Document.Content.of(rawDocumentContent);
-
             val documentMetadata = Document.Metadata.of(
                 documentTitle, documentDescription, documentAuthors, documentGenres,
                 Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(rawDocumentCoverImage)
