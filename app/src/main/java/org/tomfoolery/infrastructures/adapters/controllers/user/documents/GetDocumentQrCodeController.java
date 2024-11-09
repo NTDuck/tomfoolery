@@ -49,7 +49,7 @@ public final class GetDocumentQrCodeController implements ThrowableFunction<GetD
 
         private static @NonNull ViewModel fromResponseModel(GetDocumentQrCodeUseCase.@NonNull Response responseModel) {
             val documentQrCode = responseModel.getDocumentQrCode();
-            val rawDocumentQrCode = documentQrCode.getBuffer();
+            val rawDocumentQrCode = documentQrCode.getBytes();
 
             return new ViewModel(rawDocumentQrCode);
         }

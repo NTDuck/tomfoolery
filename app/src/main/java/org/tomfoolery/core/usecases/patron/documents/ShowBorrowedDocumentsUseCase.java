@@ -3,6 +3,7 @@ package org.tomfoolery.core.usecases.patron.documents;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -46,9 +47,9 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
         val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
 
         int pageIndex = request.getPageIndex();
-        int pageSize = request.getPageSize();
+        int maxPageSize = request.getMaxPageSize();
 
-        val paginatedDocumentIds = getPaginatedBorrowedDocumentIdsFromPatron(patron, pageIndex, pageSize);
+        val paginatedDocumentIds = getPaginatedBorrowedDocumentIdsFromPatron(patron, pageIndex, maxPageSize);
         val paginatedFragmentaryBorrowedDocuments = getPaginatedFragmentaryBorrowedDocuments(paginatedDocumentIds);
 
         return Response.of(paginatedFragmentaryBorrowedDocuments);
@@ -68,7 +69,7 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
         return patron;
     }
 
-    private @NonNull Page<Document.Id> getPaginatedBorrowedDocumentIdsFromPatron(@NonNull Patron patron, int pageIndex, int maxPageSize) throws PaginationInvalidException {
+    private @NonNull Page<Document.Id> getPaginatedBorrowedDocumentIdsFromPatron(@NonNull Patron patron, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
         val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
         val paginatedBorrowedDocumentIds = Page.fromUnpaginated(borrowedDocumentIds, pageIndex, maxPageSize);
 
@@ -90,8 +91,8 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
 
     @Value(staticConstructor = "of")
     public static class Request {
-        int pageIndex;
-        int pageSize;
+        @Unsigned int pageIndex;
+        @Unsigned int maxPageSize;
     }
 
     @Value(staticConstructor = "of")
