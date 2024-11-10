@@ -14,38 +14,38 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdateDocumentContentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
 
-    public static @NonNull UpdateDocumentContentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new UpdateDocumentContentUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull UpdateDocumentContentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdateDocumentContentUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private UpdateDocumentContentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
+    private UpdateDocumentContentUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+
         this.documentRepository = documentRepository;
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Staff.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Staff.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
-        val staffAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(staffAuthenticationToken);
-        val staffId = getStaffIdFromAuthenticationToken(staffAuthenticationToken);
+        val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
+        val staffId = this.getStaffIdFromAuthenticationToken(staffAuthenticationToken);
 
         val documentId = request.getDocumentId();
         val newDocumentContent = request.getNewDocumentContent();
 
-        val document = getDocumentById(documentId);
+        val document = this.getDocumentById(documentId);
 
-        updateDocumentContentAndMarkAsLastModifiedByStaff(document, newDocumentContent, staffId);
+        this.updateDocumentContentAndMarkAsLastModifiedByStaff(document, newDocumentContent, staffId);
 
         this.documentRepository.save(document);
     }
@@ -68,7 +68,7 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
         return document;
     }
 
-    private static void updateDocumentContentAndMarkAsLastModifiedByStaff(@NonNull Document document, Document.@NonNull Content newDocumentContent, Staff.@NonNull Id staffId) {
+    private void updateDocumentContentAndMarkAsLastModifiedByStaff(@NonNull Document document, Document.@NonNull Content newDocumentContent, Staff.@NonNull Id staffId) {
         document.setContent(newDocumentContent);
 
         val documentAudit = document.getAudit();

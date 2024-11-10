@@ -15,24 +15,25 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ShowDocumentsUseCase.Request, ShowDocumentsUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
 
-    public static @NonNull ShowDocumentsUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new ShowDocumentsUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull ShowDocumentsUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowDocumentsUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowDocumentsUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
+    private ShowDocumentsUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+
         this.documentRepository = documentRepository;
     }
 
     @Override
     public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenInvalidException, AuthenticationTokenNotFoundException, PaginationInvalidException {
-        val authenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(authenticationToken);
+        val authenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(authenticationToken);
 
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedFragmentaryDocuments = getPaginatedFragmentaryDocuments(pageIndex, maxPageSize);
+        val paginatedFragmentaryDocuments = this.getPaginatedFragmentaryDocuments(pageIndex, maxPageSize);
 
         return Response.of(paginatedFragmentaryDocuments);
     }

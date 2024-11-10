@@ -12,21 +12,21 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdatePatronPasswordUseCase.Request> {
     private final @NonNull PatronRepository patronRepository;
     private final @NonNull PasswordEncoder passwordEncoder;
 
-    public static @NonNull UpdatePatronPasswordUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
-        return new UpdatePatronPasswordUseCase(authenticationTokenGenerator, authenticationTokenRepository, patronRepository, passwordEncoder);
+    public static @NonNull UpdatePatronPasswordUseCase of(@NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new UpdatePatronPasswordUseCase(patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private UpdatePatronPasswordUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+    private UpdatePatronPasswordUseCase(@NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.patronRepository = patronRepository;
@@ -34,25 +34,27 @@ public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase 
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Patron.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Patron.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, PasswordInvalidException, PasswordMismatchException {
-        val patronAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(patronAuthenticationToken);
-        val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
+        val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
+        val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
 
-        val oldPatronPassword = request.getOldPatronPassword();
-        ensurePasswordIsValid(oldPatronPassword);
-        ensurePasswordsMatch(oldPatronPassword, patron);
+        val rawOldPatronPassword = request.getRawOldPatronPassword();
+        this.ensurePasswordIsValid(rawOldPatronPassword);
+        this.ensurePasswordsMatch(rawOldPatronPassword, patron);
 
-        val newPatronPassword = request.getNewPatronPassword();
-        ensurePasswordIsValid(newPatronPassword);
+        val rawNewPatronPassword = request.getRawNewPatronPassword();
+        this.ensurePasswordIsValid(rawNewPatronPassword);
+        val encodedNewPatronPassword = this.passwordEncoder.encodePassword(rawNewPatronPassword);
 
-        val encodedNewPatronPassword = getEncodedNewPatronPassword(newPatronPassword);
-        updatePatronPassword(patron, encodedNewPatronPassword);
+        this.updatePatronPassword(patron, encodedNewPatronPassword);
+
+        this.patronRepository.save(patron);
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
@@ -69,37 +71,31 @@ public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase 
         return patron;
     }
 
-    private static void ensurePasswordIsValid(@NonNull String password) throws PasswordInvalidException {
-        if (!CredentialsVerifier.verifyPassword(password))
+    private void ensurePasswordIsValid(@NonNull SecureString rawPassword) throws PasswordInvalidException {
+        if (!CredentialsVerifier.verifyPassword(rawPassword))
             throw new PasswordInvalidException();
     }
 
-    private void ensurePasswordsMatch(@NonNull String patronPassword, @NonNull Patron patron) throws PasswordMismatchException {
-        val patronCredentials = patron.getCredentials();
-        val patronEncodedPassword = patronCredentials.getPassword();
+    private void ensurePasswordsMatch(@NonNull SecureString rawPatronPassword, @NonNull Patron patron) throws PasswordMismatchException {
+        val encodedPatronCredentials = patron.getCredentials();
+        val encodedPatronPassword = encodedPatronCredentials.getPassword();
 
-        if (!this.passwordEncoder.verifyPassword(patronPassword, patronEncodedPassword))
+        if (!this.passwordEncoder.verifyPassword(rawPatronPassword, encodedPatronPassword))
             throw new PasswordMismatchException();
     }
 
-    private @NonNull String getEncodedNewPatronPassword(@NonNull String patronNewPassword) {
-        return this.passwordEncoder.encodePassword(patronNewPassword);
-    }
+    private void updatePatronPassword(@NonNull Patron patron, @NonNull SecureString encodedNewPatronPassword) {
+        val oldEncodedPatronCredentials = patron.getCredentials();
+        oldEncodedPatronCredentials.setPassword(encodedNewPatronPassword);
 
-    private void updatePatronPassword(@NonNull Patron patron, @NonNull String encodedNewPatronPassword) {
-        val patronCredentials = patron.getCredentials();
-        patronCredentials.setPassword(encodedNewPatronPassword);
-
-        val patronAudit = patron.getAudit();
-        val patronAuditTimestamps = patronAudit.getTimestamps();
-
+        val patronAuditTimestamps = patron.getAudit().getTimestamps();
         patronAuditTimestamps.setLastModified(Instant.now());
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        @NonNull String oldPatronPassword;
-        @NonNull String newPatronPassword;
+        @NonNull SecureString rawOldPatronPassword;
+        @NonNull SecureString rawNewPatronPassword;
     }
 
     public static class PatronNotFoundException extends Exception {}

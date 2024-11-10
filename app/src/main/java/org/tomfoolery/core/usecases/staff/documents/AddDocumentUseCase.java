@@ -15,39 +15,39 @@ import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class AddDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<AddDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
 
-    public static @NonNull AddDocumentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new AddDocumentUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull AddDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
+    private AddDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+        
         this.documentRepository = documentRepository;
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Staff.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Staff.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentAlreadyExistsException {
-        val staffAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(staffAuthenticationToken);
-        val staffId = getStaffIdFromAuthenticationToken(staffAuthenticationToken);
+        val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
+        val staffId = this.getStaffIdFromAuthenticationToken(staffAuthenticationToken);
 
         val documentId = request.getDocumentId();
-        ensureDocumentDoesNotExist(documentId);
+        this.ensureDocumentDoesNotExist(documentId);
 
         val documentContent = request.getDocumentContent();
         val documentMetadata = request.getDocumentMetadata();
 
-        val document = createDocumentAndMarkAsCreatedByStaff(documentId, documentContent, documentMetadata, staffId);
+        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentContent, documentMetadata, staffId);
 
         this.documentRepository.save(document);
     }
@@ -66,10 +66,10 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
             throw new DocumentAlreadyExistsException();
     }
 
-    private static @NonNull Document createDocumentAndMarkAsCreatedByStaff(Document.@NonNull Id documentId, Document.@NonNull Content documentContent, Document.@NonNull Metadata documentMetadata, Staff.@NonNull Id staffId) {
+    private @NonNull Document createDocumentAndMarkAsCreatedByStaff(Document.@NonNull Id documentId, Document.@NonNull Content documentContent, Document.@NonNull Metadata documentMetadata, Staff.@NonNull Id staffId) {
         val documentAuditTimestamps = Document.Audit.Timestamps.of(Instant.now());
-        val documentAverageRating = AverageRating.of();
-        val documentAudit = Document.Audit.of(staffId, documentAverageRating, documentAuditTimestamps);
+        val documentRating = AverageRating.of();
+        val documentAudit = Document.Audit.of(staffId, documentRating, documentAuditTimestamps);
 
         return Document.of(documentId, documentContent, documentMetadata, documentAudit);
     }

@@ -14,22 +14,23 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<GetDocumentByIdUseCase.Request, GetDocumentByIdUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
 
-    public static @NonNull GetDocumentByIdUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new GetDocumentByIdUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull GetDocumentByIdUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentByIdUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentByIdUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
+    private GetDocumentByIdUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+
         this.documentRepository = documentRepository;
     }
 
     @Override
     public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
-        val authenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(authenticationToken);
+        val authenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(authenticationToken);
 
         val documentId = request.getDocumentId();
-        val fragmentaryDocument = getFragmentaryDocumentFromId(documentId);
+        val fragmentaryDocument = this.getFragmentaryDocumentFromId(documentId);
 
         return Response.of(fragmentaryDocument);
     }

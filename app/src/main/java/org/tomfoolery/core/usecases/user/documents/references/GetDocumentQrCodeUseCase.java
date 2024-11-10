@@ -19,11 +19,11 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
     private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator;
     private final @NonNull DocumentUrlGenerator documentUrlGenerator;;
 
-    public static @NonNull GetDocumentQrCodeUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator) {
-        return new GetDocumentQrCodeUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, documentQrCodeGenerator, documentUrlGenerator);
+    public static @NonNull GetDocumentQrCodeUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentQrCodeUseCase(documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentQrCodeUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator) {
+    private GetDocumentQrCodeUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
@@ -34,11 +34,11 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
 
     @Override
     public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
-        val authenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(authenticationToken);
+        val authenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(authenticationToken);
 
         val documentId = request.getDocumentId();
-        val fragmentaryDocument = getFragmentaryDocumentFromId(documentId);
+        val fragmentaryDocument = this.getFragmentaryDocumentFromId(documentId);
 
         val documentUrl = this.documentUrlGenerator.generateUrlFromFragmentaryDocument(fragmentaryDocument);
         val documentQrCode = this.documentQrCodeGenerator.generateQrCodeFromUrl(documentUrl);

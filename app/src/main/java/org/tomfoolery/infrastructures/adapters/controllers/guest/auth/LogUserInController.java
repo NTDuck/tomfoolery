@@ -59,7 +59,7 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
         @NonNull UserType userType;
 
         private static @NonNull ViewModel fromResponseModel(LogUserInUseCase.@NonNull Response responseModel) {
-            val userClass = responseModel.getUserClass();
+            val userClass = responseModel.getLoggedInUserClass();
             val userType = USER_TYPES_BY_USER_CLASSES.get(userClass);
 
             return new ViewModel(userType);

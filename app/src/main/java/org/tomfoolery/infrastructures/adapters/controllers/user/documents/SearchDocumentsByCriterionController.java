@@ -7,7 +7,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.user.abc.SearchDocumentsByCriterionUseCase;
+import org.tomfoolery.core.usecases.user.abc.SearchDocumentsUseCase;
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByAuthorUseCase;
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByGenreUseCase;
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByTitleUseCase;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public final class SearchDocumentsByCriterionController implements ThrowableFunction<SearchDocumentsByCriterionController.RequestObject, SearchDocumentsByCriterionController.ViewModel> {
-    private final @NonNull Map<SearchCriterion, SearchDocumentsByCriterionUseCase> searchDocumentsByCriterionUseCasesBySearchCriteria;
+    private final @NonNull Map<SearchCriterion, SearchDocumentsUseCase> searchDocumentsByCriterionUseCasesBySearchCriteria;
 
     public static @NonNull SearchDocumentsByCriterionController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
         return new SearchDocumentsByCriterionController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
@@ -35,7 +35,7 @@ public final class SearchDocumentsByCriterionController implements ThrowableFunc
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws SearchDocumentsByCriterionUseCase.AuthenticationTokenNotFoundException, SearchDocumentsByCriterionUseCase.AuthenticationTokenInvalidException, SearchDocumentsByCriterionUseCase.PaginationInvalidException {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws SearchDocumentsUseCase.AuthenticationTokenNotFoundException, SearchDocumentsUseCase.AuthenticationTokenInvalidException, SearchDocumentsUseCase.PaginationInvalidException {
         val searchCriterion = requestObject.getSearchCriterion();
         val searchDocumentsByCriterionUseCase = this.searchDocumentsByCriterionUseCasesBySearchCriteria.get(searchCriterion);
 
@@ -53,8 +53,8 @@ public final class SearchDocumentsByCriterionController implements ThrowableFunc
         @Unsigned int pageIndex;
         @Unsigned int maxPageSize;
 
-        private SearchDocumentsByCriterionUseCase.@NonNull Request toRequestModel() {
-            return SearchDocumentsByCriterionUseCase.Request.of(searchText, pageIndex, maxPageSize);
+        private SearchDocumentsUseCase.@NonNull Request toRequestModel() {
+            return SearchDocumentsUseCase.Request.of(searchText, pageIndex, maxPageSize);
         }
     }
 
@@ -64,7 +64,7 @@ public final class SearchDocumentsByCriterionController implements ThrowableFunc
         @NonNull int pageIndex;
         @NonNull int maxPageIndex;
 
-        private static @NonNull ViewModel fromResponseModel(SearchDocumentsByCriterionUseCase.@NonNull Response responseModel) {
+        private static @NonNull ViewModel fromResponseModel(SearchDocumentsUseCase.@NonNull Response responseModel) {
             val paginatedFragmentaryDocuments = responseModel.getPaginatedFragmentaryDocuments();
 
             val viewablePaginatedFragmentaryDocuments = StreamSupport.stream(paginatedFragmentaryDocuments.spliterator(), true)

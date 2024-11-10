@@ -17,18 +17,18 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.common.Page;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ShowBorrowedDocumentsUseCase.Request, ShowBorrowedDocumentsUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
-    public static @NonNull ShowBorrowedDocumentsUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new ShowBorrowedDocumentsUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull ShowBorrowedDocumentsUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowBorrowedDocumentsUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowBorrowedDocumentsUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
+    private ShowBorrowedDocumentsUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
@@ -36,21 +36,21 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Patron.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Patron.class);
     }
 
     @Override
     public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, PaginationInvalidException {
-        val patronAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(patronAuthenticationToken);
-        val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
+        val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
+        val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
 
         int pageIndex = request.getPageIndex();
         int maxPageSize = request.getMaxPageSize();
 
-        val paginatedDocumentIds = getPaginatedBorrowedDocumentIdsFromPatron(patron, pageIndex, maxPageSize);
-        val paginatedFragmentaryBorrowedDocuments = getPaginatedFragmentaryBorrowedDocuments(paginatedDocumentIds);
+        val paginatedDocumentIds = this.getPaginatedBorrowedDocumentIdsFromPatron(patron, pageIndex, maxPageSize);
+        val paginatedFragmentaryBorrowedDocuments = this.getPaginatedFragmentaryBorrowedDocuments(paginatedDocumentIds);
 
         return Response.of(paginatedFragmentaryBorrowedDocuments);
     }
@@ -70,7 +70,8 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
     }
 
     private @NonNull Page<Document.Id> getPaginatedBorrowedDocumentIdsFromPatron(@NonNull Patron patron, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
+        val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds()
+            .parallelStream().collect(Collectors.toUnmodifiableList());
         val paginatedBorrowedDocumentIds = Page.fromUnpaginated(borrowedDocumentIds, pageIndex, maxPageSize);
 
         if (paginatedBorrowedDocumentIds == null)
@@ -86,6 +87,7 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
     private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) {
         val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
         assert fragmentaryDocument != null;
+
         return fragmentaryDocument;
     }
 

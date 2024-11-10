@@ -49,4 +49,9 @@ public class SecureString implements CharSequence, AutoCloseable {
     public void close() {
         Arrays.fill(this.value, '\0');
     }
+
+    @Override
+    public @NonNull String toString() {
+        return "";
+    }
 }

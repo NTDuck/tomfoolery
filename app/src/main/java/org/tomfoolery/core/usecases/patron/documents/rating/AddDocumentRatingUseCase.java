@@ -16,18 +16,17 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<AddDocumentRatingUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
-    public static @NonNull AddDocumentRatingUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new AddDocumentRatingUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull AddDocumentRatingUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentRatingUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentRatingUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
+    private AddDocumentRatingUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
@@ -35,24 +34,24 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Patron.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Patron.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, RatingValueInvalidException, PatronRatingAlreadyExistsException {
-        val patronAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(patronAuthenticationToken);
-        val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
+        val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
+        val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
 
-        val patronRatingValue = request.getRatingValue();
-        ensureRatingValueIsValid(patronRatingValue);
+        val patronRating = request.getPatronRating();
+        this.ensurePatronRatingIsValid(patronRating);
 
         val documentId = request.getDocumentId();
-        ensurePatronRatingDoesNotExist(patron, documentId);
+        this.ensurePatronRatingDoesNotExist(patron, documentId);
 
-        val document = getDocumentFromId(documentId);
-        addPatronRatingToDocument(document, patron, patronRatingValue);
+        val document = this.getDocumentFromId(documentId);
+        this.addPatronRatingToDocument(document, patron, patronRating);
 
         this.documentRepository.save(document);
         this.patronRepository.save(patron);
@@ -72,16 +71,15 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
         return patron;
     }
 
-    private void ensureRatingValueIsValid(double ratingValue) throws RatingValueInvalidException {
-        if (!AverageRating.isValid(ratingValue))
+    private void ensurePatronRatingIsValid(@Unsigned double patronRating) throws RatingValueInvalidException {
+        if (!AverageRating.isValid(patronRating))
             throw new RatingValueInvalidException();
     }
 
-    private static void ensurePatronRatingDoesNotExist(@NonNull Patron patron, Document.@NonNull Id documentId) throws PatronRatingAlreadyExistsException {
-        val patronAudit = patron.getAudit();
-        val patronRatingValues = patronAudit.getRatingValues();
+    private void ensurePatronRatingDoesNotExist(@NonNull Patron patron, Document.@NonNull Id documentId) throws PatronRatingAlreadyExistsException {
+        val patronRatingsByDocumentIds = patron.getAudit().getRatingsByDocumentIds();
 
-        if (patronRatingValues.containsKey(documentId))
+        if (patronRatingsByDocumentIds.containsKey(documentId))
             throw new PatronRatingAlreadyExistsException();
     }
 
@@ -94,22 +92,20 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
         return document;
     }
 
-    private static void addPatronRatingToDocument(@NonNull Document document, @NonNull Patron patron, double ratingValue) {
-        val patronAudit = patron.getAudit();
-        val patronRatingValues = patronAudit.getRatingValues();
+    private void addPatronRatingToDocument(@NonNull Document document, @NonNull Patron patron, @Unsigned double rating) {
+        val patronRatingsByDocumentIds = patron.getAudit().getRatingsByDocumentIds();
 
         val documentId = document.getId();
-        val documentAudit = document.getAudit();
-        val documentRating = documentAudit.getRating();
+        val documentRating = document.getAudit().getRating();
 
-        patronRatingValues.put(documentId, ratingValue);
-        documentRating.addRating(ratingValue);
+        patronRatingsByDocumentIds.put(documentId, rating);
+        documentRating.addRating(rating);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
         Document.@NonNull Id documentId;
-        @Unsigned double ratingValue;
+        @Unsigned double patronRating;
     }
 
     public static class PatronNotFoundException extends Exception {}

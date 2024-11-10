@@ -8,20 +8,20 @@ import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.D
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.user.abc.GetScheduledDocumentRecommendationUseCase;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 public final class GetTopRatedDocumentRecommendationUseCase extends GetScheduledDocumentRecommendationUseCase {
-    public static @NonNull GetTopRatedDocumentRecommendationUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository) {
-        return new GetTopRatedDocumentRecommendationUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository);
+    public static @NonNull GetTopRatedDocumentRecommendationUseCase of(@NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetTopRatedDocumentRecommendationUseCase(documentRecommendationGenerator, documentRecommendationRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetTopRatedDocumentRecommendationUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository) {
-        super(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository);
+    private GetTopRatedDocumentRecommendationUseCase(@NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(documentRecommendationGenerator, documentRecommendationRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
-    protected @NonNull Supplier<Collection<FragmentaryDocument>> getDocumentRecommendationSupplier() {
+    protected @NonNull Supplier<List<FragmentaryDocument>> getDocumentRecommendationSupplier() {
         return this.documentRecommendationRepository::getTopRatedDocumentRecommendation;
     }
 }

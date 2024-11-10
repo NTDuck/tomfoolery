@@ -12,9 +12,10 @@ import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
 import java.time.Instant;
 import java.time.Year;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data(staticConstructor = "of")
 public final class Document implements ddd.Entity<Document.Id> {
@@ -59,7 +60,7 @@ public final class Document implements ddd.Entity<Document.Id> {
         private final Staff.@NonNull Id createdByStaffId;
         private Staff.@Nullable Id lastModifiedByStaffId;
 
-        private final @NonNull Collection<Patron.Id> borrowingPatronIds = new HashSet<>();
+        private final @NonNull Set<Patron.Id> borrowingPatronIds = Collections.synchronizedSet(new HashSet<>());
         private final @NonNull AverageRating rating;
 
         private final @NonNull Timestamps timestamps;

@@ -20,20 +20,20 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
 
     @Override
     public void accept(@NonNull Request request) throws PatronCredentialsInvalidException, PatronAlreadyExistsException {
-        val patronCredentials = request.getPatronCredentials();
+        val rawPatronCredentials = request.getRawPatronCredentials();
         val patronMetadata = request.getPatronMetadata();
 
-        ensurePatronCredentialsAreValid(patronCredentials);
-        ensurePatronDoesNotExist(patronCredentials);
-        encodePatronPassword(patronCredentials);
+        this.ensurePatronCredentialsAreValid(rawPatronCredentials);
+        this.ensurePatronDoesNotExist(rawPatronCredentials);
+        val encodedPatronCredentials = this.passwordEncoder.encodeCredentials(rawPatronCredentials);
 
-        val patron = createPatron(patronCredentials, patronMetadata);
+        val patron = this.createPatron(encodedPatronCredentials, patronMetadata);
 
         this.patronRepository.save(patron);
     }
 
-    private static void ensurePatronCredentialsAreValid(Patron.@NonNull Credentials patronCredentials) throws PatronCredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(patronCredentials))
+    private void ensurePatronCredentialsAreValid(Patron.@NonNull Credentials rawPatronCredentials) throws PatronCredentialsInvalidException {
+        if (!CredentialsVerifier.verifyCredentials(rawPatronCredentials))
             throw new PatronCredentialsInvalidException();
     }
 
@@ -44,23 +44,17 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
             throw new PatronAlreadyExistsException();
     }
 
-    private void encodePatronPassword(Patron.@NonNull Credentials patronCredentials) {
-        val password = patronCredentials.getPassword();
-        val encodedPassword = this.passwordEncoder.encodePassword(password);
-        patronCredentials.setPassword(encodedPassword);
-    }
-
-    private static @NonNull Patron createPatron(Patron.@NonNull Credentials patronCredentials, Patron.@NonNull Metadata patronMetadata) {
+    private @NonNull Patron createPatron(Patron.@NonNull Credentials encodedPatronCredentials, Patron.@NonNull Metadata patronMetadata) {
         val patronId = Patron.Id.of(UUID.randomUUID());
         val patronAuditTimestamps = Patron.Audit.Timestamps.of(Instant.now());
         val patronAudit = Patron.Audit.of(false, patronAuditTimestamps);
 
-        return Patron.of(patronId, patronCredentials, patronAudit, patronMetadata);
+        return Patron.of(patronId, encodedPatronCredentials, patronAudit, patronMetadata);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Patron.@NonNull Credentials patronCredentials;
+        Patron.@NonNull Credentials rawPatronCredentials;
         Patron.@NonNull Metadata patronMetadata;
     }
 

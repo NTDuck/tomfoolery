@@ -15,38 +15,38 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdateDocumentMetadataUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
 
-    public static @NonNull UpdateDocumentMetadataUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new UpdateDocumentMetadataUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull UpdateDocumentMetadataUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdateDocumentMetadataUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private UpdateDocumentMetadataUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
+    private UpdateDocumentMetadataUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+
         this.documentRepository = documentRepository;
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Staff.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Staff.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
-        val staffAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(staffAuthenticationToken);
-        val staffId = getStaffIdFromAuthenticationToken(staffAuthenticationToken);
+        val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
+        val staffId = this.getStaffIdFromAuthenticationToken(staffAuthenticationToken);
 
         val documentId = request.getDocumentId();
         val newDocumentMetadata = request.getNewDocumentMetadata();
 
-        val fragmentaryDocument = getFragmentaryDocumentById(documentId);
+        val fragmentaryDocument = this.getFragmentaryDocumentById(documentId);
 
-        updateDocumentMetadataAndMarkAsLastModifiedByStaff(fragmentaryDocument, newDocumentMetadata, staffId);
+        this.updateDocumentMetadataAndMarkAsLastModifiedByStaff(fragmentaryDocument, newDocumentMetadata, staffId);
 
         this.documentRepository.save(fragmentaryDocument);
     }
@@ -69,7 +69,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
         return fragmentaryDocument;
     }
 
-    private static void updateDocumentMetadataAndMarkAsLastModifiedByStaff(@NonNull FragmentaryDocument fragmentaryDocument, Document.@NonNull Metadata newDocumentMetadata, Staff.@NonNull Id staffId) {
+    private void updateDocumentMetadataAndMarkAsLastModifiedByStaff(@NonNull FragmentaryDocument fragmentaryDocument, Document.@NonNull Metadata newDocumentMetadata, Staff.@NonNull Id staffId) {
         fragmentaryDocument.setMetadata(newDocumentMetadata);
 
         val documentAudit = fragmentaryDocument.getAudit();

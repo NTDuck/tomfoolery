@@ -16,27 +16,28 @@ import java.time.Instant;
 public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements ThrowableRunnable {
     private final @NonNull UserRepositories userRepositories;
 
-    public static @NonNull LogUserOutUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
-        return new LogUserOutUseCase(authenticationTokenGenerator, authenticationTokenRepository, userRepositories);
+    public static @NonNull LogUserOutUseCase of(@NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new LogUserOutUseCase(userRepositories, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private LogUserOutUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
+    private LogUserOutUseCase(@NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+
         this.userRepositories = userRepositories;
     }
 
     @Override
     public void run() throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException {
-        val authenticationToken = getAuthenticationTokenFromRepository();
+        val authenticationToken = this.getAuthenticationTokenFromRepository();
 
-        val userAndRepository = getUserAndRepositoryFromAuthenticationToken(authenticationToken);
+        val userAndRepository = this.getUserAndRepositoryFromAuthenticationToken(authenticationToken);
         val userRepository = userAndRepository.getUserRepository();
         val user = userAndRepository.getUser();
 
-        markUserAsLoggedOut(user);
+        this.markUserAsLoggedOut(user);
         userRepository.save(user);
 
-        invalidateAuthenticationToken(authenticationToken);
+        this.invalidateAuthenticationToken(authenticationToken);
     }
 
     private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
@@ -53,7 +54,7 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
         return userAndRepository;
     }
 
-    private static <User extends BaseUser> void markUserAsLoggedOut(@NonNull User user) {
+    private <User extends BaseUser> void markUserAsLoggedOut(@NonNull User user) {
         val userAudit = user.getAudit();
         val userAuditTimestamps = userAudit.getTimestamps();
 

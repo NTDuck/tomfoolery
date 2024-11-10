@@ -13,7 +13,7 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -23,24 +23,24 @@ public abstract class GetScheduledDocumentRecommendationUseCase extends Authenti
     private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator;
     protected final @NonNull DocumentRecommendationRepository documentRecommendationRepository;
 
-    protected GetScheduledDocumentRecommendationUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository) {
+    protected GetScheduledDocumentRecommendationUseCase(@NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRecommendationGenerator = documentRecommendationGenerator;
         this.documentRecommendationRepository = documentRecommendationRepository;
     }
 
-    protected abstract @NonNull Supplier<Collection<FragmentaryDocument>> getDocumentRecommendationSupplier();
+    protected abstract @NonNull Supplier<List<FragmentaryDocument>> getDocumentRecommendationSupplier();
 
     @Override
     public @NonNull Response get() throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException {
-        val userAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(userAuthenticationToken);
+        val userAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(userAuthenticationToken);
 
-        if (isGenerationIntervalElapsed())
-            regenerateDocumentRecommendations();   // Non-blocking
+        if (this.isGenerationIntervalElapsed())
+            this.regenerateDocumentRecommendations();   // Non-blocking
 
-        val documentRecommendationSupplier = getDocumentRecommendationSupplier();
+        val documentRecommendationSupplier = this.getDocumentRecommendationSupplier();
         val documentRecommendation = documentRecommendationSupplier.get();
 
         return Response.of(documentRecommendation);
@@ -77,6 +77,6 @@ public abstract class GetScheduledDocumentRecommendationUseCase extends Authenti
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Collection<FragmentaryDocument> documentRecommendation;
+        @NonNull List<FragmentaryDocument> documentRecommendation;
     }
 }

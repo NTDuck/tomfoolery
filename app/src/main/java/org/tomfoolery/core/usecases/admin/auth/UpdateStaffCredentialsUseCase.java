@@ -16,18 +16,17 @@ import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdateStaffCredentialsUseCase.Request> {
     private final @NonNull StaffRepository staffRepository;
     private final @NonNull PasswordEncoder passwordEncoder;
 
-    public static @NonNull UpdateStaffCredentialsUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder) {
-        return new UpdateStaffCredentialsUseCase(authenticationTokenGenerator, authenticationTokenRepository, staffRepository, passwordEncoder);
+    public static @NonNull UpdateStaffCredentialsUseCase of(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new UpdateStaffCredentialsUseCase(staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private UpdateStaffCredentialsUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder) {
+    private UpdateStaffCredentialsUseCase(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.staffRepository = staffRepository;
@@ -35,24 +34,24 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Administrator.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Administrator.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, StaffCredentialsInvalidException, StaffNotFoundException {
-        val administratorAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(administratorAuthenticationToken);
-        val administratorId = getAdministratorIdFromAuthenticationToken(administratorAuthenticationToken);
+        val administratorAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(administratorAuthenticationToken);
+        val administratorId = this.getAdministratorIdFromAuthenticationToken(administratorAuthenticationToken);
 
-        val newStaffCredentials = request.getNewStaffCredentials();
-        ensureStaffCredentialsAreValid(newStaffCredentials);
-        encodeStaffPassword(newStaffCredentials);
+        val rawNewStaffCredentials = request.getRawNewStaffCredentials();
+        this.ensureStaffCredentialsAreValid(rawNewStaffCredentials);
+        val encodedNewStaffCredentials = this.passwordEncoder.encodeCredentials(rawNewStaffCredentials);
 
         val staffId = request.getStaffId();
-        val staff = getStaffFromId(staffId);
+        val staff = this.getStaffFromId(staffId);
 
-        updateStaffCredentialsAndMarkAsLastModifiedByAdministrator(staff, newStaffCredentials, administratorId);
+        this.updateStaffCredentialsAndMarkAsLastModifiedByAdministrator(staff, encodedNewStaffCredentials, administratorId);
 
         this.staffRepository.save(staff);
     }
@@ -66,15 +65,9 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
         return administratorId;
     }
 
-    private static void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials staffCredentials) throws StaffCredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(staffCredentials))
+    private void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials rawStaffCredentials) throws StaffCredentialsInvalidException {
+        if (!CredentialsVerifier.verifyCredentials(rawStaffCredentials))
             throw new StaffCredentialsInvalidException();
-    }
-
-    private void encodeStaffPassword(Staff.@NonNull Credentials staffCredentials) {
-        val password = staffCredentials.getPassword();
-        val encodedPassword = this.passwordEncoder.encodePassword(password);
-        staffCredentials.setPassword(encodedPassword);
     }
 
     private @NonNull Staff getStaffFromId(Staff.@NonNull Id staffId) throws StaffNotFoundException {
@@ -86,8 +79,8 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
         return staff;
     }
 
-    private static void updateStaffCredentialsAndMarkAsLastModifiedByAdministrator(@NonNull Staff staff, Staff.@NonNull Credentials newStaffCredentials, Administrator.@NonNull Id administratorId) {
-        staff.setCredentials(newStaffCredentials);
+    private void updateStaffCredentialsAndMarkAsLastModifiedByAdministrator(@NonNull Staff staff, Staff.@NonNull Credentials encodedNewStaffCredentials, Administrator.@NonNull Id administratorId) {
+        staff.setCredentials(encodedNewStaffCredentials);
 
         val staffAudit = staff.getAudit();
         val staffAuditTimestamps = staffAudit.getTimestamps();
@@ -99,7 +92,7 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
     @Value(staticConstructor = "of")
     public static class Request {
         Staff.@NonNull Id staffId;
-        Staff.@NonNull Credentials newStaffCredentials;
+        Staff.@NonNull Credentials rawNewStaffCredentials;
     }
 
     public static class StaffCredentialsInvalidException extends Exception {}

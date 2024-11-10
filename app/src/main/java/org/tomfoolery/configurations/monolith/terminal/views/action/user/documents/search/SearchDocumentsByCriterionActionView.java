@@ -9,8 +9,7 @@ import org.tomfoolery.configurations.monolith.terminal.views.action.user.documen
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.user.abc.SearchDocumentsByCriterionUseCase;
-import org.tomfoolery.core.usecases.user.documents.ShowDocumentsUseCase;
+import org.tomfoolery.core.usecases.user.abc.SearchDocumentsUseCase;
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByAuthorUseCase;
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByGenreUseCase;
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByTitleUseCase;
@@ -19,7 +18,7 @@ import org.tomfoolery.infrastructures.adapters.presenters.user.documents.search.
 import java.util.Map;
 
 public final class SearchDocumentsByCriterionActionView extends SharedUserActionView {
-    private final @NonNull Map<Integer, SearchDocumentsByCriterionUseCase> useCases;
+    private final @NonNull Map<Integer, SearchDocumentsUseCase> useCases;
     private final @NonNull SearchDocumentsByCriterionPresenter presenter;
 
     private int criterionIndex;
@@ -48,7 +47,7 @@ public final class SearchDocumentsByCriterionActionView extends SharedUserAction
         }
     }
 
-    private SearchDocumentsByCriterionUseCase.@NonNull Request collectRequestModel() {
+    private SearchDocumentsUseCase.@NonNull Request collectRequestModel() {
         val criterionIndexAsString = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "search criterion (0 for author, 1 for title, 2 for genre");
         this.criterionIndex = Integer.parseUnsignedInt(criterionIndexAsString);
 
@@ -60,7 +59,7 @@ public final class SearchDocumentsByCriterionActionView extends SharedUserAction
             throw new ShowDocumentsActionView.PageIndexInvalidException();
         }
 
-        return SearchDocumentsByCriterionUseCase.Request.of(criterion, pageIndex, MAX_PAGE_SIZE);
+        return SearchDocumentsUseCase.Request.of(criterion, pageIndex, MAX_PAGE_SIZE);
     }
 
     private static class CriterionIndexInvalidException extends Exception {}

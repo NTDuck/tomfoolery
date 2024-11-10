@@ -12,33 +12,33 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class DeleteStaffAccountUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<DeleteStaffAccountUseCase.Request> {
     private final @NonNull StaffRepository staffRepository;
 
-    public static @NonNull DeleteStaffAccountUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StaffRepository staffRepository) {
-        return new DeleteStaffAccountUseCase(authenticationTokenGenerator, authenticationTokenRepository, staffRepository);
+    public static @NonNull DeleteStaffAccountUseCase of(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new DeleteStaffAccountUseCase(staffRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private DeleteStaffAccountUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StaffRepository staffRepository) {
+    private DeleteStaffAccountUseCase(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+        
         this.staffRepository = staffRepository;
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Administrator.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Administrator.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, StaffNotFoundException {
-        val administratorAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(administratorAuthenticationToken);
+        val administratorAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(administratorAuthenticationToken);
 
         val staffId = request.getStaffId();
-        ensureStaffExists(staffId);
+        this.ensureStaffExists(staffId);
 
         this.staffRepository.delete(staffId);
     }

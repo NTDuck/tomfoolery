@@ -10,48 +10,50 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncode
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.core.utils.dataclasses.common.UserAndRepository;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
 
+import java.time.Duration;
 import java.time.Instant;
 
 @RequiredArgsConstructor(staticName = "of")
 public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCase.Request, LogUserInUseCase.Response> {
-    private static final int TOKEN_LIFE_IN_MINUTES = 30;
+    private static final @NonNull Duration AUTHENTICATION_TOKEN_LIFESPAN = Duration.ofHours(6);
 
     private final @NonNull UserRepositories userRepositories;
 
-    private final @NonNull PasswordEncoder passwordEncoder;
     private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
+    private final @NonNull PasswordEncoder passwordEncoder;
 
     @Override
     public @NonNull Response apply(@NonNull Request request) throws CredentialsInvalidException, UserNotFoundException, PasswordMismatchException, UserAlreadyLoggedInException {
-        val userCredentials = request.getUserCredentials();
-        val username = userCredentials.getUsername();
-        val password = userCredentials.getPassword();
+        val rawUserCredentials = request.getRawUserCredentials();
+        val username = rawUserCredentials.getUsername();
+        val rawPassword = rawUserCredentials.getPassword();
 
-        ensureUserCredentialsAreValid(userCredentials);
+        this.ensureUserCredentialsAreValid(rawUserCredentials);
 
-        val userAndRepository = getUserAndRepositoryByUsername(username);
+        val userAndRepository = this.getUserAndRepositoryByUsername(username);
         val userRepository = userAndRepository.getUserRepository();
         val user = userAndRepository.getUser();
 
-        ensurePasswordsMatch(password, user);
+        this.ensurePasswordsMatch(rawPassword, user);
 
-        markUserAsLoggedIn(user);
+        this.markUserAsLoggedIn(user);
         userRepository.save(user);
 
-        val authenticationToken = generateAuthenticationToken(userAndRepository);
-        saveAuthenticationToken(authenticationToken);
+        val authenticationToken = this.generateAuthenticationToken(user);
+        this.saveAuthenticationTokenToRepository(authenticationToken);
 
         val userClass = user.getClass();
         return Response.of(userClass);
     }
 
-    private static <User extends BaseUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials credentials) throws CredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(credentials))
+    private <User extends BaseUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials rawUserCredentials) throws CredentialsInvalidException {
+        if (!CredentialsVerifier.verifyCredentials(rawUserCredentials))
             throw new CredentialsInvalidException();
     }
 
@@ -64,15 +66,15 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
         return userAndRepository;
     }
 
-    private <User extends BaseUser> void ensurePasswordsMatch(@NonNull String password, @NonNull User user) throws PasswordMismatchException {
+    private <User extends BaseUser> void ensurePasswordsMatch(@NonNull SecureString rawPassword, @NonNull User user) throws PasswordMismatchException {
         val credentials = user.getCredentials();
         val encodedPassword = credentials.getPassword();
 
-        if (!this.passwordEncoder.verifyPassword(password, encodedPassword))
+        if (!this.passwordEncoder.verifyPassword(rawPassword, encodedPassword))
             throw new PasswordMismatchException();
     }
 
-    private static <User extends BaseUser> void markUserAsLoggedIn(@NonNull User user) throws UserAlreadyLoggedInException {
+    private <User extends BaseUser> void markUserAsLoggedIn(@NonNull User user) throws UserAlreadyLoggedInException {
         val userAudit = user.getAudit();
 
         if (userAudit.isLoggedIn())
@@ -84,29 +86,26 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
         userAuditTimestamps.setLastLogin(Instant.now());
     }
 
-    private <User extends BaseUser> AuthenticationToken generateAuthenticationToken(@NonNull UserAndRepository<User> userAndRepository) {
-        val user = userAndRepository.getUser();
-        val userRepository = userAndRepository.getUserRepository();
-
+    private <User extends BaseUser> AuthenticationToken generateAuthenticationToken(@NonNull User user) {
         val userId = user.getId();
-        val userClass = userRepository.getUserClass();
-        val expiryTimestamp = Instant.now().plusSeconds(TOKEN_LIFE_IN_MINUTES * 60);
+        val userClass = user.getClass();
+        val expiryTimestamp = Instant.now().plus(AUTHENTICATION_TOKEN_LIFESPAN);
 
         return this.authenticationTokenGenerator.generateAuthenticationToken(userId, userClass, expiryTimestamp);
     }
 
-    private void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    private void saveAuthenticationTokenToRepository(@NonNull AuthenticationToken authenticationToken) {
         this.authenticationTokenRepository.saveAuthenticationToken(authenticationToken);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        BaseUser.@NonNull Credentials userCredentials;
+        BaseUser.@NonNull Credentials rawUserCredentials;
     }
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Class<? extends BaseUser> userClass;
+        @NonNull Class<? extends BaseUser> loggedInUserClass;
     }
 
     public static class CredentialsInvalidException extends Exception {}

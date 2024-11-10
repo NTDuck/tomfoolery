@@ -15,18 +15,17 @@ import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<RemoveDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
-    public static @NonNull RemoveDocumentUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new RemoveDocumentUseCase(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull RemoveDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new RemoveDocumentUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private RemoveDocumentUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
+    private RemoveDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
         
         this.documentRepository = documentRepository;
@@ -34,19 +33,19 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Staff.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Staff.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
-        val staffAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(staffAuthenticationToken);
+        val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
 
         val documentId = request.getDocumentId();
-        val fragmentaryDocument = getFragmentaryDocumentById(documentId);
+        val fragmentaryDocument = this.getFragmentaryDocumentById(documentId);
 
-        removeDocumentFromBorrowingPatrons(fragmentaryDocument);
+        this.cascadeRemoveDocumentFromBorrowingPatrons(fragmentaryDocument);
 
         this.documentRepository.delete(documentId);
     }
@@ -60,24 +59,24 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
         return fragmentaryDocument;
     }
 
-    private void removeDocumentFromBorrowingPatrons(@NonNull FragmentaryDocument fragmentaryDocument) {
+    private void cascadeRemoveDocumentFromBorrowingPatrons(@NonNull FragmentaryDocument fragmentaryDocument) {
         val documentId = fragmentaryDocument.getId();
         val borrowingPatronIds = fragmentaryDocument.getAudit().getBorrowingPatronIds();
 
         for (val borrowingPatronId : borrowingPatronIds)
-            removeDocumentFromBorrowingPatron(documentId, borrowingPatronId);
+            this.removeDocumentFromBorrowingPatron(documentId, borrowingPatronId);
     }
 
-    private void removeDocumentFromBorrowingPatron(Document.@NonNull Id documentId, Patron.@NonNull Id patronId) {
-        val patron = this.patronRepository.getById(patronId);
+    private void removeDocumentFromBorrowingPatron(Document.@NonNull Id documentId, Patron.@NonNull Id borrowingPatronId) {
+        val borrowingPatron = this.patronRepository.getById(borrowingPatronId);
 
-        if (patron == null)
+        if (borrowingPatron == null)
             return;
 
-        val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
+        val borrowedDocumentIds = borrowingPatron.getAudit().getBorrowedDocumentIds();
         borrowedDocumentIds.remove(documentId);
 
-        this.patronRepository.save(patron);
+        this.patronRepository.save(borrowingPatron);
     }
 
     @Value(staticConstructor = "of")

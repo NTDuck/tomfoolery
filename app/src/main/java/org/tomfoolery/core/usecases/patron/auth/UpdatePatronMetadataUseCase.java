@@ -13,34 +13,34 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public final class UpdatePatronMetadataUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdatePatronMetadataUseCase.Request> {
     private final @NonNull PatronRepository patronRepository;
 
-    public static @NonNull UpdatePatronMetadataUseCase of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PatronRepository patronRepository) {
-        return new UpdatePatronMetadataUseCase(authenticationTokenGenerator, authenticationTokenRepository, patronRepository);
+    public static @NonNull UpdatePatronMetadataUseCase of(@NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdatePatronMetadataUseCase(patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private UpdatePatronMetadataUseCase(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PatronRepository patronRepository) {
+    private UpdatePatronMetadataUseCase(@NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
+
         this.patronRepository = patronRepository;
     }
 
     @Override
-    protected @NonNull Collection<Class<? extends BaseUser>> getAllowedUserClasses() {
-        return List.of(Patron.class);
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        return Set.of(Patron.class);
     }
 
     @Override
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronAuthenticationToken = getAuthenticationTokenFromRepository();
-        ensureAuthenticationTokenIsValid(patronAuthenticationToken);
-        val patron = getPatronFromAuthenticationToken(patronAuthenticationToken);
+        val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
+        val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
 
         val newPatronMetadata = request.getNewPatronMetadata();
-        updatePatronMetadata(patron, newPatronMetadata);
+        this.updatePatronMetadata(patron, newPatronMetadata);
 
         this.patronRepository.save(patron);
     }
@@ -59,11 +59,10 @@ public final class UpdatePatronMetadataUseCase extends AuthenticatedUserUseCase 
         return patron;
     }
 
-    private static void updatePatronMetadata(@NonNull Patron patron, Patron.@NonNull Metadata newPatronMetadata) {
+    private void updatePatronMetadata(@NonNull Patron patron, Patron.@NonNull Metadata newPatronMetadata) {
         patron.setMetadata(newPatronMetadata);
 
-        val patronAudit = patron.getAudit();
-        val patronAuditTimestamps = patronAudit.getTimestamps();
+        val patronAuditTimestamps = patron.getAudit().getTimestamps();
         patronAuditTimestamps.setLastModified(Instant.now());
     }
 
