@@ -6,36 +6,38 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.utils.contracts.ddd.ddd;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BaseInMemoryRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
-    protected final @NonNull Map<EntityId, Entity> entityIdToEntityMap = new HashMap<>();
+    protected final @NonNull Map<EntityId, Entity> entitiesByIds = new HashMap<>();
 
     @Override
     public void save(@NonNull Entity entity) {
         val entityId = entity.getId();
-        this.entityIdToEntityMap.put(entityId, entity);
+        this.entitiesByIds.put(entityId, entity);
     }
 
     @Override
     public void delete(@NonNull EntityId entityId) {
-        this.entityIdToEntityMap.remove(entityId);
+        this.entitiesByIds.remove(entityId);
     }
 
     @Override
     public @Nullable Entity getById(@NonNull EntityId entityId) {
-        return this.entityIdToEntityMap.get(entityId);
+        return this.entitiesByIds.get(entityId);
     }
 
     @Override
-    public @NonNull Collection<Entity> show() {
-        return this.entityIdToEntityMap.values();
+    public @NonNull List<Entity> show() {
+        return this.entitiesByIds.values()
+            .parallelStream().collect(Collectors.toUnmodifiableList());
     }
 
     @Override
     public boolean contains(@NonNull EntityId entityId) {
-        return this.entityIdToEntityMap.containsKey(entityId);
+        return this.entitiesByIds.containsKey(entityId);
     }
 }

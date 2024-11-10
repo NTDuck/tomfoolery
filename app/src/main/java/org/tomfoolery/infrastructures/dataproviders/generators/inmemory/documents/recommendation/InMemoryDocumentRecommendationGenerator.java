@@ -6,11 +6,11 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class InMemoryDocumentRecommendationGenerator implements DocumentRecommendationGenerator {
@@ -30,28 +30,28 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
     }
 
     @Override
-    public @NonNull Collection<Document> generateLatestDocumentRecommendation() {
-        val documentComparator = Comparator.<Document, Instant>comparing(document -> document.getAudit().getTimestamps().getCreated()).reversed();
-        return generateDocumentRecommendationByComparator(documentComparator);
+    public @NonNull List<FragmentaryDocument> generateLatestDocumentRecommendation() {
+        val fragmentaryDocumentComparator = Comparator.<FragmentaryDocument, Instant>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getTimestamps().getCreated()).reversed();
+        return generateDocumentRecommendationByComparator(fragmentaryDocumentComparator);
     }
 
     @Override
-    public @NonNull Collection<Document> generatePopularDocumentRecommendation() {
-        val documentComparator = Comparator.<Document, Integer>comparing(document -> document.getAudit().getBorrowingPatronIds().size()).reversed();
-        return generateDocumentRecommendationByComparator(documentComparator);
+    public @NonNull List<FragmentaryDocument> generatePopularDocumentRecommendation() {
+        val fragmentaryDocumentComparator = Comparator.<FragmentaryDocument, Integer>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getBorrowingPatronIds().size()).reversed();
+        return generateDocumentRecommendationByComparator(fragmentaryDocumentComparator);
     }
 
     @Override
-    public @NonNull Collection<Document> generateTopRatedDocumentRecommendation() {
-        val documentComparator = Comparator.<Document, Double>comparing(document -> document.getAudit().getRating().getValue()).reversed();
-        return generateDocumentRecommendationByComparator(documentComparator);
+    public @NonNull List<FragmentaryDocument> generateTopRatedDocumentRecommendation() {
+        val fragmentaryDocumentComparator = Comparator.<FragmentaryDocument, Double>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getRating().getValue()).reversed();
+        return generateDocumentRecommendationByComparator(fragmentaryDocumentComparator);
     }
 
-    private @NonNull Collection<Document> generateDocumentRecommendationByComparator(@NonNull Comparator<Document> documentComparator) {
-        val documents = this.documentRepository.show();
+    private @NonNull List<FragmentaryDocument> generateDocumentRecommendationByComparator(@NonNull Comparator<FragmentaryDocument> fragmentaryDocumentComparator) {
+        val fragmentaryDocuments = this.documentRepository.showFragmentaryDocuments();
 
-        return documents.stream()
-            .sorted(documentComparator)
+        return fragmentaryDocuments.parallelStream()
+            .sorted(fragmentaryDocumentComparator)
             .limit(DOCUMENT_COUNT_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());
     }

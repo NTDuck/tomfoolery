@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 
 import java.util.Arrays;
 
 @Value(staticConstructor = "of")
-public class SecureString implements CharSequence, AutoCloseable {
+public class SecureString implements Comparable<SecureString>, CharSequence, AutoCloseable {
     @Getter(AccessLevel.NONE)
     transient char @NonNull [] value;
 
@@ -48,6 +49,22 @@ public class SecureString implements CharSequence, AutoCloseable {
     @Override
     public void close() {
         Arrays.fill(this.value, '\0');
+    }
+
+    @Override
+    public int compareTo(@NonNull SecureString other) {
+        return CharSequence.compare(this, other);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+        if (other == null)
+            return false;
+
+        if (!(other instanceof SecureString otherSecureString))
+            return false;
+
+        return this.compareTo(otherSecureString) == 0;
     }
 
     @Override

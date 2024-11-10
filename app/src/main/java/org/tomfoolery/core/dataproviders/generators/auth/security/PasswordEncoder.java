@@ -15,5 +15,7 @@ public interface PasswordEncoder {
         return rawCredentials.withPassword(encodedPassword);
     }
 
-    boolean verifyPassword(@NonNull SecureString rawPassword, @NonNull SecureString encodedPassword);
+    default boolean verifyPassword(@NonNull SecureString rawPassword, @NonNull SecureString encodedPassword {
+        return this.encodePassword(rawPassword).equals(encodedPassword);
+    }
 }

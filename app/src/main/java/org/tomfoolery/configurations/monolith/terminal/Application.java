@@ -30,7 +30,7 @@ import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.dataproviders.generators.apache.document.references.ApacheDocumentUrlGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.ApacheHttpClientDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.security.JJWTAuthenticationTokenGenerator;
@@ -53,7 +53,7 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull DocumentRecommendationRepository documentRecommendationRepository = InMemoryDocumentRecommendationRepository.of();
 
     private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = QrgenDocumentQrCodeGenerator.of();
-    private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheDocumentUrlGenerator.of();
+    private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
 
     private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
     private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();

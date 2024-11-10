@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.dataproviders.generators.apache.document.references;
+package org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references;
 
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @NoArgsConstructor(staticName = "of")
-public class ApacheDocumentUrlGenerator implements DocumentUrlGenerator {
+public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerator {
     private static final @NonNull String URL_HOST = "";
 
     private static final @NonNull String URL_PARAMETER_ISBN = "isbn";
