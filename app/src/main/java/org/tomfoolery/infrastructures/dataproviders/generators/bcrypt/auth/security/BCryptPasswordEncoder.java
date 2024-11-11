@@ -16,12 +16,16 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
 
     @Override
     public @NonNull SecureString encodePassword(@NonNull SecureString rawPassword) {
-        val encodedChars = encoder.hashToChar(COST, rawPassword.getChars());
+        val rawPasswordChars = rawPassword.getChars();
+        val encodedChars = encoder.hashToChar(COST, rawPasswordChars);
+
         return SecureString.of(encodedChars);
     }
 
     @Override
     public boolean verifyPassword(@NonNull SecureString rawPassword, @NonNull SecureString encodedPassword) {
-        return verifyer.verify(rawPassword.getChars(), encodedPassword).verified;
+        val rawPasswordChars = rawPassword.getChars();
+
+        return verifyer.verify(rawPasswordChars, encodedPassword).verified;
     }
 }

@@ -34,6 +34,7 @@ public abstract class InMemoryUserRepository<User extends BaseUser> extends Base
     public void delete(User.@NonNull Id userId) {
         val deletedUser = this.entitiesByIds.remove(userId);
         val usernameOfDeletedUser = deletedUser.getCredentials().getUsername();
+
         this.userNameToUserMap.remove(usernameOfDeletedUser);
     }
 }

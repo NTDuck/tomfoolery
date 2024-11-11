@@ -10,6 +10,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -30,7 +31,8 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
 
             .compact();
 
-        return AuthenticationToken.of(serializedPayload);
+        val wrappedSerializedPayload = SecureString.of(serializedPayload.toCharArray());
+        return AuthenticationToken.of(wrappedSerializedPayload);
     }
 
     @Override

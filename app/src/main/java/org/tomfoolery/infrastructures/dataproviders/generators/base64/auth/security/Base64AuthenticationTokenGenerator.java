@@ -10,7 +10,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Encoder;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Codec;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -21,8 +22,10 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
     @SneakyThrows
     public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val payload = Payload.of(userId, userClass, expiryTimestamp);
-        val serializedPayload = Base64Encoder.encode(payload);
-        return AuthenticationToken.of(serializedPayload);
+        val serializedPayload = Base64Codec.encode(payload);
+        val wrappedSerializedPayload = SecureString.of(serializedPayload);
+
+        return AuthenticationToken.of(wrappedSerializedPayload);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
         val serializedPayload = token.getSerializedPayload();
 
         try {
-            return (Payload) Base64Encoder.decode(serializedPayload);
+            return (Payload) Base64Codec.decode(serializedPayload);
         } catch (Exception exception) {
             return null;
         }

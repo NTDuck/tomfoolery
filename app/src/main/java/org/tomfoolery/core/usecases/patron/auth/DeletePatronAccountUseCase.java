@@ -15,7 +15,7 @@ import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
 
 import java.util.Set;
 

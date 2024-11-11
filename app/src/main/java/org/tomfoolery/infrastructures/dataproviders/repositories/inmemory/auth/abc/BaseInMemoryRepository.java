@@ -33,7 +33,8 @@ public class BaseInMemoryRepository<Entity extends ddd.Entity<EntityId>, EntityI
     @Override
     public @NonNull List<Entity> show() {
         return this.entitiesByIds.values()
-            .parallelStream().collect(Collectors.toUnmodifiableList());
+            .parallelStream()
+            .collect(Collectors.toUnmodifiableList());
     }
 
     @Override

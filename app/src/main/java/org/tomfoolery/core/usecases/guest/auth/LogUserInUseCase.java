@@ -13,7 +13,7 @@ import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.core.utils.dataclasses.common.UserAndRepository;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.core.utils.helpers.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
 
 import java.time.Duration;
 import java.time.Instant;

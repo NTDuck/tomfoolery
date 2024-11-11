@@ -12,7 +12,8 @@ import org.tomfoolery.core.domain.documents.Document;
 public class QrgenDocumentQrCodeGenerator implements DocumentQrCodeGenerator {
     @Override
     public Document.@NonNull QrCode generateQrCodeFromUrl(@NonNull String documentUrl) {
-        val buffer = QRCode.from(documentUrl).to(ImageType.PNG).stream().toByteArray();
-        return Document.QrCode.of(buffer);
+        val bytes = QRCode.from(documentUrl).to(ImageType.PNG)
+            .stream().toByteArray();
+        return Document.QrCode.of(bytes);
     }
 }
