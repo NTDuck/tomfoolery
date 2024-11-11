@@ -2,8 +2,10 @@ package org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.secu
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 @NoArgsConstructor(staticName = "of")
 public class BCryptPasswordEncoder implements PasswordEncoder {
@@ -13,12 +15,13 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
     private static final int COST = 12;
 
     @Override
-    public @NonNull String encodePassword(@NonNull String password) {
-        return encoder.hashToString(COST, password.toCharArray());
+    public @NonNull SecureString encodePassword(@NonNull SecureString rawPassword) {
+        val encodedChars = encoder.hashToChar(COST, rawPassword.getChars());
+        return SecureString.of(encodedChars);
     }
 
     @Override
-    public boolean verifyPassword(@NonNull String password, @NonNull String encodedPassword) {
-        return verifyer.verify(password.toCharArray(), encodedPassword).verified;
+    public boolean verifyPassword(@NonNull SecureString rawPassword, @NonNull SecureString encodedPassword) {
+        return verifyer.verify(rawPassword.getChars(), encodedPassword).verified;
     }
 }

@@ -7,13 +7,15 @@ import lombok.val;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
-import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.function.Function;
 
 @NoArgsConstructor(staticName = "of")
 public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerator {
@@ -36,8 +38,8 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
 
     @Override
     @SneakyThrows
-    public @NonNull String generateUrlFromDocumentPreview(Document.@NonNull Preview documentPreview) {
-        val parameterPairs = generateParameterPairsFromDocumentPreview(documentPreview);
+    public @NonNull String generateUrlFromFragmentaryDocument(@NonNull FragmentaryDocument fragmentaryDocument) {
+        val parameterPairs = generateParameterPairsFromDocumentPreview(fragmentaryDocument);
 
         URIBuilder uriBuilder = new URIBuilder()
             .setHost(URL_HOST)
@@ -46,17 +48,17 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
         return uriBuilder.build().toString();
     }
 
-    private static @NonNull List<NameValuePair> generateParameterPairsFromDocumentPreview(Document.@NonNull Preview documentPreview) {
+    private static @NonNull List<NameValuePair> generateParameterPairsFromDocumentPreview(@NonNull FragmentaryDocument fragmentaryDocument) {
         return List.of(
-            generateParameterPairFromDocumentISBN(documentPreview.getId().getISBN()),
-            generateParameterPairFromDocumentTitle(documentPreview.getMetadata().getTitle()),
-            generateParameterPairFromDocumentDescription(documentPreview.getMetadata().getDescription()),
-            generateParameterPairFromDocumentAuthors(documentPreview.getMetadata().getAuthors()),
-            generateParameterPairFromDocumentGenres(documentPreview.getMetadata().getGenres()),
-            generateParameterPairFromDocumentPublishedYear(documentPreview.getMetadata().getPublishedYear()),
-            generateParameterPairFromDocumentPublisher(documentPreview.getMetadata().getPublisher()),
-            generateParameterPairFromDocumentBorrowingPatronCount(documentPreview.getAudit().getBorrowingPatronCount()),
-            generateParameterPairFromDocumentRating(documentPreview.getAudit().getRating())
+            generateParameterPairFromDocumentISBN(fragmentaryDocument.getId().getISBN()),
+            generateParameterPairFromDocumentTitle(fragmentaryDocument.getMetadata().getTitle()),
+            generateParameterPairFromDocumentDescription(fragmentaryDocument.getMetadata().getDescription()),
+            generateParameterPairFromDocumentAuthors(fragmentaryDocument.getMetadata().getAuthors()),
+            generateParameterPairFromDocumentGenres(fragmentaryDocument.getMetadata().getGenres()),
+            generateParameterPairFromDocumentPublishedYear(fragmentaryDocument.getMetadata().getPublishedYear()),
+            generateParameterPairFromDocumentPublisher(fragmentaryDocument.getMetadata().getPublisher()),
+            generateParameterPairFromNumberOfBorrowingPatrons(fragmentaryDocument.getAudit().getBorrowingPatronIds().size()),
+            generateParameterPairFromDocumentRating(fragmentaryDocument.getAudit().getRating())
         );
     }
 
@@ -91,9 +93,9 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
         return ParameterPair.of(URL_PARAMETER_PUBLISHER, publisher);
     }
 
-    private static @NonNull ParameterPair generateParameterPairFromDocumentBorrowingPatronCount(int borrowingPatronCount) {
-        val stringifiedBorrowingPatronCount = Integer.valueOf(borrowingPatronCount).toString();
-        return ParameterPair.of(URL_PARAMETER_BORROWING_PATRON_COUNT, stringifiedBorrowingPatronCount);
+    private static @NonNull ParameterPair generateParameterPairFromNumberOfBorrowingPatrons(@Unsigned int numberOfBorrowingPatrons) {
+        val stringifiedNumberOfBorrowingPatrons = Integer.valueOf(numberOfBorrowingPatrons).toString();
+        return ParameterPair.of(URL_PARAMETER_BORROWING_PATRON_COUNT, stringifiedNumberOfBorrowingPatrons);
     }
 
     private static @NonNull ParameterPair generateParameterPairFromDocumentRating(@NonNull AverageRating rating) {
