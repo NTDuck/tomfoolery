@@ -7,7 +7,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.DocumentRecommendationRepository;
-import org.tomfoolery.core.usecases.user.abc.GetScheduledDocumentRecommendationUseCase;
+import org.tomfoolery.core.usecases.user.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetLatestDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetPopularDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetTopRatedDocumentRecommendationUseCase;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class GetDocumentRecommendationController implements ThrowableFunction<GetDocumentRecommendationController.RequestObject, GetDocumentRecommendationController.ViewModel> {
-    private final @NonNull Map<RecommendationType, GetScheduledDocumentRecommendationUseCase> getScheduledDocumentRecommendationUseCasesByRecommendationTypes;
+    private final @NonNull Map<RecommendationType, GetDocumentRecommendationUseCase> getScheduledDocumentRecommendationUseCasesByRecommendationTypes;
 
     public static @NonNull GetDocumentRecommendationController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository) {
         return new GetDocumentRecommendationController(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository);
@@ -34,7 +34,7 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws GetScheduledDocumentRecommendationUseCase.AuthenticationTokenNotFoundException, GetScheduledDocumentRecommendationUseCase.AuthenticationTokenInvalidException {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws GetDocumentRecommendationUseCase.AuthenticationTokenNotFoundException, GetDocumentRecommendationUseCase.AuthenticationTokenInvalidException {
         val recommendationType = requestObject.getRecommendationType();
         val getScheduledDocumentRecommendationUseCase = this.getScheduledDocumentRecommendationUseCasesByRecommendationTypes.get(recommendationType);
 
@@ -53,7 +53,7 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
     public static class ViewModel {
         @NonNull List<ViewableFragmentaryDocument> documentRecommendation;
 
-        public static @NonNull ViewModel fromResponseModel(GetScheduledDocumentRecommendationUseCase.@NonNull Response responseModel) {
+        public static @NonNull ViewModel fromResponseModel(GetDocumentRecommendationUseCase.@NonNull Response responseModel) {
             val documentRecommendation = responseModel.getDocumentRecommendation();
             val viewableDocumentRecommendation = documentRecommendation.parallelStream()
                 .map(ViewableFragmentaryDocument::of)

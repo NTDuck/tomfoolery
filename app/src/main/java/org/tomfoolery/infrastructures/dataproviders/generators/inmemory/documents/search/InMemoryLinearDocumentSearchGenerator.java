@@ -32,7 +32,7 @@ public class InMemoryLinearDocumentSearchGenerator implements DocumentSearchGene
     }
 
     private @NonNull List<FragmentaryDocument> searchDocumentsByPredicate(@NonNull Predicate<? super FragmentaryDocument> predicate) {
-        val fragmentaryDocuments = this.documentRepository.showFragmentaryDocuments();
+        val fragmentaryDocuments = this.documentRepository.showFragments();
 
         return fragmentaryDocuments.parallelStream()
             .filter(predicate)

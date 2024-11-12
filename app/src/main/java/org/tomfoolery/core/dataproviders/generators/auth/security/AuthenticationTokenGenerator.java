@@ -2,12 +2,13 @@ package org.tomfoolery.core.dataproviders.generators.auth.security;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.tomfoolery.core.dataproviders.generators.abc.BaseGenerator;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.time.Instant;
 
-public interface AuthenticationTokenGenerator {
+public interface AuthenticationTokenGenerator extends BaseGenerator {
     @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp);
 
     void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken);

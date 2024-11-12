@@ -85,7 +85,7 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) {
-        val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
+        val fragmentaryDocument = this.documentRepository.getFragmentById(documentId);
         assert fragmentaryDocument != null;
 
         return fragmentaryDocument;

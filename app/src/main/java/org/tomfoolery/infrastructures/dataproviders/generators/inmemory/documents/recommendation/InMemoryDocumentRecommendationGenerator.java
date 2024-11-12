@@ -48,7 +48,7 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
     }
 
     private @NonNull List<FragmentaryDocument> generateDocumentRecommendationByComparator(@NonNull Comparator<FragmentaryDocument> fragmentaryDocumentComparator) {
-        val fragmentaryDocuments = this.documentRepository.showFragmentaryDocuments();
+        val fragmentaryDocuments = this.documentRepository.showFragments();
 
         return fragmentaryDocuments.parallelStream()
             .sorted(fragmentaryDocumentComparator)

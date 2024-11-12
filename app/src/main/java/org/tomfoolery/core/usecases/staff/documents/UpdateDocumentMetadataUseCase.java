@@ -48,7 +48,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
 
         this.updateDocumentMetadataAndMarkAsLastModifiedByStaff(fragmentaryDocument, newDocumentMetadata, staffId);
 
-        this.documentRepository.save(fragmentaryDocument);
+        this.documentRepository.saveFragment(fragmentaryDocument);
     }
 
     private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
@@ -61,7 +61,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
+        val fragmentaryDocument = this.documentRepository.getFragmentById(documentId);
 
         if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();

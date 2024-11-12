@@ -49,7 +49,7 @@ public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implem
         this.ensureDocumentIsAlreadyBorrowed(patron, documentId);
         this.markDocumentAsReturnedByPatron(patron, fragmentaryDocument);
 
-        this.documentRepository.save(fragmentaryDocument);
+        this.documentRepository.saveFragment(fragmentaryDocument);
         this.patronRepository.save(patron);
     }
 
@@ -68,7 +68,7 @@ public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getFragmentaryDocumentById(documentId);
+        val fragmentaryDocument = this.documentRepository.getFragmentById(documentId);
 
         if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();
