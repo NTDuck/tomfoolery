@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
-public class InMemoryDocumentSearchGenerator implements DocumentSearchGenerator {
+public class InMemoryLinearDocumentSearchGenerator implements DocumentSearchGenerator {
     private final @NonNull DocumentRepository documentRepository;
 
     @Override

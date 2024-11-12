@@ -7,8 +7,7 @@ import java.time.Instant;
 import java.util.List;
 
 public interface DocumentRecommendationGenerator {
-    @NonNull
-    List<FragmentaryDocument> generateLatestDocumentRecommendation();
+    @NonNull List<FragmentaryDocument> generateLatestDocumentRecommendation();
     @NonNull List<FragmentaryDocument> generatePopularDocumentRecommendation();
     @NonNull List<FragmentaryDocument> generateTopRatedDocumentRecommendation();
 

@@ -13,6 +13,12 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
+repositories {
+    mavenCentral()
+
+    maven("https://jitpack.io")
+}
+
 dependencies {
     // Uses `Lombok` for reduced boilerplate
     compileOnly("org.projectlombok:lombok:1.18.34")
@@ -40,6 +46,10 @@ dependencies {
     // Uses `QRGen` for simplified QR Code generation
     implementation("com.github.kenglxn.QRGen:javase:3.0.1")
 
+    // Contains necessary implementation of Directed Acyclic Subsequence Graph
+    // required for in-memory indexing of documents
+    implementation("com.github.Qualtagh:DAWG:e98133f757")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
@@ -53,14 +63,6 @@ dependencies {
     implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
     implementation("com.google.http-client:google-http-client-jackson2:1.43.3")
     implementation("com.google.oauth-client:google-oauth-client:1.34.1")
-}
-
-repositories {
-    mavenCentral()
-
-    maven {
-        url = uri("https://jitpack.io")
-    }
 }
 
 group = "org.tomfoolery"
