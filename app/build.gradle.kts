@@ -47,8 +47,12 @@ dependencies {
     implementation("com.github.kenglxn.QRGen:javase:3.0.1")
 
     // Contains necessary implementation of Directed Acyclic Subsequence Graph
-    // required for in-memory indexing of documents
+    // required for efficient in-memory indexing of documents
     implementation("com.github.Qualtagh:DAWG:e98133f757")
+
+    // Contains necessary implementation for Trie HashMap
+    // required for efficient in-memory autocompletion
+    implementation("com.github.doried-a-a:java-trie:af01cdabde")
 
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
