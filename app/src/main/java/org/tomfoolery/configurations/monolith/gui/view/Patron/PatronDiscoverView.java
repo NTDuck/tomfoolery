@@ -8,16 +8,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.view.View;
 
-public class DiscoverView {
-    private final @NonNull StageManager stageManager;
-
-    public DiscoverView(@NonNull StageManager stageManager) {
-        this.stageManager = stageManager;
+public class PatronDiscoverView extends View {
+    public PatronDiscoverView() {
     }
 
     @FXML
@@ -77,6 +73,6 @@ public class DiscoverView {
     }
 
     private void goToDashboard() {
-        stageManager.openMenu("/fxml/Patron/Dashboard.fxml", "Dashboard");
+        StageManager.getInstance().openMenu("/fxml/Patron/Dashboard.fxml");
     }
 }

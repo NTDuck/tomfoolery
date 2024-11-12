@@ -3,14 +3,11 @@ package org.tomfoolery.configurations.monolith.gui.view.Patron;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.view.View;
 
-public class DashboardView {
-    private final @NonNull StageManager stageManager;
-
-    public DashboardView(@NonNull StageManager stageManager) {
-        this.stageManager = stageManager;
+public class PatronDashboardView extends View {
+    public PatronDashboardView() {
     }
 
     @FXML
@@ -34,6 +31,6 @@ public class DashboardView {
     }
 
     private void goToDiscover() {
-        stageManager.openMenu("/fxml/Patron/Discover.fxml", "Discover");
+        StageManager.getInstance().openMenu("/fxml/Patron/Discover.fxml");
     }
 }

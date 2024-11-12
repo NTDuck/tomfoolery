@@ -1,6 +1,7 @@
 package org.tomfoolery.configurations.monolith.gui;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -9,10 +10,14 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.gui.utils.FxmlPathParser;
+import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDashboardView;
+import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDiscoverView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
-import org.tomfoolery.configurations.monolith.gui.view.Patron.DashboardView;
-import org.tomfoolery.configurations.monolith.gui.view.Patron.DiscoverView;
+import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDashboardView;
+import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDiscoverView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
+import org.tomfoolery.configurations.monolith.gui.view.View;
 import org.tomfoolery.core.dataproviders.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.dataproviders.PatronRepository;
@@ -30,6 +35,7 @@ import java.util.Objects;
 
 // Using singleton for StageManager
 public class StageManager {
+
     private static final double LOGIN_MENU_WIDTH = 600;
     private static final double LOGIN_MENU_HEIGHT = 800;
     private static final double MAIN_STAGE_WIDTH = 1280;
@@ -40,8 +46,7 @@ public class StageManager {
     @Setter
     private @Getter Stage primaryStage;
 
-    private StageManager() {
-    }
+    private StageManager() {}
 
     public static StageManager getInstance() {
         if (instance == null) {
@@ -103,6 +108,7 @@ public class StageManager {
                     authenticationTokenRepository, this);
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/LoginMenu.fxml"));
             loader.setController(controller);
+
             VBox root = loader.load();
 
             Scene scene = new Scene(root);
@@ -134,22 +140,38 @@ public class StageManager {
         }
     }
 
-    public void openMenu(String fxmlPath, String menuType) {
+    private View loadView(String userType, String sceneType) {
+        View view = new View();
+        switch (userType) {
+            case "Admin":
+                view = switch (sceneType) {
+                    case "Dashboard" -> new AdminDashboardView();
+                    case "Discover" -> new AdminDiscoverView();
+                    default -> view;
+                };
+                break;
+            case "Patron":
+                view = switch (sceneType) {
+                    case "Dashboard" -> new PatronDashboardView();
+                    case "Discover" -> new PatronDiscoverView();
+                    default -> view;
+                };
+                break;
+            case "Staff":
+                System.out.println("staff views not declared");
+                break;
+        }
+
+        return view;
+    }
+
+    public void openMenu(String fxmlPath) {
+        String userType = FxmlPathParser.getSceneInfo(fxmlPath).getUserType();
+        String sceneType = FxmlPathParser.getSceneInfo(fxmlPath).getSceneType();
         try {
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource(fxmlPath));
-
-            switch (menuType) {
-                case "Dashboard":
-                    DashboardView dashboardController = new DashboardView(this);
-                    loader.setController(dashboardController);
-                    break;
-                case "Discover":
-                    DiscoverView discoverView = new DiscoverView(this);
-                    loader.setController(discoverView);
-                    break;
-                default:
-                    System.out.println("wtf");
-            }
+            View view = loadView(userType, sceneType);
+            loader.setController(view);
 
             HBox root = loader.load();
 

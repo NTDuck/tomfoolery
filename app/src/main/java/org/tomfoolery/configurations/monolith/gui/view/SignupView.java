@@ -18,11 +18,9 @@ import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatr
 
 public class SignupView {
     private final @NonNull CreatePatronAccountController controller;
-    private final @NonNull StageManager stageManager;
 
     public SignupView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService, StageManager stageManager) {
         controller = CreatePatronAccountController.of(patronRepository, passwordService);
-        this.stageManager = stageManager;
     }
 
     @FXML
@@ -67,12 +65,12 @@ public class SignupView {
             val requestObject = getRequestObject();
             this.controller.accept(requestObject);
 
-            message.setText("Registered Successfully");
+            message.setText("Registered Successfully, redirecting to login page...");
             message.setStyle("-fx-text-fill: #9dcc65");
             message.setVisible(true);
 
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
-            pause.setOnFinished(e -> returnToLogin(e));
+            pause.setOnFinished(this::returnToLogin);
             pause.play();
         } catch (PasswordMismatchException exception) {
             onPasswordMismatchException();
@@ -121,6 +119,6 @@ public class SignupView {
     private static class PasswordMismatchException extends Exception {}
 
     private void returnToLogin(ActionEvent event) {
-        stageManager.openLoginMenu();
+        StageManager.getInstance().openLoginMenu();
     }
 }

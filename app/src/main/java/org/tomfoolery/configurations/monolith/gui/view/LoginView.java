@@ -21,14 +21,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class LoginView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
-    private final @NonNull StageManager stageManager;
 
-    public LoginView(@NonNull UserRepositories userRepositories, @NonNull PasswordService passwordService, 
+    public LoginView(@NonNull UserRepositories userRepositories,
+                     @NonNull PasswordService passwordService,
                      @NonNull AuthenticationTokenService authenticationTokenService,
                      @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StageManager stageManager) {
         this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
         this.presenter = LogUserInPresenter.of(authenticationTokenService);
-        this.stageManager = stageManager;
     }
 
     @FXML
@@ -62,7 +61,7 @@ public class LoginView {
         try {
             val responseModel = this.controller.apply(requestObject);
             val viewModel = this.presenter.apply(responseModel);
-            stageManager.openMenu(getFXMLPathFromViewModel(viewModel), "Dashboard");
+            StageManager.getInstance().openMenu(getFXMLPathFromViewModel(viewModel));
         } catch (Exception exception) {
             errorMessage.setText("Invalid username or password");
             errorMessage.setVisible(true);
@@ -71,7 +70,7 @@ public class LoginView {
 
     @FXML
     private void register(ActionEvent event) {
-        stageManager.openSignupMenu();
+        StageManager.getInstance().openSignupMenu();
     }
 
     private @NonNull String getFXMLPathFromViewModel(LogUserInPresenter.@NonNull ViewModel viewModel) {
