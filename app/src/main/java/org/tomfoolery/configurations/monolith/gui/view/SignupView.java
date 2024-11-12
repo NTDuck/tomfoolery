@@ -19,7 +19,10 @@ import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatr
 public class SignupView {
     private final @NonNull CreatePatronAccountController controller;
 
-    public SignupView(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService, StageManager stageManager) {
+    public SignupView(
+            @NonNull PatronRepository patronRepository,
+            @NonNull PasswordService passwordService
+    ) {
         controller = CreatePatronAccountController.of(patronRepository, passwordService);
     }
 

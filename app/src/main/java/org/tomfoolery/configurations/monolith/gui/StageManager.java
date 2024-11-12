@@ -46,7 +46,8 @@ public class StageManager {
     @Setter
     private @Getter Stage primaryStage;
 
-    private StageManager() {}
+    private StageManager() {
+    }
 
     public static StageManager getInstance() {
         if (instance == null) {
@@ -60,13 +61,14 @@ public class StageManager {
     private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
 
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
-    private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository,
-            staffRepository, patronRepository);
+    private final @NonNull UserRepositories userRepositories = UserRepositories.of(
+            administratorRepository,
+            staffRepository,
+            patronRepository
+    );
 
-    private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService
-            .of();
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository
-            .of();
+    private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService.of();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
     private final @NonNull PasswordService passwordService = Base64PasswordService.of();
 
     public StageManager(Stage stage) {
@@ -75,9 +77,11 @@ public class StageManager {
 
     private void setMainStageProperties() {
         primaryStage.setResizable(true);
+
         boolean isMaximized = primaryStage.isMaximized();
         double currentWidth = primaryStage.getWidth();
         double currentHeight = primaryStage.getHeight();
+
         if (currentHeight < MAIN_STAGE_HEIGHT || currentWidth < MAIN_STAGE_WIDTH) {
             primaryStage.setWidth(MAIN_STAGE_WIDTH);
             primaryStage.setHeight(MAIN_STAGE_HEIGHT);
@@ -86,15 +90,19 @@ public class StageManager {
             primaryStage.setWidth(currentWidth);
             primaryStage.setHeight(currentHeight);
         }
+
         primaryStage.setMinHeight(MAIN_STAGE_HEIGHT);
         primaryStage.setMinWidth(MAIN_STAGE_WIDTH);
+
         primaryStage.setTitle("Tomfoolery - Library Management Application");
     }
 
     private void setAuthStageProperties() {
         primaryStage.setMinWidth(0);
         primaryStage.setMinHeight(0);
+
         primaryStage.setResizable(false);
+
         primaryStage.setWidth(LOGIN_MENU_WIDTH);
         primaryStage.setHeight(LOGIN_MENU_HEIGHT);
 
@@ -104,8 +112,13 @@ public class StageManager {
 
     public void openLoginMenu() {
         try {
-            LoginView controller = new LoginView(userRepositories, passwordService, authenticationTokenService,
-                    authenticationTokenRepository, this);
+            LoginView controller = new LoginView(
+                    userRepositories,
+                    passwordService,
+                    authenticationTokenService,
+                    authenticationTokenRepository
+            );
+
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/LoginMenu.fxml"));
             loader.setController(controller);
 
@@ -116,6 +129,7 @@ public class StageManager {
             setAuthStageProperties();
             primaryStage.setTitle("Tomfoolery - Login");
             primaryStage.setScene(scene);
+
             primaryStage.show();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -124,9 +138,11 @@ public class StageManager {
 
     public void openSignupMenu() {
         try {
-            SignupView signUpController = new SignupView(patronRepository, passwordService, this);
+            SignupView signUpController = new SignupView(patronRepository, passwordService);
+
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/SignupMenu.fxml"));
             loader.setController(signUpController);
+
             VBox root = loader.load();
 
             Scene scene = new Scene(root);
@@ -134,6 +150,7 @@ public class StageManager {
             setAuthStageProperties();
             primaryStage.setTitle("Tomfoolery - Sign up");
             primaryStage.setScene(scene);
+
             primaryStage.show();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -142,6 +159,7 @@ public class StageManager {
 
     private View loadView(String userType, String sceneType) {
         View view = new View();
+
         switch (userType) {
             case "Admin":
                 view = switch (sceneType) {
@@ -168,8 +186,10 @@ public class StageManager {
     public void openMenu(String fxmlPath) {
         String userType = FxmlPathParser.getSceneInfo(fxmlPath).getUserType();
         String sceneType = FxmlPathParser.getSceneInfo(fxmlPath).getSceneType();
+
         try {
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource(fxmlPath));
+
             View view = loadView(userType, sceneType);
             loader.setController(view);
 
@@ -177,11 +197,10 @@ public class StageManager {
 
             setMainStageProperties();
             primaryStage.setScene(new Scene(root));
+
             primaryStage.show();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
-
 }

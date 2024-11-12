@@ -25,8 +25,13 @@ public class LoginView {
     public LoginView(@NonNull UserRepositories userRepositories,
                      @NonNull PasswordService passwordService,
                      @NonNull AuthenticationTokenService authenticationTokenService,
-                     @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StageManager stageManager) {
-        this.controller = LogUserInController.of(userRepositories, passwordService, authenticationTokenService, authenticationTokenRepository);
+                     @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.controller = LogUserInController.of(
+                userRepositories,
+                passwordService,
+                authenticationTokenService,
+                authenticationTokenRepository
+        );
         this.presenter = LogUserInPresenter.of(authenticationTokenService);
     }
 
