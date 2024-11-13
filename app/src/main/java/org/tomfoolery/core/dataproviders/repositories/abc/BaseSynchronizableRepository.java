@@ -12,7 +12,7 @@ import java.util.Set;
  * entity {@code E} is saved at {@code T+1},
  * then deleted at {@code T+2}.
  * Calling {@code getSavedEntitiesSince(T)} would yield {@code []},
- * and {@code getDeletedEntityIdsSince(T)} would yield {@code [E.Id]}.
+ * and {@code getDeletedEntitiesSince(T)} would yield {@code [E]}.
  * (because the deletion happens more recently)
  */
 public interface BaseSynchronizableRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends BaseRepository<Entity, EntityId> {

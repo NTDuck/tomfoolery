@@ -13,13 +13,15 @@ import org.tomfoolery.core.utils.contracts.ddd.ddd;
 import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends BaseInMemoryRepository<Entity, EntityId> implements BaseSynchronizableRepository<Entity, EntityId> {
-    private final @NonNull TimestampedCircularBuffer<Entity> timestampedSavedEntities = TimestampedCircularBuffer.of();
-    private final @NonNull TimestampedCircularBuffer<EntityId> timestampedDeletedEntityIds = TimestampedCircularBuffer.of();
+    private final @NonNull TimestampedCircularBuffer timestampedSavedEntities = TimestampedCircularBuffer.of();
+    private final @NonNull TimestampedCircularBuffer timestampedDeletedEntityIds = TimestampedCircularBuffer.of();
 
     @Override
     public void save(@NonNull Entity entity) {
@@ -30,113 +32,141 @@ public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<Enti
 
     @Override
     public void delete(@NonNull EntityId entityId) {
-        super.delete(entityId);
+        val entity = super.entitiesByIds.remove(entityId);
 
-        this.timestampedDeletedEntityIds.add(entityId);
+        if (entity != null)
+            this.timestampedDeletedEntityIds.add(entity);
     }
 
     @Override
     @Locked
     public @NonNull Set<Entity> getSavedEntitiesSince(@NonNull Instant fromTimestamp) {
-        var iteratorOfSavedEntities = timestampedSavedEntities.descendingIterator();
-        var iteratorOfDeletedEntityIds = timestampedDeletedEntityIds.descendingIterator();
+        Map<EntityId, Entity> cachedSavedEntities = new HashMap<>();
+        Map<EntityId, Entity> cachedDeletedEntityIds = new HashMap<>();
 
-        var latestSavedEntityEntry = getNextEntry(iteratorOfSavedEntities);
-        var latestDeletedEntityIdEntry = getNextEntry(iteratorOfDeletedEntityIds);
+        val iteratorOfSavedEntities = timestampedSavedEntities.descendingIterator();
+        val iteratorOfDeletedEntityIds = timestampedDeletedEntityIds.descendingIterator();
 
-        val cachedSavedEntities = CachedEntities.of();
-        val cachedDeletedEntityIds = CachedEntityIds.of();
+        var latestCreationEntry = getNextEntry(iteratorOfSavedEntities);
+        var latestDeletionEntry = getNextEntry(iteratorOfDeletedEntityIds);
 
-        while (latestSavedEntityEntry != null && latestDeletedEntityIdEntry != null) {
-            if (this.isNotWithinFromTimestamp(latestSavedEntityEntry, latestDeletedEntityIdEntry, fromTimestamp))
+        while (latestCreationEntry != null && latestDeletionEntry != null) {
+            val latestCreationTimestamp = latestCreationEntry.getTimestamp();
+            val latestDeletionTimestamp = latestDeletionEntry.getTimestamp();
+
+            if (fromTimestamp.isAfter(latestCreationTimestamp)
+                || fromTimestamp.isAfter(latestDeletionTimestamp))
                 break;
 
-            if (latestSavedEntityEntry.getAddedTimestamp().isAfter(latestDeletedEntityIdEntry.getAddedTimestamp())) {
-                this.processSavedEntityEntry(latestSavedEntityEntry, cachedSavedEntities, cachedDeletedEntityIds);
-                latestSavedEntityEntry = getNextEntry(iteratorOfSavedEntities);
+            if (latestCreationTimestamp.isAfter(latestDeletionTimestamp)) {
+                val savedEntity = latestCreationEntry.getEntity();
+                val savedEntityId = savedEntity.getId();
+
+                if (!cachedDeletedEntityIds.containsKey(savedEntityId))
+                    cachedSavedEntities.putIfAbsent(savedEntityId, savedEntity);
+
+                latestCreationEntry = getNextEntry(iteratorOfSavedEntities);
+
             } else {
-                this.processDeletedEntityIdEntry(latestDeletedEntityIdEntry, cachedSavedEntities, cachedDeletedEntityIds);
-                latestDeletedEntityIdEntry = getNextEntry(iteratorOfDeletedEntityIds);
+                val deletedEntity = latestDeletionEntry.getEntity();
+                val deletedEntityId = deletedEntity.getId();
+
+                if (!cachedSavedEntities.containsKey(deletedEntityId))
+                    cachedDeletedEntityIds.putIfAbsent(deletedEntityId, deletedEntity);
+
+                latestDeletionEntry = getNextEntry(iteratorOfDeletedEntityIds);
             }
         }
 
-        while (latestSavedEntityEntry != null) {
-            if (fromTimestamp.isAfter(latestSavedEntityEntry.getAddedTimestamp()))
+        while (latestCreationEntry != null) {
+            val latestCreationTimestamp = latestCreationEntry.getTimestamp();
+
+            if (fromTimestamp.isAfter(latestCreationTimestamp))
                 break;
 
-            this.processSavedEntityEntry(latestSavedEntityEntry, cachedSavedEntities, cachedDeletedEntityIds);
-            latestSavedEntityEntry = getNextEntry(iteratorOfSavedEntities);
+            val savedEntity = latestCreationEntry.getEntity();
+            val savedEntityId = savedEntity.getId();
+
+            if (!cachedDeletedEntityIds.containsKey(savedEntityId))
+                cachedSavedEntities.put(savedEntityId, savedEntity);
+
+            latestCreationEntry = getNextEntry(iteratorOfSavedEntities);
         }
 
-        return cachedSavedEntities;
+        return cachedSavedEntities.values().parallelStream()
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
     @Locked
-    public @NonNull Set<EntityId> getDeletedEntitiesSince(@NonNull Instant fromTimestamp) {
-        var iteratorOfSavedEntities = timestampedSavedEntities.descendingIterator();
-        var iteratorOfDeletedEntityIds = timestampedDeletedEntityIds.descendingIterator();
+    public @NonNull Set<Entity> getDeletedEntitiesSince(@NonNull Instant fromTimestamp) {
+        Map<EntityId, Entity> cachedSavedEntities = new HashMap<>();
+        Map<EntityId, Entity> cachedDeletedEntities = new HashMap<>();
 
-        var latestSavedEntityEntry = getNextEntry(iteratorOfSavedEntities);
-        var latestDeletedEntityIdEntry = getNextEntry(iteratorOfDeletedEntityIds);
+        val iteratorOfSavedEntities = timestampedSavedEntities.descendingIterator();
+        val iteratorOfDeletedEntityIds = timestampedDeletedEntityIds.descendingIterator();
 
-        val cachedSavedEntities = CachedEntities.of();
-        val cachedDeletedEntityIds = CachedEntityIds.of();
+        var latestCreationEntry = getNextEntry(iteratorOfSavedEntities);
+        var latestDeletionEntry = getNextEntry(iteratorOfDeletedEntityIds);
 
-        while (latestSavedEntityEntry != null && latestDeletedEntityIdEntry != null) {
-            if (this.isNotWithinFromTimestamp(latestSavedEntityEntry, latestDeletedEntityIdEntry, fromTimestamp))
+        while (latestCreationEntry != null && latestDeletionEntry != null) {
+            val latestCreationTimestamp = latestCreationEntry.getTimestamp();
+            val latestDeletionTimestamp = latestDeletionEntry.getTimestamp();
+
+            if (fromTimestamp.isAfter(latestCreationTimestamp)
+                || fromTimestamp.isAfter(latestDeletionTimestamp))
                 break;
 
-            if (latestSavedEntityEntry.getAddedTimestamp().isAfter(latestDeletedEntityIdEntry.getAddedTimestamp())) {
-                this.processSavedEntityEntry(latestSavedEntityEntry, cachedSavedEntities, cachedDeletedEntityIds);
-                latestSavedEntityEntry = getNextEntry(iteratorOfSavedEntities);
+            if (latestCreationTimestamp.isAfter(latestDeletionTimestamp)) {
+                val savedEntity = latestCreationEntry.getEntity();
+                val savedEntityId = savedEntity.getId();
+
+                if (!cachedDeletedEntities.containsKey(savedEntityId))
+                    cachedSavedEntities.putIfAbsent(savedEntityId, savedEntity);
+
+                latestCreationEntry = getNextEntry(iteratorOfSavedEntities);
+
             } else {
-                this.processDeletedEntityIdEntry(latestDeletedEntityIdEntry, cachedSavedEntities, cachedDeletedEntityIds);
-                latestDeletedEntityIdEntry = getNextEntry(iteratorOfDeletedEntityIds);
+                val deletedEntity = latestDeletionEntry.getEntity();
+                val deletedEntityId = deletedEntity.getId();
+
+                if (!cachedSavedEntities.containsKey(deletedEntityId))
+                    cachedDeletedEntities.putIfAbsent(deletedEntityId, deletedEntity);
+
+                latestDeletionEntry = getNextEntry(iteratorOfDeletedEntityIds);
             }
         }
 
-        while (latestDeletedEntityIdEntry != null) {
-            if (fromTimestamp.isAfter(latestDeletedEntityIdEntry.getAddedTimestamp()))
+        while (latestDeletionEntry != null) {
+            val latestDeletionTimestamp = latestDeletionEntry.getTimestamp();
+
+            if (fromTimestamp.isAfter(latestDeletionTimestamp))
                 break;
 
-            this.processDeletedEntityIdEntry(latestDeletedEntityIdEntry, cachedSavedEntities, cachedDeletedEntityIds);
-            latestDeletedEntityIdEntry = getNextEntry(iteratorOfDeletedEntityIds);
+            val deletedEntity = latestDeletionEntry.getEntity();
+            val deletedEntityId = deletedEntity.getId();
+
+            if (!cachedSavedEntities.containsKey(deletedEntityId))
+                cachedDeletedEntities.putIfAbsent(deletedEntityId, deletedEntity);
+
+            latestDeletionEntry = getNextEntry(iteratorOfDeletedEntityIds);
         }
 
-        return cachedDeletedEntityIds;
+        return cachedDeletedEntities.values().parallelStream()
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     private static <Entry> @Nullable Entry getNextEntry(@NonNull Iterator<Entry> iterator) {
         return iterator.hasNext() ? iterator.next() : null;
     }
 
-    private boolean isNotWithinFromTimestamp(TimestampedCircularBuffer<Entity>.@NonNull Entry savedEntityEntry, TimestampedCircularBuffer<EntityId>.@NonNull Entry deletedEntityIdEntry, @NonNull Instant fromTimestamp) {
-        return fromTimestamp.isAfter(savedEntityEntry.getAddedTimestamp())
-            || fromTimestamp.isAfter(deletedEntityIdEntry.getAddedTimestamp());
-    }
-
-    private void processSavedEntityEntry(TimestampedCircularBuffer<Entity>.@NonNull Entry savedEntityEntry, @NonNull CachedEntities cachedSavedEntities, @NonNull CachedEntityIds cachedDeletedEntityIds) {
-        var savedEntity = savedEntityEntry.getElement();
-
-        if (!cachedDeletedEntityIds.contains(savedEntity))
-            cachedSavedEntities.add(savedEntity);
-    }
-
-    private void processDeletedEntityIdEntry(TimestampedCircularBuffer<EntityId>.@NonNull Entry deletedEntityIdEntry, @NonNull CachedEntities cachedSavedEntities, @NonNull CachedEntityIds cachedDeletedEntityIds) {
-        var deletedEntityId = deletedEntityIdEntry.getElement();
-
-        if (!cachedSavedEntities.contains(deletedEntityId))
-            cachedDeletedEntityIds.add(deletedEntityId);
-    }
-
     @NoArgsConstructor(staticName = "of")
-    private static class TimestampedCircularBuffer<Element> implements Iterable<TimestampedCircularBuffer<Element>.Entry> {
+    private class TimestampedCircularBuffer implements Iterable<TimestampedCircularBuffer.Entry> {
         public static final @Unsigned long BUFFER_LIMIT = (long) Math.pow(2, 22);
         protected final @NonNull Deque<Entry> entries = new ArrayDeque<>();
 
-        void add(@NonNull Element element) {
-            val entry = Entry.of(element, Instant.now());
+        void add(@NonNull Entity entity) {
+            val entry = Entry.of(entity, Instant.now());
 
             this.entries.push(entry);
 
@@ -155,29 +185,8 @@ public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<Enti
 
         @Value(staticConstructor = "of")
         protected class Entry {
-            @NonNull Element element;
-            @NonNull Instant addedTimestamp;
-        }
-    }
-
-    @NoArgsConstructor(staticName = "of")
-    private class CachedEntities extends HashSet<Entity> {
-        public boolean contains(@NonNull EntityId entityId) {
-            return this.parallelStream()
-                .anyMatch(entity -> entity.getId().equals(entityId));
-        }
-    }
-
-    @NoArgsConstructor(staticName = "of")
-    private class CachedEntityIds extends HashSet<EntityId> {
-        public boolean contains(@NonNull Entity entity) {
-            return this.parallelStream()
-                .anyMatch(entityId -> entity.getId().equals(entityId));
+            @NonNull Entity entity;
+            @NonNull Instant timestamp;
         }
     }
 }
-
-/*
-
-
- */

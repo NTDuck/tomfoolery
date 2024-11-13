@@ -72,8 +72,8 @@ public class LinearDocumentSearchGenerator implements DocumentSearchGenerator {
     }
 
     @Override
-    public void synchronizeRecentlyDeletedEntityIds(@NonNull Set<Document.Id> deletedEntityIds) {
-        deletedEntityIds.parallelStream()
+    public void synchronizeRecentlyDeletedEntities(@NonNull Set<Document.Id> deletedEntities) {
+        deletedEntities.parallelStream()
             .forEach(this.repository::deleteDocument);
     }
 

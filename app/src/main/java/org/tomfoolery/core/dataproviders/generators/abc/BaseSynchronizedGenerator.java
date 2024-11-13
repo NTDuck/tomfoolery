@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface BaseSynchronizedGenerator<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends BaseGenerator {
     void synchronizeRecentlySavedEntities(@NonNull Set<Entity> savedEntities);
-    void synchronizeRecentlyDeletedEntityIds(@NonNull Set<EntityId> deletedEntityIds);
+    void synchronizeRecentlyDeletedEntities(@NonNull Set<Entity> deletedEntities);
 
     @NonNull Instant getLastSynchronizedTimestamp();
     void setLastSynchronizedTimestamp(@NonNull Instant lastSynchronizedTimestamp);
@@ -24,7 +24,7 @@ public interface BaseSynchronizedGenerator<Entity extends ddd.Entity<EntityId>, 
         });
         val futureOfDeletionSynchronization = CompletableFuture.runAsync(() -> {
             val deletedEntityIds = repository.getDeletedEntitiesSince(lastSynchronizedTimestamp);
-            this.synchronizeRecentlyDeletedEntityIds(deletedEntityIds);
+            this.synchronizeRecentlyDeletedEntities(deletedEntityIds);
         });
 
         CompletableFuture.allOf(futureOfCreationSynchronization, futureOfDeletionSynchronization).join();
