@@ -7,71 +7,95 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Label?>
 
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.FlowPane?>
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
       prefWidth="1280" prefHeight="720"
-      stylesheets="/css/Patron/Discover.css" styleClass="main">
+      stylesheets="/css/Admin/Dashboard.css" styleClass="main">
 
-   <!-- SIDEBAR -->
-   <VBox>
-      <VBox alignment="TOP_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar" VBox.vgrow="ALWAYS">
-         <Button styleClass="sidebar-button" fx:id="sidebarDashboardButton">
-            <graphic>
-               <ImageView fitHeight="32" fitWidth="32">
-                  <Image url="/images/home.png"/>
-               </ImageView>
-            </graphic>
-         </Button>
+    <!-- SIDEBAR -->
+    <VBox>
+        <VBox alignment="TOP_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar"
+              HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <Button styleClass="sidebar-button" fx:id="sidebarDashboardButton">
+                <graphic>
+                    <ImageView fitHeight="32" fitWidth="32">
+                        <Image url="/images/home.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
 
-         <Button styleClass="sidebar-button" fx:id="sidebarDiscoverButton">
-            <graphic>
-               <ImageView fitHeight="40" fitWidth="40">
-                  <Image url="/images/search.png"/>
-               </ImageView>
-            </graphic>
-         </Button>
-      </VBox>
+            <Button styleClass="sidebar-button" fx:id="sidebarDiscoverButton">
+                <graphic>
+                    <ImageView fitHeight="40" fitWidth="40">
+                        <Image url="/images/search.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
 
-      <VBox alignment="BOTTOM_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar" VBox.vgrow="ALWAYS">
-         <Button styleClass="sidebar-button" fx:id="sidebarNotificationButton">
-            <graphic>
-               <ImageView fitHeight="32" fitWidth="32">
-                  <Image url="/images/bell.png"/>
-               </ImageView>
-            </graphic>
-         </Button>
+            <Button styleClass="sidebar-button" fx:id="sidebarControlCenterButton">
+                <graphic>
+                    <ImageView fitHeight="40" fitWidth="40">
+                        <Image url="/images/controlcenter.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
 
-         <Button styleClass="sidebar-button" fx:id="sidebarProfileButton">
-            <graphic>
-               <ImageView fitHeight="32" fitWidth="32">
-                  <Image url="/images/user.png"/>
-               </ImageView>
-            </graphic>
-         </Button>
-      </VBox>
-   </VBox>
+        <VBox alignment="BOTTOM_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar"
+              HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <Button styleClass="sidebar-button" fx:id="sidebarNotificationButton">
+                <graphic>
+                    <ImageView fitHeight="32" fitWidth="32">
+                        <Image url="/images/bell.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
 
-   <!-- DISCOVER -->
-   <HBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" styleClass="discover">
-      <VBox prefWidth="200" prefHeight="Infinity" alignment="TOP_CENTER" styleClass="categories">
-         <Label text="Categories" styleClass="categories-header"/>
-         <Label text="Horror" styleClass="category-option"/>
-         <Label text="Fantasy" styleClass="category-option"/>
-         <Label text="Science" styleClass="category-option"/>
-      </VBox>
+            <Button styleClass="sidebar-button" fx:id="sidebarProfileButton">
+                <graphic>
+                    <ImageView fitHeight="32" fitWidth="32">
+                        <Image url="/images/user.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
+    </VBox>
 
-      <VBox spacing="20" HBox.hgrow="ALWAYS">
-         <HBox maxWidth="800" minHeight="80" styleClass="search-container">
-            <TextField HBox.hgrow="ALWAYS" prefHeight="60" promptText="Search for books..."
-                       styleClass="search-field"/>
-         </HBox>
+    <!-- DASHBOARD -->
+    <VBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS">
+        <Label text="Welcome to Tomfoolery, Duy" styleClass="welcome-text" VBox.vgrow="ALWAYS" prefWidth="Infinity"/>
+        <HBox styleClass="content" prefWidth="Infinity" prefHeight="400">
+            <VBox style="-fx-background-color: #007bff;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+                <Label text="13" styleClass="dashboard-tile-number"/>
+                <Label text="students" styleClass="dashboard-tile-text"/>
+            </VBox>
+            <VBox style="-fx-background-color: #28a745;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+                <Label text="0" styleClass="dashboard-tile-number"/>
+                <Label text="borrowed books" styleClass="dashboard-tile-text"/>
+            </VBox>
+            <VBox style="-fx-background-color: #28a745;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+                <Label text="0" styleClass="dashboard-tile-number"/>
+                <Label text="books overdue" styleClass="dashboard-tile-text"/>
+            </VBox>
+            <VBox style="-fx-background-color: #28a745;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+                <Label text="0" styleClass="dashboard-tile-number"/>
+                <Label text="returned books" styleClass="dashboard-tile-text"/>
+            </VBox>
+        </HBox>
 
-         <ScrollPane fx:id="scrollPane" styleClass="books-scroll-pane" VBox.vgrow="ALWAYS">
-            <FlowPane styleClass="books-container" hgap="20" vgap="20" fx:id="booksContainer" prefWrapLength="800">
-            </FlowPane>
-         </ScrollPane>
-      </VBox>
-   </HBox>
+        <VBox prefWidth="Infinity" prefHeight="280" styleClass="book-display"
+              alignment="CENTER" VBox.vgrow="ALWAYS" spacing="40">
+            <HBox styleClass="book-display-box" prefWidth="800" prefHeight="250" alignment="CENTER" VBox.vgrow="ALWAYS">
+                <VBox spacing="20" alignment="CENTER">
+                    <Label text="Book of the day" style="-fx-font-size: 40; -fx-font-family: 'Segoe UI Variable'"/>
+                    <Label text="Name: what is bro yapping" style="-fx-font-size: 25; -fx-font-family: 'Segoe UI Variable'"/>
+                    <Label text="Author: pham trung hieu" style="-fx-font-size: 25; -fx-font-family: 'Segoe UI Variable'"/>
+                </VBox>
+
+                <ImageView fitWidth="240" fitHeight="240" styleClass="book-image-view">
+                    <Image url="/images/book-cover.jpg"/>
+                </ImageView>
+            </HBox>
+        </VBox>
+
+    </VBox>
 </HBox>

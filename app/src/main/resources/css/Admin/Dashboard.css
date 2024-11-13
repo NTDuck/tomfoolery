@@ -1,0 +1,88 @@
+/*
+The color palette:
+Background: #E7ECEF
+Background-selected: #A3CEF1
+Foreground: #D8DEE9
+Accent color: #88C0D0
+Foreground-secondary: #81A1C1
+Error: #BF616A
+Success: #A3BE8C
+Border and separator: #4C566A
+*/
+
+.main {
+    -fx-background-color: #E7ECEF;
+}
+
+.sidebar {
+    -fx-padding: 25 0 25 0;
+    -fx-spacing: 25;
+    -fx-background-color: #6096BA;
+}
+
+.sidebar-button {
+    -fx-pref-width: 48;
+    -fx-pref-height: 48;
+    -fx-background-radius: 50;
+    -fx-background-color: transparent;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #A3CEF1;
+    -fx-cursor: hand;
+}
+
+.welcome-text {
+    -fx-background-color: white;
+    -fx-pref-width: infinity;
+    -fx-pref-height: 40;
+    -fx-padding: 20 0 20 20;
+    -fx-font-size: 25;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: black;
+}
+
+.content {
+    -fx-spacing: 30;
+    -fx-pref-columns: 4;
+    -fx-alignment: center;
+    -fx-padding: 25 30 25 30;
+}
+
+.dashboard-tile {
+    -fx-pref-width: 160;
+    -fx-pref-height: 160;
+    -fx-background-radius: 15;
+    -fx-alignment: center;
+    -fx-padding: 10;
+}
+
+.dashboard-tile-number {
+    -fx-font-size: 48;
+    -fx-text-fill: white;
+}
+
+.dashboard-tile-text {
+    -fx-font-size: 20;
+    -fx-text-fill: white;
+}
+
+.book-display {
+    -fx-background-color: #A3CEF1;
+    -fx-padding: 40 40 40 40;
+}
+
+.book-display-box {
+    -fx-background-color: #E7ECEF;
+    -fx-background-radius: 15;
+    -fx-padding: 20 20 20 20;
+    -fx-spacing: 60;
+}
+
+.book-image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 5, 5);
+    -fx-border-width: 2;
+    -fx-border-color: #ccc;
+    -fx-background-color: white;
+    -fx-padding: 5;
+}

@@ -1,7 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -13,6 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.utils.FxmlPathParser;
 import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDashboardView;
 import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDiscoverView;
+import org.tomfoolery.configurations.monolith.gui.view.Admin.ControlCenterView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDashboardView;
 import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDiscoverView;
@@ -35,7 +35,6 @@ import java.util.Objects;
 
 // Using singleton for StageManager
 public class StageManager {
-
     private static final double LOGIN_MENU_WIDTH = 600;
     private static final double LOGIN_MENU_HEIGHT = 800;
     private static final double MAIN_STAGE_WIDTH = 1280;
@@ -43,8 +42,8 @@ public class StageManager {
 
     private static StageManager instance;
 
-    @Setter
-    private @Getter Stage primaryStage;
+    @Setter @Getter
+    private Stage primaryStage;
 
     private StageManager() {
     }
@@ -56,11 +55,15 @@ public class StageManager {
         return instance;
     }
 
+    // Initialize resources
     private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
+
     private final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
+
     private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
 
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
+
     private final @NonNull UserRepositories userRepositories = UserRepositories.of(
             administratorRepository,
             staffRepository,
@@ -68,11 +71,22 @@ public class StageManager {
     );
 
     private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService.of();
+
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
+
     private final @NonNull PasswordService passwordService = Base64PasswordService.of();
 
-    public StageManager(Stage stage) {
-        primaryStage = stage;
+    private void setAuthStageProperties() {
+        primaryStage.setMinWidth(0);
+        primaryStage.setMinHeight(0);
+
+        primaryStage.setResizable(false);
+
+        primaryStage.setWidth(LOGIN_MENU_WIDTH);
+        primaryStage.setHeight(LOGIN_MENU_HEIGHT);
+
+        Image icon = new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("/images/logo.png")));
+        primaryStage.getIcons().add(icon);
     }
 
     private void setMainStageProperties() {
@@ -95,19 +109,6 @@ public class StageManager {
         primaryStage.setMinWidth(MAIN_STAGE_WIDTH);
 
         primaryStage.setTitle("Tomfoolery - Library Management Application");
-    }
-
-    private void setAuthStageProperties() {
-        primaryStage.setMinWidth(0);
-        primaryStage.setMinHeight(0);
-
-        primaryStage.setResizable(false);
-
-        primaryStage.setWidth(LOGIN_MENU_WIDTH);
-        primaryStage.setHeight(LOGIN_MENU_HEIGHT);
-
-        Image icon = new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("/images/logo.png")));
-        primaryStage.getIcons().add(icon);
     }
 
     public void openLoginMenu() {
@@ -157,32 +158,6 @@ public class StageManager {
         }
     }
 
-    private View loadView(String userType, String sceneType) {
-        View view = new View();
-
-        switch (userType) {
-            case "Admin":
-                view = switch (sceneType) {
-                    case "Dashboard" -> new AdminDashboardView();
-                    case "Discover" -> new AdminDiscoverView();
-                    default -> view;
-                };
-                break;
-            case "Patron":
-                view = switch (sceneType) {
-                    case "Dashboard" -> new PatronDashboardView();
-                    case "Discover" -> new PatronDiscoverView();
-                    default -> view;
-                };
-                break;
-            case "Staff":
-                System.out.println("staff views not declared");
-                break;
-        }
-
-        return view;
-    }
-
     public void openMenu(String fxmlPath) {
         String userType = FxmlPathParser.getSceneInfo(fxmlPath).getUserType();
         String sceneType = FxmlPathParser.getSceneInfo(fxmlPath).getSceneType();
@@ -202,5 +177,32 @@ public class StageManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private View loadView(String userType, String sceneType) {
+        View view = new View();
+
+        switch (userType) {
+            case "Admin":
+                view = switch (sceneType) {
+                    case "Dashboard" -> new AdminDashboardView();
+                    case "Discover" -> new AdminDiscoverView();
+                    case "ControlCenter" -> new ControlCenterView();
+                    default -> view;
+                };
+                break;
+            case "Patron":
+                view = switch (sceneType) {
+                    case "Dashboard" -> new PatronDashboardView();
+                    case "Discover" -> new PatronDiscoverView();
+                    default -> view;
+                };
+                break;
+            case "Staff":
+                System.out.println("staff views not declared");
+                break;
+        }
+
+        return view;
     }
 }

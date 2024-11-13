@@ -1,0 +1,101 @@
+/*
+The color palette:
+Background: #E7ECEF
+Background-selected: #A3CEF1
+Foreground: #D8DEE9
+Accent color: #88C0D0
+Foreground-secondary: #81A1C1
+Error: #BF616A
+Success: #A3BE8C
+Border and separator: #4C566A
+Text: #24283b (Tokyo night background)
+*/
+
+.main {
+    -fx-background-color: #E7ECEF;
+}
+
+.sidebar {
+    -fx-padding: 25 0 25 0;
+    -fx-spacing: 25;
+    -fx-background-color: #6096BA;
+}
+
+.sidebar-button {
+    -fx-pref-width: 48;
+    -fx-pref-height: 48;
+    -fx-background-radius: 50;
+    -fx-background-color: transparent;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #A3CEF1;
+    -fx-cursor: hand;
+}
+
+.discover {
+    -fx-spacing: 20;
+}
+
+.categories {
+    -fx-background-radius: 0 15 15 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 5, 0);
+    -fx-background-color: white;
+    -fx-spacing: 10;
+}
+
+.categories-header {
+    -fx-alignment: center;
+    -fx-pref-width: 300;
+    -fx-text-fill: #24283b;
+    -fx-background-color: #7cb0d3;
+    -fx-background-radius: 0 15 0 0;
+    -fx-font-size: 35;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-weight: bold;
+}
+
+.category-option {
+    -fx-background-radius: 15;
+    -fx-padding: 10 10 10 10;
+    -fx-text-fill: rgba(36, 40, 59, 0.7);
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 25;
+}
+
+.category-option:hover {
+    -fx-background-color: #a3cef1;
+    -fx-cursor: hand;
+}
+
+.discover-section {
+    -fx-spacing: 20;
+    -fx-padding: 10 20 0 0;
+}
+
+.search-container {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+    -fx-padding: 20 10 10 10;
+}
+
+.search-field {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, 5, 5);
+    -fx-background-radius: 15;
+    -fx-background-color: white;
+    -fx-prompt-text-fill: rgba(0, 0, 0, 0.4);
+    -fx-font-size: 30;
+    -fx-font-family: "Segoe UI Variable";
+}
+
+.books-scroll-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, -5, -5);
+}
+
+.books-container {
+    -fx-background-color: white;
+    -fx-alignment: center;
+    -fx-background-radius: 15;
+}

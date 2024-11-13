@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.gui.view.Patron;
+package org.tomfoolery.configurations.monolith.gui.view.Admin;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -6,8 +6,8 @@ import javafx.scene.control.TextField;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.View;
 
-public class PatronDashboardView extends View {
-    public PatronDashboardView() {
+public class ControlCenterView extends View {
+    public ControlCenterView() {
     }
 
     @FXML
@@ -15,6 +15,9 @@ public class PatronDashboardView extends View {
 
     @FXML
     private Button sidebarDiscoverButton;
+
+    @FXML
+    private Button sidebarControlCenterButton;
 
     @FXML
     private Button sidebarNotificationButton;
@@ -27,10 +30,16 @@ public class PatronDashboardView extends View {
 
     @FXML
     public void initialize() {
+        sidebarDashboardButton.setOnAction(event -> goToDashboard());
         sidebarDiscoverButton.setOnAction(event -> goToDiscover());
     }
 
-    private void goToDiscover() {
-        StageManager.getInstance().openMenu("/fxml/Patron/Discover.fxml");
+    private void goToDashboard() {
+        StageManager.getInstance().openMenu("/fxml/Admin/Dashboard.fxml");
     }
+
+    private void goToDiscover() {
+        StageManager.getInstance().openMenu("/fxml/Admin/Discover.fxml");
+    }
+
 }
