@@ -55,4 +55,8 @@ public class InMemoryDocumentRecommendationGenerator implements DocumentRecommen
             .limit(DOCUMENT_COUNT_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());
     }
+
+    public interface Repository {
+
+    }
 }

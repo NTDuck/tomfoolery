@@ -40,7 +40,6 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.I
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.recommendation.InMemoryDocumentRecommendationRepository;
 
 import java.time.Instant;
 import java.util.UUID;
