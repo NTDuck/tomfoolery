@@ -6,17 +6,18 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Label?>
-
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.FlowPane?>
+
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
       prefWidth="1280" prefHeight="720"
       stylesheets="/css/Admin/Discover.css" styleClass="main">
 
     <!-- SIDEBAR -->
     <VBox>
-        <VBox alignment="TOP_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar" VBox.vgrow="ALWAYS">
+        <VBox alignment="TOP_CENTER" prefHeight="340" prefWidth="80"
+              styleClass="sidebar" VBox.vgrow="ALWAYS">
             <Button styleClass="sidebar-button" fx:id="sidebarDashboardButton">
                 <graphic>
                     <ImageView fitHeight="32" fitWidth="32">

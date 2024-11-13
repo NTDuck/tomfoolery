@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"
+      styleClass="tables-display" stylesheets="/css/Admin/ControlCenter.css"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml">
+    <ScrollPane styleClass="scroll-pane" VBox.vgrow="ALWAYS">
+        <TableView styleClass="table" fx:id="accountsTable">
+            <columns>
+                <TableColumn text="username"/>
+                <TableColumn text="first name"/>
+                <TableColumn text="last name"/>
+                <TableColumn text="email"/>
+                <TableColumn text="address"/>
+                <TableColumn text="password"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+    </ScrollPane>
+</VBox>

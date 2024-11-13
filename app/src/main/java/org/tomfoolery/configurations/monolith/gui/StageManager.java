@@ -12,7 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.utils.FxmlPathParser;
 import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDashboardView;
 import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDiscoverView;
-import org.tomfoolery.configurations.monolith.gui.view.Admin.ControlCenterView;
+import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminControlCenterView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDashboardView;
 import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDiscoverView;
@@ -187,7 +187,7 @@ public class StageManager {
                 view = switch (sceneType) {
                     case "Dashboard" -> new AdminDashboardView();
                     case "Discover" -> new AdminDiscoverView();
-                    case "ControlCenter" -> new ControlCenterView();
+                    case "ControlCenter" -> new AdminControlCenterView();
                     default -> view;
                 };
                 break;

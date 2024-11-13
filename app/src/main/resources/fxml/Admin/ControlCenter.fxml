@@ -6,9 +6,6 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TableColumn?>
 
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
       prefWidth="1280" prefHeight="720"
@@ -66,36 +63,20 @@
     <!-- CONTROL CENTER -->
     <HBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" styleClass="controlCenter">
         <VBox prefWidth="200" prefHeight="Infinity" alignment="TOP_CENTER" styleClass="optionPanel">
-            <Label text="Documents" styleClass="option"/>
-            <Label text="Accounts" styleClass="option"/>
+            <Button style="-fx-background-color: transparent" fx:id="viewDocumentsButton">
+                <graphic>
+                    <Label text="Documents" styleClass="option"/>
+                </graphic>
+            </Button>
+
+            <Button style="-fx-background-color: transparent" fx:id="viewAccountsButton">
+                <graphic>
+                    <Label text="Accounts" styleClass="option"/>
+                </graphic>
+            </Button>
         </VBox>
 
-        <VBox prefHeight="Infinity" HBox.hgrow="ALWAYS" styleClass="tables-display">
-            <ScrollPane styleClass="scroll-pane" VBox.vgrow="ALWAYS">
-                <TableView styleClass="table" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn text="username" prefWidth="40"/>
-                        <TableColumn text="first name" prefWidth="40"/>
-                        <TableColumn text="last name" prefWidth="40"/>
-                        <TableColumn text="email" prefWidth="40"/>
-                        <TableColumn text="address" prefWidth="40"/>
-                        <TableColumn text="password" prefWidth="40"/>
-                    </columns>
-                </TableView>
-            </ScrollPane>
-
-            <ScrollPane styleClass="scroll-pane" VBox.vgrow="ALWAYS">
-                <TableView styleClass="table" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn text="username" prefWidth="40"/>
-                        <TableColumn text="first name" prefWidth="40"/>
-                        <TableColumn text="last name" prefWidth="40"/>
-                        <TableColumn text="email" prefWidth="40"/>
-                        <TableColumn text="address" prefWidth="40"/>
-                        <TableColumn text="password" prefWidth="40"/>
-                    </columns>
-                </TableView>
-            </ScrollPane>
+        <VBox prefHeight="Infinity" HBox.hgrow="ALWAYS" styleClass="tables-display" fx:id="tableDisplay">
         </VBox>
     </HBox>
 </HBox>
