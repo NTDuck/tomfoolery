@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.abc;
+package org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.abc;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;

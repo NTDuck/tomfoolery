@@ -7,22 +7,27 @@ import org.tomfoolery.core.utils.contracts.ddd.ddd;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public interface BaseSynchronizedGenerator<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends BaseGenerator {
-    void synchronizeWithRepository(@NonNull List<Entity> savedEntities, @NonNull List<EntityId> deletedEntityIds);
+    void synchronizeRecentlySavedEntities(@NonNull Set<Entity> savedEntities);
+    void synchronizeRecentlyDeletedEntityIds(@NonNull Set<EntityId> deletedEntityIds);
 
-    default void synchronizeWithRepository(@NonNull BaseSynchronizableRepository<Entity, EntityId> repository, @NonNull Instant sinceTimestamp, @NonNull Instant currentTimestamp) {
-        val futureOfSavedEntities = CompletableFuture.supplyAsync(() -> repository.getSavedEntitiesSince(sinceTimestamp));
-        val futureOfDeletedEntityIds = CompletableFuture.supplyAsync(() -> repository.getDeletedEntityIdsSince(sinceTimestamp));
+    @NonNull Instant getLastSynchronizedTimestamp();
+    void setLastSynchronizedTimestamp(@NonNull Instant lastSynchronizedTimestamp);
 
-        CompletableFuture.allOf(futureOfSavedEntities, futureOfDeletedEntityIds).join();
+    default void synchronizeWithRepository(@NonNull BaseSynchronizableRepository<Entity, EntityId> repository, @NonNull Instant lastSynchronizedTimestamp, @NonNull Instant currentTimestamp) {
+        val futureOfCreationSynchronization = CompletableFuture.runAsync(() -> {
+            val savedEntities = repository.getSavedEntitiesSince(lastSynchronizedTimestamp);
+            this.synchronizeRecentlySavedEntities(savedEntities);
+        });
+        val futureOfDeletionSynchronization = CompletableFuture.runAsync(() -> {
+            val deletedEntityIds = repository.getDeletedEntityIdsSince(lastSynchronizedTimestamp);
+            this.synchronizeRecentlyDeletedEntityIds(deletedEntityIds);
+        });
 
-        val savedEntities = futureOfSavedEntities.join();
-        val deletedEntityIds = futureOfDeletedEntityIds.join();
-
-        this.synchronizeWithRepository(savedEntities, deletedEntityIds);
+        CompletableFuture.allOf(futureOfCreationSynchronization, futureOfDeletionSynchronization).join();
 
         this.setLastSynchronizedTimestamp(currentTimestamp);
     }
@@ -33,9 +38,6 @@ public interface BaseSynchronizedGenerator<Entity extends ddd.Entity<EntityId>, 
 
         this.synchronizeWithRepository(repository, lastSynchronizedTimestamp, currentTimestamp);
     }
-
-    @NonNull Instant getLastSynchronizedTimestamp();
-    void setLastSynchronizedTimestamp(@NonNull Instant lastSyncedTimestamp);
 
     default boolean isSynchronizedIntervalElapsed(@NonNull Duration synchronizationInterval, @NonNull Instant currentTimestamp) {
         val lastSynchronizedTimestamp = this.getLastSynchronizedTimestamp();
