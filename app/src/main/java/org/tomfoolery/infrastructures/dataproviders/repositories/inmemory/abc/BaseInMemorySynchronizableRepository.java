@@ -73,3 +73,8 @@ public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<Enti
         @NonNull Instant timestamp;
     }
 }
+
+/*
+
+
+ */

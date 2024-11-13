@@ -50,10 +50,8 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
     }
 
     private void synchronizeGeneratorIfIntervalIsElapsed() {
-        if (!this.documentSearchGenerator.isSynchronizedIntervalElapsed(SYNCHRONIZATION_INTERVAL))
-            return;
-
-        CompletableFuture.runAsync(() -> this.documentSearchGenerator.synchronizeWithRepository(this.documentRepository));
+        if (this.documentSearchGenerator.isSynchronizedIntervalElapsed(SYNCHRONIZATION_INTERVAL))
+            CompletableFuture.runAsync(() -> this.documentSearchGenerator.synchronizeWithRepository(this.documentRepository));
     }
 
     private @NonNull Page<FragmentaryDocument> searchDocuments(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
