@@ -23,7 +23,7 @@ public interface BaseSynchronizedGenerator<Entity extends ddd.Entity<EntityId>, 
             this.synchronizeRecentlySavedEntities(savedEntities);
         });
         val futureOfDeletionSynchronization = CompletableFuture.runAsync(() -> {
-            val deletedEntityIds = repository.getDeletedEntityIdsSince(lastSynchronizedTimestamp);
+            val deletedEntityIds = repository.getDeletedEntitiesSince(lastSynchronizedTimestamp);
             this.synchronizeRecentlyDeletedEntityIds(deletedEntityIds);
         });
 

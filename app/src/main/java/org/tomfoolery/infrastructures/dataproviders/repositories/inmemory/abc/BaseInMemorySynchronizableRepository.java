@@ -73,7 +73,7 @@ public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<Enti
 
     @Override
     @Locked
-    public @NonNull Set<EntityId> getDeletedEntityIdsSince(@NonNull Instant fromTimestamp) {
+    public @NonNull Set<EntityId> getDeletedEntitiesSince(@NonNull Instant fromTimestamp) {
         var iteratorOfSavedEntities = timestampedSavedEntities.descendingIterator();
         var iteratorOfDeletedEntityIds = timestampedDeletedEntityIds.descendingIterator();
 

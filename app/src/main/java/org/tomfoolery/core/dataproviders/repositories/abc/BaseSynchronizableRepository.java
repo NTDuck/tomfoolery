@@ -17,5 +17,5 @@ import java.util.Set;
  */
 public interface BaseSynchronizableRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends BaseRepository<Entity, EntityId> {
     @NonNull Set<Entity> getSavedEntitiesSince(@NonNull Instant fromTimestamp);
-    @NonNull Set<EntityId> getDeletedEntityIdsSince(@NonNull Instant fromTimestamp);
+    @NonNull Set<Entity> getDeletedEntitiesSince(@NonNull Instant fromTimestamp);
 }
