@@ -18,6 +18,7 @@ import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSele
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
+import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
@@ -25,14 +26,15 @@ import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
-import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.DocumentRecommendationRepository;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.ApacheHttpClientDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryDocumentRecommendationGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryLinearDocumentRecommendationGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryLinearDocumentSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.qrgen.documents.references.QrgenDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.KeyStoreAuthenticationTokenRepository;
@@ -48,8 +50,8 @@ import java.util.UUID;
 public class Application implements Runnable, AutoCloseable {
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
 
-    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryDocumentRecommendationGenerator.of(documentRepository);
-    private final @NonNull DocumentRecommendationRepository documentRecommendationRepository = InMemoryDocumentRecommendationRepository.of();
+    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryLinearDocumentSearchGenerator.of();
+    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryLinearDocumentRecommendationGenerator.of();
 
     private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = QrgenDocumentQrCodeGenerator.of();
     private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
@@ -84,7 +86,7 @@ public class Application implements Runnable, AutoCloseable {
         // Decoy
         this.patronRepository.save(Patron.of(
             BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword("Root_123")),
+            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
             Patron.Audit.of(false, ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
             Patron.Metadata.of("", "", "")
         ));

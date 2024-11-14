@@ -52,7 +52,7 @@ dependencies {
 
     // Contains necessary implementation for Trie HashMap
     // required for efficient in-memory autocompletion
-    // implementation("com.github.doried-a-a:java-trie:af01cdabde")
+    // implementation("com.github.doried-a-a:java-trie")
 
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
