@@ -66,7 +66,7 @@ public class LoginView {
         try {
             val responseModel = this.controller.apply(requestObject);
             val viewModel = this.presenter.apply(responseModel);
-            StageManager.getInstance().openMenu(getFXMLPathFromViewModel(viewModel));
+            onSuccess(viewModel);
         } catch (Exception exception) {
             errorMessage.setText("Invalid username or password");
             errorMessage.setVisible(true);
@@ -76,6 +76,18 @@ public class LoginView {
     @FXML
     private void register(ActionEvent event) {
         StageManager.getInstance().openSignupMenu();
+    }
+
+    private void onSuccess(LogUserInPresenter.ViewModel viewModel) {
+        val userClass = viewModel.getUserClass();
+
+        if (userClass.equals(Administrator.class)) {
+            StageManager.getInstance().loadAdminView("Dashboard");
+        }
+        else if (userClass.equals(Staff.class)) {
+            StageManager.getInstance().loadStaffView("Dashboard");
+        }
+        else StageManager.getInstance().loadAdminView("Dashboard");
     }
 
     private @NonNull String getFXMLPathFromViewModel(LogUserInPresenter.@NonNull ViewModel viewModel) {

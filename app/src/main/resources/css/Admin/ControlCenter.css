@@ -13,28 +13,6 @@ Text: #24283b (Tokyo night background)
 
 .main {
     -fx-background-color: #E7ECEF;
-}
-
-.sidebar {
-    -fx-padding: 25 0 25 0;
-    -fx-spacing: 25;
-    -fx-background-color: #6096BA;
-}
-
-.sidebar-button {
-    -fx-pref-width: 48;
-    -fx-pref-height: 48;
-    -fx-background-radius: 50;
-    -fx-background-color: transparent;
-}
-
-.sidebar-button:hover {
-    -fx-background-color: #A3CEF1;
-    -fx-cursor: hand;
-}
-
-.controlCenter {
-    -fx-background-color: #E7ECEF;
     -fx-spacing: 20;
 }
 

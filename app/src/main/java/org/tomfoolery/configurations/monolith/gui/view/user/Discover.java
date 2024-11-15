@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.gui.view.Patron;
+package org.tomfoolery.configurations.monolith.gui.view.user;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -10,20 +10,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.configurations.monolith.gui.view.View;
 
-public class PatronDiscoverView extends View {
-    public PatronDiscoverView() {
+public class Discover {
+    public Discover() {
     }
-
-    @FXML
-    private Button sidebarDashboardButton;
-
-    @FXML
-    private Button sidebarDiscoverButton;
-
-    @FXML
-    private Button notificationButton;
 
     @FXML
     private ScrollPane scrollPane;
@@ -36,7 +26,6 @@ public class PatronDiscoverView extends View {
         booksContainer.prefWidthProperty().bind(scrollPane.widthProperty().subtract(20));
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        sidebarDashboardButton.setOnAction(event -> {goToDashboard();});
         Platform.runLater(this::loadBooks);
     }
 
@@ -70,9 +59,5 @@ public class PatronDiscoverView extends View {
         }
 
         return tile;
-    }
-
-    private void goToDashboard() {
-        StageManager.getInstance().openMenu("/fxml/Patron/Dashboard.fxml");
     }
 }

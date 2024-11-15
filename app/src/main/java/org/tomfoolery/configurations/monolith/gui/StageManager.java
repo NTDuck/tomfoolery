@@ -3,21 +3,14 @@ package org.tomfoolery.configurations.monolith.gui;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.gui.utils.FxmlPathParser;
-import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDashboardView;
-import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminDiscoverView;
-import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminControlCenterView;
+import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
-import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDashboardView;
-import org.tomfoolery.configurations.monolith.gui.view.Patron.PatronDiscoverView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
-import org.tomfoolery.configurations.monolith.gui.view.View;
 import org.tomfoolery.core.dataproviders.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.DocumentRepository;
 import org.tomfoolery.core.dataproviders.PatronRepository;
@@ -76,7 +69,7 @@ public class StageManager {
 
     private final @NonNull PasswordService passwordService = Base64PasswordService.of();
 
-    private void setAuthStageProperties() {
+    public void setAuthStageProperties() {
         primaryStage.setMinWidth(0);
         primaryStage.setMinHeight(0);
 
@@ -89,7 +82,7 @@ public class StageManager {
         primaryStage.getIcons().add(icon);
     }
 
-    private void setMainStageProperties() {
+    public void setMainStageProperties() {
         primaryStage.setResizable(true);
 
         boolean isMaximized = primaryStage.isMaximized();
@@ -158,51 +151,14 @@ public class StageManager {
         }
     }
 
-    public void openMenu(String fxmlPath) {
-        String userType = FxmlPathParser.getSceneInfo(fxmlPath).getUserType();
-        String sceneType = FxmlPathParser.getSceneInfo(fxmlPath).getSceneType();
-
-        try {
-            FXMLLoader loader = new FXMLLoader(StageManager.class.getResource(fxmlPath));
-
-            View view = loadView(userType, sceneType);
-            loader.setController(view);
-
-            HBox root = loader.load();
-
-            setMainStageProperties();
-            primaryStage.setScene(new Scene(root));
-
-            primaryStage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void loadAdminView(String contentType) {
+        AdminView adminView = new AdminView();
+        adminView.loadView(contentType);
     }
 
-    private View loadView(String userType, String sceneType) {
-        View view = new View();
+    public void loadStaffView(String contentType) {
+    }
 
-        switch (userType) {
-            case "Admin":
-                view = switch (sceneType) {
-                    case "Dashboard" -> new AdminDashboardView();
-                    case "Discover" -> new AdminDiscoverView();
-                    case "ControlCenter" -> new AdminControlCenterView();
-                    default -> view;
-                };
-                break;
-            case "Patron":
-                view = switch (sceneType) {
-                    case "Dashboard" -> new PatronDashboardView();
-                    case "Discover" -> new PatronDiscoverView();
-                    default -> view;
-                };
-                break;
-            case "Staff":
-                System.out.println("staff views not declared");
-                break;
-        }
-
-        return view;
+    public void loadPatronView(String contentType) {
     }
 }
