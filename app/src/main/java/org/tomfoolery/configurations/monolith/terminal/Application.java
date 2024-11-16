@@ -33,8 +33,8 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.ApacheHttpClientDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryLinearDocumentRecommendationGenerator;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryLinearDocumentSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.qrgen.documents.references.QrgenDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.KeyStoreAuthenticationTokenRepository;
@@ -50,8 +50,8 @@ import java.util.UUID;
 public class Application implements Runnable, AutoCloseable {
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
 
-    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryLinearDocumentSearchGenerator.of();
-    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryLinearDocumentRecommendationGenerator.of();
+    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
+    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
 
     private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = QrgenDocumentQrCodeGenerator.of();
     private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
