@@ -11,17 +11,17 @@ import org.tomfoolery.core.usecases.user.documents.search.abc.SearchDocumentsUse
 import org.tomfoolery.core.utils.contracts.functional.TriFunction;
 import org.tomfoolery.core.utils.dataclasses.common.Page;
 
-public final class SearchDocumentsByAuthorUseCase extends SearchDocumentsUseCase {
-    public static @NonNull SearchDocumentsByAuthorUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchDocumentsByAuthorUseCase(documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+public final class SearchDocumentsByGenreSubsequenceUseCase extends SearchDocumentsUseCase {
+    public static @NonNull SearchDocumentsByGenreSubsequenceUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchDocumentsByGenreSubsequenceUseCase(documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchDocumentsByAuthorUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchDocumentsByGenreSubsequenceUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
     protected @NonNull TriFunction<@NonNull String, @NonNull Integer, @NonNull Integer, @Nullable Page<FragmentaryDocument>> getDocumentSearchFunction() {
-        return this.documentSearchGenerator::searchPaginatedDocumentsByAuthorSubsequence;
+        return this.documentSearchGenerator::searchPaginatedDocumentsByGenreSubsequence;
     }
 }

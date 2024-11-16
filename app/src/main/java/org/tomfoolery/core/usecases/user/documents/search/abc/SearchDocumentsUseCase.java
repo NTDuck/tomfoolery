@@ -40,7 +40,7 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
 
         this.synchronizeGeneratorIfIntervalIsElapsed();
 
-        val searchTerm = request.getSearchTerm();
+        val searchTerm = request.getSearchTerm().toLowerCase();
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
