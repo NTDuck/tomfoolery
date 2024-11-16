@@ -31,7 +31,7 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
         this.documentSearchGenerator = documentSearchGenerator;
     }
 
-    protected abstract @NonNull TriFunction<@NonNull String, @NonNull @Unsigned Integer, @NonNull @Unsigned Integer, @Nullable Page<FragmentaryDocument>> getDocumentSearchFunction();
+    protected abstract @NonNull DocumentSearchFunction getDocumentSearchFunction();
 
     @Override
     public final @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PaginationInvalidException {
@@ -77,4 +77,9 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
     }
 
     public static class PaginationInvalidException extends Exception {}
+
+    @FunctionalInterface
+    protected interface DocumentSearchFunction {
+        @Nullable Page<FragmentaryDocument> apply(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize);
+    }
 }

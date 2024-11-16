@@ -5,12 +5,11 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.usecases.user.documents.search.*;
 import org.tomfoolery.core.usecases.user.documents.search.abc.SearchDocumentsUseCase;
-import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByAuthorSubsequenceUseCase;
-import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByGenreSubsequenceUseCase;
-import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByTitleSubsequenceUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 
@@ -22,22 +21,37 @@ import java.util.stream.StreamSupport;
 public final class SearchDocumentsController implements ThrowableFunction<SearchDocumentsController.RequestObject, SearchDocumentsController.ViewModel> {
     private final @NonNull Map<SearchCriterionAndPattern, SearchDocumentsUseCase> searchDocumentsUseCasesBySearchCriteria;
 
-    public static @NonNull SearchDocumentsController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new SearchDocumentsController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull SearchDocumentsController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchDocumentsController(documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchDocumentsController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        this.searchDocumentsUseCasesBySearchCriteria = Map.of(
-            SearchCriterion.TITLE, SearchDocumentsByTitleSubsequenceUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository),
-            SearchCriterion.AUTHOR, SearchDocumentsByAuthorSubsequenceUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository),
-            SearchCriterion.GENRE, SearchDocumentsByGenreSubsequenceUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository)
+    private SearchDocumentsController(@NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        Map<SearchCriterionAndPattern, SearchDocumentsUseCaseInitializer> searchDocumentsUseCaseInitializersBySearchCriteriaAndPatterns = Map.of(
+            SearchCriterionAndPattern.of(SearchCriterion.TITLE, SearchPattern.PREFIX), SearchDocumentsByTitlePrefixUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.TITLE, SearchPattern.SUFFIX), SearchDocumentsByTitleSuffixUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.TITLE, SearchPattern.SUBSEQUENCE), SearchDocumentsByTitleSubsequenceUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.AUTHOR, SearchPattern.PREFIX), SearchDocumentsByAuthorPrefixUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.AUTHOR, SearchPattern.SUFFIX), SearchDocumentsByAuthorSuffixUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.AUTHOR, SearchPattern.SUBSEQUENCE), SearchDocumentsByAuthorSubsequenceUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.GENRE, SearchPattern.PREFIX), SearchDocumentsByGenrePrefixUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.GENRE, SearchPattern.SUFFIX), SearchDocumentsByGenreSuffixUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.GENRE, SearchPattern.SUBSEQUENCE), SearchDocumentsByGenreSubsequenceUseCase::of
         );
+
+        this.searchDocumentsUseCasesBySearchCriteria = searchDocumentsUseCaseInitializersBySearchCriteriaAndPatterns.entrySet().parallelStream()
+            .collect(Collectors.toUnmodifiableMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().apply(documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository)
+            ));
     }
 
     @Override
     public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws SearchDocumentsUseCase.AuthenticationTokenNotFoundException, SearchDocumentsUseCase.AuthenticationTokenInvalidException, SearchDocumentsUseCase.PaginationInvalidException {
         val searchCriterion = requestObject.getSearchCriterion();
-        val searchDocumentsByCriterionUseCase = this.searchDocumentsUseCasesBySearchCriteria.get(searchCriterion);
+        val searchPattern = requestObject.getSearchPattern();
+        val searchCriterionAndPattern = SearchCriterionAndPattern.of(searchCriterion, searchPattern);
+
+        val searchDocumentsByCriterionUseCase = this.searchDocumentsUseCasesBySearchCriteria.get(searchCriterionAndPattern);
 
         val requestModel = requestObject.toRequestModel();
         val responseModel = searchDocumentsByCriterionUseCase.apply(requestModel);
@@ -96,6 +110,6 @@ public final class SearchDocumentsController implements ThrowableFunction<Search
 
     @FunctionalInterface
     private interface SearchDocumentsUseCaseInitializer {
-        @NonNull SearchDocumentsUseCase apply(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository);
+        @NonNull SearchDocumentsUseCase apply(@NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository);
     }
 }

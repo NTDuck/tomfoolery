@@ -21,7 +21,7 @@ public final class SearchDocumentsByGenrePrefixUseCase extends SearchDocumentsUs
     }
 
     @Override
-    protected @NonNull TriFunction<@NonNull String, @NonNull Integer, @NonNull Integer, @Nullable Page<FragmentaryDocument>> getDocumentSearchFunction() {
+    protected @NonNull DocumentSearchFunction getDocumentSearchFunction() {
         return this.documentSearchGenerator::searchPaginatedDocumentsByGenrePrefix;
     }
 }

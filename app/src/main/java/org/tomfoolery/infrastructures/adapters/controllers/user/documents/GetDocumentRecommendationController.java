@@ -12,7 +12,6 @@ import org.tomfoolery.core.usecases.user.documents.recommendation.GetLatestDocum
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetPopularDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetTopRatedDocumentRecommendationUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.core.utils.contracts.functional.TriFunction;
 import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 
 import java.util.List;
@@ -27,17 +26,17 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
     }
 
     private GetDocumentRecommendationController(@NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        Map<RecommendationType, TriFunction<DocumentRecommendationGenerator, AuthenticationTokenGenerator, AuthenticationTokenRepository, GetDocumentRecommendationUseCase>> initializer = Map.of(
+        Map<RecommendationType, GetDocumentRecommendationUseCaseInitializer> getDocumentRecommendationUseCaseInitializersByRecommendationTypes = Map.of(
             RecommendationType.LATEST, GetLatestDocumentRecommendationUseCase::of,
             RecommendationType.POPULAR, GetPopularDocumentRecommendationUseCase::of,
             RecommendationType.TOP_RATED, GetTopRatedDocumentRecommendationUseCase::of
         );
 
-        this.getScheduledDocumentRecommendationUseCasesByRecommendationTypes = Map.of(
-            RecommendationType.LATEST, GetLatestDocumentRecommendationUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository),
-            RecommendationType.POPULAR, GetPopularDocumentRecommendationUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository),
-            RecommendationType.TOP_RATED, GetTopRatedDocumentRecommendationUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository)
-        );
+        this.getScheduledDocumentRecommendationUseCasesByRecommendationTypes = getDocumentRecommendationUseCaseInitializersByRecommendationTypes.entrySet().parallelStream()
+            .collect(Collectors.toUnmodifiableMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().apply(documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository)
+            ));
     }
 
     @Override
@@ -72,5 +71,10 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
 
     public enum RecommendationType {
         LATEST, POPULAR, TOP_RATED,
+    }
+
+    @FunctionalInterface
+    private interface GetDocumentRecommendationUseCaseInitializer {
+        @NonNull GetDocumentRecommendationUseCase apply(@NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository);
     }
 }

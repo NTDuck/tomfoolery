@@ -21,7 +21,7 @@ public final class SearchDocumentsByAuthorSuffixUseCase extends SearchDocumentsU
     }
 
     @Override
-    protected @NonNull TriFunction<@NonNull String, @NonNull Integer, @NonNull Integer, @Nullable Page<FragmentaryDocument>> getDocumentSearchFunction() {
+    protected @NonNull DocumentSearchFunction getDocumentSearchFunction() {
         return this.documentSearchGenerator::searchPaginatedDocumentsByAuthorSuffix;
     }
 }
