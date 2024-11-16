@@ -6,9 +6,8 @@ import org.tomfoolery.core.dataproviders.generators.documents.recommendation.Doc
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.abc.BaseInMemorySynchronizedGenerator;
+import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
-import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,9 +17,20 @@ import java.util.stream.Collectors;
 public class InMemoryIndexedDocumentRecommendationGenerator extends BaseInMemorySynchronizedGenerator<Document, Document.Id> implements DocumentRecommendationGenerator {
     private static final int DOCUMENT_COUNT_PER_RECOMMENDATION = 10;
 
-    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByCreationTimestamps = new TreeSet<>(Comparator.<FragmentaryDocument, Instant>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getTimestamps().getCreated()).reversed());
-    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByNumberOfBorrowingPatrons = new TreeSet<>(Comparator.<FragmentaryDocument, Integer>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getBorrowingPatronIds().size()).reversed());
-    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByRatings = new TreeSet<>(Comparator.<FragmentaryDocument, Double>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getRating().getValue()).reversed());
+    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByCreationTimestamps = new TreeSet<>(
+        DocumentComparator.byCreationTimestampDescending
+            .thenComparing(DocumentComparator.byIdAscending)
+    );
+
+    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByNumberOfBorrowingPatrons = new TreeSet<>(
+        DocumentComparator.byNumberOfBorrowingPatronsDescending
+            .thenComparing(DocumentComparator.byIdAscending)
+    );
+
+    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByRatings = new TreeSet<>(
+        DocumentComparator.byRatingDescending
+            .thenComparing(DocumentComparator.byIdAscending)
+    );
 
     @Override
     public @NonNull List<FragmentaryDocument> getLatestDocumentRecommendation() {

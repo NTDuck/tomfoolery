@@ -8,16 +8,12 @@ import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.abc.InMemoryLinearDocumentGenerator;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(staticName = "of")
 public class InMemoryLinearDocumentSearchGenerator extends InMemoryLinearDocumentGenerator implements DocumentSearchGenerator {
-    @NonNull Set<FragmentaryDocument> fragmentaryDocuments = new HashSet<>();
-
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByTitlePrefix(@NonNull String title) {
         return this.searchDocumentsByPredicate(document -> matchesPrefix(title, document.getMetadata().getTitle()));

@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.user.documents.GetDocumentByIdUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.helpers.dataclasses.ViewableFragmentaryDocument;
+import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 
 public final class GetDocumentByIdController implements ThrowableFunction<GetDocumentByIdController.RequestObject, GetDocumentByIdController.ViewModel> {
     private final @NonNull GetDocumentByIdUseCase getDocumentByIdUseCase;

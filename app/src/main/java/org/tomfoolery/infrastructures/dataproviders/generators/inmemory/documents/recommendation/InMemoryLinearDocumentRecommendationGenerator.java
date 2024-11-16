@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.abc.InMemoryLinearDocumentGenerator;
+import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
 import java.time.Instant;
 import java.util.Comparator;
@@ -18,25 +19,31 @@ public class InMemoryLinearDocumentRecommendationGenerator extends InMemoryLinea
 
     @Override
     public @NonNull List<FragmentaryDocument> getLatestDocumentRecommendation() {
-        val fragmentaryDocumentComparator = Comparator.<FragmentaryDocument, Instant>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getTimestamps().getCreated()).reversed();
-        return generateDocumentRecommendationByComparator(fragmentaryDocumentComparator);
+        return generateDocumentRecommendationByComparator(
+            DocumentComparator.byCreationTimestampDescending
+                .thenComparing(DocumentComparator.byIdAscending)
+        );
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> getPopularDocumentRecommendation() {
-        val fragmentaryDocumentComparator = Comparator.<FragmentaryDocument, Integer>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getBorrowingPatronIds().size()).reversed();
-        return generateDocumentRecommendationByComparator(fragmentaryDocumentComparator);
+        return generateDocumentRecommendationByComparator(
+            DocumentComparator.byNumberOfBorrowingPatronsDescending
+                .thenComparing(DocumentComparator.byIdAscending)
+        );
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> getTopRatedDocumentRecommendation() {
-        val fragmentaryDocumentComparator = Comparator.<FragmentaryDocument, Double>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getRating().getValue()).reversed();
-        return generateDocumentRecommendationByComparator(fragmentaryDocumentComparator);
+        return generateDocumentRecommendationByComparator(
+            DocumentComparator.byRatingDescending
+                .thenComparing(DocumentComparator.byIdAscending)
+        );
     }
 
-    private @NonNull List<FragmentaryDocument> generateDocumentRecommendationByComparator(@NonNull Comparator<FragmentaryDocument> fragmentaryDocumentComparator) {
+    private @NonNull List<FragmentaryDocument> generateDocumentRecommendationByComparator(@NonNull Comparator<FragmentaryDocument> comparator) {
         return super.fragmentaryDocuments.parallelStream()
-            .sorted(fragmentaryDocumentComparator)
+            .sorted(comparator)
             .limit(DOCUMENT_COUNT_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());
     }

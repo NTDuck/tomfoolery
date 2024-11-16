@@ -12,7 +12,7 @@ import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByAutho
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByGenreUseCase;
 import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByTitleUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.helpers.dataclasses.ViewableFragmentaryDocument;
+import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 
 import java.util.List;
 import java.util.Map;

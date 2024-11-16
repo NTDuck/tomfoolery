@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.utils.helpers.dataclasses;
+package org.tomfoolery.infrastructures.utils.dataclasses;
 
 import lombok.AccessLevel;
 import lombok.Builder;

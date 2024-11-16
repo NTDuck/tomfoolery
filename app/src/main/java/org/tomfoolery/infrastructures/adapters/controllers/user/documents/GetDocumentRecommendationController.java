@@ -12,7 +12,7 @@ import org.tomfoolery.core.usecases.user.documents.recommendation.GetLatestDocum
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetPopularDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetTopRatedDocumentRecommendationUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.helpers.dataclasses.ViewableFragmentaryDocument;
+import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 
 import java.util.List;
 import java.util.Map;

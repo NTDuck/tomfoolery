@@ -14,6 +14,7 @@ import java.util.Set;
 
 public class InMemoryIndexDocumentSearchGenerator extends BaseInMemorySynchronizedGenerator<Document, Document.Id> implements DocumentSearchGenerator {
     private final @NonNull DAWGSet fragmentaryDocumentsByTitle = new ModifiableDAWGSet();
+    private final @NonNull DAWGMap
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByTitlePrefix(@NonNull String title) {
@@ -64,12 +65,14 @@ public class InMemoryIndexDocumentSearchGenerator extends BaseInMemorySynchroniz
     public void synchronizeRecentlySavedEntities(@NonNull Set<Document> savedEntities) {
         savedEntities.parallelStream()
             .map(FragmentaryDocument::of)
-            .forEach(fragmentaryDocument -> );
+            .forEach(this::synchronizeRecentlySavedEntity);
     }
 
     @Override
     public void synchronizeRecentlyDeletedEntities(@NonNull Set<Document> deletedEntities) {
-
+        deletedEntities.parallelStream()
+            .map(FragmentaryDocument::of)
+            .forEach(this::synchronizeRecentlyDeletedEntity);
     }
 
     private void synchronizeRecentlySavedEntity(@NonNull FragmentaryDocument fragmentaryDocument) {
@@ -78,5 +81,9 @@ public class InMemoryIndexDocumentSearchGenerator extends BaseInMemorySynchroniz
         val documentTitle = documentMetadata.getTitle();
         val documentAuthors = documentMetadata.getAuthors();
         val documentGenres = documentMetadata.getGenres();
+    }
+
+    private void synchronizeRecentlyDeletedEntity(@NonNull FragmentaryDocument fragmentaryDocument) {
+
     }
 }
