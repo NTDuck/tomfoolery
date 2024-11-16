@@ -14,12 +14,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 public final class BorrowDocumentController implements ThrowableConsumer<BorrowDocumentController.RequestObject> {
     private final @NonNull BorrowDocumentUseCase borrowDocumentUseCase;
 
-    public static @NonNull BorrowDocumentController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new BorrowDocumentController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull BorrowDocumentController of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new BorrowDocumentController(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private BorrowDocumentController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        this.borrowDocumentUseCase = BorrowDocumentUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    private BorrowDocumentController(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.borrowDocumentUseCase = BorrowDocumentUseCase.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

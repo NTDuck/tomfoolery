@@ -17,12 +17,12 @@ import java.util.List;
 public final class UpdateDocumentMetadataController implements ThrowableConsumer<UpdateDocumentMetadataController.RequestObject> {
     private final @NonNull UpdateDocumentMetadataUseCase updateDocumentMetadataUseCase;
 
-    public static @NonNull UpdateDocumentMetadataController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new UpdateDocumentMetadataController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull UpdateDocumentMetadataController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdateDocumentMetadataController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private UpdateDocumentMetadataController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        this.updateDocumentMetadataUseCase = UpdateDocumentMetadataUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    private UpdateDocumentMetadataController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.updateDocumentMetadataUseCase = UpdateDocumentMetadataUseCase.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -43,13 +43,13 @@ public final class UpdateDocumentMetadataController implements ThrowableConsumer
         @Unsigned short documentPublishedYear;
         @NonNull String documentPublisher;
 
-        byte @NonNull [] rawDocumentCoverImage;
+        byte @NonNull [] documentCoverImage;
 
         private UpdateDocumentMetadataUseCase.@NonNull Request toRequestModel() {
             val documentId = Document.Id.of(ISBN);
             val documentMetadata = Document.Metadata.of(
-                    documentTitle, documentDescription, documentAuthors, documentGenres,
-                    Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(rawDocumentCoverImage)
+                documentTitle, documentDescription, documentAuthors, documentGenres,
+                Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(documentCoverImage)
             );
 
             return UpdateDocumentMetadataUseCase.Request.of(documentId, documentMetadata);

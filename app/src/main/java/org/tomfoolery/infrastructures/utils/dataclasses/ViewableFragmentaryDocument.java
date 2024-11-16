@@ -23,7 +23,7 @@ public class ViewableFragmentaryDocument {
     @Unsigned short documentPublishedYear;
     @NonNull String documentPublisher;
 
-    byte @NonNull [] rawDocumentCoverImage;
+    byte @NonNull [] documentCoverImage;
 
     @Unsigned long numberOfBorrowingPatrons;
     @Unsigned long numberOfRatings;

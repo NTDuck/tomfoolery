@@ -14,12 +14,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 public final class RemoveDocumentRatingController implements ThrowableConsumer<RemoveDocumentRatingController.RequestObject> {
     private final @NonNull RemoveDocumentRatingUseCase removeDocumentRatingUseCase;
 
-    public static @NonNull RemoveDocumentRatingController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new RemoveDocumentRatingController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull RemoveDocumentRatingController of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new RemoveDocumentRatingController(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private RemoveDocumentRatingController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        this.removeDocumentRatingUseCase = RemoveDocumentRatingUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    private RemoveDocumentRatingController(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.removeDocumentRatingUseCase = RemoveDocumentRatingUseCase.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

@@ -15,12 +15,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 public final class AddDocumentRatingController implements ThrowableConsumer<AddDocumentRatingController.RequestObject> {
     private final @NonNull AddDocumentRatingUseCase addDocumentRatingUseCase;
 
-    public static @NonNull AddDocumentRatingController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new AddDocumentRatingController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull AddDocumentRatingController of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentRatingController(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentRatingController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        this.addDocumentRatingUseCase = AddDocumentRatingUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    private AddDocumentRatingController(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.addDocumentRatingUseCase = AddDocumentRatingUseCase.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

@@ -13,12 +13,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 public final class UpdatePatronMetadataController implements ThrowableConsumer<UpdatePatronMetadataController.RequestObject> {
     private final @NonNull UpdatePatronMetadataUseCase updatePatronMetadataUseCase;
 
-    public static @NonNull UpdatePatronMetadataController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PatronRepository patronRepository) {
-        return new UpdatePatronMetadataController(authenticationTokenGenerator, authenticationTokenRepository, patronRepository);
+    public static @NonNull UpdatePatronMetadataController of(@NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdatePatronMetadataController(patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private UpdatePatronMetadataController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PatronRepository patronRepository) {
-        this.updatePatronMetadataUseCase = UpdatePatronMetadataUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, patronRepository);
+    private UpdatePatronMetadataController(@NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.updatePatronMetadataUseCase = UpdatePatronMetadataUseCase.of(patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -29,11 +29,14 @@ public final class UpdatePatronMetadataController implements ThrowableConsumer<U
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        @NonNull String patronFullName;
+        @NonNull String patronFirstName;
+        @NonNull String patronLastName;
+
         @NonNull String patronAddress;
         @NonNull String patronEmail;
 
         private UpdatePatronMetadataUseCase.@NonNull Request toRequestModel() {
+            val patronFullName = String.format("%s %s", patronFirstName, patronLastName);
             val patronMetadata = Patron.Metadata.of(patronFullName, patronAddress, patronEmail);
 
             return UpdatePatronMetadataUseCase.Request.of(patronMetadata);

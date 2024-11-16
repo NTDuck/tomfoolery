@@ -10,16 +10,17 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.admin.auth.CreateStaffAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 public final class CreateStaffAccountController implements ThrowableConsumer<CreateStaffAccountController.RequestObject> {
     private final @NonNull CreateStaffAccountUseCase createStaffAccountUseCase;
 
-    public static @NonNull CreateStaffAccountController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder) {
-        return new CreateStaffAccountController(authenticationTokenGenerator, authenticationTokenRepository, staffRepository, passwordEncoder);
+    public static @NonNull CreateStaffAccountController of(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreateStaffAccountController(staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private CreateStaffAccountController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull StaffRepository staffRepository, @NonNull PasswordEncoder passwordEncoder) {
-        this.createStaffAccountUseCase = CreateStaffAccountUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, staffRepository, passwordEncoder);
+    private CreateStaffAccountController(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        this.createStaffAccountUseCase = CreateStaffAccountUseCase.of(staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
     @Override
@@ -31,9 +32,10 @@ public final class CreateStaffAccountController implements ThrowableConsumer<Cre
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @NonNull String staffUsername;
-        @NonNull String staffPassword;
+        char @NonNull [] staffPassword;
 
         private CreateStaffAccountUseCase.@NonNull Request toRequestModel() {
+            val staffPassword = SecureString.of(this.staffPassword);
             val staffCredentials = Staff.Credentials.of(staffUsername, staffPassword);
 
             return CreateStaffAccountUseCase.Request.of(staffCredentials);

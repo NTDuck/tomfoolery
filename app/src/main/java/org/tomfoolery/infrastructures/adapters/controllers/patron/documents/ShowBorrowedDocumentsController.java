@@ -19,12 +19,12 @@ import java.util.stream.StreamSupport;
 public final class ShowBorrowedDocumentsController implements ThrowableFunction<ShowBorrowedDocumentsController.RequestObject, ShowBorrowedDocumentsController.ViewModel> {
     private final @NonNull ShowBorrowedDocumentsUseCase showBorrowedDocumentsUseCase;
 
-    public static @NonNull ShowBorrowedDocumentsController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new ShowBorrowedDocumentsController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull ShowBorrowedDocumentsController of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowBorrowedDocumentsController(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowBorrowedDocumentsController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        this.showBorrowedDocumentsUseCase = ShowBorrowedDocumentsUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    private ShowBorrowedDocumentsController(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.showBorrowedDocumentsUseCase = ShowBorrowedDocumentsUseCase.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -49,8 +49,8 @@ public final class ShowBorrowedDocumentsController implements ThrowableFunction<
     @Value
     public static class ViewModel {
         @NonNull List<ViewableFragmentaryDocument> paginatedFragmentaryDocuments;
-        @NonNull int pageIndex;
-        @NonNull int maxPageIndex;
+        @Unsigned int pageIndex;
+        @Unsigned int maxPageIndex;
 
         private static @NonNull ViewModel fromResponseModel(ShowBorrowedDocumentsUseCase.@NonNull Response responseModel) {
             val paginatedFragmentaryDocuments = responseModel.getPaginatedFragmentaryBorrowedDocuments();

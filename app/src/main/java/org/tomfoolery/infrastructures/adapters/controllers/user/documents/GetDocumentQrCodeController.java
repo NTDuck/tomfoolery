@@ -15,12 +15,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 public final class GetDocumentQrCodeController implements ThrowableFunction<GetDocumentQrCodeController.RequestObject, GetDocumentQrCodeController.ViewModel> {
     private final @NonNull GetDocumentQrCodeUseCase getDocumentQrCodeUseCase;
 
-    public static @NonNull GetDocumentQrCodeController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator) {
-        return new GetDocumentQrCodeController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, documentQrCodeGenerator, documentUrlGenerator);
+    public static @NonNull GetDocumentQrCodeController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentQrCodeController(documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentQrCodeController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator) {
-        this.getDocumentQrCodeUseCase = GetDocumentQrCodeUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, documentQrCodeGenerator, documentUrlGenerator);
+    private GetDocumentQrCodeController(@NonNull DocumentRepository documentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.getDocumentQrCodeUseCase = GetDocumentQrCodeUseCase.of(documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

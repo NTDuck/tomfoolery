@@ -15,12 +15,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 public final class ReadBorrowedDocumentController implements ThrowableFunction<ReadBorrowedDocumentController.RequestObject, ReadBorrowedDocumentController.ViewModel> {
     private final @NonNull ReadBorrowedDocumentUseCase readBorrowedDocumentUseCase;
 
-    public static @NonNull ReadBorrowedDocumentController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        return new ReadBorrowedDocumentController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    public static @NonNull ReadBorrowedDocumentController of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ReadBorrowedDocumentController(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ReadBorrowedDocumentController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository) {
-        this.readBorrowedDocumentUseCase = ReadBorrowedDocumentUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository, patronRepository);
+    private ReadBorrowedDocumentController(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.readBorrowedDocumentUseCase = ReadBorrowedDocumentUseCase.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

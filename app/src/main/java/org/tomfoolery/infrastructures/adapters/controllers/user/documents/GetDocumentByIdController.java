@@ -14,12 +14,12 @@ import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocum
 public final class GetDocumentByIdController implements ThrowableFunction<GetDocumentByIdController.RequestObject, GetDocumentByIdController.ViewModel> {
     private final @NonNull GetDocumentByIdUseCase getDocumentByIdUseCase;
 
-    public static @NonNull GetDocumentByIdController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new GetDocumentByIdController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull GetDocumentByIdController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentByIdController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentByIdController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        this.getDocumentByIdUseCase = GetDocumentByIdUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    private GetDocumentByIdController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.getDocumentByIdUseCase = GetDocumentByIdUseCase.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

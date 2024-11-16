@@ -13,12 +13,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 public final class UpdateDocumentContentController implements ThrowableConsumer<UpdateDocumentContentController.RequestObject> {
     private final @NonNull UpdateDocumentContentUseCase updateDocumentContentUseCase;
 
-    public static @NonNull UpdateDocumentContentController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new UpdateDocumentContentController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull UpdateDocumentContentController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdateDocumentContentController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private UpdateDocumentContentController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        this.updateDocumentContentUseCase = UpdateDocumentContentUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    private UpdateDocumentContentController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.updateDocumentContentUseCase = UpdateDocumentContentUseCase.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -30,11 +30,11 @@ public final class UpdateDocumentContentController implements ThrowableConsumer<
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @NonNull String ISBN;
-        byte @NonNull [] rawNewDocumentContent;
+        byte @NonNull [] newDocumentContent;
 
         private UpdateDocumentContentUseCase.@NonNull Request toRequestModel() {
             val documentId = Document.Id.of(ISBN);
-            val newDocumentContent = Document.Content.of(rawNewDocumentContent);
+            val newDocumentContent = Document.Content.of(this.newDocumentContent);
 
             return UpdateDocumentContentUseCase.Request.of(documentId, newDocumentContent);
         }

@@ -18,12 +18,12 @@ import java.util.stream.StreamSupport;
 public final class ShowDocumentsController implements ThrowableFunction<ShowDocumentsController.RequestObject, ShowDocumentsController.ViewModel> {
     private final @NonNull ShowDocumentsUseCase showDocumentsUseCase;
 
-    public static @NonNull ShowDocumentsController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new ShowDocumentsController(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    public static @NonNull ShowDocumentsController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowDocumentsController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowDocumentsController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        this.showDocumentsUseCase = ShowDocumentsUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    private ShowDocumentsController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.showDocumentsUseCase = ShowDocumentsUseCase.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

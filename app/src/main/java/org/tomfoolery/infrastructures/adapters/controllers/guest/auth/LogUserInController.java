@@ -13,11 +13,12 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 import java.util.Map;
 
 public final class LogUserInController implements ThrowableFunction<LogUserInController.RequestObject, LogUserInController.ViewModel> {
-    private static final @NonNull Map<Class<? extends BaseUser>, UserType> USER_TYPES_BY_USER_CLASSES = Map.of(
+    private static final @NonNull Map<Class<? extends BaseUser>, UserType> userTypesByUserClasses = Map.of(
         Administrator.class, UserType.ADMINISTRATOR,
         Patron.class, UserType.PATRON,
         Staff.class, UserType.STAFF
@@ -25,12 +26,13 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
 
     private final @NonNull LogUserInUseCase logUserInUseCase;
 
-    public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new LogUserInController(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull LogUserInController of(@NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new LogUserInController(userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private LogUserInController(@NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.logUserInUseCase = LogUserInUseCase.of(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
+    private LogUserInController(@NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        this.logUserInUseCase = LogUserInUseCase.of(userRepositories, authenticationTokenGenerator,
+            authenticationTokenRepository, passwordEncoder);
     }
 
     @Override
@@ -45,9 +47,10 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @NonNull String username;
-        @NonNull String password;
+        char @NonNull [] password;
 
         private LogUserInUseCase.@NonNull Request toRequestModel() {
+            val password = SecureString.of(this.password);
             val credentials = Staff.Credentials.of(username, password);
 
             return LogUserInUseCase.Request.of(credentials);
@@ -60,7 +63,7 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
 
         private static @NonNull ViewModel fromResponseModel(LogUserInUseCase.@NonNull Response responseModel) {
             val userClass = responseModel.getLoggedInUserClass();
-            val userType = USER_TYPES_BY_USER_CLASSES.get(userClass);
+            val userType = userTypesByUserClasses.get(userClass);
 
             return new ViewModel(userType);
         }

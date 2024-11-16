@@ -6,12 +6,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.recommendation.DocumentRecommendationRepository;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.user.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetLatestDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetPopularDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.user.documents.recommendation.GetTopRatedDocumentRecommendationUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.core.utils.contracts.functional.TriFunction;
 import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 
 import java.util.List;
@@ -21,11 +22,17 @@ import java.util.stream.Collectors;
 public final class GetDocumentRecommendationController implements ThrowableFunction<GetDocumentRecommendationController.RequestObject, GetDocumentRecommendationController.ViewModel> {
     private final @NonNull Map<RecommendationType, GetDocumentRecommendationUseCase> getScheduledDocumentRecommendationUseCasesByRecommendationTypes;
 
-    public static @NonNull GetDocumentRecommendationController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository) {
-        return new GetDocumentRecommendationController(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository);
+    public static @NonNull GetDocumentRecommendationController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentRecommendationController(documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentRecommendationController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull DocumentRecommendationRepository documentRecommendationRepository) {
+    private GetDocumentRecommendationController(@NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        Map<RecommendationType, TriFunction<DocumentRecommendationGenerator, AuthenticationTokenGenerator, AuthenticationTokenRepository, GetDocumentRecommendationUseCase>> initializer = Map.of(
+            RecommendationType.LATEST, GetLatestDocumentRecommendationUseCase::of,
+            RecommendationType.POPULAR, GetPopularDocumentRecommendationUseCase::of,
+            RecommendationType.TOP_RATED, GetTopRatedDocumentRecommendationUseCase::of
+        );
+
         this.getScheduledDocumentRecommendationUseCasesByRecommendationTypes = Map.of(
             RecommendationType.LATEST, GetLatestDocumentRecommendationUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository),
             RecommendationType.POPULAR, GetPopularDocumentRecommendationUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRecommendationGenerator, documentRecommendationRepository),

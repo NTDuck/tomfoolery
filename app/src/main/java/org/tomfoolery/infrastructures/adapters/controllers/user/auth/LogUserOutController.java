@@ -10,12 +10,12 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
 public final class LogUserOutController implements ThrowableRunnable {
     private final @NonNull LogUserOutUseCase logUserOutUseCase;
 
-    public static @NonNull LogUserOutController of(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
-        return new LogUserOutController(authenticationTokenGenerator, authenticationTokenRepository, userRepositories);
+    public static @NonNull LogUserOutController of(@NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new LogUserOutController(userRepositories, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private LogUserOutController(@NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull UserRepositories userRepositories) {
-        this.logUserOutUseCase = LogUserOutUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, userRepositories);
+    private LogUserOutController(@NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.logUserOutUseCase = LogUserOutUseCase.of(userRepositories, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
