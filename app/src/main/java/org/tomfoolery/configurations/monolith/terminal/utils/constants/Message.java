@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.terminal.utils.contants;
+package org.tomfoolery.configurations.monolith.terminal.utils.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

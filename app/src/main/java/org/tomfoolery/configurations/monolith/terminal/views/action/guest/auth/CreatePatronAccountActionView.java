@@ -3,7 +3,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.utils.contants.Message;
+import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
