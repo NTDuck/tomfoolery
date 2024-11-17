@@ -10,9 +10,9 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.user.documents.search.abc.SearchDocumentsUseCase;
-import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByAuthorUseCase;
-import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByGenreUseCase;
-import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByTitleUseCase;
+import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByAuthorSubsequenceUseCase;
+import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByGenreSubsequenceUseCase;
+import org.tomfoolery.core.usecases.user.documents.search.SearchDocumentsByTitleSubsequenceUseCase;
 import org.tomfoolery.infrastructures.adapters.presenters.user.documents.search.SearchDocumentsByCriterionPresenter;
 
 import java.util.Map;
@@ -31,9 +31,9 @@ public final class SearchDocumentsByCriterionActionView extends SharedUserAction
         super(ioHandler, authenticationTokenGenerator, authenticationTokenRepository);
 
         this.useCases = Map.of(
-            0, SearchDocumentsByTitleUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository),
-            1, SearchDocumentsByAuthorUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository),
-            2, SearchDocumentsByGenreUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository)
+            0, SearchDocumentsByTitleSubsequenceUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository),
+            1, SearchDocumentsByAuthorSubsequenceUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository),
+            2, SearchDocumentsByGenreSubsequenceUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository)
         );
         this.presenter = SearchDocumentsByCriterionPresenter.of();
     }

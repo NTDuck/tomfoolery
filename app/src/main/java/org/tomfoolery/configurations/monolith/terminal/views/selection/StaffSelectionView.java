@@ -18,10 +18,10 @@ public class StaffSelectionView extends UserSelectionView {
 
     private StaffSelectionView(@NonNull IOHandler ioHandler) {
         super(ioHandler, List.of(
-            SelectionItem.of(7, "Add a Document", AddDocumentActionView.class),
-            SelectionItem.of(8, "Change a Document's content", UpdateDocumentContentActionView.class),
-            SelectionItem.of(9, "Change a Document's metadata", UpdateDocumentMetadataActionView.class),
-            SelectionItem.of(10, "Remove a Document", RemoveDocumentActionView.class)
+            SelectionItem.of("Add a Document", AddDocumentActionView.class),
+            SelectionItem.of("Change a Document's content", UpdateDocumentContentActionView.class),
+            SelectionItem.of("Change a Document's metadata", UpdateDocumentMetadataActionView.class),
+            SelectionItem.of("Remove a Document", RemoveDocumentActionView.class)
         ));
     }
 

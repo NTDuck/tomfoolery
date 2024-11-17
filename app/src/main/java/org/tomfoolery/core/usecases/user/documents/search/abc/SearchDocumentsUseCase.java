@@ -12,7 +12,6 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.core.utils.contracts.functional.TriFunction;
 import org.tomfoolery.core.utils.dataclasses.common.Page;
 
 import java.time.Duration;

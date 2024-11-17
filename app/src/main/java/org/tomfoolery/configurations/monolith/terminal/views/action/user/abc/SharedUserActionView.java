@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.abc;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.adapters.action.user.SharedActionAdapter;
+import org.tomfoolery.configurations.monolith.terminal.adapters.controllers.action.user.SharedActionAdapter;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;

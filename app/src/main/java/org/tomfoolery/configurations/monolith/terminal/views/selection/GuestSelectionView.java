@@ -16,9 +16,9 @@ public class GuestSelectionView extends BaseSelectionView {
 
     private GuestSelectionView(@NonNull IOHandler ioHandler) {
         super(ioHandler, List.of(
-            SelectionItem.of(0, "Exit", null),
-            SelectionItem.of(1, "Create Patron account", CreatePatronAccountActionView.class),
-            SelectionItem.of(2, "Login", LogUserInActionView.class)
+            SelectionItem.of("Exit", null),
+            SelectionItem.of("Create Patron account", CreatePatronAccountActionView.class),
+            SelectionItem.of("Login", LogUserInActionView.class)
         ));
     }
 

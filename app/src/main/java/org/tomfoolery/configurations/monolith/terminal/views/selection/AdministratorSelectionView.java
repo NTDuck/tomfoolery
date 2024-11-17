@@ -17,9 +17,9 @@ public class AdministratorSelectionView extends UserSelectionView {
 
     private AdministratorSelectionView(@NonNull IOHandler ioHandler) {
         super(ioHandler, List.of(
-            SelectionItem.of(7, "Create Staff account", CreateStaffAccountActionView.class),
-            SelectionItem.of(8, "Update Staff credentials", UpdateStaffCredentialsActionView.class),
-            SelectionItem.of(9, "Delete Staff account", DeleteStaffAccountActionView.class)
+            SelectionItem.of("Create Staff account", CreateStaffAccountActionView.class),
+            SelectionItem.of("Update Staff credentials", UpdateStaffCredentialsActionView.class),
+            SelectionItem.of("Delete Staff account", DeleteStaffAccountActionView.class)
         ));
     }
 

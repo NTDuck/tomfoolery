@@ -2,9 +2,8 @@ package org.tomfoolery.configurations.monolith.terminal.views.selection.abc;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
-import org.tomfoolery.configurations.monolith.terminal.adapters.selection.SelectionAdapter;
+import org.tomfoolery.configurations.monolith.terminal.adapters.controllers.selection.SelectionController;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 
@@ -12,64 +11,63 @@ import java.util.InputMismatchException;
 import java.util.List;
 
 public abstract class BaseSelectionView extends BaseView {
-    private final @NonNull SelectionAdapter selectionAdapter;
+    private final @NonNull SelectionController selectionController;
 
     protected BaseSelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionItem> selectionItems) {
         super(ioHandler);
-        this.selectionAdapter = SelectionAdapter.of(selectionItems);
+
+        this.selectionController = SelectionController.of(selectionItems);
     }
 
     @Override
     public final void run() {
-        displayPrompt();
+        this.displayPrompt();
 
-        val viewModel = this.selectionAdapter.get();
-        displayViewModel(viewModel);
+        val viewModel = this.selectionController.get();
+        this.displayViewModel(viewModel);
 
         try {
-            val requestObject = getRequestObject();
-            val responseModel = this.selectionAdapter.apply(requestObject);
+            val requestObject = this.collectRequestObject();
+            val responseModel = this.selectionController.apply(requestObject);
 
-            onSuccess(responseModel);
+            this.onSuccess(responseModel);
 
         } catch (InputMismatchException exception) {
-            onInputMismatchException();
-        } catch (SelectionAdapter.SelectionItemNotFoundException exception) {
-            onSelectionItemNotFoundException();
+            this.onInputMismatchException();
+        } catch (SelectionController.SelectionItemNotFoundException exception) {
+            this.onSelectionItemNotFoundException();
         }
     }
 
     private void displayPrompt() {
-        val prompt = getPrompt();
+        val prompt = this.getPrompt();
 
-        if (prompt.isEmpty() || prompt.isBlank())
+        if (prompt.isBlank())
             return;
 
         this.ioHandler.writeLine(prompt);
     }
 
-    private void displayViewModel(SelectionAdapter.@NonNull ViewModel viewModel) {
-        val viewonlySelectionItems = viewModel.getViewonlySelectionItems();
-
-        for (val viewonlySelectionItem : viewonlySelectionItems)
-            displayViewonlySelectionItem(viewonlySelectionItem);
+    private void displayViewModel(SelectionController.@NonNull ViewModel viewModel) {
+        viewModel.getViewableSelectionItems()
+            .forEach(this::displayViewableSelectionItem);
     }
 
-    private void displayViewonlySelectionItem(SelectionAdapter.@NonNull ViewonlySelectionItem viewonlySelectionItem) {
-        val index = viewonlySelectionItem.getIndex();
-        val label = viewonlySelectionItem.getLabel();
+    private void displayViewableSelectionItem(SelectionController.@NonNull ViewableSelectionItem viewableSelectionItem) {
+        val index = viewableSelectionItem.getIndex();
+        val label = viewableSelectionItem.getLabel();
 
         this.ioHandler.writeLine("[%2d] %s", index, label);
     }
 
-    private SelectionAdapter.@NonNull RequestObject getRequestObject() throws InputMismatchException {
-        val rawItemIndex = this.ioHandler.readLine();
-        val itemIndex = Integer.parseInt(rawItemIndex);
+    private SelectionController.@NonNull RequestObject collectRequestObject() throws InputMismatchException {
+        val rawSelectionItemIndex = this.ioHandler.readLine();
+        val selectionItemIndex = Integer.parseInt(rawSelectionItemIndex);
 
-        return SelectionAdapter.RequestObject.of(itemIndex);
+        return SelectionController.RequestObject.of(selectionItemIndex);
     }
 
-    private void onSuccess(SelectionAdapter.@NonNull ResponseModel responseModel) {
+    private void onSuccess(SelectionController.@NonNull ResponseModel responseModel) {
         this.nextViewClass = responseModel.getNextViewClass();
 
         val message = getMessageOnSuccess();

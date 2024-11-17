@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.terminal.adapters.action.user;
+package org.tomfoolery.configurations.monolith.terminal.adapters.controllers.action.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;

@@ -23,15 +23,15 @@ public class PatronSelectionView extends UserSelectionView {
 
     private PatronSelectionView(@NonNull IOHandler ioHandler) {
         super(ioHandler, List.of(
-            SelectionItem.of(7, "Borrow a Document", BorrowDocumentActionView.class),
-            SelectionItem.of(8, "Return a Document", ReturnDocumentActionView.class),
-            SelectionItem.of(9, "Show all borrowed Documents", ShowBorrowedDocumentsActionView.class),
-            SelectionItem.of(10, "Read a Document", ReadBorrowedDocumentActionView.class),
-            SelectionItem.of(11, "Rate a Document", AddDocumentActionView.class),
-            SelectionItem.of(12, "Remove rating from a Document", RemoveDocumentActionView.class),
-            SelectionItem.of(13, "Change personal info", UpdatePatronMetadataActionView.class),
-            SelectionItem.of(14, "Change password", UpdatePatronPasswordActionView.class),
-            SelectionItem.of(15, "Delete account", DeletePatronAccountActionView.class)
+            SelectionItem.of("Borrow a Document", BorrowDocumentActionView.class),
+            SelectionItem.of("Return a Document", ReturnDocumentActionView.class),
+            SelectionItem.of("Show all borrowed Documents", ShowBorrowedDocumentsActionView.class),
+            SelectionItem.of("Read a Document", ReadBorrowedDocumentActionView.class),
+            SelectionItem.of("Rate a Document", AddDocumentActionView.class),
+            SelectionItem.of("Remove rating from a Document", RemoveDocumentActionView.class),
+            SelectionItem.of("Change personal info", UpdatePatronMetadataActionView.class),
+            SelectionItem.of("Change password", UpdatePatronPasswordActionView.class),
+            SelectionItem.of("Delete account", DeletePatronAccountActionView.class)
         ));
     }
 

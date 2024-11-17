@@ -2,9 +2,10 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.ActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedUserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.BaseSelectionView;
 
-public class GetDocumentRecommendationActionView implements ActionView {
+public class GetDocumentRecommendationActionView extends SharedUserActionView {
     @Override
     public void run() {
 

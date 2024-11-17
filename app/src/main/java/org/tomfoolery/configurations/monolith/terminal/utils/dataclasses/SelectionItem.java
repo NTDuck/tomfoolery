@@ -7,7 +7,6 @@ import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 
 @Value(staticConstructor = "of")
 public class SelectionItem {
-    int index;
     @NonNull String label;
     @Nullable Class<? extends BaseView> viewClass;
 }
