@@ -3,11 +3,13 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.contants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
 public final class CreatePatronAccountActionView extends BaseView {
     private final @NonNull CreatePatronAccountController controller;
@@ -25,41 +27,43 @@ public final class CreatePatronAccountActionView extends BaseView {
 
     @Override
     public void run() {
-        val requestObject = collectRequestObject();
+        val requestObject = this.collectRequestObject();
 
         try {
             this.controller.accept(requestObject);
-            onSuccess();
+            this.onSuccess();
 
         } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException exception) {
-            onPatronCredentialsInvalidException();
+            this.onPatronCredentialsInvalidException();
         } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException exception) {
-            onPatronAlreadyExistsException();
+            this.onPatronAlreadyExistsException();
         }
     }
 
-    private CreatePatronAccountController.@NonNull Request collectRequestObject() {
-        val username = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "username");
-        val password = this.ioHandler.readPassword(PROMPT_MESSAGE_FORMAT, "password");
+    private CreatePatronAccountController.@NonNull RequestObject collectRequestObject() {
+        val username = this.ioHandler.readLine(Message.Format.PROMPT, "username");
+        val password = this.ioHandler.readPassword(Message.Format.PROMPT, "password");
 
-        val fullName = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "full name");
-        val address = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "address");
-        val email = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "email");
+        val firstName = this.ioHandler.readLine(Message.Format.PROMPT, "first name");
+        val lastName = this.ioHandler.readLine(Message.Format.PROMPT, "last name");
 
-        return CreatePatronAccountController.Request.of(username, new String(password), fullName, address, email);
+        val address = this.ioHandler.readLine(Message.Format.PROMPT, "address");
+        val email = this.ioHandler.readLine(Message.Format.PROMPT, "email");
+
+        return CreatePatronAccountController.RequestObject.of(username, password, firstName, lastName, address, email);
     }
 
     private void onSuccess() {
-        this.ioHandler.writeLine(SUCCESS_MESSAGE_FORMAT, "Patron account created");
+        this.ioHandler.writeLine(Message.Format.SUCCESS, "Patron account created");
     }
 
     private void onPatronCredentialsInvalidException() {
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Invalid username or password");
-        this.ioHandler.writeLine("(%s)", USERNAME_CONSTRAINT_MESSAGE);
-        this.ioHandler.writeLine("(%s)", PASSWORD_CONSTRAINT_MESSAGE);
+        this.ioHandler.writeLine(Message.Format.ERROR, "Invalid username or password");
+        this.ioHandler.writeLine("(%s)", Message.USERNAME_CONSTRAINT);
+        this.ioHandler.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
     }
 
     private void onPatronAlreadyExistsException() {
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Username already exists");
+        this.ioHandler.writeLine(Message.Format.ERROR, "Username already exists");
     }
 }

@@ -2,41 +2,41 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.terminal.adapters.presenters.guest.auth.LogUserInPresenter;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.contants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 
 public final class LogUserInActionView extends BaseView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
 
-    public static @NonNull LogUserInActionView of(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new LogUserInActionView(ioHandler, userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull LogUserInActionView of(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new LogUserInActionView(ioHandler, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private LogUserInActionView(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull PasswordEncoder passwordEncoder, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private LogUserInActionView(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
         super(ioHandler);
 
-        this.controller = LogUserInController.of(userRepositories, passwordEncoder, authenticationTokenGenerator, authenticationTokenRepository);
-        this.presenter = LogUserInPresenter.of(authenticationTokenGenerator);
+        this.controller = LogUserInController.of(userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
+        this.presenter = LogUserInPresenter.of();
     }
 
     @Override
     public void run() {
-        val requestObject = collectRequestObject();
+        val requestObject = this.collectRequestObject();
 
         try {
-            val responseModel = this.controller.apply(requestObject);
-            val viewModel = this.presenter.apply(responseModel);
-
-            onSuccess(viewModel);
+            val viewModel = this.controller.apply(requestObject);
+            val adaptedViewModel = this.presenter.apply(viewModel);
+            onSuccess(adaptedViewModel);
 
         } catch (LogUserInUseCase.CredentialsInvalidException exception) {
             onCredentialsInvalidException();
@@ -49,40 +49,39 @@ public final class LogUserInActionView extends BaseView {
         }
     }
 
-    private LogUserInController.@NonNull Request collectRequestObject() {
-        val username = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "username");
-        val password = this.ioHandler.readPassword(PROMPT_MESSAGE_FORMAT, "password");
+    private LogUserInController.@NonNull RequestObject collectRequestObject() {
+        val username = this.ioHandler.readLine(Message.Format.PROMPT, "username");
+        val password = this.ioHandler.readPassword(Message.Format.PROMPT, "password");
 
-        return LogUserInController.Request.of(username, new String(password));
+        return LogUserInController.RequestObject.of(username, password);
     }
 
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
-        val userClass = viewModel.getUserClass();
-        this.nextViewClass = UserSelectionView.getUserSelectionViewClassFromUserClass(userClass);
+        this.nextViewClass = viewModel.getNextViewClass();
 
-        this.ioHandler.writeLine(SUCCESS_MESSAGE_FORMAT, "User logged in");
+        this.ioHandler.writeLine(Message.Format.SUCCESS, "User logged in");
     }
 
     private void onCredentialsInvalidException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Invalid username or password");
-        this.ioHandler.writeLine("(%s)", USERNAME_CONSTRAINT_MESSAGE);
-        this.ioHandler.writeLine("(%s)", PASSWORD_CONSTRAINT_MESSAGE);
+        this.ioHandler.writeLine(Message.Format.ERROR, "Invalid username or password");
+        this.ioHandler.writeLine("(%s)", Message.USERNAME_CONSTRAINT);
+        this.ioHandler.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
     }
 
     private void onUserNotFoundException() {
         this.nextViewClass = GuestSelectionView.class;
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Username not found");
+        this.ioHandler.writeLine(Message.Format.ERROR, "Username not found");
     }
 
     private void onPasswordMismatchException() {
         this.nextViewClass = GuestSelectionView.class;
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Wrong password");
+        this.ioHandler.writeLine(Message.Format.ERROR, "Wrong password");
     }
 
     private void onUserAlreadyLoggedInException() {
         this.nextViewClass = GuestSelectionView.class;
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "User already logged in on another device");
+        this.ioHandler.writeLine(Message.Format.ERROR, "User already logged in on another device");
     }
 }

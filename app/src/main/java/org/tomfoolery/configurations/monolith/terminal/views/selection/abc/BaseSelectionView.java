@@ -5,30 +5,31 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.terminal.adapters.controllers.selection.SelectionController;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 
 import java.util.InputMismatchException;
 import java.util.List;
 
 public abstract class BaseSelectionView extends BaseView {
-    private final @NonNull SelectionController selectionController;
+    private final @NonNull SelectionController controller;
 
     protected BaseSelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionItem> selectionItems) {
         super(ioHandler);
 
-        this.selectionController = SelectionController.of(selectionItems);
+        this.controller = SelectionController.of(selectionItems);
     }
 
     @Override
     public final void run() {
         this.displayPrompt();
 
-        val viewModel = this.selectionController.get();
+        val viewModel = this.controller.get();
         this.displayViewModel(viewModel);
 
         try {
             val requestObject = this.collectRequestObject();
-            val responseModel = this.selectionController.apply(requestObject);
+            val responseModel = this.controller.apply(requestObject);
 
             this.onSuccess(responseModel);
 
@@ -93,14 +94,14 @@ public abstract class BaseSelectionView extends BaseView {
     }
 
     protected @NonNull String getMessageOnSuccess() {
-        return String.format(SUCCESS_MESSAGE_FORMAT, "Redirecting (●'◡'●)");
+        return String.format(Message.Format.SUCCESS, "Redirecting (●'◡'●)");
     }
 
     protected @NonNull String getMessageOnInputMismatchException() {
-        return String.format(ERROR_MESSAGE_FORMAT, "Invalid input format");
+        return String.format(Message.Format.ERROR, "Invalid input format");
     }
 
     protected @NonNull String getMessageOnItemNotFoundException() {
-        return String.format(ERROR_MESSAGE_FORMAT, "Selection not found");
+        return String.format(Message.Format.ERROR, "Selection not found");
     }
 }
