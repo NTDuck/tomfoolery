@@ -72,16 +72,19 @@ public final class LogUserInActionView extends BaseView {
 
     private void onUserNotFoundException() {
         this.nextViewClass = GuestSelectionView.class;
-        this.ioHandler.writeLine(Message.Format.ERROR, "Username not found");
+
+        this.ioHandler.writeLine(Message.Format.ERROR, "User not found");
     }
 
     private void onPasswordMismatchException() {
         this.nextViewClass = GuestSelectionView.class;
+
         this.ioHandler.writeLine(Message.Format.ERROR, "Wrong password");
     }
 
     private void onUserAlreadyLoggedInException() {
         this.nextViewClass = GuestSelectionView.class;
+
         this.ioHandler.writeLine(Message.Format.ERROR, "User already logged in on another device");
     }
 }

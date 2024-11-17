@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.UserClassAndViewClassRegistry;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
 
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor(staticName = "of")
-public final class SharedActionAdapter implements Supplier<SharedActionAdapter.ViewModel> {
+public final class SharedUserActionPresenter implements Supplier<SharedUserActionPresenter.ViewModel> {
     private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator;
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository;
 
@@ -23,11 +24,13 @@ public final class SharedActionAdapter implements Supplier<SharedActionAdapter.V
         val userClass = this.authenticationTokenGenerator.getUserClassFromAuthenticationToken(authenticationToken);
         assert userClass != null;
 
-        return ViewModel.of(userClass);
+        val nextViewClass = UserClassAndViewClassRegistry.getViewClassByUserClass(userClass);
+
+        return ViewModel.of(nextViewClass);
     }
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull Class<? extends BaseUser> userClass;
+        @NonNull Class<? extends UserSelectionView> nextViewClass;
     }
 }
