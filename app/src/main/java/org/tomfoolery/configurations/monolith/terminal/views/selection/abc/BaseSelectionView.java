@@ -5,7 +5,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.terminal.adapters.controllers.selection.SelectionController;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.Message;
+import org.tomfoolery.configurations.monolith.terminal.utils.contants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 
 import java.util.InputMismatchException;

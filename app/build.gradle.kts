@@ -46,6 +46,9 @@ dependencies {
     // Uses `QRGen` for simplified QR Code generation
     implementation("com.github.kenglxn.QRGen:javase:3.0.1")
 
+    // Uses Apache's `URIBuilder` for clean and lightweight URI construction
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
+
     // Contains necessary implementation of Directed Acyclic Subsequence Graph
     // required for efficient in-memory indexing of documents
     implementation("com.github.Qualtagh:DAWG:e98133f757")

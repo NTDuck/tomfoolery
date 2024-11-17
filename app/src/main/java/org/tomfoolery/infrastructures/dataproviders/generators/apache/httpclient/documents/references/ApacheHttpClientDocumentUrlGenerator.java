@@ -4,12 +4,13 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 
+import java.net.URISyntaxException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
     private static final @NonNull String DELIMITER = ",";
 
     @Override
-    @SneakyThrows
+    @SneakyThrows(URISyntaxException.class)
     public @NonNull String generateUrlFromFragmentaryDocument(@NonNull FragmentaryDocument fragmentaryDocument) {
         val parameterPairs = generateParameterPairsFromFragmentaryDocument(fragmentaryDocument);
 
