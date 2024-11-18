@@ -34,13 +34,13 @@ public final class UpdateStaffCredentialsActionView extends UserActionView {
             this.controller.accept(requestObject);
             this.onSuccess();
 
-        } catch (UpdateStaffCredentialsUseCase.AuthenticationTokenNotFoundException e) {
+        } catch (UpdateStaffCredentialsUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
-        } catch (UpdateStaffCredentialsUseCase.AuthenticationTokenInvalidException e) {
+        } catch (UpdateStaffCredentialsUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (UpdateStaffCredentialsUseCase.StaffCredentialsInvalidException e) {
+        } catch (UpdateStaffCredentialsUseCase.StaffCredentialsInvalidException exception) {
             this.onStaffCredentialsInvalidException();
-        } catch (UpdateStaffCredentialsUseCase.StaffNotFoundException e) {
+        } catch (UpdateStaffCredentialsUseCase.StaffNotFoundException exception) {
             this.onStaffNotFoundException();
         }
     }

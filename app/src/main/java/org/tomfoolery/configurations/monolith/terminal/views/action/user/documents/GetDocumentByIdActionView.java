@@ -3,68 +3,70 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedUserActionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
+import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.user.documents.GetDocumentByIdUseCase;
-import org.tomfoolery.infrastructures.adapters.presenters.user.documents.GetDocumentByIdPresenter;
+import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentByIdController;
 
-public final class GetDocumentByIdActionView extends SharedUserActionView {
+public final class GetDocumentByIdActionView extends UserActionView {
     private final @NonNull GetDocumentByIdController controller;
-    private final @NonNull GetDocumentByIdPresenter presenter;
 
-    public static @NonNull GetDocumentByIdActionView of(@NonNull IOHandler ioHandler, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        return new GetDocumentByIdActionView(ioHandler, authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
+    private final @NonNull SelectionViewResolver selectionViewResolver;
+
+    public static @NonNull GetDocumentByIdActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentByIdActionView(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentByIdActionView(@NonNull IOHandler ioHandler, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        super(ioHandler, authenticationTokenGenerator, authenticationTokenRepository);
+    private GetDocumentByIdActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioHandler);
 
-        this.controller = GetDocumentByIdController.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
-        this.presenter = GetDocumentByIdPresenter.of();
+        this.controller = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
     public void run() {
-        val requestObject = collectRequestObject();
+        val requestObject = this.collectRequestObject();
 
         try {
-            val responseModel = this.controller.apply(requestObject);
-            val viewModel = this.presenter.apply(responseModel);
+            val viewModel = this.controller.apply(requestObject);
+            this.onSuccess(viewModel);
 
-            onSuccess(viewModel);
-
-        } catch (AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
-            onAuthenticationTokenInvalidException();
-        } catch (AuthenticatedUserUseCase.AuthenticationTokenNotFoundException exception) {
-            onAuthenticationTokenNotFoundException();
+        } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException exception) {
+            this.onAuthenticationTokenNotFoundException();
+        } catch (GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
+            this.onAuthenticationTokenInvalidException();
         } catch (GetDocumentByIdUseCase.DocumentNotFoundException exception) {
-            onDocumentNotFoundException();
+            this.onDocumentNotFoundException();
         }
     }
 
-    private GetDocumentByIdController.@NonNull Request collectRequestObject() {
-        val ISBN = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "ISBN");
-        return GetDocumentByIdController.Request.of(ISBN);
+    private GetDocumentByIdController.@NonNull RequestObject collectRequestObject() {
+        val ISBN = this.ioHandler.readLine(Message.Format.PROMPT, "document ISBN");
+
+        return GetDocumentByIdController.RequestObject.of(ISBN);
     }
 
-    private void onSuccess(GetDocumentByIdPresenter.@NonNull ViewModel viewModel) {
-        this.nextViewClass = super.getNextViewClass();
-        displayViewModel(viewModel);
+    private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) {
+        val fragmentaryDocument = viewModel.getFragmentaryDocument();
+
+        this.ioHandler.writeLine("Here is your document:");
+        this.displayViewableFragmentaryDocument(fragmentaryDocument);
+        this.ioHandler.writeLine("There's also a cover image which is not displayed in console env");
+    }
+
+    private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
+        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.displayViewModel(viewModel);
     }
 
     private void onDocumentNotFoundException() {
-        this.nextViewClass = getCurrentUserSelectionViewClassFromUserClass();
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Document not found");
-    }
+        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-    private void displayViewModel(GetDocumentByIdPresenter.@NonNull ViewModel viewModel) {
-        val viewonlyDocumentPreview = viewModel.getViewableDocumentPreview();
-
-        this.ioHandler.writeLine("Here is your document:");
-        displayViewonlyDocumentPreview(viewonlyDocumentPreview);
-        this.ioHandler.writeLine("There's also a cover image which is not displayed in console env");
+        this.ioHandler.writeLine(Message.Format.ERROR, "Document not found");
     }
 }

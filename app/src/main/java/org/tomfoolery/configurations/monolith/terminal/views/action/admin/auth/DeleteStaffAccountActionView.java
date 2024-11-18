@@ -33,11 +33,11 @@ public final class DeleteStaffAccountActionView extends UserActionView {
             this.controller.accept(requestObject);
             this.onSuccess();
 
-        } catch (DeleteStaffAccountUseCase.AuthenticationTokenNotFoundException e) {
+        } catch (DeleteStaffAccountUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
-        } catch (DeleteStaffAccountUseCase.AuthenticationTokenInvalidException e) {
+        } catch (DeleteStaffAccountUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (DeleteStaffAccountUseCase.StaffNotFoundException e) {
+        } catch (DeleteStaffAccountUseCase.StaffNotFoundException exception) {
             this.onStaffNotFoundException();
         }
     }

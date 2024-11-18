@@ -3,7 +3,6 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedUserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.BaseSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;

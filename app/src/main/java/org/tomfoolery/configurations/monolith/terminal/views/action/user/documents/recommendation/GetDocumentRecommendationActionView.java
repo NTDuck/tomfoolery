@@ -1,18 +1,18 @@
 package org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.recommendation;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.views.action.abc.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedUserActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.BaseSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
+import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentRecommendationController;
 
-public class GetDocumentRecommendationActionView extends SharedUserActionView {
+public class GetDocumentRecommendationActionView extends UserActionView {
+    private final @NonNull GetDocumentRecommendationController controller;
+
     @Override
     public void run() {
 
     }
 
-    @Override
-    public @NonNull Class<? extends BaseSelectionView> getNextViewClass() {
-        return null;
+    private GetDocumentRecommendationController.@NonNull RequestObject collectRequestObject() {
+
     }
 }

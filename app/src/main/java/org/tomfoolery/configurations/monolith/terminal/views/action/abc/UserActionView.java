@@ -24,7 +24,7 @@ public abstract class UserActionView extends BaseView {
         this.ioHandler.writeLine(Message.Format.ERROR, "Your session has expired, please log in again");
     }
 
-    protected void displayViewonlyDocumentPreview(@NonNull ViewableFragmentaryDocument viewableFragmentaryDocument) {
+    protected void displayViewableFragmentaryDocument(@NonNull ViewableFragmentaryDocument viewableFragmentaryDocument) {
         this.ioHandler.writeLine("ISBN: %s", viewableFragmentaryDocument.getISBN());
 
         this.ioHandler.writeLine("Title: %s", viewableFragmentaryDocument.getDocumentTitle());

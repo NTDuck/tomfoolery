@@ -3,6 +3,7 @@ package org.tomfoolery.configurations.monolith.terminal.utils.helpers;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class UserClassAndViewClassRegistry {
+final class UserClassAndViewClassRegistry {
     private static final @NonNull Map<Class<? extends BaseUser>, Class<? extends UserSelectionView>> viewClassesByUserClasses = Map.of(
         Administrator.class, AdministratorSelectionView.class,
         Patron.class, PatronSelectionView.class,
@@ -26,11 +27,11 @@ public final class UserClassAndViewClassRegistry {
     private static final @NonNull Map<Class<? extends UserSelectionView>, Class<? extends BaseUser>> userClassesByViewClasses = viewClassesByUserClasses.entrySet().stream()
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
 
-    public static @NonNull Class<? extends BaseUser> getUserClassByViewClass(@NonNull Class<? extends UserSelectionView> viewClass) {
+    public static @Nullable Class<? extends BaseUser> getUserClassByViewClass(@NonNull Class<? extends UserSelectionView> viewClass) {
         return userClassesByViewClasses.get(viewClass);
     }
 
-    public static @NonNull Class<? extends UserSelectionView> getViewClassByUserClass(@NonNull Class<? extends BaseUser> userClass) {
+    public static @Nullable Class<? extends UserSelectionView> getViewClassByUserClass(@NonNull Class<? extends BaseUser> userClass) {
         return viewClassesByUserClasses.get(userClass);
     }
 }

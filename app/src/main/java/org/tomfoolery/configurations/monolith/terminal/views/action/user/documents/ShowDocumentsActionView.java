@@ -2,81 +2,93 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
-import org.tomfoolery.configurations.monolith.terminal.views.action.user.abc.SharedUserActionView;
+import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
+import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.user.documents.ShowDocumentsUseCase;
-import org.tomfoolery.infrastructures.adapters.presenters.user.documents.ShowDocumentsPresenter;
+import org.tomfoolery.infrastructures.adapters.controllers.user.documents.ShowDocumentsController;
 
-public final class ShowDocumentsActionView extends SharedUserActionView {
-    private final @NonNull ShowDocumentsUseCase useCase;
-    private final @NonNull ShowDocumentsPresenter presenter;
+public final class ShowDocumentsActionView extends UserActionView {
+    private static final @Unsigned int MAX_PAGE_SIZE = 7;
 
-    private ShowDocumentsActionView(@NonNull IOHandler ioHandler, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull DocumentRepository documentRepository) {
-        super(ioHandler, authenticationTokenGenerator, authenticationTokenRepository);
+    private final @NonNull ShowDocumentsController controller;
 
-        this.useCase = ShowDocumentsUseCase.of(authenticationTokenGenerator, authenticationTokenRepository, documentRepository);
-        this.presenter = ShowDocumentsPresenter.of();
+    private final @NonNull SelectionViewResolver selectionViewResolver;
+
+    public static @NonNull ShowDocumentsActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowDocumentsActionView(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    }
+
+    private ShowDocumentsActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioHandler);
+
+        this.controller = ShowDocumentsController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
     public void run() {
         try {
-            val requestModel = collectRequestModel();
-            val responseModel = this.useCase.apply(requestModel);
-            val viewModel = this.presenter.apply(responseModel);
+            val requestObject = this.collectRequestObject();
+            val viewModel = this.controller.apply(requestObject);
 
-            onSuccess(viewModel);
+            this.onSuccess(viewModel);
 
         } catch (PageIndexInvalidException exception) {
-            onPageIndexInvalidException();
-        } catch (AuthenticatedUserUseCase.AuthenticationTokenNotFoundException e) {
-            onAuthenticationTokenNotFoundException();
-        } catch (AuthenticatedUserUseCase.AuthenticationTokenInvalidException e) {
-            onAuthenticationTokenInvalidException();
-        } catch (ShowDocumentsUseCase.PaginationInvalidException e) {
-            onDocumentsNotFoundException();
+            this.onPageIndexInvalidException();
+
+        } catch (ShowDocumentsUseCase.AuthenticationTokenNotFoundException exception) {
+            this.onAuthenticationTokenNotFoundException();
+        } catch (ShowDocumentsUseCase.AuthenticationTokenInvalidException exception) {
+            this.onAuthenticationTokenInvalidException();
+        } catch (ShowDocumentsUseCase.PaginationInvalidException exception) {
+            this.onPaginationInvalidException();
         }
     }
 
-    private ShowDocumentsUseCase.@NonNull Request collectRequestModel() throws PageIndexInvalidException {
-        val pageIndexAsString = this.ioHandler.readLine(PROMPT_MESSAGE_FORMAT, "page number");
+    private ShowDocumentsController.@NonNull RequestObject collectRequestObject() throws PageIndexInvalidException {
+        val rawPageIndex = this.ioHandler.readLine(Message.Format.PROMPT, "page number");
 
         try {
-            val pageIndex = Integer.parseUnsignedInt(pageIndexAsString);
-            return ShowDocumentsUseCase.Request.of(pageIndex, MAX_PAGE_SIZE);
+            val pageIndex = Integer.parseUnsignedInt(rawPageIndex);
+            return ShowDocumentsController.RequestObject.of(pageIndex, MAX_PAGE_SIZE);
+
         } catch (NumberFormatException exception) {
             throw new PageIndexInvalidException();
         }
     }
 
-    private void onSuccess(ShowDocumentsPresenter.@NonNull ViewModel viewModel) {
-        this.nextViewClass = getCurrentUserSelectionViewClassFromUserClass();
-        displayViewModel(viewModel);
+    private void onSuccess(ShowDocumentsController.@NonNull ViewModel viewModel) {
+        this.nextViewClass = PatronSelectionView.class;
+        this.displayViewModel(viewModel);
+    }
+
+    private void displayViewModel(ShowDocumentsController.@NonNull ViewModel viewModel) {
+        val pageIndex = viewModel.getPageIndex();
+        val maxPageIndex = viewModel.getMaxPageIndex();
+
+        this.ioHandler.writeLine("Showing borrowed documents, page %d of %d", pageIndex, maxPageIndex);
+
+        viewModel.getPaginatedFragmentaryDocuments()
+            .forEach(this::displayViewableFragmentaryDocument);
     }
 
     private void onPageIndexInvalidException() {
-        this.nextViewClass = getCurrentUserSelectionViewClassFromUserClass();
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Invalid page index");
+        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+
+        this.ioHandler.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
     }
 
-    private void onDocumentsNotFoundException() {
-        this.nextViewClass = getCurrentUserSelectionViewClassFromUserClass();
-        this.ioHandler.writeLine(ERROR_MESSAGE_FORMAT, "Documents not found");
-    }
+    private void onPaginationInvalidException() {
+        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-    private void displayViewModel(ShowDocumentsPresenter.@NonNull ViewModel viewModel) {
-        this.ioHandler.writeLine("Page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
-
-        for (val viewonlyDocumentPreview : viewModel.getViewableDocumentPreviews()) {
-            displayViewonlyDocumentPreview(viewonlyDocumentPreview);
-            this.ioHandler.writeLine("");
-        }
-
-        this.ioHandler.writeLine("There's also cover images which are not displayed in console env");
+        this.ioHandler.writeLine(Message.Format.ERROR, "Found no documents with such page number");
     }
 
     private static class PageIndexInvalidException extends Exception {}

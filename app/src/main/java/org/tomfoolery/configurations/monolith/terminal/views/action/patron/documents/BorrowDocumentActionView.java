@@ -1,17 +1,79 @@
 package org.tomfoolery.configurations.monolith.terminal.views.action.patron.documents;
 
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.views.action.abc.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.BaseSelectionView;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.usecases.patron.documents.BorrowDocumentUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.BorrowDocumentController;
 
-public class BorrowDocumentActionView implements ActionView {
-    @Override
-    public void run() {
+public final class BorrowDocumentActionView extends UserActionView {
+    private final @NonNull BorrowDocumentController controller;
 
+    public static @NonNull BorrowDocumentActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new BorrowDocumentActionView(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    }
+
+    private BorrowDocumentActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioHandler);
+
+        this.controller = BorrowDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
-    public @NonNull Class<? extends BaseSelectionView> getNextViewClass() {
-        return null;
+    public void run() {
+        val requestObject = this.collectRequestObject();
+
+        try {
+            this.controller.accept(requestObject);
+            this.onSuccess();
+
+        } catch (BorrowDocumentUseCase.AuthenticationTokenNotFoundException exception) {
+            this.onAuthenticationTokenNotFoundException();
+        } catch (BorrowDocumentUseCase.AuthenticationTokenInvalidException exception) {
+            this.onAuthenticationTokenInvalidException();
+        } catch (BorrowDocumentUseCase.PatronNotFoundException exception) {
+            this.onPatronNotFoundException();
+        } catch (BorrowDocumentUseCase.DocumentNotFoundException exception) {
+            this.onDocumentNotFoundException();
+        } catch (BorrowDocumentUseCase.DocumentAlreadyBorrowedException exception) {
+            this.onDocumentAlreadyBorrowedException();
+        }
+    }
+
+    private BorrowDocumentController.@NonNull RequestObject collectRequestObject() {
+        val ISBN = this.ioHandler.readLine(Message.Format.PROMPT, "document ISBN");
+
+        return BorrowDocumentController.RequestObject.of(ISBN);
+    }
+
+    private void onSuccess() {
+        this.nextViewClass = PatronSelectionView.class;
+
+        this.ioHandler.writeLine(Message.Format.SUCCESS, "Document borrowed");
+    }
+
+    private void onPatronNotFoundException() {
+        this.nextViewClass = PatronSelectionView.class;
+
+        this.ioHandler.writeLine(Message.Format.ERROR, "Patron not found");
+    }
+
+    private void onDocumentNotFoundException() {
+        this.nextViewClass = PatronSelectionView.class;
+
+        this.ioHandler.writeLine(Message.Format.ERROR, "Document not found");
+    }
+
+    private void onDocumentAlreadyBorrowedException() {
+        this.nextViewClass = PatronSelectionView.class;
+
+        this.ioHandler.writeLine(Message.Format.ERROR, "Document already borrowed");
     }
 }

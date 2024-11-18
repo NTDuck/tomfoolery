@@ -34,13 +34,13 @@ public final class CreateStaffAccountActionView extends UserActionView {
             this.controller.accept(requestObject);
             this.onSuccess();
 
-        } catch (CreateStaffAccountUseCase.AuthenticationTokenNotFoundException e) {
+        } catch (CreateStaffAccountUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
-        } catch (CreateStaffAccountUseCase.AuthenticationTokenInvalidException e) {
+        } catch (CreateStaffAccountUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (CreateStaffAccountUseCase.StaffCredentialsInvalidException e) {
+        } catch (CreateStaffAccountUseCase.StaffCredentialsInvalidException exception) {
             this.onStaffCredentialsInvalidException();
-        } catch (CreateStaffAccountUseCase.StaffAlreadyExistsException e) {
+        } catch (CreateStaffAccountUseCase.StaffAlreadyExistsException exception) {
             this.onStaffAlreadyExistsException();
         }
     }
