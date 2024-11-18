@@ -15,6 +15,8 @@ import org.tomfoolery.core.utils.helpers.adapters.Codec;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReadBorrowedDocumentController;
 import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Codec;
 
+import java.util.Arrays;
+
 public final class ReadBorrowedDocumentActionView extends UserActionView {
     private final @NonNull ReadBorrowedDocumentController controller;
 
@@ -58,8 +60,8 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
     private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) {
         val documentContent = viewModel.getDocumentContent();
 
-        this.ioHandler.writeLine("Here is the document content, as Base64-encoded char array:");
-        this.ioHandler.writeLine(String.valueOf(Base64Codec.encode(Codec.charSequenceFromChars(Codec.charsFromBytes(documentContent)))));
+        this.ioHandler.writeLine("The document is not viewable on terminal environments, however here's the first 44 bytes:");
+        this.ioHandler.writeLine("%s ...", Arrays.toString(documentContent).substring(0, 44));
     }
 
     private void onSuccess(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) {

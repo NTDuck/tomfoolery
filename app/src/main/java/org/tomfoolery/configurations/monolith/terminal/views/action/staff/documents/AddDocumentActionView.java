@@ -58,18 +58,12 @@ public final class AddDocumentActionView extends UserActionView {
         val rawDocumentPublishedYear = this.ioHandler.readLine(Message.Format.PROMPT, "document published year");
         val documentPublisher = this.ioHandler.readLine(Message.Format.PROMPT, "document publisher");
 
-        val rawDocumentContent = this.ioHandler.readLine(Message.Format.PROMPT, "document content");
-        val rawDocumentCoverImage = this.ioHandler.readLine(Message.Format.PROMPT, "document cover image");
-
         val documentAuthors = Arrays.asList(rawDocumentAuthors.split(","));
         val documentGenres = Arrays.asList(rawDocumentGenres.split(","));
 
-        val documentContent = Codec.bytesFromChars(Codec.charsFromCharSequence(rawDocumentContent));
-        val documentCoverImage = Codec.bytesFromChars(Codec.charsFromCharSequence(rawDocumentCoverImage));
-
         try {
             val documentPublishedYear = Short.parseShort(rawDocumentPublishedYear);
-            return AddDocumentController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentContent, documentCoverImage);
+            return AddDocumentController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, new byte[0], new byte[0]);
 
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();

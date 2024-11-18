@@ -55,8 +55,18 @@ public final class GetDocumentByIdActionView extends UserActionView {
         val fragmentaryDocument = viewModel.getFragmentaryDocument();
 
         this.ioHandler.writeLine("Here is your document:");
-        this.displayViewableFragmentaryDocument(fragmentaryDocument);
-        this.ioHandler.writeLine("There's also a cover image which is not displayed in console env");
+
+        this.ioHandler.writeLine("ISBN: %s", fragmentaryDocument.getISBN());
+
+        this.ioHandler.writeLine("Title: %s", fragmentaryDocument.getDocumentTitle());
+        this.ioHandler.writeLine("Description: %s", fragmentaryDocument.getDocumentDescription());
+        this.ioHandler.writeLine("Authors: %s", String.join(", ", fragmentaryDocument.getDocumentAuthors()));
+        this.ioHandler.writeLine("Genres: %s", String.join(", ", fragmentaryDocument.getDocumentGenres()));
+
+        this.ioHandler.writeLine("Published year: %d", fragmentaryDocument.getDocumentPublishedYear());
+        this.ioHandler.writeLine("Publisher: %s", fragmentaryDocument.getDocumentPublisher());
+
+        this.ioHandler.writeLine("Rating: %f (%d rated, %d currently borrowing)", fragmentaryDocument.getAverageRating(), fragmentaryDocument.getNumberOfRatings(), fragmentaryDocument.getNumberOfBorrowingPatrons());
     }
 
     private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {

@@ -5,7 +5,6 @@ import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.Selecti
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.AddDocumentActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.RemoveDocumentActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.UpdateDocumentContentActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.UpdateDocumentMetadataActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;
 

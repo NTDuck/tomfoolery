@@ -23,18 +23,4 @@ public abstract class UserActionView extends BaseView {
         
         this.ioHandler.writeLine(Message.Format.ERROR, "Your session has expired, please log in again");
     }
-
-    protected void displayViewableFragmentaryDocument(@NonNull ViewableFragmentaryDocument viewableFragmentaryDocument) {
-        this.ioHandler.writeLine("ISBN: %s", viewableFragmentaryDocument.getISBN());
-
-        this.ioHandler.writeLine("Title: %s", viewableFragmentaryDocument.getDocumentTitle());
-        this.ioHandler.writeLine("Description: %s", viewableFragmentaryDocument.getDocumentDescription());
-        this.ioHandler.writeLine("Authors: %s", String.join(", ", viewableFragmentaryDocument.getDocumentAuthors()));
-        this.ioHandler.writeLine("Genres: %s", String.join(", ", viewableFragmentaryDocument.getDocumentGenres()));
-
-        this.ioHandler.writeLine("Published year: %d", viewableFragmentaryDocument.getDocumentPublishedYear());
-        this.ioHandler.writeLine("Publisher: %s", viewableFragmentaryDocument.getDocumentPublisher());
-
-        this.ioHandler.writeLine("Rating: %f (%d rated, %d currently borrowing)", viewableFragmentaryDocument.getAverageRating(), viewableFragmentaryDocument.getNumberOfRatings(), viewableFragmentaryDocument.getNumberOfBorrowingPatrons());
-    }
 }

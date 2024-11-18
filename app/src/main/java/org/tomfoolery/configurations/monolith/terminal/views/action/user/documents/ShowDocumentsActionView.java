@@ -76,7 +76,12 @@ public final class ShowDocumentsActionView extends UserActionView {
         this.ioHandler.writeLine("Showing borrowed documents, page %d of %d", pageIndex, maxPageIndex);
 
         viewModel.getPaginatedFragmentaryDocuments()
-            .forEach(this::displayViewableFragmentaryDocument);
+            .forEach(fragmentaryDocument -> {
+                val ISBN = fragmentaryDocument.getISBN();
+                val documentTitle = fragmentaryDocument.getDocumentTitle();
+
+                this.ioHandler.writeLine("- (%s) %s", ISBN, documentTitle);
+            });
     }
 
     private void onPageIndexInvalidException() {
