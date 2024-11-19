@@ -28,7 +28,7 @@ replay_pid*
 
 # Ignore Gradle build output directory
 build
-bin/
+bin
 
 # IDE-specific directories
 .vscode
