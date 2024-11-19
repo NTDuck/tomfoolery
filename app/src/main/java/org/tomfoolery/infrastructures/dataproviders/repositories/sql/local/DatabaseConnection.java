@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.dataproviders.repositories.localsql;
+package org.tomfoolery.infrastructures.dataproviders.repositories.sql.local;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

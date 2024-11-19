@@ -69,15 +69,7 @@ dependencies {
 group = "org.tomfoolery"
 version = 1.0
 
-application {
-    // Terminal version as default
-    mainClass = "${project.group}.configurations.monolith.terminal.Application"
-
-    // Prevents non-blocking `java.util.Scanner`
-    tasks.getByName("run", JavaExec::class) {
-        standardInput = System.`in`
-    }
-}
+application {}
 
 java {
     toolchain {
@@ -165,14 +157,16 @@ tasks {
     }
 }
 
+tasks.named("run") {
+    dependsOn("runTerminal")
+}
+
 tasks.register<JavaExec>("runTerminal") {
     mainClass = "${project.group}.configurations.monolith.terminal.Application"
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents non-blocking `java.util.Scanner`
-    tasks.getByName(this.name, JavaExec::class) {
-        standardInput = System.`in`
-    }
+    standardInput = System.`in`
 }
 
 tasks.register<JavaExec>("runJavaFX") {
