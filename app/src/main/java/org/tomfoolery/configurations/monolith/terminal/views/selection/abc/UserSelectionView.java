@@ -7,7 +7,6 @@ import org.tomfoolery.configurations.monolith.terminal.views.action.user.auth.Lo
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.GetDocumentByIdActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.ShowDocumentsActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.recommendation.GetDocumentRecommendationActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.references.GetDocumentQrCodeActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.search.SearchDocumentsActionView;
 
 import java.util.List;
@@ -19,7 +18,6 @@ public abstract class UserSelectionView extends BaseSelectionView {
         SelectionItem.of("Exit", null),
         SelectionItem.of("Log out", LogUserOutActionView.class),
         SelectionItem.of("Get Document info", GetDocumentByIdActionView.class),
-        SelectionItem.of("Show a Document's QRCode", GetDocumentQrCodeActionView.class),
         SelectionItem.of("Get Document recommendation", GetDocumentRecommendationActionView.class),
         SelectionItem.of("Search Documents", SearchDocumentsActionView.class),
         SelectionItem.of("Show all Documents", ShowDocumentsActionView.class)

@@ -65,7 +65,7 @@ public final class ShowDocumentsActionView extends UserActionView {
     }
 
     private void onSuccess(ShowDocumentsController.@NonNull ViewModel viewModel) {
-        this.nextViewClass = PatronSelectionView.class;
+        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
         this.displayViewModel(viewModel);
     }
 
@@ -73,7 +73,7 @@ public final class ShowDocumentsActionView extends UserActionView {
         val pageIndex = viewModel.getPageIndex();
         val maxPageIndex = viewModel.getMaxPageIndex();
 
-        this.ioHandler.writeLine("Showing borrowed documents, page %d of %d", pageIndex, maxPageIndex);
+        this.ioHandler.writeLine("Showing documents, page %d of %d", pageIndex, maxPageIndex);
 
         viewModel.getPaginatedFragmentaryDocuments()
             .forEach(fragmentaryDocument -> {
