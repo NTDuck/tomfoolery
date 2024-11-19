@@ -8,7 +8,6 @@ import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 
-import java.util.InputMismatchException;
 import java.util.List;
 
 public abstract class BaseSelectionView extends BaseView {
@@ -30,11 +29,11 @@ public abstract class BaseSelectionView extends BaseView {
         try {
             val requestObject = this.collectRequestObject();
             val responseModel = this.controller.apply(requestObject);
-
             this.onSuccess(responseModel);
 
-        } catch (InputMismatchException exception) {
-            this.onInputMismatchException();
+        } catch (SelectionItemIndexInvalidException exception) {
+            this.onSelectionItemIndexInvalidException();
+
         } catch (SelectionController.SelectionItemNotFoundException exception) {
             this.onSelectionItemNotFoundException();
         }
@@ -58,10 +57,10 @@ public abstract class BaseSelectionView extends BaseView {
         val index = viewableSelectionItem.getIndex();
         val label = viewableSelectionItem.getLabel();
 
-        this.ioHandler.writeLine("[%2d] %s", index, label);
+        this.ioHandler.writeLine("[%d] %s", index, label);
     }
 
-    private SelectionController.@NonNull RequestObject collectRequestObject() throws InputMismatchException {
+    private SelectionController.@NonNull RequestObject collectRequestObject() throws SelectionItemIndexInvalidException {
         val rawSelectionItemIndex = this.ioHandler.readLine();
         val selectionItemIndex = Integer.parseInt(rawSelectionItemIndex);
 
@@ -75,7 +74,7 @@ public abstract class BaseSelectionView extends BaseView {
         this.ioHandler.writeLine(message);
     }
 
-    private void onInputMismatchException() {
+    private void onSelectionItemIndexInvalidException() {
         this.nextViewClass = this.getClass();
 
         val message = getMessageOnInputMismatchException();
@@ -104,4 +103,6 @@ public abstract class BaseSelectionView extends BaseView {
     protected @NonNull String getMessageOnItemNotFoundException() {
         return String.format(Message.Format.ERROR, "Selection not found");
     }
+
+    private static class SelectionItemIndexInvalidException extends Exception {}
 }

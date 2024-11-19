@@ -131,14 +131,6 @@ public class Application implements Runnable, AutoCloseable {
 
     @Override
     public void run() {
-        // Decoy
-        this.patronRepository.save(Patron.of(
-            BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
-            Patron.Audit.of(false, ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
-            Patron.Metadata.of("", "", "")
-        ));
-
         Class<? extends BaseView> viewClass = GuestSelectionView.class;
         BaseView view;
 
@@ -163,8 +155,23 @@ public class Application implements Runnable, AutoCloseable {
         }
     }
 
+    private void populate() {
+        this.populateUserRepositories();
+    }
+
+    private void populateUserRepositories() {
+        this.patronRepository.save(Patron.of(
+            BaseUser.Id.of(UUID.randomUUID()),
+            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+            Patron.Audit.of(false, ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
+            Patron.Metadata.of("", "", "")
+        ));
+    }
+
     public static void main(String[] args) {
         val application = Application.of();
+
+        application.populate();
 
         application.run();
         application.close();
