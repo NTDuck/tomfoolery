@@ -98,11 +98,11 @@ public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<Enti
         return iterator.hasNext() ? iterator.next() : null;
     }
 
-    private static boolean isEntryTimestampValid(TimestampedCircularBuffer<?>.@NonNull Entry entry, @NonNull Instant fromTimestamp) {
+    private static boolean isEntryTimestampValid(TimestampedCircularBuffer.@NonNull Entry<?> entry, @NonNull Instant fromTimestamp) {
         return entry.getTimestamp().isAfter(fromTimestamp);
     }
 
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> void processEntry(TimestampedCircularBuffer<Entity>.@NonNull Entry entry, @NonNull Map<EntityId, Entity> targetEntities, @NonNull Map<EntityId, Entity> referenceEntities) {
+    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> void processEntry(TimestampedCircularBuffer.@NonNull Entry<Entity> entry, @NonNull Map<EntityId, Entity> targetEntities, @NonNull Map<EntityId, Entity> referenceEntities) {
         val targetEntity = entry.getEntity();
         val targetEntityId = targetEntity.getId();
 
@@ -113,8 +113,8 @@ public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<Enti
     }
 
     @NoArgsConstructor(staticName = "of")
-    private static class TimestampedCircularBuffer<Entity> implements Iterable<TimestampedCircularBuffer<Entity>.Entry> {
-        protected final @NonNull Deque<Entry> entries = new ArrayDeque<>();
+    private static class TimestampedCircularBuffer<Entity> implements Iterable<TimestampedCircularBuffer.Entry<Entity>> {
+        protected final @NonNull Deque<Entry<Entity>> entries = new ArrayDeque<>();
 
         void add(@NonNull Entity entity) {
             val entry = Entry.of(entity, Instant.now());
@@ -126,16 +126,16 @@ public class BaseInMemorySynchronizableRepository<Entity extends ddd.Entity<Enti
         }
 
         @Override
-        public @NonNull Iterator<Entry> iterator() {
+        public @NonNull Iterator<Entry<Entity>> iterator() {
             return this.entries.iterator();
         }
 
-        public @NonNull Iterator<Entry> descendingIterator() {
+        public @NonNull Iterator<Entry<Entity>> descendingIterator() {
             return this.entries.descendingIterator();
         }
 
         @Value(staticConstructor = "of")
-        public class Entry {
+        public static class Entry<Entity> {
             @NonNull Entity entity;
             @NonNull Instant timestamp;
         }

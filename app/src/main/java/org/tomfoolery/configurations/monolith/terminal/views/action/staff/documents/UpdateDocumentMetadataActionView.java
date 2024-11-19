@@ -19,6 +19,10 @@ import java.util.Arrays;
 public final class UpdateDocumentMetadataActionView extends UserActionView {
     private final @NonNull UpdateDocumentMetadataController controller;
 
+    public static @NonNull UpdateDocumentMetadataActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdateDocumentMetadataActionView(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    }
+
     private UpdateDocumentMetadataActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioHandler);
 

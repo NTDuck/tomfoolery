@@ -4,11 +4,12 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.Test;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 import static org.testng.Assert.*;
 
 public abstract class AuthenticationTokenRepositoryTest {
-    protected static final @NonNull String PSEUDO_SERIALIZED_PAYLOAD = "eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.";
+    protected static final @NonNull SecureString PSEUDO_SERIALIZED_PAYLOAD = SecureString.of("eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.");
 
     protected abstract @NonNull AuthenticationTokenRepository getAuthenticationTokenAuthenticationTokenRepository();
 
