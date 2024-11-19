@@ -3,59 +3,50 @@ package org.tomfoolery.infrastructures.adapters.controllers.guest.auth;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.domain.Patron;
-import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
-import org.tomfoolery.infrastructures.utils.contracts.ThrowableConsumerController;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
-public class CreatePatronAccountController implements ThrowableConsumerController<CreatePatronAccountController.RequestObject, CreatePatronAccountUseCase.Request> {
-    private final @NonNull CreatePatronAccountUseCase useCase;
+public final class CreatePatronAccountController implements ThrowableConsumer<CreatePatronAccountController.RequestObject> {
+    private final @NonNull CreatePatronAccountUseCase createPatronAccountUseCase;
 
-    private CreatePatronAccountController(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        this.useCase = CreatePatronAccountUseCase.of(patronRepository, passwordService);
+    public static @NonNull CreatePatronAccountController of(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreatePatronAccountController(patronRepository, passwordEncoder);
     }
 
-    public static @NonNull CreatePatronAccountController of(@NonNull PatronRepository patronRepository, @NonNull PasswordService passwordService) {
-        return new CreatePatronAccountController(patronRepository, passwordService);
-    }
-
-    @Override
-    public CreatePatronAccountUseCase.@NonNull Request getRequestModelFromRequestObject(@NonNull RequestObject requestObject) {
-        val username = requestObject.getUsername();
-        val password = requestObject.getPassword();
-
-        val credentials = Patron.Credentials.of(username, password);
-
-        val firstName = requestObject.getFirstName();
-        val lastName = requestObject.getLastName();
-        val address = requestObject.getAddress();
-        val gmail = requestObject.getGmail();
-
-        val fullName = getFullName(firstName, lastName);
-        val metadata = Patron.Metadata.of(fullName, address, gmail);
-
-        return CreatePatronAccountUseCase.Request.of(credentials, metadata);
+    private CreatePatronAccountController(@NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {
+        this.createPatronAccountUseCase = CreatePatronAccountUseCase.of(patronRepository, passwordEncoder);
     }
 
     @Override
     public void accept(@NonNull RequestObject requestObject) throws CreatePatronAccountUseCase.PatronCredentialsInvalidException, CreatePatronAccountUseCase.PatronAlreadyExistsException {
-        val requestModel = getRequestModelFromRequestObject(requestObject);
-        this.useCase.accept(requestModel);
-    }
-
-    private static @NonNull String getFullName(@NonNull String firstName, @NonNull String lastName) {
-        return firstName + " " + lastName;
+        val requestModel = requestObject.toRequestModel();
+        this.createPatronAccountUseCase.accept(requestModel);
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        @NonNull String username;
-        @NonNull String password;
+        @NonNull String patronUsername;
+        char @NonNull [] patronPassword;
 
-        @NonNull String firstName;
-        @NonNull String lastName;
-        @NonNull String address;
-        @NonNull String gmail;
+        @NonNull String patronFirstName;
+        @NonNull String patronLastName;
+
+        @NonNull String patronAddress;
+        @NonNull String patronEmail;
+
+        private CreatePatronAccountUseCase.@NonNull Request toRequestModel() {
+            val patronPassword = SecureString.of(this.patronPassword);
+            val patronFullName = String.format("%s %s", patronFirstName, patronLastName);
+
+            val patronCredentials = Patron.Credentials.of(patronUsername, patronPassword);
+            val patronMetadata = Patron.Metadata.of(patronFullName, patronAddress, patronEmail);
+
+            return CreatePatronAccountUseCase.Request.of(patronCredentials, patronMetadata);
+        }
     }
 }
