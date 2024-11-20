@@ -42,19 +42,3 @@ Text: #24283b (Tokyo night background)
     -fx-padding: 10 0 10 0;
     -fx-background-radius: 15 0 0 15;
 }
-
-.scroll-pane {
-    -fx-fit-to-height: true;
-    -fx-fit-to-width: true;
-    -fx-background-color: transparent;
-    -fx-background-radius: 15 0 0 15;
-}
-
-.table {
-    -fx-background-color: white;
-    -fx-background-radius: 15;
-}
-
-.table-column {
-
-}

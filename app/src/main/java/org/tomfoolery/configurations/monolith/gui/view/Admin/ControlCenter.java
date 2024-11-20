@@ -8,10 +8,12 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 
 public class ControlCenter {
-    private DocumentsDisplayView documentsDisplayView;
-    private AccountsDisplayView accountsDisplayView;
+    private final DocumentsDisplayView documentsDisplayView;
+    private final AccountsDisplayView accountsDisplayView;
 
     public ControlCenter() {
+        documentsDisplayView = new DocumentsDisplayView();
+        accountsDisplayView = new AccountsDisplayView();
     }
 
     @FXML
@@ -34,8 +36,9 @@ public class ControlCenter {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/DocumentsDisplay.fxml"));
             loader.setController(documentsDisplayView);
-            tableDisplay.getChildren().clear();
             VBox v = loader.load();
+
+            tableDisplay.getChildren().clear();
             tableDisplay.getChildren().setAll(v);
         } catch (IOException e) {
             System.err.println("Error loading documents display view fxml");
@@ -46,8 +49,9 @@ public class ControlCenter {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/AccountsDisplay.fxml"));
             loader.setController(accountsDisplayView);
-            tableDisplay.getChildren().clear();
             VBox v = loader.load();
+
+            tableDisplay.getChildren().clear();
             tableDisplay.getChildren().setAll(v);
         } catch (IOException e) {
             System.err.println("Error loading documents display view fxml");

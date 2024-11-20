@@ -3,13 +3,11 @@ package org.tomfoolery.configurations.monolith.gui.view.Admin;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.layout.VBox;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.Dashboard;
 import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
-
 import java.io.IOException;
 
 public class AdminView extends BaseView {
@@ -60,7 +58,6 @@ public class AdminView extends BaseView {
                 loadControlCenter();
                 break;
         }
-
     }
 
     private void loadDashboard() throws IOException {

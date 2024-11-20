@@ -2,24 +2,52 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"
-      alignment="CENTER"
-      styleClass="tables-display" stylesheets="/css/Admin/ControlCenter.css"
-      xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml">
-    <ScrollPane styleClass="scroll-pane" VBox.vgrow="ALWAYS">
-        <TableView styleClass="table" fx:id="documentsTable">
-            <columns>
-                <TableColumn text="ID"/>
-                <TableColumn text="Name"/>
-                <TableColumn text="Author"/>
-                <TableColumn text="Description"/>
-                <TableColumn text="ISBN"/>
-            </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-            </columnResizePolicy>
-        </TableView>
-    </ScrollPane>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="content-container" stylesheets="/css/Admin/DocumentTable.css"
+      VBox.vgrow="ALWAYS"
+      HBox.hgrow="ALWAYS">
+
+    <TableView fx:id="accountsTable"
+               styleClass="accounts-table"
+               VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="Username" styleClass="table-column">
+                <cellValueFactory>
+                    <PropertyValueFactory property="username"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="First Name" styleClass="table-column">
+                <cellValueFactory>
+                    <PropertyValueFactory property="firstName"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Last Name" styleClass="table-column">
+                <cellValueFactory>
+                    <PropertyValueFactory property="lastName"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Email" styleClass="table-column">
+                <cellValueFactory>
+                    <PropertyValueFactory property="email"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Address" styleClass="table-column">
+                <cellValueFactory>
+                    <PropertyValueFactory property="address"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Password" styleClass="table-column">
+                <cellValueFactory>
+                    <PropertyValueFactory property="password"/>
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
 </VBox>

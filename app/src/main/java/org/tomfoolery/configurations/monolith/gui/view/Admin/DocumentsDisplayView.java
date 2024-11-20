@@ -2,14 +2,22 @@ package org.tomfoolery.configurations.monolith.gui.view.Admin;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
-
+import org.tomfoolery.core.domain.Document;
 
 public class DocumentsDisplayView {
     @FXML
-    private TableView documentsTable;
+    private TableView<Document> documentsTable;
 
     @FXML
     public void initialize() {
+        loadDocuments();
+    }
 
+    public void getDocuments() {
+
+    }
+
+    public void loadDocuments() {
+        documentsTable.getItems().addAll();
     }
 }
