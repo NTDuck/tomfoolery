@@ -8,31 +8,26 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import lombok.val;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.domain.Administrator;
-import org.tomfoolery.core.domain.Staff;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
-import org.tomfoolery.infrastructures.adapters.presenters.guest.auth.LogUserInPresenter;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 
 public class LoginView {
     private final @NonNull LogUserInController controller;
-    private final @NonNull LogUserInPresenter presenter;
 
     public LoginView(@NonNull UserRepositories userRepositories,
-                     @NonNull PasswordService passwordService,
-                     @NonNull AuthenticationTokenService authenticationTokenService,
-                     @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+                     @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
+                     @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+                     @NonNull PasswordEncoder passwordEncoder) {
         this.controller = LogUserInController.of(
                 userRepositories,
-                passwordService,
-                authenticationTokenService,
-                authenticationTokenRepository
+                authenticationTokenGenerator,
+                authenticationTokenRepository,
+                passwordEncoder
         );
-        this.presenter = LogUserInPresenter.of(authenticationTokenService);
     }
 
     @FXML
@@ -60,12 +55,12 @@ public class LoginView {
     private void login(ActionEvent event) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
+        char[] passwordCharArray = password.toCharArray();
 
-        val requestObject = LogUserInController.RequestObject.of(username, password);
+        val requestObject = LogUserInController.RequestObject.of(username, passwordCharArray);
 
         try {
-            val responseModel = this.controller.apply(requestObject);
-            val viewModel = this.presenter.apply(responseModel);
+            val viewModel = this.controller.apply(requestObject);
             onSuccess(viewModel);
         } catch (Exception exception) {
             errorMessage.setText("Invalid username or password");
@@ -73,30 +68,21 @@ public class LoginView {
         }
     }
 
-    @FXML
-    private void register(ActionEvent event) {
-        StageManager.getInstance().openSignupMenu();
-    }
+    private void onSuccess(LogUserInController.ViewModel viewModel) {
+        val userType = viewModel.getUserType();
 
-    private void onSuccess(LogUserInPresenter.ViewModel viewModel) {
-        val userClass = viewModel.getUserClass();
-
-        if (userClass.equals(Administrator.class)) {
+        if (userType.equals(LogUserInController.UserType.ADMINISTRATOR)) {
             StageManager.getInstance().loadAdminView("Dashboard");
         }
-        else if (userClass.equals(Staff.class)) {
+        else if (userType.equals(LogUserInController.UserType.STAFF)) {
             StageManager.getInstance().loadStaffView("Dashboard");
         }
         else StageManager.getInstance().loadAdminView("Dashboard");
     }
 
-    private @NonNull String getFXMLPathFromViewModel(LogUserInPresenter.@NonNull ViewModel viewModel) {
-        val userClass = viewModel.getUserClass();
-
-        if (userClass.equals(Administrator.class)) {
-            return "/fxml/Admin/Dashboard.fxml";
-        } else if (userClass.equals(Staff.class)) {
-            return "/fxml/Staff/Dashboard.fxml";
-        } else return "/fxml/Patron/Dashboard.fxml";
+    @FXML
+    private void register(ActionEvent event) {
+        StageManager.getInstance().openSignupMenu();
     }
 }
+

@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.gui.view.Admin;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
-import org.tomfoolery.core.domain.Document;
+import org.tomfoolery.core.domain.documents.Document;
 
 public class DocumentsDisplayView {
     @FXML

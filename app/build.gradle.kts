@@ -69,7 +69,9 @@ dependencies {
 group = "org.tomfoolery"
 version = 1.0
 
-application {}
+application {
+    mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
+}
 
 java {
     toolchain {
@@ -157,27 +159,12 @@ tasks {
     }
 }
 
-tasks.named("run") {
-    dependsOn("runTerminal")
-}
-
 tasks.register<JavaExec>("runTerminal") {
     mainClass = "${project.group}.configurations.monolith.terminal.Application"
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`
-}
-
-tasks.register<JavaExec>("runJavaFX") {
-    mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
-    classpath = sourceSets["main"].runtimeClasspath
-
-    // Prevents "Error: JavaFX runtime components are missing, and are required to run this application"
-    jvmArgs = listOf(
-        "--module-path", classpath.asPath,
-        "--add-modules", javafx.modules.joinToString(",")
-    )
 }
 
 tasks.named<Test>("test") {

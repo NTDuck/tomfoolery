@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui.view;
 
+import io.jsonwebtoken.security.Password;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,9 +12,9 @@ import javafx.util.Duration;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.usecases.external.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
 public class SignupView {
@@ -21,7 +22,7 @@ public class SignupView {
 
     public SignupView(
             @NonNull PatronRepository patronRepository,
-            @NonNull PasswordService passwordService
+            @NonNull PasswordEncoder passwordService
     ) {
         controller = CreatePatronAccountController.of(patronRepository, passwordService);
     }
@@ -75,12 +76,12 @@ public class SignupView {
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
             pause.setOnFinished(this::returnToLogin);
             pause.play();
+        } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException exception) {
+            this.onPatronCredentialsInvalidException();
+        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException exception) {
+            this.onPatronAlreadyExistsException();
         } catch (PasswordMismatchException exception) {
-            onPasswordMismatchException();
-        } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException e) {
-            onPatronCredentialsInvalidException();
-        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException e) {
-            onPatronAlreadyExistsException();
+            this.onPasswordMismatchException();
         }
     }
 
@@ -91,11 +92,12 @@ public class SignupView {
         String password = passwordTextField.getText();
         String retypePassword = retypePasswordTextField.getText();
         String address = addressTextField.getText();
+        char[] passwordCharArray = password.toCharArray();
 
         if (!password.equals(retypePassword))
             throw new PasswordMismatchException();
 
-        return CreatePatronAccountController.RequestObject.of(username, password, firstName, lastName, address, "");
+        return CreatePatronAccountController.RequestObject.of(username, passwordCharArray, firstName, lastName, address, "");
     }
 
     private void onPasswordMismatchException() {

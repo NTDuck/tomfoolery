@@ -11,17 +11,27 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
-import org.tomfoolery.core.dataproviders.AdministratorRepository;
-import org.tomfoolery.core.dataproviders.DocumentRepository;
-import org.tomfoolery.core.dataproviders.PatronRepository;
-import org.tomfoolery.core.dataproviders.StaffRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.ConsoleIOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
+import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
+import org.tomfoolery.core.dataproviders.repositories.auth.AdministratorRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.dataproviders.hash.base64.Base64AuthenticationTokenService;
-import org.tomfoolery.infrastructures.dataproviders.hash.base64.Base64PasswordService;
-import org.tomfoolery.infrastructures.dataproviders.inmemory.*;
+import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.security.JJWTAuthenticationTokenGenerator;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.KeyStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryAdministratorRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryPatronRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryStaffRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -49,25 +59,25 @@ public class StageManager {
     }
 
     // Initialize resources
-    private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
-
-    private final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
-
-    private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
-
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
 
-    private final @NonNull UserRepositories userRepositories = UserRepositories.of(
-            administratorRepository,
-            staffRepository,
-            patronRepository
-    );
+    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
+    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
 
-    private final @NonNull AuthenticationTokenService authenticationTokenService = Base64AuthenticationTokenService.of();
+    // private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = QrgenDocumentQrCodeGenerator.of();
+    // private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
 
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = InMemoryAuthenticationTokenRepository.of();
+    private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
+    private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
+    private final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
 
-    private final @NonNull PasswordService passwordService = Base64PasswordService.of();
+    private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
+
+    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
+    private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
+
+    private final @NonNull IOHandler ioHandler = ConsoleIOHandler.of();
 
     public void setAuthStageProperties() {
         primaryStage.setMinWidth(0);
@@ -108,9 +118,9 @@ public class StageManager {
         try {
             LoginView controller = new LoginView(
                     userRepositories,
-                    passwordService,
-                    authenticationTokenService,
-                    authenticationTokenRepository
+                    authenticationTokenGenerator,
+                    authenticationTokenRepository,
+                    passwordEncoder
             );
 
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/LoginMenu.fxml"));
@@ -132,7 +142,7 @@ public class StageManager {
 
     public void openSignupMenu() {
         try {
-            SignupView signUpController = new SignupView(patronRepository, passwordService);
+            SignupView signUpController = new SignupView(patronRepository, passwordEncoder);
 
             FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/SignupMenu.fxml"));
             loader.setController(signUpController);
