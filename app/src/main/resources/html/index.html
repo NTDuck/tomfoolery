@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+        }
+        .field {
+            margin-bottom: 15px;
+        }
+        .field label {
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+        .field p, .field ul {
+            margin: 5px 0 0 0;
+            color: #555;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Document Details</h1>
+
+    <div class="field">
+        <label>Title:</label>
+        <p id="title">N/A</p>
+    </div>
+
+    <div class="field">
+        <label>Description:</label>
+        <p id="description">N/A</p>
+    </div>
+
+    <div class="field">
+        <label>Authors:</label>
+        <ul id="authors">
+            <li>N/A</li>
+        </ul>
+    </div>
+
+    <div class="field">
+        <label>Genres:</label>
+        <ul id="genres">
+            <li>N/A</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    function getURLParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    function populateFields() {
+        const title = getURLParameter("title") || "No Title Provided";
+        const description = getURLParameter("description") || "No Description Provided";
+        const authors = getURLParameter("authors");
+        const genres = getURLParameter("genres");
+
+        document.getElementById("title").textContent = title;
+        document.getElementById("description").textContent = description;
+
+        const authorsList = document.getElementById("authors");
+        authorsList.innerHTML = ""; // Clear default N/A
+        if (authors) {
+            authors.split(",").forEach(author => {
+                const li = document.createElement("li");
+                li.textContent = author.trim();
+                authorsList.appendChild(li);
+            });
+        } else {
+            authorsList.innerHTML = "<li>N/A</li>";
+        }
+
+        const genresList = document.getElementById("genres");
+        genresList.innerHTML = ""; // Clear default N/A
+        if (genres) {
+            genres.split(",").forEach(genre => {
+                const li = document.createElement("li");
+                li.textContent = genre.trim();
+                genresList.appendChild(li);
+            });
+        } else {
+            genresList.innerHTML = "<li>N/A</li>";
+        }
+    }
+
+    window.onload = populateFields;
+</script>
+</body>
+</html>

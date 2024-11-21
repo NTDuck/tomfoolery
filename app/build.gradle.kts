@@ -13,9 +13,10 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
-javafx {
-    version = "21"
-    modules("javafx.controls", "javafx.fxml")
+repositories {
+    mavenCentral()
+
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -35,25 +36,40 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     // runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.6")
 
+    // Os-specific secure storage for persistence of authentication tokens
+    implementation("com.microsoft:credential-secure-storage:1.0.0")
+
+    // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
+    testImplementation("org.slf4j:slf4j-simple:1.7.36")
+    // testImplementation("ch.qos.logback:logback-classic:1.2.11")
+
+    // Uses `QRGen` for simplified QR Code generation
+    implementation("com.github.kenglxn.QRGen:javase:3.0.1")
+
+    // Uses Apache's `URIBuilder` for clean and lightweight URI construction
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
+
+    // Contains necessary implementation of Directed Acyclic Subsequence Graph
+    // required for efficient in-memory indexing of documents
+    implementation("com.github.Qualtagh:DAWG:e98133f757")
+
+    // Contains necessary implementation for Trie HashMap
+    // required for efficient in-memory autocompletion
+    // implementation("com.github.doried-a-a:java-trie")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
     // Used by `application`
     implementation(libs.guava)
+
+    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
 }
 
 group = "org.tomfoolery"
 version = 1.0
 
-application {
-    // Terminal version as default
-    mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
-
-    // Prevents non-blocking `java.util.Scanner`
-    tasks.getByName("run", JavaExec::class) {
-        standardInput = System.`in`
-    }
-}
+application {}
 
 java {
     toolchain {
@@ -65,8 +81,9 @@ java {
     withSourcesJar()
 }
 
-repositories {
-    mavenCentral()
+javafx {
+    version = "21"
+    modules("javafx.controls", "javafx.fxml")
 }
 
 publishing {
@@ -140,19 +157,27 @@ tasks {
     }
 }
 
+tasks.named("run") {
+    dependsOn("runTerminal")
+}
+
 tasks.register<JavaExec>("runTerminal") {
     mainClass = "${project.group}.configurations.monolith.terminal.Application"
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents non-blocking `java.util.Scanner`
-    tasks.getByName("runTerminal", JavaExec::class) {
-        standardInput = System.`in`
-    }
+    standardInput = System.`in`
 }
 
 tasks.register<JavaExec>("runJavaFX") {
     mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
     classpath = sourceSets["main"].runtimeClasspath
+
+    // Prevents "Error: JavaFX runtime components are missing, and are required to run this application"
+    jvmArgs = listOf(
+        "--module-path", classpath.asPath,
+        "--add-modules", javafx.modules.joinToString(",")
+    )
 }
 
 tasks.named<Test>("test") {

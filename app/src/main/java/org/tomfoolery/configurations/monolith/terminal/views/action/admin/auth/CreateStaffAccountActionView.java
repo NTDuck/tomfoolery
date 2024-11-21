@@ -2,80 +2,73 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.ActionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.contract.SelectionView;
-import org.tomfoolery.configurations.monolith.terminal.utils.services.ScannerService;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
-import org.tomfoolery.core.dataproviders.StaffRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.usecases.external.admin.CreateStaffAccountUseCase;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.admin.auth.CreateStaffAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.CreateStaffAccountController;
 
-public class CreateStaffAccountActionView implements ActionView {
+public final class CreateStaffAccountActionView extends UserActionView {
     private final @NonNull CreateStaffAccountController controller;
 
-    private CreateStaffAccountActionView(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.controller = CreateStaffAccountController.of(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
+    public static @NonNull CreateStaffAccountActionView of(@NonNull IOHandler ioHandler, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreateStaffAccountActionView(ioHandler, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    public static @NonNull CreateStaffAccountActionView of(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new CreateStaffAccountActionView(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
+    private CreateStaffAccountActionView(@NonNull IOHandler ioHandler, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        super(ioHandler);
+
+        this.controller = CreateStaffAccountController.of(staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
     @Override
     public void run() {
-        val requestObject = getRequestObject();
+        val requestObject = collectRequestObject();
 
         try {
             this.controller.accept(requestObject);
-            onSuccess();
-        } catch (CreateStaffAccountUseCase.AdminAuthenticationTokenInvalidException exception) {
-            onAdminAuthenticationTokenNotFoundException();
-        } catch (CreateStaffAccountUseCase.AdminAuthenticationTokenNotFoundException exception) {
-            onAdminAuthenticationTokenInvalidException();
+            this.onSuccess();
+
+        } catch (CreateStaffAccountUseCase.AuthenticationTokenNotFoundException exception) {
+            this.onAuthenticationTokenNotFoundException();
+        } catch (CreateStaffAccountUseCase.AuthenticationTokenInvalidException exception) {
+            this.onAuthenticationTokenInvalidException();
         } catch (CreateStaffAccountUseCase.StaffCredentialsInvalidException exception) {
-            onStaffCredentialsInvalidException();
+            this.onStaffCredentialsInvalidException();
         } catch (CreateStaffAccountUseCase.StaffAlreadyExistsException exception) {
-            onStaffAlreadyExistsException();
+            this.onStaffAlreadyExistsException();
         }
     }
 
-    @Override
-    public @NonNull Class<? extends SelectionView> getNextViewClass() {
-        return AdministratorSelectionView.class;
-    }
-
-    private static CreateStaffAccountController.@NonNull RequestObject getRequestObject() {
-        val scanner = ScannerService.getScanner();
-
-        System.out.print("Enter username: ");
-        val username = scanner.nextLine();
-
-        System.out.print("Enter password: ");
-        val password = scanner.nextLine();
+    private CreateStaffAccountController.@NonNull RequestObject collectRequestObject() {
+        val username = this.ioHandler.readLine(Message.Format.PROMPT, "username");
+        val password = this.ioHandler.readPassword(Message.Format.PROMPT, "password");
 
         return CreateStaffAccountController.RequestObject.of(username, password);
     }
 
-    private static void onSuccess() {
-        System.out.println("Success: Patron account created.");
+    private void onSuccess() {
+        this.nextViewClass = AdministratorSelectionView.class;
+
+        this.ioHandler.writeLine(Message.Format.SUCCESS, "Staff account created");
     }
 
-    private static void onAdminAuthenticationTokenInvalidException() {
-        System.out.println("Error: Authentication token is invalid.");
+    private void onStaffCredentialsInvalidException() {
+        this.nextViewClass = AdministratorSelectionView.class;
+
+        this.ioHandler.writeLine(Message.Format.ERROR, "Invalid username or password");
+        this.ioHandler.writeLine("(%s)", Message.USERNAME_CONSTRAINT);
+        this.ioHandler.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
     }
 
-    private static void onAdminAuthenticationTokenNotFoundException() {
-        System.out.println("Error: Authentication token not found.");
-    }
+    private void onStaffAlreadyExistsException() {
+        this.nextViewClass = AdministratorSelectionView.class;
 
-    private static void onStaffCredentialsInvalidException() {
-        System.out.println("Error: Provided credentials are invalid.");
-    }
-
-    private static void onStaffAlreadyExistsException() {
-        System.out.println("Error: Staff already exists.");
+        this.ioHandler.writeLine(Message.Format.ERROR, "Staff already exists");
     }
 }

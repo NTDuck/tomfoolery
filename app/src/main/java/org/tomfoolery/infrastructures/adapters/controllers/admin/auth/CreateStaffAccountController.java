@@ -1,47 +1,44 @@
 package org.tomfoolery.infrastructures.adapters.controllers.admin.auth;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.StaffRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.auth.AuthenticationTokenService;
-import org.tomfoolery.core.dataproviders.auth.PasswordService;
-import org.tomfoolery.core.domain.Staff;
-import org.tomfoolery.core.usecases.external.admin.CreateStaffAccountUseCase;
-import org.tomfoolery.infrastructures.utils.contracts.ThrowableConsumerController;
+import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.usecases.admin.auth.CreateStaffAccountUseCase;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
-@RequiredArgsConstructor(staticName = "of")
-public class CreateStaffAccountController implements ThrowableConsumerController<CreateStaffAccountController.RequestObject, CreateStaffAccountUseCase.Request> {
-    private final @NonNull CreateStaffAccountUseCase useCase;
+public final class CreateStaffAccountController implements ThrowableConsumer<CreateStaffAccountController.RequestObject> {
+    private final @NonNull CreateStaffAccountUseCase createStaffAccountUseCase;
 
-    private CreateStaffAccountController(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.useCase = CreateStaffAccountUseCase.of(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
+    public static @NonNull CreateStaffAccountController of(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreateStaffAccountController(staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    public static @NonNull CreateStaffAccountController of(@NonNull StaffRepository staffRepository, @NonNull PasswordService passwordService, @NonNull AuthenticationTokenService authenticationTokenService, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new CreateStaffAccountController(staffRepository, passwordService, authenticationTokenService, authenticationTokenRepository);
-    }
-
-    @Override
-    public CreateStaffAccountUseCase.@NonNull Request getRequestModelFromRequestObject(@NonNull RequestObject requestObject) {
-        val staffUsername = requestObject.getUsername();
-        val staffPassword = requestObject.getPassword();
-        val staffCredentials = Staff.Credentials.of(staffUsername, staffPassword);
-
-        return CreateStaffAccountUseCase.Request.of(staffCredentials);
+    private CreateStaffAccountController(@NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        this.createStaffAccountUseCase = CreateStaffAccountUseCase.of(staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws CreateStaffAccountUseCase.AdminAuthenticationTokenNotFoundException, CreateStaffAccountUseCase.AdminAuthenticationTokenInvalidException, CreateStaffAccountUseCase.StaffCredentialsInvalidException, CreateStaffAccountUseCase.StaffAlreadyExistsException {
-        val requestModel = this.getRequestModelFromRequestObject(requestObject);
-        this.useCase.accept(requestModel);
+    public void accept(CreateStaffAccountController.@NonNull RequestObject requestObject) throws CreateStaffAccountUseCase.AuthenticationTokenNotFoundException, CreateStaffAccountUseCase.AuthenticationTokenInvalidException, CreateStaffAccountUseCase.StaffCredentialsInvalidException, CreateStaffAccountUseCase.StaffAlreadyExistsException {
+        val requestModel = requestObject.toRequestModel();
+        this.createStaffAccountUseCase.accept(requestModel);
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        @NonNull String username;
-        @NonNull String password;
+        @NonNull String staffUsername;
+        char @NonNull [] staffPassword;
+
+        private CreateStaffAccountUseCase.@NonNull Request toRequestModel() {
+            val staffPassword = SecureString.of(this.staffPassword);
+            val staffCredentials = Staff.Credentials.of(staffUsername, staffPassword);
+
+            return CreateStaffAccountUseCase.Request.of(staffCredentials);
+        }
     }
 }
