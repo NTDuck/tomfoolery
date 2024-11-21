@@ -56,6 +56,7 @@ import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.document
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.security.JJWTAuthenticationTokenGenerator;
 // import org.tomfoolery.infrastructures.dataproviders.generators.qrgen.documents.references.QrgenDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.KeyStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.hybrid.abc.BaseHybridRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryPatronRepository;
