@@ -71,7 +71,7 @@ group = "org.tomfoolery"
 version = 1.0
 
 application {
-    mainClass = "${project.group}.configurations.placeholder.Placeholder"
+    mainClass = ""
 }
 
 java {
