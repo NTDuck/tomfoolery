@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.patron.docu
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
@@ -11,21 +11,19 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.ReadBorrowedDocumentUseCase;
-import org.tomfoolery.core.utils.helpers.adapters.Codec;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReadBorrowedDocumentController;
-import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Codec;
 
 import java.util.Arrays;
 
 public final class ReadBorrowedDocumentActionView extends UserActionView {
     private final @NonNull ReadBorrowedDocumentController controller;
 
-    public static @NonNull ReadBorrowedDocumentActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ReadBorrowedDocumentActionView(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ReadBorrowedDocumentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ReadBorrowedDocumentActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ReadBorrowedDocumentActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private ReadBorrowedDocumentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = ReadBorrowedDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -52,7 +50,7 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
     }
 
     private ReadBorrowedDocumentController.@NonNull RequestObject collectRequestObject() {
-        val ISBN = this.ioHandler.readLine(Message.Format.PROMPT, "document ISBN");
+        val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         return ReadBorrowedDocumentController.RequestObject.of(ISBN);
     }
@@ -60,8 +58,8 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
     private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) {
         val documentContent = viewModel.getDocumentContent();
 
-        this.ioHandler.writeLine("The document is not viewable on terminal environments, however here's the first 44 bytes:");
-        this.ioHandler.writeLine("%s ...", Arrays.toString(documentContent).substring(0, 44));
+        this.ioProvider.writeLine("The document is not viewable on terminal environments, however here's the first 44 bytes:");
+        this.ioProvider.writeLine("%s ...", Arrays.toString(documentContent).substring(0, 44));
     }
 
     private void onSuccess(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) {
@@ -72,18 +70,18 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
     private void onPatronNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Patron not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
     }
 
     private void onDocumentNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Document not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
     }
 
     private void onDocumentNotBorrowedException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Document must be borrowed to be read");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Document must be borrowed to be read");
     }
 }

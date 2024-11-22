@@ -3,7 +3,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.EnumResolver;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
@@ -31,12 +31,12 @@ public final class SearchDocumentsActionView extends UserActionView {
     private final @NonNull SearchDocumentsController controller;
     private final @NonNull SelectionViewResolver selectionViewResolver;
 
-    public static @NonNull SearchDocumentsActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchDocumentsActionView(ioHandler, documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchDocumentsActionView(ioProvider, documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchDocumentsActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private SearchDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = SearchDocumentsController.of(documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
         this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
@@ -69,14 +69,14 @@ public final class SearchDocumentsActionView extends UserActionView {
         val searchCriterion = this.collectSearchCriterion();
         val searchPattern = this.collectSearchPattern();
 
-        val searchText = this.ioHandler.readLine(Message.Format.PROMPT, "search text");
+        val searchText = this.ioProvider.readLine(Message.Format.PROMPT, "search text");
         val pageIndex = this.collectPageIndex();
 
         return SearchDocumentsController.RequestObject.of(searchCriterion, searchPattern, searchText, pageIndex, MAX_PAGE_SIZE);
     }
 
     private SearchDocumentsController.@NonNull SearchCriterion collectSearchCriterion() throws SearchCriterionIndexInvalidException {
-        val rawSearchCriterionIndex = this.ioHandler.readLine(Message.Format.PROMPT, SEARCH_CRITERION_PROMPT);
+        val rawSearchCriterionIndex = this.ioProvider.readLine(Message.Format.PROMPT, SEARCH_CRITERION_PROMPT);
 
         try {
             val searchCriterionIndex = Integer.parseUnsignedInt(rawSearchCriterionIndex);
@@ -90,7 +90,7 @@ public final class SearchDocumentsActionView extends UserActionView {
     }
 
     private SearchDocumentsController.@NonNull SearchPattern collectSearchPattern() throws SearchPatternIndexInvalidException {
-        val rawSearchPatternIndex = this.ioHandler.readLine(Message.Format.PROMPT, SEARCH_PATTERN_PROMPT);
+        val rawSearchPatternIndex = this.ioProvider.readLine(Message.Format.PROMPT, SEARCH_PATTERN_PROMPT);
 
         try {
             val searchPatternIndex = Integer.parseUnsignedInt(rawSearchPatternIndex);
@@ -104,7 +104,7 @@ public final class SearchDocumentsActionView extends UserActionView {
     }
 
     private @Unsigned int collectPageIndex() throws PageIndexInvalidException {
-        val rawPageIndex = this.ioHandler.readLine(Message.Format.PROMPT, "page number");
+        val rawPageIndex = this.ioProvider.readLine(Message.Format.PROMPT, "page number");
 
         try {
             val pageIndex = Integer.parseUnsignedInt(rawPageIndex);
@@ -124,39 +124,39 @@ public final class SearchDocumentsActionView extends UserActionView {
         val pageIndex = viewModel.getPageIndex();
         val maxPageIndex = viewModel.getMaxPageIndex();
 
-        this.ioHandler.writeLine("Showing matching documents, page %d of %d", pageIndex, maxPageIndex);
+        this.ioProvider.writeLine("Showing matching documents, page %d of %d", pageIndex, maxPageIndex);
 
         viewModel.getPaginatedFragmentaryDocuments()
             .forEach(fragmentaryDocument -> {
                 val ISBN = fragmentaryDocument.getISBN();
                 val documentTitle = fragmentaryDocument.getDocumentTitle();
 
-                this.ioHandler.writeLine("- (%s) %s", ISBN, documentTitle);
+                this.ioProvider.writeLine("- (%s) %s", ISBN, documentTitle);
             });
     }
 
     private void onPageIndexInvalidException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
     }
 
     private void onSearchCriterionIndexInvalidException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Search criterion must be a valid number");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Search criterion must be a valid number");
     }
 
     private void onSearchPatternIndexInvalidException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Search pattern must be a valid number");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Search pattern must be a valid number");
     }
 
     private void onPaginationInvalidException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Found no documents with such page number");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Found no documents with such page number");
     }
 
     private static class SearchCriterionIndexInvalidException extends Exception {}

@@ -3,11 +3,10 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
-import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
@@ -21,12 +20,12 @@ public final class ShowDocumentsActionView extends UserActionView {
 
     private final @NonNull SelectionViewResolver selectionViewResolver;
 
-    public static @NonNull ShowDocumentsActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowDocumentsActionView(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowDocumentsActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowDocumentsActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private ShowDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = ShowDocumentsController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
@@ -53,7 +52,7 @@ public final class ShowDocumentsActionView extends UserActionView {
     }
 
     private ShowDocumentsController.@NonNull RequestObject collectRequestObject() throws PageIndexInvalidException {
-        val rawPageIndex = this.ioHandler.readLine(Message.Format.PROMPT, "page number");
+        val rawPageIndex = this.ioProvider.readLine(Message.Format.PROMPT, "page number");
 
         try {
             val pageIndex = Integer.parseUnsignedInt(rawPageIndex);
@@ -73,27 +72,27 @@ public final class ShowDocumentsActionView extends UserActionView {
         val pageIndex = viewModel.getPageIndex();
         val maxPageIndex = viewModel.getMaxPageIndex();
 
-        this.ioHandler.writeLine("Showing documents, page %d of %d", pageIndex, maxPageIndex);
+        this.ioProvider.writeLine("Showing documents, page %d of %d", pageIndex, maxPageIndex);
 
         viewModel.getPaginatedFragmentaryDocuments()
             .forEach(fragmentaryDocument -> {
                 val ISBN = fragmentaryDocument.getISBN();
                 val documentTitle = fragmentaryDocument.getDocumentTitle();
 
-                this.ioHandler.writeLine("- (%s) %s", ISBN, documentTitle);
+                this.ioProvider.writeLine("- (%s) %s", ISBN, documentTitle);
             });
     }
 
     private void onPageIndexInvalidException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
     }
 
     private void onPaginationInvalidException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Found no documents with such page number");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Found no documents with such page number");
     }
 
     private static class PageIndexInvalidException extends Exception {}

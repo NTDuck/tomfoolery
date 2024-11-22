@@ -1,8 +1,9 @@
-package org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc;
+package org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.infrastructures.dataproviders.providers.abc.BaseProvider;
 
-public interface IOHandler {
+public interface IOProvider extends BaseProvider {
     void write(@NonNull String format, Object... args);
     @NonNull String readLine();
 

@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
@@ -15,12 +15,12 @@ import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.DeleteStaf
 public final class DeleteStaffAccountActionView extends UserActionView {
     private final @NonNull DeleteStaffAccountController controller;
 
-    public static @NonNull DeleteStaffAccountActionView of(@NonNull IOHandler ioHandler, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new DeleteStaffAccountActionView(ioHandler, staffRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull DeleteStaffAccountActionView of(@NonNull IOProvider ioProvider, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new DeleteStaffAccountActionView(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private DeleteStaffAccountActionView(@NonNull IOHandler ioHandler, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private DeleteStaffAccountActionView(@NonNull IOProvider ioProvider, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = DeleteStaffAccountController.of(staffRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -43,7 +43,7 @@ public final class DeleteStaffAccountActionView extends UserActionView {
     }
 
     private DeleteStaffAccountController.@NonNull RequestObject collectRequestObject() {
-        val staffId = this.ioHandler.readLine(Message.Format.PROMPT, "staff ID");
+        val staffId = this.ioProvider.readLine(Message.Format.PROMPT, "staff ID");
 
         return DeleteStaffAccountController.RequestObject.of(staffId);
     }
@@ -51,12 +51,12 @@ public final class DeleteStaffAccountActionView extends UserActionView {
     private void onSuccess() {
         this.nextViewClass = AdministratorSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "Staff account deleted");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Staff account deleted");
     }
 
     private void onStaffNotFoundException() {
         this.nextViewClass = AdministratorSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Staff not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Staff not found");
     }
 }

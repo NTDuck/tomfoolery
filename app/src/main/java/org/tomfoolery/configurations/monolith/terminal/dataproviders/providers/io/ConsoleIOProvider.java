@@ -1,26 +1,26 @@
-package org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io;
+package org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 
 import java.io.Console;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConsoleIOHandler implements IOHandler {
+public class ConsoleIOProvider implements IOProvider {
     private final @NonNull Console console;
 
     @SneakyThrows
-    public static @NonNull ConsoleIOHandler of() {
+    public static @NonNull ConsoleIOProvider of() {
         val console = System.console();
 
         if (console == null)
             throw new InstantiationException();
 
-        return new ConsoleIOHandler(console);
+        return new ConsoleIOProvider(console);
     }
 
     @Override
@@ -47,4 +47,7 @@ public class ConsoleIOHandler implements IOHandler {
     public char @NonNull [] readPassword(@NonNull String format, Object... args) {
         return this.console.readPassword(format, args);
     }
+
+    @Override
+    public void close() {}
 }

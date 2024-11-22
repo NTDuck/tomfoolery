@@ -58,7 +58,15 @@ dependencies {
     // required for efficient in-memory autocompletion
     // implementation("com.github.doried-a-a:java-trie")
 
+    // Uses `SQLite JDBC driver` for non-centralized persistence
     implementation("org.xerial:sqlite-jdbc:3.44.1.0")
+
+    // Uses `OkHttp` as HTTP Client
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    // Uses `Jsoniter` for performant JSON parsing
+    implementation("com.jsoniter:jsoniter:0.9.23")
 
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
@@ -172,11 +180,6 @@ tasks.register<JavaExec>("runTerminal") {
 
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`
-
-    // Beautify console output
-    jvmArgs = listOf(
-        "--console=plain"
-    )
 }
 
 tasks.register<JavaExec>("runJavaFX") {

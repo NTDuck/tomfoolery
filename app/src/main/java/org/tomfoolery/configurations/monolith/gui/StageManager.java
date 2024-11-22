@@ -11,8 +11,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.ConsoleIOHandler;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.ConsoleIOProvider;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
@@ -77,7 +77,7 @@ public class StageManager {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
     private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
-    private final @NonNull IOHandler ioHandler = ConsoleIOHandler.of();
+    private final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
 
     public void setAuthStageProperties() {
         primaryStage.setMinWidth(0);

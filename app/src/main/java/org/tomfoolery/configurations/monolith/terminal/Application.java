@@ -4,8 +4,8 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.ConsoleIOHandler;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.ConsoleIOProvider;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.utils.containers.Views;
 import org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth.CreateStaffAccountActionView;
@@ -55,6 +55,9 @@ import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.document
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.security.JJWTAuthenticationTokenGenerator;
 // import org.tomfoolery.infrastructures.dataproviders.generators.qrgen.documents.references.QrgenDocumentQrCodeGenerator;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.builtin.BuiltinHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryAdministratorRepository;
@@ -68,9 +71,14 @@ import java.util.UUID;
 
 @NoArgsConstructor(staticName = "of")
 public class Application implements Runnable, AutoCloseable {
+    private final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
+
     private final @NonNull DocumentRepository documentRepository = HybridDocumentRepository.of(
         InMemoryDocumentRepository.of(),
-        List.of()
+        List.of(
+            GoogleApiDocumentRepository.of(OkHttpClientProvider.of()),
+            GoogleApiDocumentRepository.of(BuiltinHttpClientProvider.of())
+        )
     );
 
     private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
@@ -89,49 +97,47 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
     private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
-    private final @NonNull IOHandler ioHandler = ConsoleIOHandler.of();
-
     private final @NonNull Views views = Views.of(
-        GuestSelectionView.of(ioHandler),
+        GuestSelectionView.of(ioProvider),
 
-        AdministratorSelectionView.of(ioHandler),
-        PatronSelectionView.of(ioHandler),
-        StaffSelectionView.of(ioHandler),
+        AdministratorSelectionView.of(ioProvider),
+        PatronSelectionView.of(ioProvider),
+        StaffSelectionView.of(ioProvider),
 
         // Guest action views
-        CreatePatronAccountActionView.of(ioHandler, patronRepository, passwordEncoder),
-        LogUserInActionView.of(ioHandler, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+        CreatePatronAccountActionView.of(ioProvider, patronRepository, passwordEncoder),
+        LogUserInActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
 
         // Shared user action views
-        LogUserOutActionView.of(ioHandler, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
+        LogUserOutActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
 
-        GetDocumentByIdActionView.of(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        SearchDocumentsActionView.of(ioHandler, documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
-        ShowDocumentsActionView.of(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        GetDocumentRecommendationActionView.of(ioHandler, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+        GetDocumentByIdActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        SearchDocumentsActionView.of(ioProvider, documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+        ShowDocumentsActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        GetDocumentRecommendationActionView.of(ioProvider, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository),
 
         // Administrator action views
-        CreateStaffAccountActionView.of(ioHandler, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
-        DeleteStaffAccountActionView.of(ioHandler, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdateStaffCredentialsActionView.of(ioHandler, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+        CreateStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+        DeleteStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        UpdateStaffCredentialsActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
 
         // Patron action views
-        DeletePatronAccountActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
-        UpdatePatronMetadataActionView.of(ioHandler, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdatePatronPasswordActionView.of(ioHandler, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+        DeletePatronAccountActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+        UpdatePatronMetadataActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        UpdatePatronPasswordActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
 
-        BorrowDocumentActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ReadBorrowedDocumentActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ReturnDocumentActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ShowBorrowedDocumentsActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        BorrowDocumentActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        ReadBorrowedDocumentActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        ReturnDocumentActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        ShowBorrowedDocumentsActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
 
-        AddDocumentRatingActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        RemoveDocumentRatingActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        AddDocumentRatingActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        RemoveDocumentRatingActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
 
         // Staff action views
-        AddDocumentActionView.of(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        RemoveDocumentRatingActionView.of(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdateDocumentMetadataActionView.of(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository)
+        AddDocumentActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        RemoveDocumentRatingActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        UpdateDocumentMetadataActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository)
     );
 
     @Override

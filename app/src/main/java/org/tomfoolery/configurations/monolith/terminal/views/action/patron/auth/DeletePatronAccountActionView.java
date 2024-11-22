@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
@@ -18,12 +18,12 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.auth.DeletePat
 public final class DeletePatronAccountActionView extends UserActionView {
     private final @NonNull DeletePatronAccountController controller;
 
-    public static @NonNull DeletePatronAccountActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        return new DeletePatronAccountActionView(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
+    public static @NonNull DeletePatronAccountActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new DeletePatronAccountActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private DeletePatronAccountActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        super(ioHandler);
+    private DeletePatronAccountActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        super(ioProvider);
 
         this.controller = DeletePatronAccountController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
@@ -50,7 +50,7 @@ public final class DeletePatronAccountActionView extends UserActionView {
     }
 
     private DeletePatronAccountController.@NonNull RequestObject collectRequestObject() {
-        val patronPassword = this.ioHandler.readPassword(Message.Format.PROMPT, "password");
+        val patronPassword = this.ioProvider.readPassword(Message.Format.PROMPT, "password");
 
         return DeletePatronAccountController.RequestObject.of(patronPassword);
     }
@@ -58,25 +58,25 @@ public final class DeletePatronAccountActionView extends UserActionView {
     private void onSuccess() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "Patron account deleted, redirecting back to Guest view");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Patron account deleted, redirecting back to Guest view");
     }
 
     private void onPatronNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Patron not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
     }
 
     private void onPasswordInvalidException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Invalid password");
-        this.ioHandler.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
+        this.ioProvider.writeLine(Message.Format.ERROR, "Invalid password");
+        this.ioProvider.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
     }
 
     private void onPasswordMismatchException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Wrong password");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Wrong password");
     }
 }

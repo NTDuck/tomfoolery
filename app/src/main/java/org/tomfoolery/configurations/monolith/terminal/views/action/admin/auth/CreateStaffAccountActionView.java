@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.admin.auth;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.AdministratorSelectionView;
@@ -16,12 +16,12 @@ import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.CreateStaf
 public final class CreateStaffAccountActionView extends UserActionView {
     private final @NonNull CreateStaffAccountController controller;
 
-    public static @NonNull CreateStaffAccountActionView of(@NonNull IOHandler ioHandler, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        return new CreateStaffAccountActionView(ioHandler, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
+    public static @NonNull CreateStaffAccountActionView of(@NonNull IOProvider ioProvider, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new CreateStaffAccountActionView(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private CreateStaffAccountActionView(@NonNull IOHandler ioHandler, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        super(ioHandler);
+    private CreateStaffAccountActionView(@NonNull IOProvider ioProvider, @NonNull StaffRepository staffRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        super(ioProvider);
 
         this.controller = CreateStaffAccountController.of(staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
@@ -46,8 +46,8 @@ public final class CreateStaffAccountActionView extends UserActionView {
     }
 
     private CreateStaffAccountController.@NonNull RequestObject collectRequestObject() {
-        val username = this.ioHandler.readLine(Message.Format.PROMPT, "username");
-        val password = this.ioHandler.readPassword(Message.Format.PROMPT, "password");
+        val username = this.ioProvider.readLine(Message.Format.PROMPT, "username");
+        val password = this.ioProvider.readPassword(Message.Format.PROMPT, "password");
 
         return CreateStaffAccountController.RequestObject.of(username, password);
     }
@@ -55,20 +55,20 @@ public final class CreateStaffAccountActionView extends UserActionView {
     private void onSuccess() {
         this.nextViewClass = AdministratorSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "Staff account created");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Staff account created");
     }
 
     private void onStaffCredentialsInvalidException() {
         this.nextViewClass = AdministratorSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Invalid username or password");
-        this.ioHandler.writeLine("(%s)", Message.USERNAME_CONSTRAINT);
-        this.ioHandler.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
+        this.ioProvider.writeLine(Message.Format.ERROR, "Invalid username or password");
+        this.ioProvider.writeLine("(%s)", Message.USERNAME_CONSTRAINT);
+        this.ioProvider.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
     }
 
     private void onStaffAlreadyExistsException() {
         this.nextViewClass = AdministratorSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Staff already exists");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Staff already exists");
     }
 }
