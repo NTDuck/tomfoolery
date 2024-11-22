@@ -2,14 +2,14 @@ package org.tomfoolery.configurations.monolith.terminal.views.abc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 
 public abstract class BaseView implements Runnable {
-    protected final @NonNull IOHandler ioHandler;
+    protected final @NonNull IOProvider ioProvider;
     protected @Nullable Class<? extends BaseView> nextViewClass;
 
-    protected BaseView(@NonNull IOHandler ioHandler) {
-        this.ioHandler = ioHandler;
+    protected BaseView(@NonNull IOProvider ioProvider) {
+        this.ioProvider = ioProvider;
         this.nextViewClass = null;
     }
 

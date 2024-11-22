@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.patron.docu
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
@@ -16,12 +16,12 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rati
 public final class AddDocumentRatingActionView extends UserActionView {
     private final @NonNull AddDocumentRatingController controller;
 
-    public static @NonNull AddDocumentRatingActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentRatingActionView(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull AddDocumentRatingActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentRatingActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentRatingActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private AddDocumentRatingActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = AddDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -52,8 +52,8 @@ public final class AddDocumentRatingActionView extends UserActionView {
     }
 
     private AddDocumentRatingController.@NonNull RequestObject collectRequestObject() throws RatingInvalidException {
-        val ISBN = this.ioHandler.readLine(Message.Format.PROMPT, "document ISBN");
-        val rawRating = this.ioHandler.readLine(Message.Format.PROMPT, "document rating");
+        val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
+        val rawRating = this.ioProvider.readLine(Message.Format.PROMPT, "document rating");
 
         try {
             val rating = Double.parseDouble(rawRating);
@@ -67,37 +67,37 @@ public final class AddDocumentRatingActionView extends UserActionView {
     private void onSuccess() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "Added rating for document");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Added rating for document");
     }
 
     private void onRatingInvalidException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Rating must be a number");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Rating must be a number");
     }
 
     private void onPatronNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Patron not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
     }
 
     private void onDocumentNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Document not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
     }
 
     private void onRatingValueInvalidException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Rating must be a number between 0 and 5");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Rating must be a number between 0 and 5");
     }
 
     private void onPatronRatingAlreadyExistsException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Document already rated");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Document already rated");
     }
 
     private static class RatingInvalidException extends Exception {}

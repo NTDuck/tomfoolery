@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.patron.docu
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
@@ -16,12 +16,12 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rati
 public final class RemoveDocumentRatingActionView extends UserActionView {
     private final @NonNull RemoveDocumentRatingController controller;
 
-    public static @NonNull RemoveDocumentRatingActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new RemoveDocumentRatingActionView(ioHandler, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull RemoveDocumentRatingActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new RemoveDocumentRatingActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private RemoveDocumentRatingActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private RemoveDocumentRatingActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = RemoveDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -48,7 +48,7 @@ public final class RemoveDocumentRatingActionView extends UserActionView {
     }
 
     private RemoveDocumentRatingController.@NonNull RequestObject collectRequestObject() {
-        val ISBN = this.ioHandler.readLine(Message.Format.PROMPT, "document ISBN");
+        val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         return RemoveDocumentRatingController.RequestObject.of(ISBN);
     }
@@ -56,24 +56,24 @@ public final class RemoveDocumentRatingActionView extends UserActionView {
     private void onSuccess() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "Removed rating for document");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Removed rating for document");
     }
 
     private void onPatronNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Patron not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
     }
 
     private void onDocumentNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Document not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
     }
 
     private void onPatronRatingNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Document not rated");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Document not rated");
     }
 }

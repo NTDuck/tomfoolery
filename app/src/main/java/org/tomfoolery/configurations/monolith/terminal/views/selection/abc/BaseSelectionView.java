@@ -4,7 +4,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.terminal.adapters.controllers.selection.SelectionController;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 
@@ -13,8 +13,8 @@ import java.util.List;
 public abstract class BaseSelectionView extends BaseView {
     private final @NonNull SelectionController controller;
 
-    protected BaseSelectionView(@NonNull IOHandler ioHandler, @NonNull List<SelectionItem> selectionItems) {
-        super(ioHandler);
+    protected BaseSelectionView(@NonNull IOProvider ioProvider, @NonNull List<SelectionItem> selectionItems) {
+        super(ioProvider);
 
         this.controller = SelectionController.of(selectionItems);
     }
@@ -45,7 +45,7 @@ public abstract class BaseSelectionView extends BaseView {
         if (prompt.isBlank())
             return;
 
-        this.ioHandler.writeLine(prompt);
+        this.ioProvider.writeLine(prompt);
     }
 
     private void displayViewModel(SelectionController.@NonNull ViewModel viewModel) {
@@ -57,11 +57,11 @@ public abstract class BaseSelectionView extends BaseView {
         val index = viewableSelectionItem.getIndex();
         val label = viewableSelectionItem.getLabel();
 
-        this.ioHandler.writeLine("[%d] %s", index, label);
+        this.ioProvider.writeLine("[%d] %s", index, label);
     }
 
     private SelectionController.@NonNull RequestObject collectRequestObject() throws SelectionItemIndexInvalidException {
-        val rawSelectionItemIndex = this.ioHandler.readLine();
+        val rawSelectionItemIndex = this.ioProvider.readLine();
         val selectionItemIndex = Integer.parseInt(rawSelectionItemIndex);
 
         return SelectionController.RequestObject.of(selectionItemIndex);
@@ -71,21 +71,21 @@ public abstract class BaseSelectionView extends BaseView {
         this.nextViewClass = responseModel.getNextViewClass();
 
         val message = getMessageOnSuccess();
-        this.ioHandler.writeLine(message);
+        this.ioProvider.writeLine(message);
     }
 
     private void onSelectionItemIndexInvalidException() {
         this.nextViewClass = this.getClass();
 
         val message = getMessageOnInputMismatchException();
-        this.ioHandler.writeLine(message);
+        this.ioProvider.writeLine(message);
     }
 
     private void onSelectionItemNotFoundException() {
         this.nextViewClass = this.getClass();
 
         val message = getMessageOnItemNotFoundException();
-        this.ioHandler.writeLine(message);
+        this.ioProvider.writeLine(message);
     }
 
     protected @NonNull String getPrompt() {

@@ -1,22 +1,17 @@
-/* Sidebar styling */
 .sidebar {
-    -fx-padding: 20 0 20 20;
-    -fx-background-color: #434C5E4D;
-    -fx-border-width: 4 4 4 4;
-    -fx-border-radius: 15;
-    -fx-border-color: #434C5E;
-    -fx-background-radius: 15;
+    -fx-padding: 25 0 25 0;
+    -fx-spacing: 25;
+    -fx-background-color: #6096BA;
 }
 
-.sidebar-option {
-    -fx-background-radius: 15;
+.sidebar-button {
+    -fx-pref-width: 48;
+    -fx-pref-height: 48;
+    -fx-background-radius: 50;
     -fx-background-color: transparent;
-    -fx-text-fill: #D8DEE9;
-    -fx-font-size: 30;
-    -fx-font-family: 'Segoe UI Variable';
 }
 
-.sidebar-option:hover {
-    -fx-background-color: #545d77;
+.sidebar-button:hover {
+    -fx-background-color: #A3CEF1;
     -fx-cursor: hand;
 }

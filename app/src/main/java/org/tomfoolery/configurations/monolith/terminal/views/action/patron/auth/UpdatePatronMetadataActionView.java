@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
@@ -15,12 +15,12 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.auth.UpdatePat
 public final class UpdatePatronMetadataActionView extends UserActionView {
     private final @NonNull UpdatePatronMetadataController controller;
 
-    public static @NonNull UpdatePatronMetadataActionView of(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new UpdatePatronMetadataActionView(ioHandler, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull UpdatePatronMetadataActionView of(@NonNull IOProvider ioProvider, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new UpdatePatronMetadataActionView(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private UpdatePatronMetadataActionView(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private UpdatePatronMetadataActionView(@NonNull IOProvider ioProvider, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = UpdatePatronMetadataController.of(patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -43,11 +43,11 @@ public final class UpdatePatronMetadataActionView extends UserActionView {
     }
 
     private UpdatePatronMetadataController.@NonNull RequestObject collectRequestObject() {
-        val patronFirstName = this.ioHandler.readLine(Message.Format.PROMPT, "first name");
-        val patronLastName = this.ioHandler.readLine(Message.Format.PROMPT, "last name");
+        val patronFirstName = this.ioProvider.readLine(Message.Format.PROMPT, "first name");
+        val patronLastName = this.ioProvider.readLine(Message.Format.PROMPT, "last name");
 
-        val patronAddress = this.ioHandler.readLine(Message.Format.PROMPT, "address");
-        val patronEmail = this.ioHandler.readLine(Message.Format.PROMPT, "email");
+        val patronAddress = this.ioProvider.readLine(Message.Format.PROMPT, "address");
+        val patronEmail = this.ioProvider.readLine(Message.Format.PROMPT, "email");
 
         return UpdatePatronMetadataController.RequestObject.of(patronFirstName, patronLastName, patronAddress, patronEmail);
     }
@@ -55,12 +55,12 @@ public final class UpdatePatronMetadataActionView extends UserActionView {
     private void onSuccess() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "Patron metadata updated");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Patron metadata updated");
     }
 
     private void onPatronNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Patron not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
     }
 }

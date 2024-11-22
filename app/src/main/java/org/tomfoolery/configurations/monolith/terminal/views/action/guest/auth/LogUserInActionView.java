@@ -3,7 +3,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.guest.auth;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.adapters.presenters.guest.auth.LogUserInPresenter;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
@@ -18,12 +18,12 @@ public final class LogUserInActionView extends BaseView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
 
-    public static @NonNull LogUserInActionView of(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        return new LogUserInActionView(ioHandler, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
+    public static @NonNull LogUserInActionView of(@NonNull IOProvider ioProvider, @NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new LogUserInActionView(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private LogUserInActionView(@NonNull IOHandler ioHandler, @NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        super(ioHandler);
+    private LogUserInActionView(@NonNull IOProvider ioProvider, @NonNull UserRepositories userRepositories, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        super(ioProvider);
 
         this.controller = LogUserInController.of(userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
         this.presenter = LogUserInPresenter.of();
@@ -50,8 +50,8 @@ public final class LogUserInActionView extends BaseView {
     }
 
     private LogUserInController.@NonNull RequestObject collectRequestObject() {
-        val username = this.ioHandler.readLine(Message.Format.PROMPT, "username");
-        val password = this.ioHandler.readPassword(Message.Format.PROMPT, "password");
+        val username = this.ioProvider.readLine(Message.Format.PROMPT, "username");
+        val password = this.ioProvider.readPassword(Message.Format.PROMPT, "password");
 
         return LogUserInController.RequestObject.of(username, password);
     }
@@ -59,32 +59,32 @@ public final class LogUserInActionView extends BaseView {
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
         this.nextViewClass = viewModel.getNextViewClass();
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "User logged in");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "User logged in");
     }
 
     private void onCredentialsInvalidException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Invalid username or password");
-        this.ioHandler.writeLine("(%s)", Message.USERNAME_CONSTRAINT);
-        this.ioHandler.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
+        this.ioProvider.writeLine(Message.Format.ERROR, "Invalid username or password");
+        this.ioProvider.writeLine("(%s)", Message.USERNAME_CONSTRAINT);
+        this.ioProvider.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
     }
 
     private void onUserNotFoundException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "User not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "User not found");
     }
 
     private void onPasswordMismatchException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Wrong password");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Wrong password");
     }
 
     private void onUserAlreadyLoggedInException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "User already logged in on another device");
+        this.ioProvider.writeLine(Message.Format.ERROR, "User already logged in on another device");
     }
 }

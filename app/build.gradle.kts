@@ -9,15 +9,15 @@ plugins {
     // Supports signing built files and artifacts
     signing
 
-    // Primary GUI
+    // JavaFX plugins and extras
     id("org.openjfx.javafxplugin") version "0.1.0"
+    // id ("org.javamodularity.moduleplugin") version "1.8.12"
 }
 
 repositories {
     mavenCentral()
 
     maven("https://jitpack.io")
-
 }
 
 dependencies {
@@ -58,27 +58,29 @@ dependencies {
     // required for efficient in-memory autocompletion
     // implementation("com.github.doried-a-a:java-trie")
 
+    // Uses `SQLite JDBC driver` for non-centralized persistence
+    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
+
+    // Uses `OkHttp` as HTTP Client
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    // Uses `Jsoniter` for performant JSON parsing
+    implementation("com.jsoniter:jsoniter:0.9.23")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
     // Used by `application`
     implementation(libs.guava)
-
-    // Supabase Java client
-    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.github.jan-tennert.supabase:auth-kt")
-    implementation("io.github.jan-tennert.supabase:realtime-kt")
-
-    // Ktor engine to integrate supabase
-    implementation("io.ktor:ktor-client-java:3.0.1")
-
 }
 
 group = "org.tomfoolery"
 version = 1.0
 
-application {}
+application {
+    mainClass = "${project.group}.configurations.placeholder.Placeholder"
+}
 
 java {
     toolchain {
@@ -88,11 +90,13 @@ java {
     // Packaging
     withJavadocJar()
     withSourcesJar()
+
+    modularity.inferModulePath = true
 }
 
 javafx {
-    version = "21"
-    modules("javafx.controls", "javafx.fxml")
+    version = "22"
+    modules("javafx.base", "javafx.graphics", "javafx.controls", "javafx.fxml")
 }
 
 publishing {
@@ -167,7 +171,7 @@ tasks {
 }
 
 tasks.named("run") {
-    dependsOn("runTerminal")
+    dependsOn("runJavaFX")
 }
 
 tasks.register<JavaExec>("runTerminal") {
@@ -182,9 +186,11 @@ tasks.register<JavaExec>("runJavaFX") {
     mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
     classpath = sourceSets["main"].runtimeClasspath
 
-    // Prevents "Error: JavaFX runtime components are missing, and are required to run this application"
+    // Ensure JavaFX runtime components are registered
     jvmArgs = listOf(
-        "--module-path", classpath.asPath,
+        "--module-path", configurations.runtimeClasspath.get().files
+            .filter { it.name.contains("javafx") }
+            .joinToString(File.pathSeparator),
         "--add-modules", javafx.modules.joinToString(",")
     )
 }

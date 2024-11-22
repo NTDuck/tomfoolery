@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
@@ -17,12 +17,12 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.auth.UpdatePat
 public final class UpdatePatronPasswordActionView extends UserActionView {
     private final @NonNull UpdatePatronPasswordController controller;
 
-    public static @NonNull UpdatePatronPasswordActionView of(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        return new UpdatePatronPasswordActionView(ioHandler, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
+    public static @NonNull UpdatePatronPasswordActionView of(@NonNull IOProvider ioProvider, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        return new UpdatePatronPasswordActionView(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
 
-    private UpdatePatronPasswordActionView(@NonNull IOHandler ioHandler, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
-        super(ioHandler);
+    private UpdatePatronPasswordActionView(@NonNull IOProvider ioProvider, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull PasswordEncoder passwordEncoder) {
+        super(ioProvider);
 
         this.controller = UpdatePatronPasswordController.of(patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder);
     }
@@ -48,8 +48,8 @@ public final class UpdatePatronPasswordActionView extends UserActionView {
     }
 
     private UpdatePatronPasswordController.@NonNull RequestObject collectRequestObject() {
-        val oldPatronPassword = this.ioHandler.readPassword(Message.Format.PROMPT, "current password");
-        val newPatronPassword = this.ioHandler.readPassword(Message.Format.PROMPT, "new password");
+        val oldPatronPassword = this.ioProvider.readPassword(Message.Format.PROMPT, "current password");
+        val newPatronPassword = this.ioProvider.readPassword(Message.Format.PROMPT, "new password");
 
         return UpdatePatronPasswordController.RequestObject.of(oldPatronPassword, newPatronPassword);
     }
@@ -57,25 +57,25 @@ public final class UpdatePatronPasswordActionView extends UserActionView {
     private void onSuccess() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.SUCCESS, "Patron password updated");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Patron password updated");
     }
 
     private void onPatronNotFoundException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Patron not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
     }
 
     private void onPasswordInvalidException() {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Invalid password");
-        this.ioHandler.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
+        this.ioProvider.writeLine(Message.Format.ERROR, "Invalid password");
+        this.ioProvider.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
     }
 
     private void onPasswordMismatchException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Wrong password");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Wrong password");
     }
 }
