@@ -1,17 +1,15 @@
-package org.tomfoolery.configurations.monolith.gui.view.Admin;
+package org.tomfoolery.configurations.monolith.gui.view.patron;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.Dashboard;
 import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
+
 import java.io.IOException;
 
-public class AdminView extends BaseView {
-
+public class PatronView extends BaseView {
     public void loadView(String contentType) {
         try {
             loadSidebar();
@@ -30,20 +28,11 @@ public class AdminView extends BaseView {
     }
 
     private void loadSidebar() throws IOException {
-        AdminSidebar controller = new AdminSidebar();
+        PatronSidebar controller = new PatronSidebar();
 
         FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/BaseSidebar.fxml"));
         sidebarLoader.setController(controller);
         sidebar = sidebarLoader.load();
-
-        FXMLLoader controlCenterButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Admin/SidebarControlCenterButton.fxml"));
-        controlCenterButtonLoader.setController(controller);
-        Button controlCenterButton = controlCenterButtonLoader.load();
-
-        controlCenterButton.setOnAction(event -> controller.goToControlCenter());
-
-        VBox sidebarTopSection = (VBox) sidebar.getChildren().getFirst();
-        sidebarTopSection.getChildren().add(controlCenterButton);
     }
 
     private void loadContent(String contentType) throws IOException {
@@ -53,9 +42,6 @@ public class AdminView extends BaseView {
                 break;
             case "Discover":
                 loadDiscover();
-                break;
-            case "ControlCenter":
-                loadControlCenter();
                 break;
         }
     }
@@ -69,18 +55,15 @@ public class AdminView extends BaseView {
     }
 
     private void loadDiscover() throws IOException {
-        Discover controller = new Discover();
+        Discover controller = new Discover(
+                StageManager.getInstance().getDocumentRepository(),
+                StageManager.getInstance().getDocumentSearchGenerator(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository()
+        );
 
         FXMLLoader discoverLoader = new FXMLLoader(getClass().getResource("/fxml/Discover.fxml"));
         discoverLoader.setController(controller);
         content = discoverLoader.load();
-    }
-
-    private void loadControlCenter() throws IOException {
-        ControlCenter controller = new ControlCenter();
-
-        FXMLLoader controlCenterLoader = new FXMLLoader(getClass().getResource("/fxml/Admin/ControlCenter.fxml"));
-        controlCenterLoader.setController(controller);
-        content = controlCenterLoader.load();
     }
 }

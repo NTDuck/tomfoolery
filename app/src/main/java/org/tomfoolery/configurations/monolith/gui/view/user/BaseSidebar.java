@@ -21,7 +21,7 @@ public abstract class BaseSidebar {
         discoverButton.setOnAction(event -> goToDiscover());
     }
 
-    protected abstract void goToDiscover();
+    public abstract void goToDiscover();
 
-    protected abstract void goToDashboard();
+    public abstract void goToDashboard();
 }

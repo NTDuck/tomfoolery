@@ -3,10 +3,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
-
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.ComboBox?>
+<?import java.lang.String?>
 
 <!-- DISCOVER -->
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
@@ -20,9 +22,28 @@
     </VBox>
 
     <VBox spacing="20" HBox.hgrow="ALWAYS">
-        <HBox maxWidth="800" minHeight="80" styleClass="search-container">
+        <HBox maxWidth="800" minHeight="80" styleClass="search-container" spacing="10">
             <TextField HBox.hgrow="ALWAYS" prefHeight="60" promptText="Search for books..."
-                       styleClass="search-field"/>
+                       styleClass="search-field" fx:id="searchField"/>
+
+            <ComboBox prefWidth="150" fx:id="criteriaChooser">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Title"/>
+                        <String fx:value="Author"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+
+            <ComboBox prefWidth="150" fx:id="patternChooser">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Prefix"/>
+                        <String fx:value="Suffix"/>
+                        <String fx:value="Subsequence"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
         </HBox>
 
         <ScrollPane fx:id="scrollPane" styleClass="books-scroll-pane" VBox.vgrow="ALWAYS">

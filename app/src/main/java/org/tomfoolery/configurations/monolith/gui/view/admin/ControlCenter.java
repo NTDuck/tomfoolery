@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.gui.view.Admin;
+package org.tomfoolery.configurations.monolith.gui.view.admin;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

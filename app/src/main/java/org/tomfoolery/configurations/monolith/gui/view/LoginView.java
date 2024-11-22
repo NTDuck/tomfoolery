@@ -77,7 +77,7 @@ public class LoginView {
         else if (userType.equals(LogUserInController.UserType.STAFF)) {
             StageManager.getInstance().loadStaffView("Dashboard");
         }
-        else StageManager.getInstance().loadAdminView("Dashboard");
+        else StageManager.getInstance().loadPatronView("Dashboard");
     }
 
     @FXML

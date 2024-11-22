@@ -8,9 +8,10 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.gui.view.Admin.AdminView;
+import org.tomfoolery.configurations.monolith.gui.view.admin.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
+import org.tomfoolery.configurations.monolith.gui.view.patron.PatronView;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.ConsoleIOHandler;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -59,25 +60,23 @@ public class StageManager {
     }
 
     // Initialize resources
-    private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
+    private final @NonNull @Getter DocumentRepository documentRepository = InMemoryDocumentRepository.of();
 
-    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
-    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
+    private final @NonNull @Getter DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
+    private final @NonNull @Getter DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
 
     // private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = QrgenDocumentQrCodeGenerator.of();
     // private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
 
-    private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
-    private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
-    private final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
+    private final @NonNull @Getter AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
+    private final @NonNull @Getter PatronRepository patronRepository = InMemoryPatronRepository.of();
+    private final @NonNull @Getter StaffRepository staffRepository = InMemoryStaffRepository.of();
 
-    private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
+    private final @NonNull @Getter UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
 
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
-    private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
-
-    private final @NonNull IOHandler ioHandler = ConsoleIOHandler.of();
+    private final @NonNull @Getter AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
+    private final @NonNull @Getter AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
+    private final @NonNull @Getter PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
     public void setAuthStageProperties() {
         primaryStage.setMinWidth(0);
@@ -170,5 +169,7 @@ public class StageManager {
     }
 
     public void loadPatronView(String contentType) {
+        PatronView patronView = new PatronView();
+        patronView.loadView(contentType);
     }
 }

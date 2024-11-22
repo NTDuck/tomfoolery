@@ -13,5 +13,6 @@ public class MainApplication extends Application {
         StageManager.getInstance().setPrimaryStage(primaryStage);
         StageManager.getInstance().openLoginMenu();
 //        StageManager.getInstance().loadAdminView("ControlCenter");
+//        StageManager.getInstance().loadPatronView("Discover");
     }
 }

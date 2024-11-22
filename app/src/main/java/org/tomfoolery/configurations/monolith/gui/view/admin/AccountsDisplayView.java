@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.gui.view.Admin;
+package org.tomfoolery.configurations.monolith.gui.view.admin;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
