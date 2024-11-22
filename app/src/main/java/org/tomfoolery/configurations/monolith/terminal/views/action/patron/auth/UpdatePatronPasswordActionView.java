@@ -33,6 +33,7 @@ public final class UpdatePatronPasswordActionView extends UserActionView {
 
         try {
             this.controller.accept(requestObject);
+            this.onSuccess();
 
         } catch (UpdatePatronPasswordUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
