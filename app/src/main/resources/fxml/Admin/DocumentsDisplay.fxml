@@ -10,38 +10,43 @@
       VBox.vgrow="ALWAYS"
       HBox.hgrow="ALWAYS">
 
-    <TableView fx:id="accountsTable"
-               styleClass="accounts-table"
+    <TableView fx:id="documentsTable"
+               styleClass="documents-table"
                VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn text="Username" styleClass="table-column">
+            <TableColumn text="ISBN">
                 <cellValueFactory>
-                    <PropertyValueFactory property="username"/>
+                    <PropertyValueFactory property="ISBN"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="First Name" styleClass="table-column">
+            <TableColumn text="Title">
                 <cellValueFactory>
-                    <PropertyValueFactory property="firstName"/>
+                    <PropertyValueFactory property="title"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Last Name" styleClass="table-column">
+            <TableColumn text="Authors">
                 <cellValueFactory>
-                    <PropertyValueFactory property="lastName"/>
+                    <PropertyValueFactory property="authors"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Email" styleClass="table-column">
+            <TableColumn text="Genres">
                 <cellValueFactory>
-                    <PropertyValueFactory property="email"/>
+                    <PropertyValueFactory property="genres"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Address" styleClass="table-column">
+            <TableColumn text="Published Year">
                 <cellValueFactory>
-                    <PropertyValueFactory property="address"/>
+                    <PropertyValueFactory property="publishedYear"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Password" styleClass="table-column">
+            <TableColumn text="Created">
                 <cellValueFactory>
-                    <PropertyValueFactory property="password"/>
+                    <PropertyValueFactory property="created"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Last Modified">
+                <cellValueFactory>
+                    <PropertyValueFactory property="lastModified"/>
                 </cellValueFactory>
             </TableColumn>
         </columns>

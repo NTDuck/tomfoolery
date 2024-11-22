@@ -12,8 +12,6 @@ import org.tomfoolery.configurations.monolith.gui.view.admin.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
 import org.tomfoolery.configurations.monolith.gui.view.patron.PatronView;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.ConsoleIOHandler;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;

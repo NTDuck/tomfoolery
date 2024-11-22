@@ -1,6 +1,5 @@
 package org.tomfoolery.configurations.monolith.gui.view;
 
-import io.jsonwebtoken.security.Password;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
