@@ -17,6 +17,7 @@ repositories {
     mavenCentral()
 
     maven("https://jitpack.io")
+
 }
 
 dependencies {
@@ -63,7 +64,15 @@ dependencies {
     // Used by `application`
     implementation(libs.guava)
 
-    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
+    // Supabase Java client
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+    // Ktor engine to integrate supabase
+    implementation("io.ktor:ktor-client-java:3.0.1")
+
 }
 
 group = "org.tomfoolery"
