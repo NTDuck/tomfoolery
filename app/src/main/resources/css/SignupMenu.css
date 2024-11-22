@@ -1,37 +1,29 @@
 .signup-menu {
-    -fx-alignment: center;
     -fx-background-color: #2E3440;
-    -fx-pref-width: 600;
-    -fx-pref-height: 800;
-    -fx-padding: 20 60 10 60;
-}
-
-.short-textbox {
-    -fx-background-color: transparent;
-    -fx-pref-height: 70;
-    -fx-pref-width: 220;
-    -fx-spacing: 5;
-}
-
-.wide-textbox {
-    -fx-background-color: transparent;
-    -fx-pref-height: 70;
-    -fx-pref-width: 480;
-    -fx-spacing: 5;
-}
-
-.user-icon {
-    -fx-background-color: transparent;
-    -fx-pref-height: 90;
-    -fx-pref-width: 90;
+    -fx-padding: 10 40 20 40;
+    -fx-spacing: 10;
 }
 
 .name-box {
     -fx-background-color: transparent;
     -fx-alignment: top-center;
-    -fx-pref-height: 70;
+    -fx-pref-height: 60;
     -fx-pref-width: 480;
-    -fx-spacing: 40;
+    -fx-spacing: 20;
+}
+
+.short-textbox {
+    -fx-background-color: transparent;
+    -fx-pref-height: 60;
+    -fx-pref-width: 240;
+    -fx-spacing: 5;
+}
+
+.wide-textbox {
+    -fx-background-color: transparent;
+    -fx-pref-height: 60;
+    -fx-pref-width: 480;
+    -fx-spacing: 5;
 }
 
 .textbox-label {
@@ -44,7 +36,7 @@
 
 .input-field {
     -fx-pref-width: 480;
-    -fx-pref-height: 90;
+    -fx-pref-height: 60;
     -fx-background-radius: 12;
     -fx-background-color: #d8dee9;
     -fx-text-fill: black;
@@ -54,7 +46,7 @@
 
 .signup-button {
     -fx-pref-width: 180;
-    -fx-pref-height: 40;
+    -fx-pref-height: 30;
     -fx-background-color: #81a1c1;
     -fx-background-radius: 15;
     -fx-border-width: 2;
@@ -70,15 +62,21 @@
     -fx-cursor: hand;
 }
 
-.returntologin-button {
-    -fx-pref-height: 40;
+.return-button {
+    -fx-pref-height: 30;
     -fx-background-color: transparent;
     -fx-text-fill: #d8dee999;
     -fx-font-family: "Segoe UI Variable";
     -fx-font-size: 20;
 }
 
-.returntologin-button:hover {
+.return-button:hover {
     -fx-text-fill: #81a1c1;
     -fx-cursor: hand;
+}
+
+.message {
+    -fx-background-color: transparent;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
 }

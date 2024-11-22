@@ -1,0 +1,16 @@
+/* Sidebar styling */
+.main {
+    -fx-padding: 30 0 30 0;
+    -fx-spacing: 30;
+    -fx-background-color: #E7ECEF;
+}
+
+.button {
+    -fx-background-radius: 50;
+    -fx-background-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: #545d77;
+    -fx-cursor: hand;
+}
