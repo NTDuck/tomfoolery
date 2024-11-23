@@ -174,7 +174,7 @@ public class Application implements Runnable, AutoCloseable {
         this.patronRepository.save(Patron.of(
             BaseUser.Id.of(UUID.randomUUID()),
             BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
-            Patron.Audit.of(false, ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
+            Patron.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
             Patron.Metadata.of("", "", "")
         ));
     }

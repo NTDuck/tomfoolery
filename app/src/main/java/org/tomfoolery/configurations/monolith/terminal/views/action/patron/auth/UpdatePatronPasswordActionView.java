@@ -56,9 +56,9 @@ public final class UpdatePatronPasswordActionView extends UserActionView {
     }
 
     private void onSuccess() {
-        this.nextViewClass = PatronSelectionView.class;
+        this.nextViewClass = GuestSelectionView.class;
 
-        this.ioProvider.writeLine(Message.Format.SUCCESS, "Patron password updated");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Patron password updated, please log in again");
     }
 
     private void onPatronNotFoundException() {
@@ -77,6 +77,6 @@ public final class UpdatePatronPasswordActionView extends UserActionView {
     private void onPasswordMismatchException() {
         this.nextViewClass = GuestSelectionView.class;
 
-        this.ioProvider.writeLine(Message.Format.ERROR, "Wrong password");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Wrong password, so now you are a Guest");
     }
 }
