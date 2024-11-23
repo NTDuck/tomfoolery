@@ -55,10 +55,7 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
     }
 
     private <User extends BaseUser> void markUserAsLoggedOut(@NonNull User user) {
-        val userAudit = user.getAudit();
-        val userAuditTimestamps = userAudit.getTimestamps();
-
-        userAudit.setLoggedIn(false);
+        val userAuditTimestamps = user.getAudit().getTimestamps();
         userAuditTimestamps.setLastLogout(Instant.now());
     }
 

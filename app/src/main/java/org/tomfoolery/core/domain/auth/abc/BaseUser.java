@@ -29,16 +29,13 @@ public class BaseUser implements ddd.Entity<BaseUser.Id> {
 
     @Getter @Setter
     public static class Audit implements ddd.ValueObject {
-        private boolean isLoggedIn;
-
         private final @NonNull Timestamps timestamps;
 
-        public static @NonNull Audit of(boolean isLoggedIn, @NonNull Timestamps timestamps) {
-            return new Audit(isLoggedIn, timestamps);
+        public static @NonNull Audit of(@NonNull Timestamps timestamps) {
+            return new Audit(timestamps);
         }
 
-        protected Audit(boolean isLoggedIn, @NonNull Timestamps timestamps) {
-            this.isLoggedIn = isLoggedIn;
+        protected Audit(@NonNull Timestamps timestamps) {
             this.timestamps = timestamps;
         }
 

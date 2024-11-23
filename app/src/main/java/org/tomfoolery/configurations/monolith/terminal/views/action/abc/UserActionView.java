@@ -19,7 +19,7 @@ public abstract class UserActionView extends BaseView {
 
     protected void onAuthenticationTokenInvalidException() {
         this.nextViewClass = GuestSelectionView.class;
-        
+
         this.ioProvider.writeLine(Message.Format.ERROR, "Your session has expired, please log in again");
     }
 }

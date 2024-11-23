@@ -79,7 +79,7 @@ public final class CreateStaffAccountUseCase extends AuthenticatedUserUseCase im
     private @NonNull Staff createStaffAndMarkAsCreatedByAdministrator(Staff.@NonNull Credentials encodedStaffCredentials, Administrator.@NonNull Id administratorId) {
         val staffId = Staff.Id.of(UUID.randomUUID());
         val staffAuditTimestamps = Staff.Audit.Timestamps.of(Instant.now());
-        val staffAudit = Staff.Audit.of(false, staffAuditTimestamps, administratorId);
+        val staffAudit = Staff.Audit.of(staffAuditTimestamps, administratorId);
 
         return Staff.of(staffId, encodedStaffCredentials, staffAudit);
     }

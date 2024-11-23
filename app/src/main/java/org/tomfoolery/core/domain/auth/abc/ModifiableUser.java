@@ -19,12 +19,12 @@ public class ModifiableUser extends BaseUser {
 
     @Getter @Setter
     public static class Audit extends BaseUser.Audit {
-        public static @NonNull Audit of(boolean loggedIn, @NonNull Timestamps timestamps) {
-            return new Audit(loggedIn, timestamps);
+        public static @NonNull Audit of(@NonNull Timestamps timestamps) {
+            return new Audit(timestamps);
         }
 
-        protected Audit(boolean isLoggedIn, @NonNull Timestamps timestamps) {
-            super(isLoggedIn, timestamps);
+        protected Audit(@NonNull Timestamps timestamps) {
+            super(timestamps);
         }
 
         @Override
