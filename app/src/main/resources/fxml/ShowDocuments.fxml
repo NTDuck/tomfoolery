@@ -39,6 +39,11 @@
                     <PropertyValueFactory property="genres"/>
                 </cellValueFactory>
             </TableColumn>
+            <TableColumn text="Description">
+                <cellValueFactory>
+                    <PropertyValueFactory property="description"/>
+                </cellValueFactory>
+            </TableColumn>
             <TableColumn text="Published Year">
                 <cellValueFactory>
                     <PropertyValueFactory property="publishedYear"/>

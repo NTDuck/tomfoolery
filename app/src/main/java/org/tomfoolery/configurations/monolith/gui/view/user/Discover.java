@@ -20,7 +20,6 @@ import org.tomfoolery.core.usecases.user.documents.search.abc.SearchDocumentsUse
 import org.tomfoolery.infrastructures.adapters.controllers.user.documents.SearchDocumentsController;
 import java.util.Objects;
 
-
 public class Discover {
     private final @NonNull SearchDocumentsController controller;
 

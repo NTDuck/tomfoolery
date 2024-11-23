@@ -11,15 +11,15 @@ public class AdminSidebar extends BaseSidebar {
 
     @Override
     public void goToDashboard() {
-        StageManager.getInstance().loadAdminView("Dashboard");
+        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
     }
 
     @Override
     public void goToDiscover() {
-        StageManager.getInstance().loadAdminView("Discover");
+        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DISCOVER);
     }
 
     public void goToControlCenter() {
-        StageManager.getInstance().loadAdminView("ControlCenter");
+        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_CONTROL_CENTER);
     }
 }

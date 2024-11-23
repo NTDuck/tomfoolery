@@ -10,7 +10,7 @@ import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
 import java.io.IOException;
 
 public class PatronView extends BaseView {
-    public void loadView(String contentType) {
+    public void loadView(StageManager.ContentType contentType) {
         try {
             loadSidebar();
             loadContent(contentType);
@@ -35,12 +35,12 @@ public class PatronView extends BaseView {
         sidebar = sidebarLoader.load();
     }
 
-    private void loadContent(String contentType) throws IOException {
+    private void loadContent(StageManager.ContentType contentType) throws IOException {
         switch (contentType) {
-            case "Dashboard":
+            case PATRON_DASHBOARD:
                 loadDashboard();
                 break;
-            case "Discover":
+            case PATRON_DISCOVER:
                 loadDiscover();
                 break;
         }

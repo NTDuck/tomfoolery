@@ -72,12 +72,12 @@ public class LoginView {
         val userType = viewModel.getUserType();
 
         if (userType.equals(LogUserInController.UserType.ADMINISTRATOR)) {
-            StageManager.getInstance().loadAdminView("Dashboard");
+            StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
         }
         else if (userType.equals(LogUserInController.UserType.STAFF)) {
-            StageManager.getInstance().loadStaffView("Dashboard");
+            StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DASHBOARD);
         }
-        else StageManager.getInstance().loadPatronView("Dashboard");
+        else StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_DASHBOARD);
     }
 
     @FXML

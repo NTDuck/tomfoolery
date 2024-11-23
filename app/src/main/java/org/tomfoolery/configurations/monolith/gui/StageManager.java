@@ -12,6 +12,7 @@ import org.tomfoolery.configurations.monolith.gui.view.admin.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
 import org.tomfoolery.configurations.monolith.gui.view.patron.PatronView;
+import org.tomfoolery.configurations.monolith.gui.view.staff.StaffView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 // Using singleton for StageManager
+@Getter
 public class StageManager {
     private static final double LOGIN_MENU_WIDTH = 600;
     private static final double LOGIN_MENU_HEIGHT = 800;
@@ -44,7 +46,7 @@ public class StageManager {
 
     private static StageManager instance;
 
-    @Setter @Getter
+    @Setter
     private Stage primaryStage;
 
     private StageManager() {
@@ -58,23 +60,23 @@ public class StageManager {
     }
 
     // Initialize resources
-    private final @NonNull @Getter DocumentRepository documentRepository = InMemoryDocumentRepository.of();
+    private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
 
-    private final @NonNull @Getter DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
-    private final @NonNull @Getter DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
+    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
+    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
 
     // private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = QrgenDocumentQrCodeGenerator.of();
     // private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
 
-    private final @NonNull @Getter AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
-    private final @NonNull @Getter PatronRepository patronRepository = InMemoryPatronRepository.of();
-    private final @NonNull @Getter StaffRepository staffRepository = InMemoryStaffRepository.of();
+    private final @NonNull AdministratorRepository administratorRepository = InMemoryAdministratorRepository.of();
+    private final @NonNull PatronRepository patronRepository = InMemoryPatronRepository.of();
+    private final @NonNull StaffRepository staffRepository = InMemoryStaffRepository.of();
 
-    private final @NonNull @Getter UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
+    private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
 
-    private final @NonNull @Getter AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
-    private final @NonNull @Getter AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
-    private final @NonNull @Getter PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
+    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
+    private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
     public void setAuthStageProperties() {
         primaryStage.setMinWidth(0);
@@ -158,16 +160,29 @@ public class StageManager {
         }
     }
 
-    public void loadAdminView(String contentType) {
+    public void loadAdminView(StageManager.ContentType contentType) {
         AdminView adminView = new AdminView();
         adminView.loadView(contentType);
     }
 
-    public void loadStaffView(String contentType) {
+    public void loadStaffView(StageManager.ContentType contentType) {
+        StaffView staffView = new StaffView();
+        staffView.loadView(contentType);
     }
 
-    public void loadPatronView(String contentType) {
+    public void loadPatronView(StageManager.ContentType contentType) {
         PatronView patronView = new PatronView();
         patronView.loadView(contentType);
+    }
+
+    public enum ContentType{
+        ADMIN_DASHBOARD,
+        ADMIN_DISCOVER,
+        ADMIN_CONTROL_CENTER,
+        STAFF_DASHBOARD,
+        STAFF_DISCOVER,
+        STAFF_DOCUMENTS_MANAGEMENT,
+        PATRON_DASHBOARD,
+        PATRON_DISCOVER
     }
 }

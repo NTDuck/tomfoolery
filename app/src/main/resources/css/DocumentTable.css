@@ -14,7 +14,7 @@
 }
 
 .documents-table:focused {
-    -fx-background-color: transparent;
+    -fx-background-color: white;
 }
 
 /* Header styling */

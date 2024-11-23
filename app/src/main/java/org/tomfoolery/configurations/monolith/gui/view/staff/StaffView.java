@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.gui.view.admin;
+package org.tomfoolery.configurations.monolith.gui.view.staff;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,10 +8,9 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.Dashboard;
 import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
-
 import java.io.IOException;
 
-public class AdminView extends BaseView {
+public class StaffView extends BaseView {
     public void loadView(StageManager.ContentType contentType) {
         try {
             loadSidebar();
@@ -30,32 +29,32 @@ public class AdminView extends BaseView {
     }
 
     private void loadSidebar() throws IOException {
-        AdminSidebar controller = new AdminSidebar();
+        StaffSidebar controller = new StaffSidebar();
 
         FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/BaseSidebar.fxml"));
         sidebarLoader.setController(controller);
         sidebar = sidebarLoader.load();
 
-        FXMLLoader controlCenterButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Admin/SidebarControlCenterButton.fxml"));
-        controlCenterButtonLoader.setController(controller);
-        Button controlCenterButton = controlCenterButtonLoader.load();
+        FXMLLoader documentsManagementButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Staff/SidebarDocumentsManagementButton.fxml"));
+        documentsManagementButtonLoader.setController(controller);
+        Button documentsManagementButton = documentsManagementButtonLoader.load();
 
-        controlCenterButton.setOnAction(event -> controller.goToControlCenter());
+        documentsManagementButton.setOnAction(event -> controller.goToDocumentsManagement());
 
         VBox sidebarTopSection = (VBox) sidebar.getChildren().getFirst();
-        sidebarTopSection.getChildren().add(controlCenterButton);
+        sidebarTopSection.getChildren().add(documentsManagementButton);
     }
 
     private void loadContent(StageManager.ContentType contentType) throws IOException {
         switch (contentType) {
-            case ADMIN_DASHBOARD:
+            case STAFF_DASHBOARD:
                 loadDashboard();
                 break;
-            case ADMIN_DISCOVER:
+            case STAFF_DISCOVER:
                 loadDiscover();
                 break;
-            case ADMIN_CONTROL_CENTER:
-                loadControlCenter();
+            case STAFF_DOCUMENTS_MANAGEMENT:
+                loadDocumentsManagement();
                 break;
         }
     }
@@ -81,11 +80,15 @@ public class AdminView extends BaseView {
         content = discoverLoader.load();
     }
 
-    private void loadControlCenter() throws IOException {
-        ControlCenter controller = new ControlCenter();
+    private void loadDocumentsManagement() throws IOException {
+        DocumentsManagementView controller = new DocumentsManagementView(
+                StageManager.getInstance().getDocumentRepository(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository()
+        );
 
-        FXMLLoader controlCenterLoader = new FXMLLoader(getClass().getResource("/fxml/Admin/ControlCenter.fxml"));
-        controlCenterLoader.setController(controller);
-        content = controlCenterLoader.load();
+        FXMLLoader documentsManagementLoader = new FXMLLoader(getClass().getResource("/fxml/Staff/DocumentsManagement.fxml"));
+        documentsManagementLoader.setController(controller);
+        content = documentsManagementLoader.load();
     }
 }

@@ -4,15 +4,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import org.tomfoolery.configurations.monolith.gui.StageManager;
 
 import java.io.IOException;
 
 public class ControlCenter {
-    private final DocumentsDisplayView documentsDisplayView;
+    private final AdminShowDocumentsView showDocumentsView;
     private final AccountsDisplayView accountsDisplayView;
 
     public ControlCenter() {
-        documentsDisplayView = new DocumentsDisplayView();
+        showDocumentsView = new AdminShowDocumentsView(
+                StageManager.getInstance().getDocumentRepository(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository()
+        );
         accountsDisplayView = new AccountsDisplayView();
     }
 
@@ -34,8 +39,8 @@ public class ControlCenter {
 
     private void viewDocuments() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/DocumentsDisplay.fxml"));
-            loader.setController(documentsDisplayView);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ShowDocuments.fxml"));
+            loader.setController(showDocumentsView);
             VBox v = loader.load();
 
             tableDisplay.getChildren().clear();
