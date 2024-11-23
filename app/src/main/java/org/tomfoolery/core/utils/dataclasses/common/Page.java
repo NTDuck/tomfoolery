@@ -44,14 +44,14 @@ public class Page<T> implements Iterable<T> {
         return page;
     }
     
-    public static <T> @Nullable Page<T> fromUnpaginated(@NonNull List<T> unpaginatedItems, int pageIndex, int maxPageSize) {
+    public static <T> @Nullable Page<T> fromUnpaginated(@NonNull List<T> unpaginatedItems, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
         if (pageIndex < 0)
             return null;
 
         val pageOffset = (pageIndex - 1) * maxPageSize;
         val maxPageIndex = unpaginatedItems.size() / maxPageSize;
 
-        if (maxPageIndex < pageIndex)
+        if (pageOffset < 0 || maxPageIndex < pageIndex)
             return null;
 
         val paginatedItems = unpaginatedItems.parallelStream()

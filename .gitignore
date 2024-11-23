@@ -43,4 +43,4 @@ src/main/resources/credentials.json
 # KEYSTORE_NAME of KeyStoreAuthenticationTokenRepository
 .tomfoolery.p12
 
-.db
+*.db
