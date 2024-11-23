@@ -35,8 +35,7 @@ bin
 .idea
 
 # Credentials
-src/main/resources/credentials.json
-*.json
+src/main/resources/config.properties
 
 !gradle-wrapper.jar
 

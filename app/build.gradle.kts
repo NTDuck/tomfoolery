@@ -56,10 +56,7 @@ dependencies {
 
     // Contains necessary implementation for Trie HashMap
     // required for efficient in-memory autocompletion
-    // implementation("com.github.doried-a-a:java-trie")
-
-    // Uses `SQLite JDBC driver` for non-centralized persistence
-    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
+    // implementation("com.github.doried-a-a:java-trie"
 
     // Uses `OkHttp` as HTTP Client
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
@@ -73,6 +70,13 @@ dependencies {
 
     // Used by `application`
     implementation(libs.guava)
+
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+    implementation("io.ktor:ktor-client-apache5:3.0.1")
 }
 
 group = "org.tomfoolery"
