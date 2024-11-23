@@ -36,7 +36,7 @@ public final class LogUserInController implements ThrowableFunction<LogUserInCon
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException, LogUserInUseCase.UserAlreadyLoggedInException {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws LogUserInUseCase.CredentialsInvalidException, LogUserInUseCase.UserNotFoundException, LogUserInUseCase.PasswordMismatchException {
         val requestModel = requestObject.toRequestModel();
         val responseModel = this.logUserInUseCase.apply(requestModel);
         val viewModel = ViewModel.fromResponseModel(responseModel);

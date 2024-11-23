@@ -29,7 +29,7 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
     private final @NonNull PasswordEncoder passwordEncoder;
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws CredentialsInvalidException, UserNotFoundException, PasswordMismatchException, UserAlreadyLoggedInException {
+    public @NonNull Response apply(@NonNull Request request) throws CredentialsInvalidException, UserNotFoundException, PasswordMismatchException {
         val rawUserCredentials = request.getRawUserCredentials();
         val username = rawUserCredentials.getUsername();
         val rawPassword = rawUserCredentials.getPassword();
@@ -74,15 +74,8 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
             throw new PasswordMismatchException();
     }
 
-    private <User extends BaseUser> void markUserAsLoggedIn(@NonNull User user) throws UserAlreadyLoggedInException {
-        val userAudit = user.getAudit();
-
-        if (userAudit.isLoggedIn())
-            throw new UserAlreadyLoggedInException();
-
-        userAudit.setLoggedIn(true);
-
-        val userAuditTimestamps = userAudit.getTimestamps();
+    private <User extends BaseUser> void markUserAsLoggedIn(@NonNull User user) {
+        val userAuditTimestamps = user.getAudit().getTimestamps();
         userAuditTimestamps.setLastLogin(Instant.now());
     }
 
@@ -111,5 +104,4 @@ public final class LogUserInUseCase implements ThrowableFunction<LogUserInUseCas
     public static class CredentialsInvalidException extends Exception {}
     public static class UserNotFoundException extends Exception {}
     public static class PasswordMismatchException extends Exception {}
-    public static class UserAlreadyLoggedInException extends Exception {}
 }

@@ -44,8 +44,6 @@ public final class LogUserInActionView extends BaseView {
             onUserNotFoundException();
         } catch (LogUserInUseCase.PasswordMismatchException exception) {
             onPasswordMismatchException();
-        } catch (LogUserInUseCase.UserAlreadyLoggedInException exception) {
-            onUserAlreadyLoggedInException();
         }
     }
 
@@ -80,11 +78,5 @@ public final class LogUserInActionView extends BaseView {
         this.nextViewClass = GuestSelectionView.class;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Wrong password");
-    }
-
-    private void onUserAlreadyLoggedInException() {
-        this.nextViewClass = GuestSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "User already logged in on another device");
     }
 }

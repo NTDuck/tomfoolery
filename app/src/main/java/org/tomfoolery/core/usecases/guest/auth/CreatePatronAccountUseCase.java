@@ -47,7 +47,7 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
     private @NonNull Patron createPatron(Patron.@NonNull Credentials encodedPatronCredentials, Patron.@NonNull Metadata patronMetadata) {
         val patronId = Patron.Id.of(UUID.randomUUID());
         val patronAuditTimestamps = Patron.Audit.Timestamps.of(Instant.now());
-        val patronAudit = Patron.Audit.of(false, patronAuditTimestamps);
+        val patronAudit = Patron.Audit.of(patronAuditTimestamps);
 
         return Patron.of(patronId, encodedPatronCredentials, patronAudit, patronMetadata);
     }
