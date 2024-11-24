@@ -12,6 +12,8 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.user.documents.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
+import java.awt.image.BufferedImage;
+
 public final class GetDocumentQrCodeController implements ThrowableFunction<GetDocumentQrCodeController.RequestObject, GetDocumentQrCodeController.ViewModel> {
     private final @NonNull GetDocumentQrCodeUseCase getDocumentQrCodeUseCase;
 

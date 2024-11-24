@@ -16,7 +16,9 @@ import java.util.List;
 
 @NoArgsConstructor(staticName = "of")
 public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerator {
-    private static final @NonNull String URL_HOST = "";
+    private static final @NonNull String URL_SCHEME = "https";
+    private static final @NonNull String URL_HOST = "tomfoolery-landing-page.github.io";
+    private static final @NonNull String URL_PATH = "tomfoolery-landing-page/";
 
     private static final @NonNull String URL_PARAMETER_ISBN = "isbn";
 
@@ -40,8 +42,13 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
         val parameterPairs = generateParameterPairsFromFragmentaryDocument(fragmentaryDocument);
 
         URIBuilder uriBuilder = new URIBuilder()
+            .setScheme(URL_SCHEME)
             .setHost(URL_HOST)
+            .setPath(URL_PATH)
+
             .addParameters(parameterPairs);
+
+        System.out.println("URL is" + uriBuilder.build().toString());
 
         return uriBuilder.build().toString();
     }
@@ -53,7 +60,7 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
             ParameterPair.of(URL_PARAMETER_DESCRIPTION, fragmentaryDocument.getMetadata().getDescription()),
             ParameterPair.of(URL_PARAMETER_AUTHORS, String.join(DELIMITER, fragmentaryDocument.getMetadata().getAuthors())),
             ParameterPair.of(URL_PARAMETER_GENRES, String.join(DELIMITER, fragmentaryDocument.getMetadata().getGenres())),
-            ParameterPair.of(URL_PARAMETER_PUBLISHED_YEAR, fragmentaryDocument.getMetadata().getPublishedYear().format(DateTimeFormatter.ISO_ORDINAL_DATE)),
+            ParameterPair.of(URL_PARAMETER_PUBLISHED_YEAR, fragmentaryDocument.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
             ParameterPair.of(URL_PARAMETER_PUBLISHER, fragmentaryDocument.getMetadata().getPublisher()),
             ParameterPair.of(URL_PARAMETER_NUMBER_OF_BORROWING_PATRONS, String.valueOf(fragmentaryDocument.getAudit().getBorrowingPatronIds().size())),
             ParameterPair.of(URL_PARAMETER_RATING, String.valueOf(fragmentaryDocument.getAudit().getRating().getValue())),

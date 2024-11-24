@@ -6,5 +6,7 @@ import org.tomfoolery.core.domain.documents.Document;
 
 @FunctionalInterface
 public interface DocumentQrCodeGenerator extends BaseGenerator {
+    @NonNull String IMAGE_FORMAT = "png";
+
     Document.@NonNull QrCode generateQrCodeFromUrl(@NonNull String documentUrl);
 }

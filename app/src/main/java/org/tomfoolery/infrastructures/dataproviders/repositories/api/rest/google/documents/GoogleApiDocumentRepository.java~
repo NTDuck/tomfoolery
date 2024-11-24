@@ -101,7 +101,7 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
             Document.Content.of(new byte[0]),
             Document.Metadata.of(
                 title, description, authors, genres,
-                publishedYear, publisher, Document.Metadata.CoverImage.of(new byte[0])
+                publishedYear, publisher, Document.Metadata.CoverImage.of(new byte[0]))
             ),
             Document.Audit.of(
                 Staff.Id.of(UUID.fromString("00000000-0000-0000-0000-000000000000")),
