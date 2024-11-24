@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
       prefWidth="1280" prefHeight="720"
-      stylesheets="/css/Discover.css" styleClass="main">
+      stylesheets="/css/User/Discover.css" styleClass="main">
 
     <!-- SIDEBAR -->
     <VBox>

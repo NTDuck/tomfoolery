@@ -7,7 +7,7 @@
 <?import javafx.scene.control.Label?>
 
 <!-- DASHBOARD -->
-<VBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" stylesheets="/css/Dashboard.css"
+<VBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" stylesheets="/css/User/Dashboard.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml" styleClass="main">
     <Label text="Welcome to Tomfoolery, Duy" styleClass="welcome-text" VBox.vgrow="ALWAYS" prefWidth="Infinity"/>
     <HBox styleClass="content" prefWidth="Infinity" prefHeight="400">

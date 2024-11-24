@@ -13,6 +13,7 @@ import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
 import org.tomfoolery.configurations.monolith.gui.view.patron.PatronView;
 import org.tomfoolery.configurations.monolith.gui.view.staff.StaffView;
+import org.tomfoolery.configurations.monolith.gui.view.user.LogOutView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;

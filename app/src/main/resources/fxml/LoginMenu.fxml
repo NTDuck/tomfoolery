@@ -10,8 +10,8 @@
 
 <VBox xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
-    styleClass="login-menu" stylesheets="/css/LoginMenu.css" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-    <ImageView styleClass="user-icon">
+    styleClass="login-menu" stylesheets="/css/LoginMenu.css">
+    <ImageView styleClass="user-icon" fitWidth="90" fitHeight="90">
         <Image url="/images/user.png" />
     </ImageView>
 

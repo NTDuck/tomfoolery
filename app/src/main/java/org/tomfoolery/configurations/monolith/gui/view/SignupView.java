@@ -100,21 +100,18 @@ public class SignupView {
     }
 
     private void onPasswordMismatchException() {
-        System.out.println("Error: Password does not match.");
         message.setText("Password does not match.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);
     }
 
     private void onPatronCredentialsInvalidException() {
-        System.out.println("Error: Provided credentials are invalid.");
         message.setText("Provided credentials are invalid.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);
     }
 
     private void onPatronAlreadyExistsException() {
-        System.out.println("Error: Patron already exists.");
         message.setText("Patron already exists.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);

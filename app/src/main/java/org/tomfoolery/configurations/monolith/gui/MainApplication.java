@@ -14,7 +14,7 @@ public class MainApplication extends Application {
 
 //        StageManager.getInstance().openLoginMenu();
 
-//        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
+        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
 //        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DISCOVER);
 //        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_CONTROL_CENTER);
 //
@@ -23,6 +23,6 @@ public class MainApplication extends Application {
 
 //        StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DASHBOARD);
 //        StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DISCOVER);
-        StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DOCUMENTS_MANAGEMENT);
+//        StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DOCUMENTS_MANAGEMENT);
     }
 }
