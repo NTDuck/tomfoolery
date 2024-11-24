@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      prefHeight="800.0" prefWidth="600.0"
+      styleClass="container" stylesheets="/css/Staff/AddDocumentMenu.css">
+    <VBox VBox.vgrow="ALWAYS" prefHeight="500" spacing="10">
+        <HBox styleClass="text-field-container">
+            <TextField promptText="ISBN" styleClass="text-field" fx:id="ISBN" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <HBox styleClass="text-field-container">
+            <TextField promptText="Title" styleClass="text-field" fx:id="title" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <HBox styleClass="text-field-container">
+            <TextField promptText="Authors" styleClass="text-field" fx:id="authors" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <HBox styleClass="text-field-container">
+            <TextField promptText="Genres" styleClass="text-field" fx:id="genres" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <HBox styleClass="text-field-container">
+            <TextField promptText="Publisher" styleClass="text-field" fx:id="publisher" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <HBox styleClass="text-field-container">
+            <TextField promptText="Year Published" styleClass="text-field" fx:id="publishedYear" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </VBox>
+
+    <HBox styleClass="text-field-container">
+        <TextArea promptText="description" styleClass="description-field" fx:id="description" HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <HBox styleClass="buttons-container">
+        <Button fx:id="cancelButton">
+            <graphic>
+                <Label text="Cancel" styleClass="button-label"/>
+            </graphic>
+        </Button>
+
+        <Button fx:id="addDocumentButton">
+            <graphic>
+                <Label text="Add" styleClass="button-label"/>
+            </graphic>
+        </Button>
+    </HBox>
+</VBox>

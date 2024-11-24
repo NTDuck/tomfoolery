@@ -7,13 +7,18 @@
 
 .panel {
     -fx-background-color: transparent;
-    -fx-padding: 15;
     -fx-background-radius: 15;
 }
 
 .button {
-    -fx-background-color: cyan;
+    -fx-padding: 10 10 10 10;
+    -fx-background-color: rgba(96, 150, 186, 0.5);
     -fx-background-radius: 50;
+}
+
+.button:hover {
+    -fx-background-color: rgb(96, 150, 186);
+    -fx-cursor: hand;
 }
 
 /* Table styling */

@@ -14,10 +14,10 @@
       styleClass="content-container" stylesheets="/css/Staff/DocumentsManagement.css"
       VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" spacing="20">
 
-    <HBox styleClass="panel" prefHeight="100" spacing="20">
+    <HBox styleClass="panel" prefHeight="60" spacing="20">
         <Button fx:id="addDocumentButton">
             <graphic>
-                <ImageView fitHeight="60" fitWidth="60">
+                <ImageView fitHeight="40" fitWidth="40">
                     <Image url="/images/add_book.png"/>
                 </ImageView>
             </graphic>
@@ -25,7 +25,7 @@
 
         <Button fx:id="deleteDocumentButton" styleClass="button">
             <graphic>
-                <ImageView fitHeight="60" fitWidth="60">
+                <ImageView fitHeight="40" fitWidth="40">
                     <Image url="/images/delete.png"/>
                 </ImageView>
             </graphic>
@@ -33,7 +33,7 @@
 
         <Button fx:id="editDocumentButton">
             <graphic>
-                <ImageView fitHeight="60" fitWidth="60">
+                <ImageView fitHeight="40" fitWidth="40">
                     <Image url="/images/edit.png"/>
                 </ImageView>
             </graphic>

@@ -1,14 +1,23 @@
 package org.tomfoolery.configurations.monolith.gui.view.staff;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.view.user.LogOutView;
 import org.tomfoolery.configurations.monolith.gui.view.user.ShowDocumentsView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+
+import java.io.IOException;
 
 public class DocumentsManagementView extends ShowDocumentsView{
     @FXML
@@ -26,7 +35,7 @@ public class DocumentsManagementView extends ShowDocumentsView{
 
     @FXML @Override
     public void initialize() {
-        addDocumentButton.setOnAction(event -> openAddDocumentDialog());
+        addDocumentButton.setOnAction(event -> openAddDocumentMenu());
         editDocumentButton.setOnAction(event -> openEditDocumentDialog());
         deleteDocumentButton.setOnAction(event -> openDeleteDocumentDialog());
 
@@ -35,7 +44,6 @@ public class DocumentsManagementView extends ShowDocumentsView{
             TableRow<ShowDocumentsView.DocumentViewModel> row = new TableRow<>();
             ContextMenu contextMenu = new ContextMenu();
 
-            // Menu item for updating content
             MenuItem updateItem = new MenuItem("Update Content");
             updateItem.setOnAction(e -> {
                 ShowDocumentsView.DocumentViewModel selectedItem = row.getItem();
@@ -44,7 +52,6 @@ public class DocumentsManagementView extends ShowDocumentsView{
                 }
             });
 
-            // Menu item for deleting the document (optional)
             MenuItem deleteItem = new MenuItem("Delete");
             deleteItem.setOnAction(e -> {
                 ShowDocumentsView.DocumentViewModel selectedItem = row.getItem();
@@ -55,7 +62,6 @@ public class DocumentsManagementView extends ShowDocumentsView{
 
             contextMenu.getItems().addAll(updateItem, deleteItem);
 
-            // Attach the context menu to the row
             row.setContextMenu(contextMenu);
 
             return row;
@@ -68,7 +74,26 @@ public class DocumentsManagementView extends ShowDocumentsView{
     private void openEditDocumentDialog() {
     }
 
-    private void openAddDocumentDialog() {
+    private void openAddDocumentMenu() {
+        try {
+            AddDocumentView controller = new AddDocumentView(
+                    StageManager.getInstance().getDocumentRepository(),
+                    StageManager.getInstance().getAuthenticationTokenGenerator(),
+                    StageManager.getInstance().getAuthenticationTokenRepository()
+            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentMenu.fxml"));
+            loader.setController(controller);
+            VBox v = loader.load();
+
+            Stage addDocumentStage = new Stage();
+            addDocumentStage.initStyle(StageStyle.DECORATED);
+            addDocumentStage.setResizable(false);
+            addDocumentStage.initModality(Modality.APPLICATION_MODAL);
+            addDocumentStage.setScene(new Scene(v));
+            addDocumentStage.show();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     private void updateDocument(ShowDocumentsView.DocumentViewModel documentViewModel) {

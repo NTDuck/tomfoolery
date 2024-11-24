@@ -12,9 +12,9 @@ public class MainApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
         StageManager.getInstance().setPrimaryStage(primaryStage);
 
-//        StageManager.getInstance().openLoginMenu();
+        StageManager.getInstance().openLoginMenu();
 
-        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
+//        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
 //        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DISCOVER);
 //        StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_CONTROL_CENTER);
 //
