@@ -52,11 +52,16 @@ public final class ShowDocumentsActionView extends UserActionView {
     }
 
     private ShowDocumentsController.@NonNull RequestObject collectRequestObject() throws PageIndexInvalidException {
+        val pageIndex = this.collectPageIndex();
+
+        return ShowDocumentsController.RequestObject.of(pageIndex, MAX_PAGE_SIZE);
+    }
+
+    private @Unsigned int collectPageIndex() throws PageIndexInvalidException {
         val rawPageIndex = this.ioProvider.readLine(Message.Format.PROMPT, "page number");
 
         try {
-            val pageIndex = Integer.parseUnsignedInt(rawPageIndex);
-            return ShowDocumentsController.RequestObject.of(pageIndex, MAX_PAGE_SIZE);
+            return Integer.parseUnsignedInt(rawPageIndex);
 
         } catch (NumberFormatException exception) {
             throw new PageIndexInvalidException();

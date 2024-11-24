@@ -39,11 +39,11 @@ public final class LogUserInActionView extends BaseView {
             this.onSuccess(adaptedViewModel);
 
         } catch (LogUserInUseCase.CredentialsInvalidException exception) {
-            onCredentialsInvalidException();
+            this.onCredentialsInvalidException();
         } catch (LogUserInUseCase.UserNotFoundException exception) {
-            onUserNotFoundException();
+            this.onUserNotFoundException();
         } catch (LogUserInUseCase.PasswordMismatchException exception) {
-            onPasswordMismatchException();
+            this.onPasswordMismatchException();
         }
     }
 

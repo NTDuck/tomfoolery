@@ -2,6 +2,8 @@ package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documen
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import lombok.Locked;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -12,11 +14,9 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.abc.BaseInMemorySynchronizedGenerator;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -26,53 +26,53 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
     private final @NonNull DAWGSet documentAuthors = new ModifiableDAWGSet();
     private final @NonNull DAWGSet documentGenres = new ModifiableDAWGSet();
 
-    private final @NonNull Multimap<String, FragmentaryDocument> documentsByTitles = ArrayListMultimap.create();
-    private final @NonNull Multimap<String, FragmentaryDocument> documentsByAuthors = ArrayListMultimap.create();
-    private final @NonNull Multimap<String, FragmentaryDocument> documentsByGenres = ArrayListMultimap.create();
+    private final @NonNull Multimap<String, FragmentaryDocument> documentsByTitles = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
+    private final @NonNull Multimap<String, FragmentaryDocument> documentsByAuthors = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
+    private final @NonNull Multimap<String, FragmentaryDocument> documentsByGenres = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByTitlePrefix(@NonNull String title) {
-        return searchDocuments(() -> this.documentTitles.getStringsStartingWith(title), this.documentsByTitles::get);
+        return searchDocuments(title, this.documentTitles::getStringsStartingWith, this.documentsByTitles);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByTitleSuffix(@NonNull String title) {
-        return searchDocuments(() -> this.documentTitles.getStringsEndingWith(title), this.documentsByTitles::get);
+        return searchDocuments(title, this.documentTitles::getStringsEndingWith, this.documentsByTitles);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByTitleSubsequence(@NonNull String title) {
-        return searchDocuments(() -> this.documentTitles.getStringsWithSubstring(title), this.documentsByTitles::get);
+        return searchDocuments(title, this.documentTitles::getStringsWithSubstring, this.documentsByTitles);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByAuthorPrefix(@NonNull String author) {
-        return searchDocuments(() -> this.documentAuthors.getStringsStartingWith(author), this.documentsByAuthors::get);
+        return searchDocuments(author, this.documentAuthors::getStringsStartingWith, this.documentsByAuthors);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByAuthorSuffix(@NonNull String author) {
-        return searchDocuments(() -> this.documentAuthors.getStringsEndingWith(author), this.documentsByAuthors::get);
+        return searchDocuments(author, this.documentAuthors::getStringsEndingWith, this.documentsByAuthors);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByAuthorSubsequence(@NonNull String author) {
-        return searchDocuments(() -> this.documentAuthors.getStringsWithSubstring(author), this.documentsByAuthors::get);
+        return searchDocuments(author, this.documentAuthors::getStringsWithSubstring, this.documentsByAuthors);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByGenrePrefix(@NonNull String genre) {
-        return searchDocuments(() -> this.documentGenres.getStringsStartingWith(genre), this.documentsByGenres::get);
+        return searchDocuments(genre, this.documentGenres::getStringsStartingWith, this.documentsByGenres);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByGenreSuffix(@NonNull String genre) {
-        return searchDocuments(() -> this.documentGenres.getStringsEndingWith(genre), this.documentsByGenres::get);
+        return searchDocuments(genre, this.documentGenres::getStringsEndingWith, this.documentsByGenres);
     }
 
     @Override
     public @NonNull List<FragmentaryDocument> searchDocumentsByGenreSubsequence(@NonNull String genre) {
-        return searchDocuments(() -> this.documentGenres.getStringsWithSubstring(genre), this.documentsByGenres::get);
+        return searchDocuments(genre, this.documentGenres::getStringsWithSubstring, this.documentsByGenres);
     }
 
     @Override
@@ -89,12 +89,13 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
             .forEach(this::synchronizeRecentlyDeletedEntity);
     }
 
-    private static List<FragmentaryDocument> searchDocuments(@NonNull Supplier<Iterable<String>> searchResultsSupplier, @NonNull Function<String, Collection<FragmentaryDocument>> matchingDocumentsSupplier) {
-        return StreamSupport.stream(searchResultsSupplier.get().spliterator(), false)
-            .flatMap(searchResult -> matchingDocumentsSupplier.apply(searchResult).stream())
+    private static @NonNull List<FragmentaryDocument> searchDocuments(@NonNull String searchTerm, @NonNull Function<String, Iterable<String>> searchFunction, @NonNull Multimap<String, FragmentaryDocument> multimap) {
+        return StreamSupport.stream(searchFunction.apply(searchTerm).spliterator(), false)
+            .flatMap(result -> multimap.get(result).stream())
             .collect(Collectors.toUnmodifiableList());
     }
 
+    @Locked
     private void synchronizeRecentlySavedEntity(@NonNull FragmentaryDocument fragmentaryDocument) {
         val documentMetadata = fragmentaryDocument.getMetadata();
 
@@ -111,6 +112,7 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
         documentGenres.forEach(documentGenre -> this.documentsByGenres.put(documentGenre, fragmentaryDocument));
     }
 
+    @Locked
     private void synchronizeRecentlyDeletedEntity(@NonNull FragmentaryDocument fragmentaryDocument) {
         val documentMetadata = fragmentaryDocument.getMetadata();
 
@@ -126,12 +128,12 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
             this.documentTitles.remove(documentTitle);
 
         documentAuthors.forEach(documentAuthor -> {
-            if (this.documentsByAuthors.containsKey(documentAuthor))
+            if (!this.documentsByAuthors.containsKey(documentAuthor))
                 this.documentAuthors.remove(documentAuthor);
         });
 
         documentGenres.forEach(documentGenre -> {
-            if (this.documentsByGenres.containsKey(documentGenre))
+            if (!this.documentsByGenres.containsKey(documentGenre))
                 this.documentGenres.remove(documentGenre);
         });
     }

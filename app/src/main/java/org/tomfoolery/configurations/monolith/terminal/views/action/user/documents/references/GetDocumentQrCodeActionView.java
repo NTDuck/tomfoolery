@@ -1,6 +1,5 @@
 package org.tomfoolery.configurations.monolith.terminal.views.action.user.documents.references;
 
-import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
@@ -15,6 +14,8 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.user.documents.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentQrCodeController;
+
+import java.io.IOException;
 
 public final class GetDocumentQrCodeActionView extends UserActionView {
     private final @NonNull GetDocumentQrCodeController controller;
@@ -47,6 +48,9 @@ public final class GetDocumentQrCodeActionView extends UserActionView {
             this.onAuthenticationTokenInvalidException();
         } catch (GetDocumentQrCodeUseCase.DocumentNotFoundException exception) {
             this.onDocumentNotFoundException();
+
+        } catch (IOException exception) {
+            this.onIOException();
         }
     }
 
@@ -56,19 +60,24 @@ public final class GetDocumentQrCodeActionView extends UserActionView {
         return GetDocumentQrCodeController.RequestObject.of(ISBN);
     }
 
-    @SneakyThrows
-    private void onSuccess(GetDocumentQrCodeController.@NonNull ViewModel viewModel) {
+    private void onSuccess(GetDocumentQrCodeController.@NonNull ViewModel viewModel) throws IOException {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
         val documentQrCode = viewModel.getDocumentQrCode();
-        TemporaryFileHandler.saveAndOpen(documentQrCode, DocumentQrCodeGenerator.IMAGE_FORMAT);
+        TemporaryFileHandler.saveAndOpen(documentQrCode, TemporaryFileHandler.Extension.IMAGE);
 
-        this.ioProvider.writeLine(Message.Format.SUCCESS, "The QR code should be opened promptly");
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Document QR code should be opened promptly");
     }
 
     private void onDocumentNotFoundException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
+    }
+
+    private void onIOException() {
+        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+
+        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document QR code");
     }
 }

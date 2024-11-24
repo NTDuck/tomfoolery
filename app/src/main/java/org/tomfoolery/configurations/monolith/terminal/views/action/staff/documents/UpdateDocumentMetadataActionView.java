@@ -2,8 +2,10 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.staff.docum
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.TemporaryFileHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
@@ -13,6 +15,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.staff.documents.UpdateDocumentMetadataUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.UpdateDocumentMetadataController;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public final class UpdateDocumentMetadataActionView extends UserActionView {
@@ -33,9 +36,12 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
         try {
             val requestObject = this.collectRequestObject();
             this.controller.accept(requestObject);
+            this.onSuccess();
 
         } catch (DocumentPublishedYearInvalidException e) {
             this.onDocumentPublishedYearInvalidException();
+        } catch (DocumentCoverImageFilePathInvalidException exception) {
+            this.onDocumentCoverImageFilePathInvalidException();
 
         } catch (UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
@@ -46,7 +52,7 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
         }
     }
 
-    private UpdateDocumentMetadataController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException {
+    private UpdateDocumentMetadataController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException, DocumentCoverImageFilePathInvalidException {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         val documentTitle = this.ioProvider.readLine(Message.Format.PROMPT, "document title");
@@ -54,18 +60,36 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
         val rawDocumentAuthors = this.ioProvider.readLine(Message.Format.PROMPT, "document authors (separated by ',')");
         val rawDocumentGenres = this.ioProvider.readLine(Message.Format.PROMPT, "document genres (separated by ','");
 
-        val rawDocumentPublishedYear = this.ioProvider.readLine(Message.Format.PROMPT, "document published year");
+        val documentPublishedYear = this.collectDocumentPublishedYear();
         val documentPublisher = this.ioProvider.readLine(Message.Format.PROMPT, "document publisher");
 
         val documentAuthors = Arrays.asList(rawDocumentAuthors.split(","));
         val documentGenres = Arrays.asList(rawDocumentGenres.split(","));
 
+        val documentCoverImage = this.collectDocumentCoverImage();
+
+        return UpdateDocumentMetadataController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentCoverImage);
+    }
+
+    private @Unsigned short collectDocumentPublishedYear() throws DocumentPublishedYearInvalidException {
+        val rawDocumentPublishedYear = this.ioProvider.readLine(Message.Format.PROMPT, "document published year");
+
         try {
-            val documentPublishedYear = Short.parseShort(rawDocumentPublishedYear);
-            return UpdateDocumentMetadataController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, new byte[0]);
+            return Short.parseShort(rawDocumentPublishedYear);
 
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();
+        }
+    }
+
+    private byte @NonNull [] collectDocumentCoverImage() throws DocumentCoverImageFilePathInvalidException {
+        val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "cover image file path");
+
+        try {
+            return TemporaryFileHandler.read(documentCoverImageFilePath);
+
+        } catch (IOException exception) {
+            throw new DocumentCoverImageFilePathInvalidException();
         }
     }
 
@@ -81,6 +105,12 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
         this.ioProvider.writeLine(Message.Format.ERROR, "Document published year must be a positive integer");
     }
 
+    private void onDocumentCoverImageFilePathInvalidException() {
+        this.nextViewClass = StaffSelectionView.class;
+
+        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open cover image");
+    }
+
     private void onDocumentNotFoundException() {
         this.nextViewClass = StaffSelectionView.class;
 
@@ -88,4 +118,5 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}
+    private static class DocumentCoverImageFilePathInvalidException extends Exception {}
 }

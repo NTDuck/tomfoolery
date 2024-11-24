@@ -16,17 +16,23 @@ public final class TemporaryFileHandler {
     private static final @NonNull String DIRECTORY = "./.tmp/";
     private static final @NonNull String BASENAME = "tomfoolery-temp-file-that-is-tomfoolery";
 
-    public static void saveAndOpen(byte @NonNull [] bytes, @NonNull String fileExt) throws IOException {
-        val filePathName = getFilePath(fileExt).toString();
+    public static void saveAndOpen(byte @NonNull [] bytes, @NonNull String fileExtension) throws IOException {
+        val filePathName = getFilePath(fileExtension).toString();
 
         save(bytes, filePathName);
         open(filePathName);
     }
 
     public static byte @NonNull [] read(@NonNull String filePathName) throws IOException {
-        val filePath = Path.of(filePathName);
+        val sanitizedFilePathName = sanitize(filePathName);
+        val filePath = Path.of(sanitizedFilePathName);
 
-        return Files.readAllBytes(filePath);
+        try {
+            return Files.readAllBytes(filePath);
+
+        } catch (Exception exception) {
+            throw new IOException();
+        }
     }
 
     private static void save(byte @NonNull [] bytes, @NonNull String filePathName) throws IOException {
@@ -47,10 +53,20 @@ public final class TemporaryFileHandler {
         desktop.open(file);
     }
 
-    private static @NonNull Path getFilePath(@NonNull String fileExt) {
+    private static @NonNull String sanitize(@NonNull String filePathName) {
+        return filePathName.replace("\\", "\\\\");
+    }
+
+    private static @NonNull Path getFilePath(@NonNull String fileExtension) {
         val directoryPath = Path.of(DIRECTORY);
-        val fileName = String.format("%s.%s", BASENAME, fileExt);
+        val fileName = String.format("%s.%s", BASENAME, fileExtension);
 
         return directoryPath.resolve(fileName);
+    }
+
+    @NoArgsConstructor(access = AccessLevel.NONE)
+    public static class Extension {
+        public static final @NonNull String DOCUMENT = "pdf";
+        public static final @NonNull String IMAGE = "png";
     }
 }

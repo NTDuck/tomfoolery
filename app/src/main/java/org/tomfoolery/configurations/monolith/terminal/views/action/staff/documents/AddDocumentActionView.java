@@ -2,8 +2,10 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.staff.docum
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.TemporaryFileHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -12,6 +14,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.staff.documents.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.AddDocumentController;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public final class AddDocumentActionView extends UserActionView {
@@ -36,6 +39,10 @@ public final class AddDocumentActionView extends UserActionView {
 
         } catch (DocumentPublishedYearInvalidException exception) {
             this.onDocumentPublishedYearInvalidException();
+        } catch (DocumentContentFilePathInvalidException exception) {
+            this.onDocumentContentFilePathInvalidException();
+        } catch (DocumentCoverImageFilePathInvalidException exception) {
+            this.onDocumentCoverImageFilePathInvalidException();
 
         } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
@@ -46,7 +53,7 @@ public final class AddDocumentActionView extends UserActionView {
         }
     }
 
-    private AddDocumentController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException {
+    private AddDocumentController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         val documentTitle = this.ioProvider.readLine(Message.Format.PROMPT, "document title");
@@ -54,18 +61,48 @@ public final class AddDocumentActionView extends UserActionView {
         val rawDocumentAuthors = this.ioProvider.readLine(Message.Format.PROMPT, "document authors (separated by ',')");
         val rawDocumentGenres = this.ioProvider.readLine(Message.Format.PROMPT, "document genres (separated by ','");
 
-        val rawDocumentPublishedYear = this.ioProvider.readLine(Message.Format.PROMPT, "document published year");
+        val documentPublishedYear = this.collectDocumentPublishedYear();
         val documentPublisher = this.ioProvider.readLine(Message.Format.PROMPT, "document publisher");
 
         val documentAuthors = Arrays.asList(rawDocumentAuthors.split(","));
         val documentGenres = Arrays.asList(rawDocumentGenres.split(","));
 
+        val documentContent = this.collectDocumentContent();
+        val documentCoverImage = this.collectDocumentCoverImage();
+
+        return AddDocumentController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentContent, documentCoverImage);
+    }
+
+    private @Unsigned short collectDocumentPublishedYear() throws DocumentPublishedYearInvalidException {
+        val rawDocumentPublishedYear = this.ioProvider.readLine(Message.Format.PROMPT, "document published year");
+
         try {
-            val documentPublishedYear = Short.parseShort(rawDocumentPublishedYear);
-            return AddDocumentController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, new byte[0], new byte[0]);
+            return Short.parseShort(rawDocumentPublishedYear);
 
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();
+        }
+    }
+
+    private byte @NonNull [] collectDocumentContent() throws DocumentContentFilePathInvalidException {
+        val documentContentFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document file path");
+
+        try {
+            return TemporaryFileHandler.read(documentContentFilePath);
+
+        } catch (IOException exception) {
+            throw new DocumentContentFilePathInvalidException();
+        }
+    }
+
+    private byte @NonNull [] collectDocumentCoverImage() throws DocumentCoverImageFilePathInvalidException {
+        val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "cover image file path");
+
+        try {
+            return TemporaryFileHandler.read(documentCoverImageFilePath);
+
+        } catch (IOException exception) {
+            throw new DocumentCoverImageFilePathInvalidException();
         }
     }
 
@@ -81,6 +118,18 @@ public final class AddDocumentActionView extends UserActionView {
         this.ioProvider.writeLine(Message.Format.ERROR, "Document published year must be a positive integer");
     }
 
+    private void onDocumentContentFilePathInvalidException() {
+        this.nextViewClass = StaffSelectionView.class;
+
+        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document");
+    }
+
+    private void onDocumentCoverImageFilePathInvalidException() {
+        this.nextViewClass = StaffSelectionView.class;
+
+        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open cover image");
+    }
+
     private void onDocumentAlreadyExistsException() {
         this.nextViewClass = StaffSelectionView.class;
 
@@ -88,4 +137,6 @@ public final class AddDocumentActionView extends UserActionView {
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}
+    private static class DocumentContentFilePathInvalidException extends Exception {}
+    private static class DocumentCoverImageFilePathInvalidException extends Exception {}
 }

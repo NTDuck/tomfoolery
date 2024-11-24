@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @NoArgsConstructor(staticName = "of")
-public class LogUserInPresenter implements Function<LogUserInController.ViewModel, LogUserInPresenter.ViewModel> {
+public final class LogUserInPresenter implements Function<LogUserInController.ViewModel, LogUserInPresenter.ViewModel> {
     private static final @NonNull Map<LogUserInController.UserType, Class<? extends UserSelectionView>> viewClassesByUserTypes = Map.of(
         LogUserInController.UserType.ADMINISTRATOR, AdministratorSelectionView.class,
         LogUserInController.UserType.PATRON, PatronSelectionView.class,

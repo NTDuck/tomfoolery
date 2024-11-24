@@ -43,7 +43,7 @@ public class ZxingDocumentQrCodeGenerator implements DocumentQrCodeGenerator {
 
     private static byte @NonNull [] getBytesFromBitMatrix(@NonNull BitMatrix bitMatrix) throws IOException {
         @Cleanup val byteArrayOutputStream = new ByteArrayOutputStream();
-        MatrixToImageWriter.writeToStream(bitMatrix, IMAGE_FORMAT, byteArrayOutputStream);
+        MatrixToImageWriter.writeToStream(bitMatrix, QR_CODE_EXTENSION, byteArrayOutputStream);
 
         return byteArrayOutputStream.toByteArray();
     }
