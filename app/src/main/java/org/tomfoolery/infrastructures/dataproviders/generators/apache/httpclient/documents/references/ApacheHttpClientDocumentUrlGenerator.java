@@ -48,8 +48,6 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
 
             .addParameters(parameterPairs);
 
-        System.out.println("URL is" + uriBuilder.build().toString());
-
         return uriBuilder.build().toString();
     }
 

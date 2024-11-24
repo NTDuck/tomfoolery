@@ -6,7 +6,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.Cleanup;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,8 +24,7 @@ public class ZxingDocumentQrCodeGenerator implements DocumentQrCodeGenerator {
     private static final @Unsigned int IMAGE_SIZE = 512;
 
     private static final @NonNull Map<EncodeHintType, ?> HINTS = Map.of(
-        EncodeHintType.MARGIN, 4,
-        EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H
+        EncodeHintType.MARGIN, 4
     );
 
     @Override
