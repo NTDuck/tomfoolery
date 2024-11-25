@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
@@ -58,11 +57,11 @@ public class AddDocumentView {
     @FXML
     public void initialize() {
         addDocumentButton.setOnAction(event -> addDocument());
-        cancelButton.setOnAction(event -> closeStage());
+        cancelButton.setOnAction(event -> closeView());
     }
 
-    public void closeStage() {
-        StackPane root = (StackPane) StageManager.getInstance().getPrimaryStage().getScene().getRoot();
+    public void closeView() {
+        StackPane root = StageManager.getInstance().getRootStackPane();
         root.getChildren().removeLast();
     }
 
@@ -101,7 +100,7 @@ public class AddDocumentView {
     }
 
     private void onSuccess() {
-        closeStage();
+        closeView();
     }
 
     private void onDocumentAlreadyExistsException() {

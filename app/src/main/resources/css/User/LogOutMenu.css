@@ -2,6 +2,8 @@
     -fx-background-color: white;
     -fx-border-width: 2;
     -fx-border-color: rgb(0, 0, 0, 0.5);
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
     -fx-padding: 40 20 40 20;
     -fx-spacing: 10;
     -fx-alignment: CENTER;

@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui.view.user;
 
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -20,6 +21,9 @@ public abstract class BaseView {
 
     public BaseView() {
         root = new StackPane();
+        root.setPrefHeight(720);
+        root.setPrefWidth(1280);
+        root.setAlignment(Pos.CENTER);
         mainView = new HBox();
         mainView.setPrefHeight(720);
         mainView.setPrefWidth(1280);

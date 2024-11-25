@@ -2,6 +2,7 @@ package org.tomfoolery.configurations.monolith.gui.view.user;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
@@ -29,10 +30,7 @@ public class LogOutView {
     @FXML
     public void initialize() {
         yesButton.setOnAction(event -> logOut());
-        noButton.setOnAction(event -> {
-            Stage stage = (Stage) noButton.getScene().getWindow();
-            stage.close();
-        });
+        noButton.setOnAction(event -> closePopup());
     }
 
     public void logOut() {
@@ -44,9 +42,8 @@ public class LogOutView {
         }
     }
 
-    public void closeStage() {
-        Stage stage = (Stage) noButton.getScene().getWindow();
-        stage.close();
+    public void closePopup() {
+        StageManager.getInstance().getRootStackPane().getChildren().removeLast();
     }
 
     private void onException() {
@@ -54,7 +51,7 @@ public class LogOutView {
     }
 
     private void onSuccess() {
-        closeStage();
+        closePopup();
         StageManager.getInstance().openLoginMenu();
     }
 }

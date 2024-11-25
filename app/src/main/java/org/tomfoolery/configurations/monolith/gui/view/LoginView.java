@@ -49,6 +49,8 @@ public class LoginView {
     public void initialize() {
         loginButton.setOnAction(this::login);
         registerButton.setOnAction(this::register);
+        usernameTextField.setOnAction(this::login);
+        passwordTextField.setOnAction(this::login);
     }
 
     @FXML

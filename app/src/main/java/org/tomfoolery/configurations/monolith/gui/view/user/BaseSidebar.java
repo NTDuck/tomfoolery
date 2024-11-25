@@ -2,16 +2,13 @@ package org.tomfoolery.configurations.monolith.gui.view.user;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-
-import java.io.IOException;
 
 @NoArgsConstructor
 public abstract class BaseSidebar {
@@ -25,38 +22,39 @@ public abstract class BaseSidebar {
     protected Button profileButton;
 
     @FXML
+    protected Button logoutButton;
+
+    @FXML
     public void initialize() {
         dashboardButton.setOnAction(event -> goToDashboard());
         discoverButton.setOnAction(event -> goToDiscover());
-        profileButton.setOnAction(event -> openLogOutView());
+        profileButton.setOnAction(event -> openProfileView());
+        logoutButton.setOnAction(event -> openLogOutView());
     }
 
     public abstract void goToDiscover();
 
     public abstract void goToDashboard();
 
+    public void openProfileView() {
+        System.out.println("sike! this is profile view");
+    }
+
+    @SneakyThrows
     public void openLogOutView() {
-        try {
-            LogOutView controller = new LogOutView (
-                    StageManager.getInstance().getUserRepositories(),
-                    StageManager.getInstance().getAuthenticationTokenGenerator(),
-                    StageManager.getInstance().getAuthenticationTokenRepository()
-            );
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogOutView.fxml"));
-            loader.setController(controller);
-            VBox dialogPane = loader.load();
+        LogOutView controller = new LogOutView (
+                StageManager.getInstance().getUserRepositories(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository()
+        );
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogOutView.fxml"));
+        loader.setController(controller);
+        VBox logoutPopup = loader.load();
+        logoutPopup.setPrefSize(350, 200);
 
-            // Create a stage for the dialog
-            Stage dialogStage = new Stage();
-            dialogStage.initStyle(StageStyle.UNDECORATED);
-            dialogStage.setTitle("Logout");
-            dialogStage.setResizable(false);
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setScene(new Scene(dialogPane));
-            dialogStage.show();
+        StackPane root = StageManager.getInstance().getRootStackPane();
+        root.getChildren().add(logoutPopup);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        StackPane.setAlignment(logoutPopup, Pos.CENTER);
     }
 }

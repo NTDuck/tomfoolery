@@ -89,8 +89,10 @@ public class DocumentsManagementView extends ShowDocumentsView{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentMenu.fxml"));
             loader.setController(controller);
             VBox v = loader.load();
+            v.setPrefWidth(600);
+            v.setPrefHeight(800);
 
-            StackPane rootScene = (StackPane) StageManager.getInstance().getPrimaryStage().getScene().getRoot();
+            StackPane rootScene = StageManager.getInstance().getRootStackPane();
             rootScene.getChildren().add(v);
         } catch (IOException e) {
             System.err.println(e.getMessage());

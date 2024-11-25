@@ -3,6 +3,7 @@ package org.tomfoolery.configurations.monolith.gui;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -67,6 +68,10 @@ public class StageManager {
         return instance;
     }
 
+    public StackPane getRootStackPane() {
+        return (StackPane) this.getPrimaryStage().getScene().getRoot();
+    }
+
     // Initialize resources
     private final @NonNull DocumentRepository documentRepository = InMemoryDocumentRepository.of();
 
@@ -91,6 +96,8 @@ public class StageManager {
         primaryStage.setMinHeight(0);
 
         primaryStage.setResizable(false);
+
+        primaryStage.setMaximized(false);
 
         primaryStage.setWidth(LOGIN_MENU_WIDTH);
         primaryStage.setHeight(LOGIN_MENU_HEIGHT);

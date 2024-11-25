@@ -30,6 +30,13 @@
     <!-- Bottom section -->
     <VBox alignment="BOTTOM_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar"
           HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+        <Button styleClass="sidebar-button" fx:id="logoutButton">
+            <graphic>
+                <ImageView fitHeight="32" fitWidth="32">
+                    <Image url="/images/logout.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
 
         <Button styleClass="sidebar-button" fx:id="profileButton">
             <graphic>
