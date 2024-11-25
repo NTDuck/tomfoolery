@@ -5,7 +5,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.TemporaryFileHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
@@ -15,7 +14,6 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.staff.documents.UpdateDocumentMetadataUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.UpdateDocumentMetadataController;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public final class UpdateDocumentMetadataActionView extends UserActionView {
@@ -40,7 +38,8 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
 
         } catch (DocumentPublishedYearInvalidException e) {
             this.onDocumentPublishedYearInvalidException();
-        } catch (DocumentCoverImageFilePathInvalidException exception) {
+
+        } catch (UpdateDocumentMetadataController.DocumentCoverImageFilePathInvalidException e) {
             this.onDocumentCoverImageFilePathInvalidException();
 
         } catch (UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException exception) {
@@ -52,7 +51,7 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
         }
     }
 
-    private UpdateDocumentMetadataController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException, DocumentCoverImageFilePathInvalidException {
+    private UpdateDocumentMetadataController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         val documentTitle = this.ioProvider.readLine(Message.Format.PROMPT, "document title");
@@ -66,9 +65,9 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
         val documentAuthors = Arrays.asList(rawDocumentAuthors.split(","));
         val documentGenres = Arrays.asList(rawDocumentGenres.split(","));
 
-        val documentCoverImage = this.collectDocumentCoverImage();
+        val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document cover image file path");
 
-        return UpdateDocumentMetadataController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentCoverImage);
+        return UpdateDocumentMetadataController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentCoverImageFilePath);
     }
 
     private @Unsigned short collectDocumentPublishedYear() throws DocumentPublishedYearInvalidException {
@@ -79,17 +78,6 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
 
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();
-        }
-    }
-
-    private byte @NonNull [] collectDocumentCoverImage() throws DocumentCoverImageFilePathInvalidException {
-        val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "cover image file path");
-
-        try {
-            return TemporaryFileHandler.read(documentCoverImageFilePath);
-
-        } catch (IOException exception) {
-            throw new DocumentCoverImageFilePathInvalidException();
         }
     }
 
@@ -118,5 +106,4 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}
-    private static class DocumentCoverImageFilePathInvalidException extends Exception {}
 }

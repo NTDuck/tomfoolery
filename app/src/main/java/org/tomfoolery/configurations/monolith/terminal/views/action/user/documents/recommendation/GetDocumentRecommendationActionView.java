@@ -5,7 +5,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.EnumResolver;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
@@ -22,7 +21,6 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
     ).stream().collect(Collectors.joining(", ")));
 
     private final @NonNull GetDocumentRecommendationController controller;
-    private final @NonNull SelectionViewResolver selectionViewResolver;
 
     public static @NonNull GetDocumentRecommendationActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new GetDocumentRecommendationActionView(ioProvider, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
@@ -32,7 +30,6 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
         super(ioProvider);
 
         this.controller = GetDocumentRecommendationController.of(documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
-        this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -73,7 +70,7 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
     }
 
     private void onSuccess(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
         this.displayViewModel(viewModel);
     }
 
@@ -90,7 +87,7 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
     }
 
     private void onRecommendationTypeIndexInvalidException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Recommendation type must be a valid number");
     }

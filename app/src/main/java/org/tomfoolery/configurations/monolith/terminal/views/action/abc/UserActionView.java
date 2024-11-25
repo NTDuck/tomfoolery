@@ -3,10 +3,9 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.abc;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 
-public abstract class UserActionView extends BaseView {
+public abstract class UserActionView extends BaseActionView {
     protected UserActionView(@NonNull IOProvider ioProvider) {
         super(ioProvider);
     }

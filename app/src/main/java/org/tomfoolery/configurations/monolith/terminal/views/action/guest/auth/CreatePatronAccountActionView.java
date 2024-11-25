@@ -5,13 +5,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
+import org.tomfoolery.configurations.monolith.terminal.views.action.abc.BaseActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
-public final class CreatePatronAccountActionView extends BaseView {
+public final class CreatePatronAccountActionView extends BaseActionView {
     private final @NonNull CreatePatronAccountController controller;
 
     public static @NonNull CreatePatronAccountActionView of(@NonNull IOProvider ioProvider, @NonNull PatronRepository patronRepository, @NonNull PasswordEncoder passwordEncoder) {

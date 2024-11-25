@@ -76,8 +76,7 @@ public class ViewableFragmentaryDocument {
     }
 
     private static @NonNull String getDefaultCoverImageFilePath() {
-        val resourceUrl = ViewableFragmentaryDocument.class.getClassLoader()
-            .getResource(DEFAULT_COVER_IMAGE_FILE_PATH);
+        val resourceUrl = ClassLoader.getSystemResource(DEFAULT_COVER_IMAGE_FILE_PATH);
         assert resourceUrl != null;
 
         val resourcePath = Paths.get(resourceUrl.getPath());

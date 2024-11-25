@@ -4,7 +4,6 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -15,8 +14,6 @@ import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDoc
 public final class GetDocumentByIdActionView extends UserActionView {
     private final @NonNull GetDocumentByIdController controller;
 
-    private final @NonNull SelectionViewResolver selectionViewResolver;
-
     public static @NonNull GetDocumentByIdActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new GetDocumentByIdActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -25,7 +22,6 @@ public final class GetDocumentByIdActionView extends UserActionView {
         super(ioProvider);
 
         this.controller = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -70,12 +66,12 @@ public final class GetDocumentByIdActionView extends UserActionView {
     }
 
     private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
         this.displayViewModel(viewModel);
     }
 
     private void onDocumentNotFoundException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
     }

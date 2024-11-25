@@ -5,7 +5,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -18,8 +17,6 @@ public final class ShowDocumentsActionView extends UserActionView {
 
     private final @NonNull ShowDocumentsController controller;
 
-    private final @NonNull SelectionViewResolver selectionViewResolver;
-
     public static @NonNull ShowDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new ShowDocumentsActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -28,7 +25,6 @@ public final class ShowDocumentsActionView extends UserActionView {
         super(ioProvider);
 
         this.controller = ShowDocumentsController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -69,7 +65,7 @@ public final class ShowDocumentsActionView extends UserActionView {
     }
 
     private void onSuccess(ShowDocumentsController.@NonNull ViewModel viewModel) {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
         this.displayViewModel(viewModel);
     }
 
@@ -89,13 +85,13 @@ public final class ShowDocumentsActionView extends UserActionView {
     }
 
     private void onPageIndexInvalidException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
     }
 
     private void onPaginationInvalidException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Found no documents with such page number");
     }

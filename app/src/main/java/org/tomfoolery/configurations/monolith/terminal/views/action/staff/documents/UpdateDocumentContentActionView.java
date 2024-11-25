@@ -4,7 +4,6 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.TemporaryFileHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
@@ -13,8 +12,6 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.staff.documents.UpdateDocumentContentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.UpdateDocumentContentController;
-
-import java.io.IOException;
 
 public final class UpdateDocumentContentActionView extends UserActionView {
     private final @NonNull UpdateDocumentContentController controller;
@@ -31,12 +28,13 @@ public final class UpdateDocumentContentActionView extends UserActionView {
 
     @Override
     public void run() {
+        val requestObject = this.collectRequestObject();
+
         try {
-            val requestObject = this.collectRequestObject();
             this.controller.accept(requestObject);
             this.onSuccess();
 
-        } catch (DocumentContentFilePathInvalidException exception) {
+        } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException exception) {
             this.onDocumentContentFilePathInvalidException();
 
         } catch (UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException exception) {
@@ -48,22 +46,11 @@ public final class UpdateDocumentContentActionView extends UserActionView {
         }
     }
 
-    private UpdateDocumentContentController.@NonNull RequestObject collectRequestObject() throws DocumentContentFilePathInvalidException {
+    private UpdateDocumentContentController.@NonNull RequestObject collectRequestObject() {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
-        val documentContent = this.collectDocumentContent();
-
-        return UpdateDocumentContentController.RequestObject.of(ISBN, documentContent);
-    }
-
-    private byte @NonNull [] collectDocumentContent() throws DocumentContentFilePathInvalidException {
         val documentContentFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document file path");
 
-        try {
-            return TemporaryFileHandler.read(documentContentFilePath);
-
-        } catch (IOException exception) {
-            throw new DocumentContentFilePathInvalidException();
-        }
+        return UpdateDocumentContentController.RequestObject.of(ISBN, documentContentFilePath);
     }
 
     private void onSuccess() {
@@ -83,6 +70,4 @@ public final class UpdateDocumentContentActionView extends UserActionView {
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
     }
-
-    private static class DocumentContentFilePathInvalidException extends Exception {}
 }
