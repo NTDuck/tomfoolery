@@ -9,6 +9,9 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.UpdateDocumentContentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+
+import java.io.IOException;
 
 public final class UpdateDocumentContentController implements ThrowableConsumer<UpdateDocumentContentController.RequestObject> {
     private final @NonNull UpdateDocumentContentUseCase updateDocumentContentUseCase;
@@ -22,7 +25,7 @@ public final class UpdateDocumentContentController implements ThrowableConsumer<
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException, UpdateDocumentContentUseCase.AuthenticationTokenInvalidException, UpdateDocumentContentUseCase.DocumentNotFoundException {
+    public void accept(@NonNull RequestObject requestObject) throws DocumentContentFilePathInvalidException, UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException, UpdateDocumentContentUseCase.AuthenticationTokenInvalidException, UpdateDocumentContentUseCase.DocumentNotFoundException {
         val requestModel = requestObject.toRequestModel();
         this.updateDocumentContentUseCase.accept(requestModel);
     }
@@ -30,13 +33,25 @@ public final class UpdateDocumentContentController implements ThrowableConsumer<
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @NonNull String ISBN;
-        byte @NonNull [] newDocumentContent;
+        @NonNull String newDocumentContentFilePath;
 
-        private UpdateDocumentContentUseCase.@NonNull Request toRequestModel() {
+        private UpdateDocumentContentUseCase.@NonNull Request toRequestModel() throws DocumentContentFilePathInvalidException {
+            val rawNewDocumentContent = readDocumentContentFromFilePath(this.newDocumentContentFilePath);
+
             val documentId = Document.Id.of(ISBN);
-            val newDocumentContent = Document.Content.of(this.newDocumentContent);
+            val newDocumentContent = Document.Content.of(rawNewDocumentContent);
 
             return UpdateDocumentContentUseCase.Request.of(documentId, newDocumentContent);
         }
+
+        private static byte @NonNull [] readDocumentContentFromFilePath(@NonNull String documentContentFilePath) throws DocumentContentFilePathInvalidException {
+            try {
+                return FileManager.read(documentContentFilePath);
+            } catch (IOException exception) {
+                throw new DocumentContentFilePathInvalidException();
+            }
+        }
     }
+
+    public static class DocumentContentFilePathInvalidException extends Exception {}
 }

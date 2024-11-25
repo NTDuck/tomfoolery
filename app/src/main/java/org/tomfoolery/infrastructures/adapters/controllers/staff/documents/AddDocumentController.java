@@ -10,7 +10,9 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.AddDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
 
+import java.io.IOException;
 import java.time.Year;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException {
+    public void accept(@NonNull RequestObject requestObject) throws DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException, AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException {
         val requestModel = requestObject.toRequestModel();
         this.addDocumentUseCase.accept(requestModel);
     }
@@ -43,18 +45,40 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
         @Unsigned short documentPublishedYear;
         @NonNull String documentPublisher;
 
-        byte @NonNull [] documentContent;
-        byte @NonNull [] documentCoverImage;
+        @NonNull String documentContentFilePath;
+        @NonNull String documentCoverImageFilePath;
 
-        private AddDocumentUseCase.@NonNull Request toRequestModel() {
+        private AddDocumentUseCase.@NonNull Request toRequestModel() throws DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException {
+            val rawDocumentContent = readDocumentContentFromFilePath(this.documentContentFilePath);
+            val rawDocumentCoverImage = readDocumentCoverImageFromFilePath(this.documentCoverImageFilePath);
+
             val documentId = Document.Id.of(ISBN);
-            val documentContent = Document.Content.of(this.documentContent);
+            val documentContent = Document.Content.of(rawDocumentContent);
             val documentMetadata = Document.Metadata.of(
                 documentTitle, documentDescription, documentAuthors, documentGenres,
-                Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(documentCoverImage)
+                Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(rawDocumentCoverImage)
             );
 
             return AddDocumentUseCase.Request.of(documentId, documentContent, documentMetadata);
         }
+
+        private static byte @NonNull [] readDocumentContentFromFilePath(@NonNull String documentContentFilePath) throws DocumentContentFilePathInvalidException {
+            try {
+                return FileManager.read(documentContentFilePath);
+            } catch (IOException exception) {
+                throw new DocumentContentFilePathInvalidException();
+            }
+        }
+
+        private static byte @NonNull [] readDocumentCoverImageFromFilePath(@NonNull String documentCoverImageFilePath) throws DocumentCoverImageFilePathInvalidException {
+            try {
+                return FileManager.read(documentCoverImageFilePath);
+            } catch (IOException exception) {
+                throw new DocumentCoverImageFilePathInvalidException();
+            }
+        }
     }
+
+    public static class DocumentContentFilePathInvalidException extends Exception {}
+    public static class DocumentCoverImageFilePathInvalidException extends Exception {}
 }

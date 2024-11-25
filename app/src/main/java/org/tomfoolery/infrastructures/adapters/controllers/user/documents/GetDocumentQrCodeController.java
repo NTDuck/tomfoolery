@@ -54,4 +54,6 @@ public final class GetDocumentQrCodeController implements ThrowableFunction<GetD
             return new ViewModel(rawDocumentQrCode);
         }
     }
+
+    public static class DocumentQrCodeUnavailable extends Exception {}
 }
