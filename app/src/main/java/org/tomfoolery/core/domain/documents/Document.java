@@ -25,6 +25,10 @@ public final class Document implements ddd.Entity<Document.Id> {
     private @NonNull Metadata metadata;
     private @NonNull Audit audit;
 
+    public static @NonNull Document of(@NonNull FragmentaryDocument fragmentaryDocument) {
+        return new Document(fragmentaryDocument.getId(), Document.Content.of(new byte[0]), fragmentaryDocument.getMetadata(), fragmentaryDocument.getAudit());
+    }
+
     @Value(staticConstructor = "of")
     public static class Id implements ddd.EntityId {
         @NonNull String ISBN;
@@ -48,10 +52,9 @@ public final class Document implements ddd.Entity<Document.Id> {
 
         private @NonNull CoverImage coverImage;
 
-        @Data
-        @AllArgsConstructor(staticName = "of")
+        @Value(staticConstructor = "of")
         public static class CoverImage implements ddd.ValueObject {
-            private byte @NonNull [] bytes;
+            byte @NonNull [] buffer;
         }
     }
 
@@ -74,6 +77,6 @@ public final class Document implements ddd.Entity<Document.Id> {
 
     @Value(staticConstructor = "of")
     public static class QrCode implements ddd.ValueObject {
-        byte @NonNull [] bytes;
+        byte @NonNull [] buffer;
     }
 }

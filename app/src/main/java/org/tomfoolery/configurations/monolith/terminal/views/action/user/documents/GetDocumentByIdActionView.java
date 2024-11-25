@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.action.user.docume
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
@@ -17,12 +17,12 @@ public final class GetDocumentByIdActionView extends UserActionView {
 
     private final @NonNull SelectionViewResolver selectionViewResolver;
 
-    public static @NonNull GetDocumentByIdActionView of(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentByIdActionView(ioHandler, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentByIdActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentByIdActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentByIdActionView(@NonNull IOHandler ioHandler, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        super(ioHandler);
+    private GetDocumentByIdActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        super(ioProvider);
 
         this.controller = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
@@ -46,7 +46,7 @@ public final class GetDocumentByIdActionView extends UserActionView {
     }
 
     private GetDocumentByIdController.@NonNull RequestObject collectRequestObject() {
-        val ISBN = this.ioHandler.readLine(Message.Format.PROMPT, "document ISBN");
+        val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         return GetDocumentByIdController.RequestObject.of(ISBN);
     }
@@ -54,19 +54,19 @@ public final class GetDocumentByIdActionView extends UserActionView {
     private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) {
         val fragmentaryDocument = viewModel.getFragmentaryDocument();
 
-        this.ioHandler.writeLine("Here is your document:");
+        this.ioProvider.writeLine("Here is your document:");
 
-        this.ioHandler.writeLine("ISBN: %s", fragmentaryDocument.getISBN());
+        this.ioProvider.writeLine("ISBN: %s", fragmentaryDocument.getISBN());
 
-        this.ioHandler.writeLine("Title: %s", fragmentaryDocument.getDocumentTitle());
-        this.ioHandler.writeLine("Description: %s", fragmentaryDocument.getDocumentDescription());
-        this.ioHandler.writeLine("Authors: %s", String.join(", ", fragmentaryDocument.getDocumentAuthors()));
-        this.ioHandler.writeLine("Genres: %s", String.join(", ", fragmentaryDocument.getDocumentGenres()));
+        this.ioProvider.writeLine("Title: %s", fragmentaryDocument.getDocumentTitle());
+        this.ioProvider.writeLine("Description: %s", fragmentaryDocument.getDocumentDescription());
+        this.ioProvider.writeLine("Authors: %s", String.join(", ", fragmentaryDocument.getDocumentAuthors()));
+        this.ioProvider.writeLine("Genres: %s", String.join(", ", fragmentaryDocument.getDocumentGenres()));
 
-        this.ioHandler.writeLine("Published year: %d", fragmentaryDocument.getDocumentPublishedYear());
-        this.ioHandler.writeLine("Publisher: %s", fragmentaryDocument.getDocumentPublisher());
+        this.ioProvider.writeLine("Published year: %d", fragmentaryDocument.getDocumentPublishedYear());
+        this.ioProvider.writeLine("Publisher: %s", fragmentaryDocument.getDocumentPublisher());
 
-        this.ioHandler.writeLine("Rating: %f (%d rated, %d currently borrowing)", fragmentaryDocument.getAverageRating(), fragmentaryDocument.getNumberOfRatings(), fragmentaryDocument.getNumberOfBorrowingPatrons());
+        this.ioProvider.writeLine("Rating: %f (%d rated, %d currently borrowing)", fragmentaryDocument.getAverageRating(), fragmentaryDocument.getNumberOfRatings(), fragmentaryDocument.getNumberOfBorrowingPatrons());
     }
 
     private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
@@ -77,6 +77,6 @@ public final class GetDocumentByIdActionView extends UserActionView {
     private void onDocumentNotFoundException() {
         this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
 
-        this.ioHandler.writeLine(Message.Format.ERROR, "Document not found");
+        this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
     }
 }

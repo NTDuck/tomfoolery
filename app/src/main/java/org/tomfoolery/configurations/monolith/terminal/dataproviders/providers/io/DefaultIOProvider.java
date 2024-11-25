@@ -1,13 +1,13 @@
-package org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io;
+package org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io;
 
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 
 import java.util.Scanner;
 
 @NoArgsConstructor(staticName = "of")
-public class DefaultIOHandler implements IOHandler, AutoCloseable {
+public class DefaultIOProvider implements IOProvider {
     private final @NonNull Scanner scanner = new Scanner(System.in);
 
     @Override

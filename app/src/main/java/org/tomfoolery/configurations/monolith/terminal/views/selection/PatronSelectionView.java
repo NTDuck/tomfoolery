@@ -2,7 +2,7 @@ package org.tomfoolery.configurations.monolith.terminal.views.selection;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.SelectionItem;
-import org.tomfoolery.configurations.monolith.terminal.dataproviders.generators.io.abc.IOHandler;
+import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth.DeletePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth.UpdatePatronMetadataActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.patron.auth.UpdatePatronPasswordActionView;
@@ -17,12 +17,12 @@ import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserS
 import java.util.List;
 
 public class PatronSelectionView extends UserSelectionView {
-    public static @NonNull PatronSelectionView of(@NonNull IOHandler ioHandler) {
-        return new PatronSelectionView(ioHandler);
+    public static @NonNull PatronSelectionView of(@NonNull IOProvider ioProvider) {
+        return new PatronSelectionView(ioProvider);
     }
 
-    private PatronSelectionView(@NonNull IOHandler ioHandler) {
-        super(ioHandler, List.of(
+    private PatronSelectionView(@NonNull IOProvider ioProvider) {
+        super(ioProvider, List.of(
             SelectionItem.of("Borrow a Document", BorrowDocumentActionView.class),
             SelectionItem.of("Return a Document", ReturnDocumentActionView.class),
             SelectionItem.of("Show all borrowed Documents", ShowBorrowedDocumentsActionView.class),

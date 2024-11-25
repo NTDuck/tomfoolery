@@ -44,8 +44,9 @@ dependencies {
     testImplementation("org.slf4j:slf4j-simple:1.7.36")
     // testImplementation("ch.qos.logback:logback-classic:1.2.11")
 
-    // Uses `QRGen` for simplified QR Code generation
-    implementation("com.github.kenglxn.QRGen:javase:3.0.1")
+    // Uses `Zxing` for QR code generation
+    implementation("com.google.zxing:core:3.5.1")
+    implementation("com.google.zxing:javase:3.5.1")
 
     // Uses Apache's `URIBuilder` for clean and lightweight URI construction
     implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
@@ -56,7 +57,23 @@ dependencies {
 
     // Contains necessary implementation for Trie HashMap
     // required for efficient in-memory autocompletion
-    // implementation("com.github.doried-a-a:java-trie")
+    // implementation("com.github.doried-a-a:java-trie"
+
+    // Uses `OkHttp` as HTTP Client
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    // Uses `Jsoniter` for performant JSON parsing
+    implementation("com.jsoniter:jsoniter:0.9.23")
+
+    //
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+    //
+    implementation("io.ktor:ktor-client-apache5:3.0.1")
 
     implementation("org.xerial:sqlite-jdbc:3.44.1.0")
 

@@ -25,12 +25,13 @@ public final class Staff extends ModifiableUser {
         private final Administrator.@NonNull Id createdByAdminId;
         private Administrator.@Nullable Id lastModifiedByAdminId;
 
-        public static @NonNull Audit of(boolean isLoggedIn, @NonNull Timestamps timestamps, Administrator.@NonNull Id createdByAdminId) {
-            return new Audit(isLoggedIn, timestamps, createdByAdminId);
+        public static @NonNull Audit of(@NonNull Timestamps timestamps, Administrator.@NonNull Id createdByAdminId) {
+            return new Audit(timestamps, createdByAdminId);
         }
 
-        protected Audit(boolean isLoggedIn, @NonNull Timestamps timestamps, Administrator.@NonNull Id createdByAdminId) {
-            super(isLoggedIn, timestamps);
+        protected Audit(@NonNull Timestamps timestamps, Administrator.@NonNull Id createdByAdminId) {
+            super(timestamps);
+
             this.createdByAdminId = createdByAdminId;
         }
     }

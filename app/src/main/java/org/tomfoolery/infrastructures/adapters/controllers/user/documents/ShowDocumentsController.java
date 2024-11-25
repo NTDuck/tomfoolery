@@ -48,8 +48,8 @@ public final class ShowDocumentsController implements ThrowableFunction<ShowDocu
     @Value
     public static class ViewModel {
         @NonNull List<ViewableFragmentaryDocument> paginatedFragmentaryDocuments;
-        int pageIndex;
-        int maxPageIndex;
+        @Unsigned int pageIndex;
+        @Unsigned int maxPageIndex;
 
         private static @NonNull ViewModel fromResponseModel(ShowDocumentsUseCase.@NonNull Response responseModel) {
             val paginatedFragmentaryDocuments = responseModel.getPaginatedFragmentaryDocuments();

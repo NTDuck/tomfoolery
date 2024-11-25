@@ -6,8 +6,10 @@
 
 ### Build and run
 ```
+gradle clean build
+
 // Terminal version
-gradle runTerminal
+gradle runTerminal --console=plain
 
 // JavaFX version
 gradle runJavaFX
