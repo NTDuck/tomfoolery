@@ -76,11 +76,12 @@ public class ShowDocumentsView {
                     String title = fragmentaryDocument.getDocumentTitle();
                     String description = fragmentaryDocument.getDocumentDescription();
                     String yearPublished = String.valueOf(fragmentaryDocument.getDocumentPublishedYear());
+                    String publisher = fragmentaryDocument.getDocumentPublisher();
                     String authors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
                     String genres = String.join(", ", fragmentaryDocument.getDocumentGenres());
 
                     documents.add(new DocumentViewModel(
-                            1, ISBN, title, authors, genres, description, yearPublished, "", "")
+                            1, ISBN, title, authors, genres, description, yearPublished, publisher, "", "")
                     );
                 });
 
@@ -112,6 +113,7 @@ public class ShowDocumentsView {
         final String genres;
         final String description;
         final String publishedYear;
+        final String publisher;
         final String created;
         final String lastModified;
     }

@@ -19,6 +19,7 @@ import java.util.List;
 
 public class AddDocumentView {
     private final @NonNull AddDocumentController controller;
+    private final @NonNull DocumentsManagementView parentView;
 
     @FXML
     private TextField title;
@@ -50,8 +51,10 @@ public class AddDocumentView {
     public AddDocumentView(
             @NonNull DocumentRepository documentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-            @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+            @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+            @NonNull DocumentsManagementView parentView) {
         this.controller = AddDocumentController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.parentView = parentView;
     }
 
     @FXML
@@ -101,6 +104,7 @@ public class AddDocumentView {
 
     private void onSuccess() {
         closeView();
+        parentView.showDocuments();
     }
 
     private void onDocumentAlreadyExistsException() {

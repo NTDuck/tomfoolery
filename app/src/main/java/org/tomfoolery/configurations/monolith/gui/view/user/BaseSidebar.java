@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui.view.user;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -47,14 +48,14 @@ public abstract class BaseSidebar {
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()
         );
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogOutView.fxml"));
         loader.setController(controller);
+
         VBox logoutPopup = loader.load();
-        logoutPopup.setPrefSize(350, 200);
+        logoutPopup.setMaxSize(300, 250);
 
         StackPane root = StageManager.getInstance().getRootStackPane();
         root.getChildren().add(logoutPopup);
-
-        StackPane.setAlignment(logoutPopup, Pos.CENTER);
     }
 }

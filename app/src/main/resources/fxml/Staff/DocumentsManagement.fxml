@@ -74,6 +74,11 @@
                     <PropertyValueFactory property="publishedYear"/>
                 </cellValueFactory>
             </TableColumn>
+            <TableColumn text="Publisher">
+                <cellValueFactory>
+                    <PropertyValueFactory property="publisher"/>
+                </cellValueFactory>
+            </TableColumn>
             <TableColumn text="Created">
                 <cellValueFactory>
                     <PropertyValueFactory property="created"/>
