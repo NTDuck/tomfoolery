@@ -1,9 +1,10 @@
 package org.tomfoolery.configurations.monolith.gui.view.staff;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import lombok.SneakyThrows;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.Dashboard;
@@ -11,24 +12,8 @@ import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
 import java.io.IOException;
 
 public class StaffView extends BaseView {
-    public void loadView(StageManager.ContentType contentType) {
-        try {
-            loadSidebar();
-            loadContent(contentType);
-
-            mainView.getChildren().add(sidebar);
-            mainView.getChildren().add(content);
-
-            StageManager.getInstance().setMainStageProperties();
-            StageManager.getInstance().getPrimaryStage().setScene(new Scene(mainView));
-
-            StageManager.getInstance().getPrimaryStage().show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void loadSidebar() throws IOException {
+    @Override @SneakyThrows
+    public void loadSidebar() {
         StaffSidebar controller = new StaffSidebar();
 
         FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/BaseSidebar.fxml"));
@@ -45,7 +30,8 @@ public class StaffView extends BaseView {
         sidebarTopSection.getChildren().add(documentsManagementButton);
     }
 
-    private void loadContent(StageManager.ContentType contentType) throws IOException {
+    @Override @SneakyThrows
+    public void loadContent(StageManager.@NonNull ContentType contentType) {
         switch (contentType) {
             case STAFF_DASHBOARD:
                 loadDashboard();

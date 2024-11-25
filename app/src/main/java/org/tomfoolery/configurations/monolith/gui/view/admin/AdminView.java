@@ -3,7 +3,10 @@ package org.tomfoolery.configurations.monolith.gui.view.admin;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import lombok.SneakyThrows;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.Dashboard;
@@ -11,25 +14,8 @@ import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
 import java.io.IOException;
 
 public class AdminView extends BaseView {
-
-    public void loadView(StageManager.ContentType contentType) {
-        try {
-            loadSidebar();
-            loadContent(contentType);
-
-            mainView.getChildren().add(sidebar);
-            mainView.getChildren().add(content);
-
-            StageManager.getInstance().setMainStageProperties();
-            StageManager.getInstance().getPrimaryStage().setScene(new Scene(mainView));
-
-            StageManager.getInstance().getPrimaryStage().show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void loadSidebar() throws IOException {
+    @SneakyThrows @Override
+    public void loadSidebar() {
         AdminSidebar controller = new AdminSidebar();
 
         FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/BaseSidebar.fxml"));
@@ -46,7 +32,8 @@ public class AdminView extends BaseView {
         sidebarTopSection.getChildren().add(controlCenterButton);
     }
 
-    private void loadContent(StageManager.ContentType contentType) throws IOException {
+    @SneakyThrows @Override
+    public void loadContent(StageManager.@NonNull ContentType contentType) {
         switch (contentType) {
             case ADMIN_DASHBOARD:
                 loadDashboard();

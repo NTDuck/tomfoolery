@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -29,7 +30,11 @@ public class DocumentsManagementView extends ShowDocumentsView{
     @FXML
     private Button deleteDocumentButton;
 
-    public DocumentsManagementView(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    public DocumentsManagementView(
+            @NonNull DocumentRepository documentRepository,
+            @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
+            @NonNull AuthenticationTokenRepository authenticationTokenRepository
+    ) {
         super(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
@@ -85,12 +90,8 @@ public class DocumentsManagementView extends ShowDocumentsView{
             loader.setController(controller);
             VBox v = loader.load();
 
-            Stage addDocumentStage = new Stage();
-            addDocumentStage.initStyle(StageStyle.DECORATED);
-            addDocumentStage.setResizable(false);
-            addDocumentStage.initModality(Modality.APPLICATION_MODAL);
-            addDocumentStage.setScene(new Scene(v));
-            addDocumentStage.show();
+            StackPane rootScene = (StackPane) StageManager.getInstance().getPrimaryStage().getScene().getRoot();
+            rootScene.getChildren().add(v);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

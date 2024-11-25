@@ -2,6 +2,8 @@ package org.tomfoolery.configurations.monolith.gui.view.patron;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.Dashboard;
@@ -10,24 +12,8 @@ import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
 import java.io.IOException;
 
 public class PatronView extends BaseView {
-    public void loadView(StageManager.ContentType contentType) {
-        try {
-            loadSidebar();
-            loadContent(contentType);
-
-            mainView.getChildren().add(sidebar);
-            mainView.getChildren().add(content);
-
-            StageManager.getInstance().setMainStageProperties();
-            StageManager.getInstance().getPrimaryStage().setScene(new Scene(mainView));
-
-            StageManager.getInstance().getPrimaryStage().show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void loadSidebar() throws IOException {
+    @Override @SneakyThrows
+    public void loadSidebar() {
         PatronSidebar controller = new PatronSidebar();
 
         FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/BaseSidebar.fxml"));
@@ -35,7 +21,8 @@ public class PatronView extends BaseView {
         sidebar = sidebarLoader.load();
     }
 
-    private void loadContent(StageManager.ContentType contentType) throws IOException {
+    @Override @SneakyThrows
+    public void loadContent(StageManager.@NotNull ContentType contentType) {
         switch (contentType) {
             case PATRON_DASHBOARD:
                 loadDashboard();

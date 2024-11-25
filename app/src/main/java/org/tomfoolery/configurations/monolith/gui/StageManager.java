@@ -13,7 +13,6 @@ import org.tomfoolery.configurations.monolith.gui.view.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.SignupView;
 import org.tomfoolery.configurations.monolith.gui.view.patron.PatronView;
 import org.tomfoolery.configurations.monolith.gui.view.staff.StaffView;
-import org.tomfoolery.configurations.monolith.gui.view.user.LogOutView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
@@ -23,7 +22,13 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.domain.auth.Administrator;
+import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
+import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
@@ -35,7 +40,9 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.I
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 // Using singleton for StageManager
 @Getter
@@ -185,5 +192,26 @@ public class StageManager {
         STAFF_DOCUMENTS_MANAGEMENT,
         PATRON_DASHBOARD,
         PATRON_DISCOVER
+    }
+
+    public void populateUserRepositories() {
+        this.administratorRepository.save(Administrator.of(
+                BaseUser.Id.of(UUID.randomUUID()),
+                BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+                BaseUser.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH))
+        ));
+
+        this.patronRepository.save(Patron.of(
+                BaseUser.Id.of(UUID.randomUUID()),
+                BaseUser.Credentials.of("patron_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+                Patron.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
+                Patron.Metadata.of("", "", "")
+        ));
+
+        this.staffRepository.save(Staff.of(
+                BaseUser.Id.of(UUID.randomUUID()),
+                BaseUser.Credentials.of("staff_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+                Staff.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH), Administrator.Id.of(UUID.randomUUID()))
+        ));
     }
 }
