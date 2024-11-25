@@ -53,11 +53,16 @@ public final class AddDocumentRatingActionView extends UserActionView {
 
     private AddDocumentRatingController.@NonNull RequestObject collectRequestObject() throws RatingInvalidException {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
-        val rawRating = this.ioProvider.readLine(Message.Format.PROMPT, "document rating");
+        val rating = this.collectRating();
+
+        return AddDocumentRatingController.RequestObject.of(ISBN, rating);
+    }
+
+    private double collectRating() throws RatingInvalidException {
+        val rawRating = this.ioProvider.readLine(Message.Format.PROMPT, "rating for document");
 
         try {
-            val rating = Double.parseDouble(rawRating);
-            return AddDocumentRatingController.RequestObject.of(ISBN, rating);
+            return Double.parseDouble(rawRating);
 
         } catch (NumberFormatException exception) {
             throw new RatingInvalidException();

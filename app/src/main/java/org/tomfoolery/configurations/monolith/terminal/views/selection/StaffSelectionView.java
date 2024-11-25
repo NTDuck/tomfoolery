@@ -5,6 +5,7 @@ import org.tomfoolery.configurations.monolith.terminal.utils.dataclasses.Selecti
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.AddDocumentActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.RemoveDocumentActionView;
+import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.UpdateDocumentContentActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.action.staff.documents.UpdateDocumentMetadataActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.abc.UserSelectionView;
 
@@ -19,6 +20,7 @@ public class StaffSelectionView extends UserSelectionView {
         super(ioProvider, List.of(
             SelectionItem.of("Add a Document", AddDocumentActionView.class),
             SelectionItem.of("Change a Document's metadata", UpdateDocumentMetadataActionView.class),
+            SelectionItem.of("Change a Document's content", UpdateDocumentContentActionView.class),
             SelectionItem.of("Remove a Document", RemoveDocumentActionView.class)
         ));
     }

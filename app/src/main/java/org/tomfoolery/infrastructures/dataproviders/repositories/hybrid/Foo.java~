@@ -1,4 +1,0 @@
-package org.tomfoolery.infrastructures.dataproviders.repositories.hybrid;
-
-public class Foo {
-}

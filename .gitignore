@@ -43,3 +43,6 @@ src/main/resources/config.properties
 .tomfoolery.p12
 
 *.db
+
+# Terminal temporary cache
+.tmp/

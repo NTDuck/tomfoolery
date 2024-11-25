@@ -12,10 +12,13 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Value
 public class Page<T> implements Iterable<T> {
+    private static final @Unsigned int MIN_PAGE_INDEX = 1;
+
     @Getter(value = AccessLevel.NONE)
     @Setter(value = AccessLevel.NONE)
     @NonNull List<T> paginatedItems;
@@ -24,7 +27,7 @@ public class Page<T> implements Iterable<T> {
     @Unsigned int maxPageIndex;
 
     public static <T> @Nullable Page<T> fromPaginated(@NonNull List<T> paginatedItems, @Unsigned int pageIndex, @Unsigned int maxPageIndex) {
-        if (pageIndex < 0 || maxPageIndex < pageIndex)
+        if (pageIndex < MIN_PAGE_INDEX || maxPageIndex < pageIndex)
             return null;
 
         return new Page<>(paginatedItems, pageIndex, maxPageIndex);
@@ -45,11 +48,11 @@ public class Page<T> implements Iterable<T> {
     }
     
     public static <T> @Nullable Page<T> fromUnpaginated(@NonNull List<T> unpaginatedItems, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        if (pageIndex < 0)
+        if (pageIndex < MIN_PAGE_INDEX)
             return null;
 
-        val pageOffset = (pageIndex - 1) * maxPageSize;
-        val maxPageIndex = unpaginatedItems.size() / maxPageSize;
+        val pageOffset = (pageIndex - MIN_PAGE_INDEX) * maxPageSize;
+        val maxPageIndex = performUpperRoundedDivision(unpaginatedItems.size(), maxPageSize);
 
         if (pageOffset < 0 || maxPageIndex < pageIndex)
             return null;
@@ -57,9 +60,13 @@ public class Page<T> implements Iterable<T> {
         val paginatedItems = unpaginatedItems.parallelStream()
             .skip(pageOffset)
             .limit(maxPageSize)
-            .toList();
+            .collect(Collectors.toUnmodifiableList());
 
         return Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
+    }
+
+    private static @Unsigned int performUpperRoundedDivision(@Unsigned int numerator, @Unsigned int denominator) {
+        return (numerator + denominator - 1) / denominator;
     }
 
     public int getPageSize() {

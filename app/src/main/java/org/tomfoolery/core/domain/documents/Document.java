@@ -52,10 +52,9 @@ public final class Document implements ddd.Entity<Document.Id> {
 
         private @NonNull CoverImage coverImage;
 
-        @Data
-        @AllArgsConstructor(staticName = "of")
+        @Value(staticConstructor = "of")
         public static class CoverImage implements ddd.ValueObject {
-            private byte @NonNull [] bytes;
+            byte @NonNull [] buffer;
         }
     }
 
@@ -78,6 +77,6 @@ public final class Document implements ddd.Entity<Document.Id> {
 
     @Value(staticConstructor = "of")
     public static class QrCode implements ddd.ValueObject {
-        byte @NonNull [] bytes;
+        byte @NonNull [] buffer;
     }
 }

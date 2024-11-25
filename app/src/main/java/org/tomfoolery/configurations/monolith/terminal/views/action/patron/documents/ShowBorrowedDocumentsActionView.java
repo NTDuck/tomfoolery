@@ -51,20 +51,25 @@ public final class ShowBorrowedDocumentsActionView extends UserActionView {
     }
 
     private ShowBorrowedDocumentsController.@NonNull RequestObject collectRequestObject() throws PageIndexInvalidException {
-        val rawPageIndex = this.ioProvider.readLine(Message.Format.PROMPT, "page number");
+        val pageIndex = this.collectPageIndex();
 
-        try {
-            val pageIndex = Integer.parseUnsignedInt(rawPageIndex);
-            return ShowBorrowedDocumentsController.RequestObject.of(pageIndex, MAX_PAGE_SIZE);
-
-        } catch (NumberFormatException exception) {
-            throw new PageIndexInvalidException();
-        }
+        return ShowBorrowedDocumentsController.RequestObject.of(pageIndex, MAX_PAGE_SIZE);
     }
 
     private void onSuccess(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {
         this.nextViewClass = PatronSelectionView.class;
         this.displayViewModel(viewModel);
+    }
+
+    private @Unsigned int collectPageIndex() throws PageIndexInvalidException {
+        val rawPageIndex = this.ioProvider.readLine(Message.Format.PROMPT, "page number");
+
+        try {
+            return Integer.parseUnsignedInt(rawPageIndex);
+
+        } catch (NumberFormatException exception) {
+            throw new PageIndexInvalidException();
+        }
     }
 
     private void displayViewModel(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {

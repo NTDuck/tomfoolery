@@ -13,6 +13,7 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
+import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.time.Year;
 import java.util.List;

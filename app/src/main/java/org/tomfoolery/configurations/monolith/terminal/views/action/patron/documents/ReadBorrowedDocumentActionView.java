@@ -4,6 +4,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.TemporaryFileHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -13,7 +14,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.patron.documents.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReadBorrowedDocumentController;
 
-import java.util.Arrays;
+import java.io.IOException;
 
 public final class ReadBorrowedDocumentActionView extends UserActionView {
     private final @NonNull ReadBorrowedDocumentController controller;
@@ -46,6 +47,9 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
             this.onDocumentNotFoundException();
         } catch (ReadBorrowedDocumentUseCase.DocumentNotBorrowedException exception) {
             this.onDocumentNotBorrowedException();
+
+        } catch (IOException exception) {
+            this.onIOException();
         }
     }
 
@@ -55,14 +59,14 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
         return ReadBorrowedDocumentController.RequestObject.of(ISBN);
     }
 
-    private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) {
+    private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws IOException {
         val documentContent = viewModel.getDocumentContent();
 
-        this.ioProvider.writeLine("The document is not viewable on terminal environments, however here's the first 44 bytes:");
-        this.ioProvider.writeLine("%s ...", Arrays.toString(documentContent).substring(0, 44));
+        this.ioProvider.writeLine("Here is your document:");
+        TemporaryFileHandler.saveAndOpen(documentContent, TemporaryFileHandler.Extension.DOCUMENT);
     }
 
-    private void onSuccess(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) {
+    private void onSuccess(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws IOException {
         this.nextViewClass = PatronSelectionView.class;
         this.displayViewModel(viewModel);
     }
@@ -83,5 +87,11 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
         this.nextViewClass = PatronSelectionView.class;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Document must be borrowed to be read");
+    }
+
+    private void onIOException() {
+        this.nextViewClass = PatronSelectionView.class;
+
+        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document");
     }
 }
