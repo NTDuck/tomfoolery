@@ -8,10 +8,10 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.Dashboard;
 import org.tomfoolery.configurations.monolith.gui.view.user.Discover;
-
 import java.io.IOException;
 
 public class AdminView extends BaseView {
+
     public void loadView(StageManager.ContentType contentType) {
         try {
             loadSidebar();

@@ -9,6 +9,15 @@ public class AdminSidebar extends BaseSidebar {
     @FXML
     private Button controlCenterButton;
 
+    public AdminSidebar() {
+        super();
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+    }
+
     @Override
     public void goToDashboard() {
         StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
