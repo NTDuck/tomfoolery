@@ -75,8 +75,7 @@ dependencies {
     //
     implementation("io.ktor:ktor-client-apache5:3.0.1")
 
-    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
-
+    implementation ("org.postgresql:postgresql:42.6.0")
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
@@ -189,11 +188,6 @@ tasks.register<JavaExec>("runTerminal") {
 
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`
-
-    // Beautify console output
-    jvmArgs = listOf(
-        "--console=plain"
-    )
 }
 
 tasks.register<JavaExec>("runJavaFX") {
