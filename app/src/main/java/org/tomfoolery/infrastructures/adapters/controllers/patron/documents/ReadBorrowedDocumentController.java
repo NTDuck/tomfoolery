@@ -8,9 +8,11 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.patron.documents.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+
+import java.io.IOException;
 
 public final class ReadBorrowedDocumentController implements ThrowableFunction<ReadBorrowedDocumentController.RequestObject, ReadBorrowedDocumentController.ViewModel> {
     private final @NonNull ReadBorrowedDocumentUseCase readBorrowedDocumentUseCase;
@@ -24,7 +26,7 @@ public final class ReadBorrowedDocumentController implements ThrowableFunction<R
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException, ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException, ReadBorrowedDocumentUseCase.PatronNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotBorrowedException {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException, ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException, ReadBorrowedDocumentUseCase.PatronNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotBorrowedException, DocumentContentUnavailable {
         val requestModel = requestObject.toRequestModel();
         val responseModel = this.readBorrowedDocumentUseCase.apply(requestModel);
         val viewModel = ViewModel.fromResponseModel(responseModel);
@@ -45,13 +47,25 @@ public final class ReadBorrowedDocumentController implements ThrowableFunction<R
 
     @Value
     public static class ViewModel {
-        byte @NonNull [] documentContent;
+        @NonNull String documentContentFilePath;
 
-        private static @NonNull ViewModel fromResponseModel(ReadBorrowedDocumentUseCase.@NonNull Response responseModel) {
+        private static @NonNull ViewModel fromResponseModel(ReadBorrowedDocumentUseCase.@NonNull Response responseModel) throws DocumentContentUnavailable {
             val documentContent = responseModel.getDocumentContent();
             val rawDocumentContent = documentContent.getBytes();
 
-            return new ViewModel(rawDocumentContent);
+            val documentContentFilePath = saveDocumentContentAndGetPath(rawDocumentContent);
+
+            return new ViewModel(documentContentFilePath);
+        }
+
+        private static @NonNull String saveDocumentContentAndGetPath(byte @NonNull [] rawDocumentContent) throws DocumentContentUnavailable {
+            try {
+                return FileManager.save(".pdf", rawDocumentContent);
+            } catch (IOException exception) {
+                throw new DocumentContentUnavailable();
+            }
         }
     }
+
+    public static class DocumentContentUnavailable extends Exception {}
 }

@@ -6,7 +6,6 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.utils.helpers.EnumResolver;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.SelectionViewResolver;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
@@ -29,7 +28,6 @@ public final class SearchDocumentsActionView extends UserActionView {
     ).stream().collect(Collectors.joining(", ")));
 
     private final @NonNull SearchDocumentsController controller;
-    private final @NonNull SelectionViewResolver selectionViewResolver;
 
     public static @NonNull SearchDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new SearchDocumentsActionView(ioProvider, documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
@@ -39,7 +37,6 @@ public final class SearchDocumentsActionView extends UserActionView {
         super(ioProvider);
 
         this.controller = SearchDocumentsController.of(documentRepository, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
-        this.selectionViewResolver = SelectionViewResolver.of(authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -116,7 +113,7 @@ public final class SearchDocumentsActionView extends UserActionView {
     }
 
     private void onSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
         this.displayViewModel(viewModel);
     }
 
@@ -136,25 +133,25 @@ public final class SearchDocumentsActionView extends UserActionView {
     }
 
     private void onPageIndexInvalidException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
     }
 
     private void onSearchCriterionIndexInvalidException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Search criterion must be a valid number");
     }
 
     private void onSearchPatternIndexInvalidException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Search pattern must be a valid number");
     }
 
     private void onPaginationInvalidException() {
-        this.nextViewClass = this.selectionViewResolver.getMostRecentSelectionView();
+        this.nextViewClass = cachedViewClass;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Found no documents with such page number");
     }

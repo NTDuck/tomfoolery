@@ -5,7 +5,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.TemporaryFileHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.StaffSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -14,7 +13,6 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.staff.documents.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.AddDocumentController;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public final class AddDocumentActionView extends UserActionView {
@@ -39,9 +37,10 @@ public final class AddDocumentActionView extends UserActionView {
 
         } catch (DocumentPublishedYearInvalidException exception) {
             this.onDocumentPublishedYearInvalidException();
-        } catch (DocumentContentFilePathInvalidException exception) {
+
+        } catch (AddDocumentController.DocumentCoverImageFilePathInvalidException exception) {
             this.onDocumentContentFilePathInvalidException();
-        } catch (DocumentCoverImageFilePathInvalidException exception) {
+        } catch (AddDocumentController.DocumentContentFilePathInvalidException exception) {
             this.onDocumentCoverImageFilePathInvalidException();
 
         } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException exception) {
@@ -53,7 +52,7 @@ public final class AddDocumentActionView extends UserActionView {
         }
     }
 
-    private AddDocumentController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException {
+    private AddDocumentController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         val documentTitle = this.ioProvider.readLine(Message.Format.PROMPT, "document title");
@@ -67,10 +66,10 @@ public final class AddDocumentActionView extends UserActionView {
         val documentAuthors = Arrays.asList(rawDocumentAuthors.split(","));
         val documentGenres = Arrays.asList(rawDocumentGenres.split(","));
 
-        val documentContent = this.collectDocumentContent();
-        val documentCoverImage = this.collectDocumentCoverImage();
+        val documentContentFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document file path");
+        val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document cover image file path");
 
-        return AddDocumentController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentContent, documentCoverImage);
+        return AddDocumentController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentContentFilePath, documentCoverImageFilePath);
     }
 
     private @Unsigned short collectDocumentPublishedYear() throws DocumentPublishedYearInvalidException {
@@ -81,28 +80,6 @@ public final class AddDocumentActionView extends UserActionView {
 
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();
-        }
-    }
-
-    private byte @NonNull [] collectDocumentContent() throws DocumentContentFilePathInvalidException {
-        val documentContentFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document file path");
-
-        try {
-            return TemporaryFileHandler.read(documentContentFilePath);
-
-        } catch (IOException exception) {
-            throw new DocumentContentFilePathInvalidException();
-        }
-    }
-
-    private byte @NonNull [] collectDocumentCoverImage() throws DocumentCoverImageFilePathInvalidException {
-        val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "cover image file path");
-
-        try {
-            return TemporaryFileHandler.read(documentCoverImageFilePath);
-
-        } catch (IOException exception) {
-            throw new DocumentCoverImageFilePathInvalidException();
         }
     }
 
@@ -137,6 +114,4 @@ public final class AddDocumentActionView extends UserActionView {
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}
-    private static class DocumentContentFilePathInvalidException extends Exception {}
-    private static class DocumentCoverImageFilePathInvalidException extends Exception {}
 }

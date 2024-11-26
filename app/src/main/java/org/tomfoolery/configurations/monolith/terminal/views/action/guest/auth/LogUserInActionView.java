@@ -6,6 +6,7 @@ import org.tomfoolery.configurations.monolith.terminal.adapters.presenters.guest
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.terminal.views.abc.BaseView;
+import org.tomfoolery.configurations.monolith.terminal.views.action.abc.BaseActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
@@ -14,7 +15,7 @@ import org.tomfoolery.core.usecases.guest.auth.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
 
-public final class LogUserInActionView extends BaseView {
+public final class LogUserInActionView extends BaseActionView {
     private final @NonNull LogUserInController controller;
     private final @NonNull LogUserInPresenter presenter;
 

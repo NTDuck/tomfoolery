@@ -4,7 +4,6 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.terminal.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.terminal.utils.helpers.io.TemporaryFileHandler;
 import org.tomfoolery.configurations.monolith.terminal.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.terminal.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -13,6 +12,7 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReadBorrowedDocumentController;
+import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
 
 import java.io.IOException;
 
@@ -48,8 +48,8 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
         } catch (ReadBorrowedDocumentUseCase.DocumentNotBorrowedException exception) {
             this.onDocumentNotBorrowedException();
 
-        } catch (IOException exception) {
-            this.onIOException();
+        } catch (ReadBorrowedDocumentController.DocumentContentUnavailable | IOException exception) {
+            this.onDocumentContentUnavailable();
         }
     }
 
@@ -60,10 +60,10 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
     }
 
     private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws IOException {
-        val documentContent = viewModel.getDocumentContent();
+        val documentContentFilePath = viewModel.getDocumentContentFilePath();
+        FileManager.open(documentContentFilePath);
 
-        this.ioProvider.writeLine("Here is your document:");
-        TemporaryFileHandler.saveAndOpen(documentContent, TemporaryFileHandler.Extension.DOCUMENT);
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "The document should be opened promptly");
     }
 
     private void onSuccess(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws IOException {
@@ -89,7 +89,7 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
         this.ioProvider.writeLine(Message.Format.ERROR, "Document must be borrowed to be read");
     }
 
-    private void onIOException() {
+    private void onDocumentContentUnavailable() {
         this.nextViewClass = PatronSelectionView.class;
 
         this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document");

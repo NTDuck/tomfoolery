@@ -6,6 +6,7 @@ import org.tomfoolery.configurations.monolith.terminal.dataproviders.providers.i
 
 public abstract class BaseView implements Runnable {
     protected final @NonNull IOProvider ioProvider;
+    
     protected @Nullable Class<? extends BaseView> nextViewClass;
 
     protected BaseView(@NonNull IOProvider ioProvider) {
@@ -13,7 +14,7 @@ public abstract class BaseView implements Runnable {
         this.nextViewClass = null;
     }
 
-    public final @Nullable Class<? extends BaseView> getNextViewClass() {
+    public @Nullable Class<? extends BaseView> getNextViewClass() {
         return this.nextViewClass;
     }
 }

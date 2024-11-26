@@ -10,7 +10,9 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.UpdateDocumentMetadataUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
 
+import java.io.IOException;
 import java.time.Year;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public final class UpdateDocumentMetadataController implements ThrowableConsumer
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException, UpdateDocumentMetadataUseCase.AuthenticationTokenInvalidException, UpdateDocumentMetadataUseCase.DocumentNotFoundException {
+    public void accept(@NonNull RequestObject requestObject) throws DocumentCoverImageFilePathInvalidException, UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException, UpdateDocumentMetadataUseCase.AuthenticationTokenInvalidException, UpdateDocumentMetadataUseCase.DocumentNotFoundException {
         val requestModel = requestObject.toRequestModel();
         this.updateDocumentMetadataUseCase.accept(requestModel);
     }
@@ -43,16 +45,28 @@ public final class UpdateDocumentMetadataController implements ThrowableConsumer
         @Unsigned short documentPublishedYear;
         @NonNull String documentPublisher;
 
-        byte @NonNull [] documentCoverImage;
+        @NonNull String documentCoverImageFilePath;
 
-        private UpdateDocumentMetadataUseCase.@NonNull Request toRequestModel() {
+        private UpdateDocumentMetadataUseCase.@NonNull Request toRequestModel() throws DocumentCoverImageFilePathInvalidException {
+            val rawDocumentCoverImage = readDocumentCoverImageFromFilePath(this.documentCoverImageFilePath);
+
             val documentId = Document.Id.of(ISBN);
             val documentMetadata = Document.Metadata.of(
                 documentTitle, documentDescription, documentAuthors, documentGenres,
-                Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(documentCoverImage)
+                Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(rawDocumentCoverImage)
             );
 
             return UpdateDocumentMetadataUseCase.Request.of(documentId, documentMetadata);
         }
+
+        private static byte @NonNull [] readDocumentCoverImageFromFilePath(@NonNull String documentCoverImageFilePath) throws DocumentCoverImageFilePathInvalidException {
+            try {
+                return FileManager.read(documentCoverImageFilePath);
+            } catch (IOException exception) {
+                throw new DocumentCoverImageFilePathInvalidException();
+            }
+        }
     }
+
+    public static class DocumentCoverImageFilePathInvalidException extends Exception {}
 }
