@@ -1,15 +1,13 @@
 package org.tomfoolery.configurations.monolith.gui.view.user;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import lombok.extern.java.Log;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -18,7 +16,6 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.user.documents.search.abc.SearchDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.user.documents.SearchDocumentsController;
-import java.util.Objects;
 
 public class Discover {
     private final @NonNull SearchDocumentsController controller;
@@ -42,10 +39,22 @@ public class Discover {
     private TextField searchField;
 
     @FXML
-    private ComboBox<String> criteriaChooser;
+    private CheckBox criteriaTitleCheckBox;
 
     @FXML
-    private ComboBox<String> patternChooser;
+    private CheckBox criteriaGenreCheckBox;
+
+    @FXML
+    private CheckBox criteriaAuthorCheckBox;
+
+    @FXML
+    private CheckBox patternPrefixCheckBox;
+
+    @FXML
+    private CheckBox patternSuffixCheckBox;
+
+    @FXML
+    private CheckBox patternSubsequenceCheckBox;
 
     @FXML
     private ScrollPane scrollPane;
@@ -59,8 +68,6 @@ public class Discover {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 //        Platform.runLater(this::loadBooks);
-        criteriaChooser.getSelectionModel().select("Title");
-        patternChooser.getSelectionModel().select("Prefix");
         searchField.setOnAction(event -> searchBooks());
     }
 
@@ -70,41 +77,67 @@ public class Discover {
             val viewModel = this.controller.apply(requestObject);
             this.onSuccess(viewModel);
         } catch (SearchDocumentsUseCase.AuthenticationTokenNotFoundException |
-                 SearchDocumentsUseCase.AuthenticationTokenInvalidException |
-                 SearchDocumentsUseCase.PaginationInvalidException e) {
-            throw new RuntimeException(e);
+                 SearchDocumentsUseCase.AuthenticationTokenInvalidException e) {
+            System.err.println("Authentication invalid or not found");
+        } catch (SearchDocumentsUseCase.PaginationInvalidException e) {
+            System.err.println("Pagination Invalid");
+            booksContainer.getChildren().clear();
         }
     }
 
     private SearchDocumentsController.@NonNull RequestObject collectRequestObject() {
-        val searchCriterion = collectSearchCriterion();
-        val searchPattern = collectSearchPattern();
+        val searchCriterion = getChoseCriterion();
+        val searchPattern = getChosePattern();
         String searchText = searchField.getText();
-        int pageIndex = 1;
 
-        return SearchDocumentsController.RequestObject.of(searchCriterion, searchPattern, searchText, pageIndex, 30);
+        return SearchDocumentsController.RequestObject.of(searchCriterion, searchPattern, searchText, 1, Integer.MAX_VALUE);
     }
 
-    private SearchDocumentsController.@NonNull SearchCriterion collectSearchCriterion() {
-        String selectedCriteria = criteriaChooser.getValue();
-        if (Objects.equals(selectedCriteria, "Title")) {
+    private SearchDocumentsController.@NonNull SearchCriterion getChoseCriterion() {
+        if (criteriaTitleCheckBox.isSelected()) {
+            criteriaGenreCheckBox.setSelected(false);
+            criteriaAuthorCheckBox.setSelected(false);
             return SearchDocumentsController.SearchCriterion.TITLE;
         }
-        else return SearchDocumentsController.SearchCriterion.AUTHOR;
+        if (criteriaGenreCheckBox.isSelected()) {
+            criteriaTitleCheckBox.setSelected(false);
+            criteriaAuthorCheckBox.setSelected(false);
+            return SearchDocumentsController.SearchCriterion.GENRE;
+        }
+        if (criteriaAuthorCheckBox.isSelected()) {
+            criteriaTitleCheckBox.setSelected(false);
+            criteriaGenreCheckBox.setSelected(false);
+            return SearchDocumentsController.SearchCriterion.AUTHOR;
+        }
+        criteriaTitleCheckBox.setSelected(true);
+        criteriaGenreCheckBox.setSelected(false);
+        criteriaAuthorCheckBox.setSelected(false);
+        return SearchDocumentsController.SearchCriterion.TITLE;
     }
 
-    private SearchDocumentsController.@NonNull SearchPattern collectSearchPattern() {
-        String selectedPattern = patternChooser.getValue();
-        if (Objects.equals(selectedPattern, "Prefix")) {
+    private SearchDocumentsController.@NonNull SearchPattern getChosePattern() {
+        if (patternPrefixCheckBox.isSelected()) {
+            patternSuffixCheckBox.setSelected(false);
+            patternSubsequenceCheckBox.setSelected(false);
             return SearchDocumentsController.SearchPattern.PREFIX;
-        } else if(Objects.equals(selectedPattern, "Suffix")) {
+        }
+        if (patternSuffixCheckBox.isSelected()) {
+            patternPrefixCheckBox.setSelected(false);
+            patternSubsequenceCheckBox.setSelected(false);
             return SearchDocumentsController.SearchPattern.SUFFIX;
-        } else return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
+        }
+        if (patternSubsequenceCheckBox.isSelected()) {
+            patternPrefixCheckBox.setSelected(false);
+            patternSuffixCheckBox.setSelected(false);
+            return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
+        }
+        patternSubsequenceCheckBox.setSelected(true);
+        patternPrefixCheckBox.setSelected(false);
+        patternSuffixCheckBox.setSelected(false);
+        return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
     }
 
     private void onSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
-        int pageIndex = viewModel.getPageIndex();
-        int maxPageIndex = viewModel.getMaxPageIndex();
         booksContainer.getChildren().clear();
 
         viewModel.getPaginatedFragmentaryDocuments()
@@ -125,7 +158,7 @@ public class Discover {
         tile.getChildren().addAll(titleLabel, ISBNLabel);
 
         try {
-            Image image = new Image("/images/book-cover.jpg", 160, 240, true, true, true);
+            Image image = new Image("/images/jayce97.png", 160, 240, true, true, true);
             ImageView coverImage = new ImageView(image);
             coverImage.setFitWidth(160);
             coverImage.setFitHeight(240);

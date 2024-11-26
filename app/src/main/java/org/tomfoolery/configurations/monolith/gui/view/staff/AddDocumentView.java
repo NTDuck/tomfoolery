@@ -64,8 +64,8 @@ public class AddDocumentView {
     }
 
     public void closeView() {
-        StackPane root = StageManager.getInstance().getRootStackPane();
-        root.getChildren().removeLast();
+        StageManager.getInstance().getRootStackPane().getChildren().getFirst().setMouseTransparent(false);
+        StageManager.getInstance().getRootStackPane().getChildren().removeLast();
     }
 
     public void addDocument() {

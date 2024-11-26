@@ -16,22 +16,36 @@ Text: #24283b (Tokyo night background)
     -fx-spacing: 20;
 }
 
-.categories {
+.side-panel {
     -fx-background-radius: 0 15 15 0;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 5, 0);
     -fx-background-color: white;
-    -fx-spacing: 10;
 }
 
-.categories-header {
-    -fx-alignment: center;
+.side-panel-child {
+    -fx-pref-height: 360;
+    -fx-background-color: transparent;
+}
+
+.side-panel-header {
+    -fx-label-padding: 0 0 0 10;
     -fx-pref-width: 300;
+    -fx-text-alignment: center;
     -fx-text-fill: #24283b;
     -fx-background-color: #7cb0d3;
     -fx-background-radius: 0 15 0 0;
-    -fx-font-size: 35;
+    -fx-font-size: 30;
     -fx-font-family: "Segoe UI Variable";
     -fx-font-weight: bold;
+}
+
+.side-panel-checkbox {
+    -fx-padding: 0 0 0 20;
+    -fx-background-color: transparent;
+    -fx-pref-width: 300;
+    -fx-pref-height: 40;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 25;
 }
 
 .category-option {

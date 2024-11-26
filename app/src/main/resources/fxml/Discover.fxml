@@ -11,39 +11,49 @@
 <?import java.lang.String?>
 
 <!-- DISCOVER -->
+<?import javafx.scene.control.CheckBox?>
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
       prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" spacing="20"
       styleClass="main" stylesheets="/css/User/Discover.css">
-    <VBox prefWidth="200" prefHeight="Infinity" alignment="TOP_CENTER" styleClass="categories">
-        <Label text="Categories" styleClass="categories-header"/>
-        <Label text="Horror" styleClass="category-option"/>
-        <Label text="Fantasy" styleClass="category-option"/>
-        <Label text="Science" styleClass="category-option"/>
+    <VBox minWidth="300" styleClass="side-panel">
+        <VBox styleClass="side-panel-child" VBox.vgrow="ALWAYS">
+            <Label text="Search Criteria" styleClass="side-panel-header"/>
+            <CheckBox text="Title" styleClass="side-panel-checkbox" fx:id="criteriaTitleCheckBox"/>
+            <CheckBox text="Author" styleClass="side-panel-checkbox" fx:id="criteriaAuthorCheckBox"/>
+            <CheckBox text="Genre" styleClass="side-panel-checkbox" fx:id="criteriaGenreCheckBox"/>
+        </VBox>
+
+        <VBox styleClass="side-panel-child" VBox.vgrow="ALWAYS">
+            <Label text="Search Pattern" styleClass="side-panel-header"/>
+            <CheckBox text="Prefix" styleClass="side-panel-checkbox" fx:id="patternPrefixCheckBox"/>
+            <CheckBox text="Subsequence" styleClass="side-panel-checkbox" fx:id="patternSubsequenceCheckBox"/>
+            <CheckBox text="Suffix" styleClass="side-panel-checkbox" fx:id="patternSuffixCheckBox"/>
+        </VBox>
     </VBox>
 
     <VBox spacing="20" HBox.hgrow="ALWAYS">
-        <HBox maxWidth="800" minHeight="80" styleClass="search-container" spacing="10">
+        <HBox prefWidth="800" maxWidth="1600" minHeight="80" styleClass="search-container" spacing="10">
             <TextField HBox.hgrow="ALWAYS" prefHeight="60" promptText="Search for books..."
                        styleClass="search-field" fx:id="searchField"/>
 
-            <ComboBox prefWidth="150" fx:id="criteriaChooser">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Title"/>
-                        <String fx:value="Author"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+<!--            <ComboBox prefWidth="150" fx:id="criteriaChooser">-->
+<!--                <items>-->
+<!--                    <FXCollections fx:factory="observableArrayList">-->
+<!--                        <String fx:value="Title"/>-->
+<!--                        <String fx:value="Author"/>-->
+<!--                    </FXCollections>-->
+<!--                </items>-->
+<!--            </ComboBox>-->
 
-            <ComboBox prefWidth="150" fx:id="patternChooser">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Prefix"/>
-                        <String fx:value="Suffix"/>
-                        <String fx:value="Subsequence"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+<!--            <ComboBox prefWidth="150" fx:id="patternChooser">-->
+<!--                <items>-->
+<!--                    <FXCollections fx:factory="observableArrayList">-->
+<!--                        <String fx:value="Prefix"/>-->
+<!--                        <String fx:value="Suffix"/>-->
+<!--                        <String fx:value="Subsequence"/>-->
+<!--                    </FXCollections>-->
+<!--                </items>-->
+<!--            </ComboBox>-->
         </HBox>
 
         <ScrollPane fx:id="scrollPane" styleClass="books-scroll-pane" VBox.vgrow="ALWAYS">

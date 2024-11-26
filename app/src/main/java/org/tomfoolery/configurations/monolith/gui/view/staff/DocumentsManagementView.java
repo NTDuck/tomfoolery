@@ -66,8 +66,9 @@ public class DocumentsManagementView extends ShowDocumentsView{
             VBox v = loader.load();
             v.setMaxSize(800, 600);
 
-            StackPane rootScene = StageManager.getInstance().getRootStackPane();
-            rootScene.getChildren().add(v);
+            StackPane rootStackPane = StageManager.getInstance().getRootStackPane();
+            rootStackPane.getChildren().getFirst().setMouseTransparent(true);
+            rootStackPane.getChildren().add(v);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

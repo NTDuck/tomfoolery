@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import org.tomfoolery.configurations.monolith.gui.StageManager;
 
 import java.io.IOException;
 
@@ -12,7 +13,11 @@ public class ControlCenter {
     private final AccountsDisplayView accountsDisplayView;
 
     public ControlCenter() {
-        documentsDisplayView = new DocumentsDisplayView();
+        documentsDisplayView = new DocumentsDisplayView(
+                StageManager.getInstance().getDocumentRepository(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository()
+        );
         accountsDisplayView = new AccountsDisplayView();
     }
 

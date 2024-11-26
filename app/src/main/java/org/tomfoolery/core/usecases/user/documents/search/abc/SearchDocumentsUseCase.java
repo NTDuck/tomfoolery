@@ -18,7 +18,7 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<SearchDocumentsUseCase.Request, SearchDocumentsUseCase.Response> {
-    private static final @NonNull Duration SYNCHRONIZATION_INTERVAL = Duration.ofMinutes(4);
+    private static final @NonNull Duration SYNCHRONIZATION_INTERVAL = Duration.ofSeconds(1);
 
     private final @NonNull DocumentRepository documentRepository;
     protected final @NonNull DocumentSearchGenerator documentSearchGenerator;

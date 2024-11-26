@@ -43,6 +43,7 @@ public class LogOutView {
     }
 
     public void closePopup() {
+        StageManager.getInstance().getRootStackPane().getChildren().getFirst().setMouseTransparent(false);
         StageManager.getInstance().getRootStackPane().getChildren().removeLast();
     }
 
