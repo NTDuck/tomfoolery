@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        jdk: [ 'temurin', 'zulu', 'adoptopenjdk', 'corretto', 'oraclejdk' ]
+        jdk: [ 'temurin', 'zulu', 'corretto' ]
 
     steps:
       - uses: actions/checkout@v4
