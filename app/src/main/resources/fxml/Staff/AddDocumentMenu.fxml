@@ -7,37 +7,43 @@
       xmlns:fx="http://javafx.com/fxml"
       prefHeight="800.0" prefWidth="600.0"
       styleClass="container" stylesheets="/css/Staff/AddDocumentMenu.css">
-    <VBox VBox.vgrow="ALWAYS" prefHeight="500" spacing="10">
-        <HBox styleClass="text-field-container">
+    <Label text="Add a document" styleClass="header" prefWidth="Infinity"/>
+
+    <HBox styleClass="document-info" prefWidth="Infinity">
+        <VBox spacing="10" styleClass="text-field-container">
             <TextField promptText="ISBN" styleClass="text-field" fx:id="ISBN" HBox.hgrow="ALWAYS"/>
-        </HBox>
 
-        <HBox styleClass="text-field-container">
             <TextField promptText="Title" styleClass="text-field" fx:id="title" HBox.hgrow="ALWAYS"/>
-        </HBox>
 
-        <HBox styleClass="text-field-container">
             <TextField promptText="Authors" styleClass="text-field" fx:id="authors" HBox.hgrow="ALWAYS"/>
-        </HBox>
 
-        <HBox styleClass="text-field-container">
             <TextField promptText="Genres" styleClass="text-field" fx:id="genres" HBox.hgrow="ALWAYS"/>
-        </HBox>
 
-        <HBox styleClass="text-field-container">
             <TextField promptText="Publisher" styleClass="text-field" fx:id="publisher" HBox.hgrow="ALWAYS"/>
-        </HBox>
 
-        <HBox styleClass="text-field-container">
             <TextField promptText="Year Published" styleClass="text-field" fx:id="publishedYear" HBox.hgrow="ALWAYS"/>
-        </HBox>
-    </VBox>
+        </VBox>
 
-    <HBox styleClass="text-field-container">
-        <TextArea promptText="description" styleClass="description-field" fx:id="description" HBox.hgrow="ALWAYS"/>
+        <VBox alignment="TOP_CENTER" spacing="20" styleClass="cover-image-and-pdf-vbox" HBox.hgrow="ALWAYS">
+            <Label text="Choose the book's cover image" style="-fx-font-family: 'Segoe UI Variable';
+                -fx-font-weight: bold; -fx-text-fill: #24273A; -fx-font-size: 20" prefWidth="300"/>
+            <Button fx:id="coverImageChooserButton">
+            </Button>
+
+            <Button fx:id="pdfChooserButton" styleClass="pdf-chooser-button" minWidth="260">
+                <graphic>
+                    <Label text="Choose PDF for document" styleClass="pdf-chooser-button-label" prefWidth="260"/>
+                </graphic>
+            </Button>
+            <Label fx:id="chosePdfInfo" styleClass="chose-pdf-info"/>
+        </VBox>
     </HBox>
 
-    <HBox styleClass="buttons-container">
+    <TextArea promptText="description" styleClass="document-description" fx:id="description"
+              prefWidth="Infinity" prefHeight="300"/>
+
+    <HBox styleClass="buttons-container" prefHeight="50">
+        <Label fx:id="errorMessage" style="-fx-font-family: 'Segoe UI Variable'; -fx-font-size: 15; -fx-text-fill: red"/>
         <Button fx:id="cancelButton">
             <graphic>
                 <Label text="Cancel" styleClass="button-label"/>

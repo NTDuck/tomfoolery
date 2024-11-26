@@ -2,9 +2,13 @@ package org.tomfoolery.configurations.monolith.gui.view.staff;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
@@ -14,10 +18,16 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.staff.documents.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.AddDocumentController;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class AddDocumentView {
+    private final @NonNull ImageView defaultCoverImage = new ImageView(new Image("/images/dayxi.png"));
+    private @NonNull String currentDocumentContentPath = "";
+    private @NonNull String currentCoverImagePath = "";
+
     private final @NonNull AddDocumentController controller;
     private final @NonNull DocumentsManagementView parentView;
 
@@ -43,6 +53,18 @@ public class AddDocumentView {
     private TextField publishedYear;
 
     @FXML
+    private Button coverImageChooserButton;
+
+    @FXML
+    private Button pdfChooserButton;
+
+    @FXML
+    private Label chosePdfInfo;
+
+    @FXML
+    private Label errorMessage;
+
+    @FXML
     private Button addDocumentButton;
 
     @FXML
@@ -59,8 +81,74 @@ public class AddDocumentView {
 
     @FXML
     public void initialize() {
+        defaultCoverImage.setFitHeight(160);
+        defaultCoverImage.setFitWidth(160);
+
+        errorMessage.setVisible(false);
         addDocumentButton.setOnAction(event -> addDocument());
         cancelButton.setOnAction(event -> closeView());
+        coverImageChooserButton.setOnAction(event -> openCoverImageFileChooser());
+        pdfChooserButton.setOnAction(event -> openPdfFileChooser());
+
+        coverImageChooserButton.setGraphic(defaultCoverImage);
+        currentCoverImagePath = Objects.requireNonNull(getCurrentCoverImageFilePath());
+        chosePdfInfo.setText("No file selected");
+    }
+
+    public File getCoverImageFile() {
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PNG files", "*.png"),
+                new FileChooser.ExtensionFilter("JPG files", "*.jpg"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+
+        Stage stage = StageManager.getInstance().getPrimaryStage();
+
+        return fileChooser.showOpenDialog(stage);
+    }
+
+    public void openCoverImageFileChooser() {
+        File selectedFile = getCoverImageFile();
+
+        if (selectedFile != null) {
+            ImageView coverImage = new ImageView(new Image(selectedFile.toURI().toString()));
+            coverImage.setFitHeight(160);
+            coverImage.setFitWidth(160);
+            coverImageChooserButton.setGraphic(coverImage);
+            this.currentCoverImagePath = selectedFile.getAbsolutePath();
+        }
+    }
+
+    private File getPdfFile() {
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PDF files", "*.pdf"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+
+        Stage stage = StageManager.getInstance().getPrimaryStage();
+
+        return fileChooser.showOpenDialog(stage);
+    }
+
+    public void openPdfFileChooser() {
+        File selectedFile = getPdfFile();
+
+        if (selectedFile != null) {
+            chosePdfInfo.setText(selectedFile.getName());
+            this.currentDocumentContentPath = selectedFile.getAbsolutePath();
+        } else {
+            if (currentDocumentContentPath.isEmpty()) {
+                chosePdfInfo.setText("No file selected");
+            }
+        }
     }
 
     public void closeView() {
@@ -81,6 +169,10 @@ public class AddDocumentView {
             this.onAuthenticationTokenInvalidException();
         } catch (AddDocumentUseCase.DocumentAlreadyExistsException exception) {
             this.onDocumentAlreadyExistsException();
+        } catch (AddDocumentController.DocumentCoverImageFilePathInvalidException e) {
+            this.onCoverImageFilePathInvalid();
+        } catch (AddDocumentController.DocumentContentFilePathInvalidException e) {
+            this.onContentFilePathInvalid();
         }
     }
 
@@ -95,32 +187,59 @@ public class AddDocumentView {
 
         try {
             val documentPublishedYear = Short.parseShort(rawDocumentPublishedYear);
-            return AddDocumentController.RequestObject.of(documentISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, new byte[0], new byte[0]);
+            return AddDocumentController.RequestObject.of(documentISBN, documentTitle, documentDescription, documentAuthors,
+                    documentGenres, documentPublishedYear, documentPublisher, currentDocumentContentPath, currentCoverImagePath);
 
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();
         }
     }
 
+    private String getCurrentCoverImageFilePath() {
+        ImageView imageView = (ImageView) coverImageChooserButton.getGraphic();
+        Image image = imageView.getImage();
+        if (image != null) {
+            String url = image.getUrl();
+            if (url != null && url.startsWith("file:")) {
+                return url.substring(5);
+            }
+        }
+        return null;
+    }
+
     private void onSuccess() {
+        errorMessage.setVisible(false);
         closeView();
         parentView.showDocuments();
     }
 
     private void onDocumentAlreadyExistsException() {
-        System.out.println("Document already exists");
+        showErrorMessage("Document already exists");
     }
 
     private void onAuthenticationTokenInvalidException() {
-        System.out.println("Authentication token invalid");
+        showErrorMessage("Authentication token invalid");
     }
 
     private void onAuthenticationTokenNotFoundException() {
-        System.out.println("Authentication token not found");
+        showErrorMessage("Authentication token not found");
     }
 
     private void onDocumentPublishedYearInvalidException() {
-        System.out.println("Document published year invalid");
+        showErrorMessage("Document published year invalid");
+    }
+
+    private void onContentFilePathInvalid() {
+        showErrorMessage("Path to document's content is invalid");
+    }
+
+    private void onCoverImageFilePathInvalid() {
+        showErrorMessage("Path to document's cover image is invalid");
+    }
+
+    private void showErrorMessage(String message) {
+        errorMessage.setVisible(true);
+        errorMessage.setText(message);
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}

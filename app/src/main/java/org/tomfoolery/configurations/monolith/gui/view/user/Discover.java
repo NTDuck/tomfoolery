@@ -95,46 +95,72 @@ public class Discover {
 
     private SearchDocumentsController.@NonNull SearchCriterion getChoseCriterion() {
         if (criteriaTitleCheckBox.isSelected()) {
-            criteriaGenreCheckBox.setSelected(false);
-            criteriaAuthorCheckBox.setSelected(false);
+            checkOnTitleBox();
             return SearchDocumentsController.SearchCriterion.TITLE;
         }
         if (criteriaGenreCheckBox.isSelected()) {
-            criteriaTitleCheckBox.setSelected(false);
-            criteriaAuthorCheckBox.setSelected(false);
+            checkOnGenreBox();
             return SearchDocumentsController.SearchCriterion.GENRE;
         }
         if (criteriaAuthorCheckBox.isSelected()) {
-            criteriaTitleCheckBox.setSelected(false);
-            criteriaGenreCheckBox.setSelected(false);
+            checkOnAuthorBox();
             return SearchDocumentsController.SearchCriterion.AUTHOR;
         }
-        criteriaTitleCheckBox.setSelected(true);
-        criteriaGenreCheckBox.setSelected(false);
-        criteriaAuthorCheckBox.setSelected(false);
+        checkOnTitleBox();
         return SearchDocumentsController.SearchCriterion.TITLE;
     }
 
     private SearchDocumentsController.@NonNull SearchPattern getChosePattern() {
         if (patternPrefixCheckBox.isSelected()) {
-            patternSuffixCheckBox.setSelected(false);
-            patternSubsequenceCheckBox.setSelected(false);
+            checkOnPrefixBox();
             return SearchDocumentsController.SearchPattern.PREFIX;
         }
         if (patternSuffixCheckBox.isSelected()) {
-            patternPrefixCheckBox.setSelected(false);
-            patternSubsequenceCheckBox.setSelected(false);
+            checkOnSuffixBox();
             return SearchDocumentsController.SearchPattern.SUFFIX;
         }
         if (patternSubsequenceCheckBox.isSelected()) {
-            patternPrefixCheckBox.setSelected(false);
-            patternSuffixCheckBox.setSelected(false);
+            checkOnSubsequenceBox();
             return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
         }
+        checkOnSubsequenceBox();
+        return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
+    }
+
+    private void checkOnTitleBox() {
+        criteriaTitleCheckBox.setSelected(true);
+        criteriaGenreCheckBox.setSelected(false);
+        criteriaAuthorCheckBox.setSelected(false);
+    }
+
+    private void checkOnGenreBox() {
+        criteriaGenreCheckBox.setSelected(true);
+        criteriaAuthorCheckBox.setSelected(false);
+        criteriaTitleCheckBox.setSelected(false);
+    }
+
+    private void checkOnAuthorBox() {
+        criteriaAuthorCheckBox.setSelected(true);
+        criteriaTitleCheckBox.setSelected(false);
+        criteriaGenreCheckBox.setSelected(false);
+    }
+
+    private void checkOnPrefixBox() {
+        patternPrefixCheckBox.setSelected(true);
+        patternSubsequenceCheckBox.setSelected(false);
+        patternSuffixCheckBox.setSelected(false);
+    }
+
+    private void checkOnSuffixBox() {
+        patternSuffixCheckBox.setSelected(true);
+        patternSubsequenceCheckBox.setSelected(false);
+        patternPrefixCheckBox.setSelected(false);
+    }
+
+    private void checkOnSubsequenceBox() {
         patternSubsequenceCheckBox.setSelected(true);
         patternPrefixCheckBox.setSelected(false);
         patternSuffixCheckBox.setSelected(false);
-        return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
     }
 
     private void onSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
