@@ -11,6 +11,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -91,7 +93,7 @@ public class AddDocumentView {
         pdfChooserButton.setOnAction(event -> openPdfFileChooser());
 
         coverImageChooserButton.setGraphic(defaultCoverImage);
-        currentCoverImagePath = Objects.requireNonNull(getCurrentCoverImageFilePath());
+        currentCoverImagePath = getDefaultCoverImageFilePath();
         chosePdfInfo.setText("No file selected");
     }
 
@@ -198,13 +200,20 @@ public class AddDocumentView {
     private String getCurrentCoverImageFilePath() {
         ImageView imageView = (ImageView) coverImageChooserButton.getGraphic();
         Image image = imageView.getImage();
-        if (image != null) {
-            String url = image.getUrl();
-            if (url != null && url.startsWith("file:")) {
-                return url.substring(5);
-            }
+        String url = image.getUrl();
+        if (url != null && url.startsWith("file:")) {
+            return url.substring(5);
         }
-        return null;
+        return url;
+    }
+
+    private @NotNull String getDefaultCoverImageFilePath() {
+        Image tmp = defaultCoverImage.getImage();
+        String url = tmp.getUrl();
+        if (url.startsWith("file:")) {
+            return url.substring(5);
+        }
+        return url;
     }
 
     private void onSuccess() {
@@ -235,6 +244,7 @@ public class AddDocumentView {
 
     private void onCoverImageFilePathInvalid() {
         showErrorMessage("Path to document's cover image is invalid");
+        System.out.println(this.currentCoverImagePath);
     }
 
     private void showErrorMessage(String message) {
