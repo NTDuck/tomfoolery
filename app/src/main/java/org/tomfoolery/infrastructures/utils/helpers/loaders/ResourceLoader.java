@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,14 +16,14 @@ public final class ResourceLoader {
         return ClassLoader.getSystemResource(resourceName);
     }
 
-    public static @NonNull Path getPath(@NonNull String resourceName) {
+    public static @NonNull Path getPath(@NonNull String resourceName) throws URISyntaxException {
         val resourceUrl = getUrl(resourceName);
-        val resourceUrlPath = resourceUrl.getPath();
+        val resourceUri = resourceUrl.toURI();
 
-        return Paths.get(resourceUrlPath);
+        return Paths.get(resourceUri);
     }
 
-    public static @NonNull String getAbsolutePath(@NonNull String resourceName) {
+    public static @NonNull String getAbsolutePath(@NonNull String resourceName) throws URISyntaxException {
         val resourcePath = getPath(resourceName);
         return resourcePath.toAbsolutePath().toString();
     }

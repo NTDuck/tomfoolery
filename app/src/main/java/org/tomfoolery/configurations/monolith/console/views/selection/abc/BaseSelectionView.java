@@ -7,7 +7,7 @@ import org.tomfoolery.configurations.monolith.console.utils.dataclasses.Selectio
 import org.tomfoolery.configurations.monolith.console.adapters.controllers.selection.SelectionController;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.console.utils.helpers.FigletFormatter;
+import org.tomfoolery.configurations.monolith.console.utils.helpers.FontFormatter;
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public abstract class BaseSelectionView extends BaseView {
 
     @SneakyThrows
     private void displayTitle() {
-        val formattedTitle = FigletFormatter.format(TITLE, FigletFormatter.Font.ANSI_SHADOW);
+        val formattedTitle = FontFormatter.format(TITLE, FontFormatter.Font.ANSI_SHADOW);
         this.ioProvider.writeLine(formattedTitle);
     }
 

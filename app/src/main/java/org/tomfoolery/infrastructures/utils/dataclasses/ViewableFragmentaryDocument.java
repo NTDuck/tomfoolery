@@ -2,6 +2,7 @@ package org.tomfoolery.infrastructures.utils.dataclasses;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -67,6 +68,7 @@ public class ViewableFragmentaryDocument {
             .build();
     }
 
+    @SneakyThrows
     private static @NonNull String saveDocumentCoverImageAndGetPath(byte @NonNull [] rawDocumentCoverImage) {
         try {
             return FileManager.save(".png", rawDocumentCoverImage);

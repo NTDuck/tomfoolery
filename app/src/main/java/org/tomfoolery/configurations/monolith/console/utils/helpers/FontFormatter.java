@@ -10,10 +10,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.infrastructures.utils.helpers.loaders.ResourceLoader;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class FigletFormatter {
-    public static @NonNull String format(@NonNull String content, @NonNull Font font) throws IOException {
+public final class FontFormatter {
+    public static @NonNull String format(@NonNull String content, @NonNull Font font) throws IOException, URISyntaxException {
         val fontAbsolutePath = ResourceLoader.getAbsolutePath(font.getPath());
         return FigletFont.convertOneLine(fontAbsolutePath, content);
     }
