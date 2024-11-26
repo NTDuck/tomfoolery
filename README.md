@@ -8,9 +8,7 @@
 ```
 gradle clean build
 
-// Terminal version
-gradle runTerminal --console=plain
-
-// JavaFX version
+// Choose one
+gradle runConsole --console=plain
 gradle runJavaFX
 ```
