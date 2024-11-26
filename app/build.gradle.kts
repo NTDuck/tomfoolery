@@ -182,8 +182,8 @@ tasks.named("run") {
     dependsOn("runJavaFX")
 }
 
-tasks.register<JavaExec>("runTerminal") {
-    mainClass = "${project.group}.configurations.monolith.terminal.Application"
+tasks.register<JavaExec>("runConsole") {
+    mainClass = "${project.group}.configurations.monolith.console.Application"
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents non-blocking `java.util.Scanner`

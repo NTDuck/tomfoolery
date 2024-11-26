@@ -148,12 +148,14 @@ public class CloudDocumentRepository implements DocumentRepository {
                 null, // Publisher (not in schema)
                 null // CoverImage (not in schema)
         );
-        Document.Audit audit = Document.Audit.of(
-                Instant.EPOCH, // Placeholder for `created`, now removed
-                rs.getTimestamp("lastModified").toInstant()
-        );
+//        Document.Audit audit = Document.Audit.of(
+//                Instant.EPOCH, // Placeholder for `created`, now removed
+//                rs.getTimestamp("lastModified").toInstant()
+//        );
+//
+//        return new Document(id, Document.Content.of(new byte[0]), metadata);
 
-        return new Document(id, Document.Content.of(new byte[0]), metadata);
+        return null;   // TODO: Syntax reviewal
     }
 }
 
