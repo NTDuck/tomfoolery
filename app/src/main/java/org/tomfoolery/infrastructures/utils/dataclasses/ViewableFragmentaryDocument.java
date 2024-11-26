@@ -8,15 +8,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+import org.tomfoolery.infrastructures.utils.helpers.loaders.ResourceLoader;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Value
 @Builder(setterPrefix = "set", toBuilder = true, access = AccessLevel.PRIVATE)
 public class ViewableFragmentaryDocument {
-    private static final @NonNull String DEFAULT_COVER_IMAGE_FILE_PATH = "images/default/document-cover-image.png";
+    private static final @NonNull String DEFAULT_COVER_IMAGE_RESOURCE_PATH = "images/default/document-cover-image.png";
 
     @NonNull String ISBN;
 
@@ -71,15 +71,7 @@ public class ViewableFragmentaryDocument {
         try {
             return FileManager.save(".png", rawDocumentCoverImage);
         } catch (IOException exception) {
-            return getDefaultCoverImageFilePath();
+            return ResourceLoader.getAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH);
         }
-    }
-
-    private static @NonNull String getDefaultCoverImageFilePath() {
-        val resourceUrl = ClassLoader.getSystemResource(DEFAULT_COVER_IMAGE_FILE_PATH);
-        assert resourceUrl != null;
-
-        val resourcePath = Paths.get(resourceUrl.getPath());
-        return resourcePath.toAbsolutePath().toString();
     }
 }

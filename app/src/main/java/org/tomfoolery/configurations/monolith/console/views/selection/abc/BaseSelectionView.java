@@ -1,16 +1,20 @@
 package org.tomfoolery.configurations.monolith.console.views.selection.abc;
 
+import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.console.adapters.controllers.selection.SelectionController;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.console.utils.helpers.FigletFormatter;
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
 
 import java.util.List;
 
 public abstract class BaseSelectionView extends BaseView {
+    private static final @NonNull String TITLE = "tomfoolery";
+
     private final @NonNull SelectionController controller;
 
     protected BaseSelectionView(@NonNull IOProvider ioProvider, @NonNull List<SelectionItem> selectionItems) {
@@ -21,6 +25,7 @@ public abstract class BaseSelectionView extends BaseView {
 
     @Override
     public final void run() {
+        this.displayTitle();
         this.displayPrompt();
 
         val viewModel = this.controller.get();
@@ -37,6 +42,12 @@ public abstract class BaseSelectionView extends BaseView {
         } catch (SelectionController.SelectionItemNotFoundException exception) {
             this.onSelectionItemNotFoundException();
         }
+    }
+
+    @SneakyThrows
+    private void displayTitle() {
+        val formattedTitle = FigletFormatter.format(TITLE, FigletFormatter.Font.ANSI_SHADOW);
+        this.ioProvider.writeLine(formattedTitle);
     }
 
     private void displayPrompt() {
@@ -88,6 +99,7 @@ public abstract class BaseSelectionView extends BaseView {
         this.ioProvider.writeLine(message);
     }
 
+    @SneakyThrows
     protected @NonNull String getPrompt() {
         return "Please select something";
     }

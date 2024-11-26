@@ -76,6 +76,10 @@ dependencies {
     implementation("io.ktor:ktor-client-apache5:3.0.1")
 
     implementation ("org.postgresql:postgresql:42.6.0")
+
+    // For Figlet fonts
+    implementation("com.github.lalyos:jfiglet:0.0.9")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
