@@ -14,11 +14,6 @@
                styleClass="documents-table"
                VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn text="Index">
-                <cellValueFactory>
-                    <PropertyValueFactory property="index"/>
-                </cellValueFactory>
-            </TableColumn>
             <TableColumn text="ISBN">
                 <cellValueFactory>
                     <PropertyValueFactory property="ISBN"/>
@@ -47,6 +42,11 @@
             <TableColumn text="Published Year">
                 <cellValueFactory>
                     <PropertyValueFactory property="publishedYear"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Publisher">
+                <cellValueFactory>
+                    <PropertyValueFactory property="publisher"/>
                 </cellValueFactory>
             </TableColumn>
             <TableColumn text="Created">

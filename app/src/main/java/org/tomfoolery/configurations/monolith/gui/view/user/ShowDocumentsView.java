@@ -4,8 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -41,9 +40,6 @@ public class ShowDocumentsView {
             val viewModel = this.controller.apply(requestObject);
 
             this.onSuccess(viewModel);
-
-        } catch (PageIndexInvalidException exception) {
-            this.onPageIndexInvalidException();
         } catch (ShowDocumentsUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
         } catch (ShowDocumentsUseCase.AuthenticationTokenInvalidException exception) {
@@ -53,35 +49,26 @@ public class ShowDocumentsView {
         }
     }
 
-    private ShowDocumentsController.@NonNull RequestObject collectRequestObject() throws PageIndexInvalidException {
-        val rawPageIndex = "1";
-
-        try {
-            val pageIndex = Integer.parseUnsignedInt(rawPageIndex);
-            return ShowDocumentsController.RequestObject.of(pageIndex, 1000);
-
-        } catch (NumberFormatException exception) {
-            throw new PageIndexInvalidException();
-        }
+    private ShowDocumentsController.@NonNull RequestObject collectRequestObject() {
+        return ShowDocumentsController.RequestObject.of(1, 1000);
     }
 
     private void onSuccess(ShowDocumentsController.ViewModel viewModel) {
-        val pageIndex = viewModel.getPageIndex();
-        val maxPageIndex = viewModel.getMaxPageIndex();
-
         ObservableList<DocumentViewModel> documents = FXCollections.observableArrayList();
         viewModel.getPaginatedFragmentaryDocuments()
                 .forEach(fragmentaryDocument -> {
                     String ISBN = fragmentaryDocument.getISBN();
                     String title = fragmentaryDocument.getDocumentTitle();
+                    String authors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
+                    String genres = String.join(", ", fragmentaryDocument.getDocumentGenres());
                     String description = fragmentaryDocument.getDocumentDescription();
                     String yearPublished = String.valueOf(fragmentaryDocument.getDocumentPublishedYear());
                     String publisher = fragmentaryDocument.getDocumentPublisher();
-                    String authors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
-                    String genres = String.join(", ", fragmentaryDocument.getDocumentGenres());
+                    String created = fragmentaryDocument.getLastCreatedTimestamp();
+                    String lastModified = fragmentaryDocument.getLastModifiedTimestamp();
 
-                    documents.add(new DocumentViewModel(
-                            1, ISBN, title, authors, genres, description, yearPublished, publisher, "", "")
+                    documents.add(DocumentViewModel.of(
+                            ISBN, title, authors, genres, description, yearPublished, publisher, created, lastModified)
                     );
                 });
 
@@ -89,10 +76,10 @@ public class ShowDocumentsView {
         documentsTable.setItems(documents);
     }
 
-    private void onPageIndexInvalidException() {
-    }
-
     private void onPaginationInvalidException() {
+        Label placeholder = new Label("Our library is currently not having any documents");
+        placeholder.setStyle("-fx-font-size: 30;");
+        documentsTable.setPlaceholder(new Label());
     }
 
     private void onAuthenticationTokenInvalidException() {
@@ -103,18 +90,16 @@ public class ShowDocumentsView {
 
     private static class PageIndexInvalidException extends Exception {}
 
-    @AllArgsConstructor
-    @Getter
+    @Value(staticConstructor = "of")
     public static class DocumentViewModel {
-        final int index;
-        final String ISBN;
-        final String title;
-        final String authors;
-        final String genres;
-        final String description;
-        final String publishedYear;
-        final String publisher;
-        final String created;
-        final String lastModified;
+        String ISBN;
+        String title;
+        String authors;
+        String genres;
+        String description;
+        String publishedYear;
+        String publisher;
+        String created;
+        String lastModified;
     }
 }

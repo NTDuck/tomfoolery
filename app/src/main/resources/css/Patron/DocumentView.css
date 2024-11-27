@@ -1,0 +1,54 @@
+.root-container {
+    -fx-background-radius: 10;
+    -fx-border-width: 2;
+    -fx-border-color: #6BA3E6;
+    -fx-border-radius: 10;
+}
+
+.left-side {
+    -fx-background-color: #6BA3E6;
+}
+
+.right-side {
+    -fx-background-color: white;
+}
+
+.status-label {
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 36;
+}
+
+.rating-label {
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 30;
+}
+
+.action-button {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
+    -fx-pref-height: 50;
+    -fx-pref-width: 100;
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: #6BA3E6;
+    -fx-border-radius: 8;
+}
+
+.action-button:hover {
+    -fx-background-color: lightgray;
+    -fx-cursor: hand;
+}
+
+.document-info {
+    -fx-padding: 0 20 0 0;
+}
+
+.document-info-label {
+    -fx-pref-height: 60;
+    -fx-pref-width: 800;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 24;
+}

@@ -12,23 +12,20 @@ import javafx.stage.Stage;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.AddDocumentController;
-
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class AddDocumentView {
-    private final @NonNull ImageView defaultCoverImage = new ImageView(new Image("/images/dayxi.png"));
-    private @NonNull String currentDocumentContentPath = "";
-    private @NonNull String currentCoverImagePath = "";
+    private @NonNull String currentDocumentContentPath;
 
     private final @NonNull AddDocumentController controller;
     private final @NonNull DocumentsManagementView parentView;
@@ -79,22 +76,38 @@ public class AddDocumentView {
             @NonNull DocumentsManagementView parentView) {
         this.controller = AddDocumentController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.parentView = parentView;
+        currentDocumentContentPath = "";
     }
 
     @FXML
     public void initialize() {
-        defaultCoverImage.setFitHeight(160);
-        defaultCoverImage.setFitWidth(160);
-
         errorMessage.setVisible(false);
         addDocumentButton.setOnAction(event -> addDocument());
         cancelButton.setOnAction(event -> closeView());
         coverImageChooserButton.setOnAction(event -> openCoverImageFileChooser());
         pdfChooserButton.setOnAction(event -> openPdfFileChooser());
 
-        coverImageChooserButton.setGraphic(defaultCoverImage);
-        currentCoverImagePath = getDefaultCoverImageFilePath();
+        coverImageChooserButton.setGraphic(getDefaultCoverImage());
         chosePdfInfo.setText("No file selected");
+    }
+
+    private ImageView getDefaultCoverImage() {
+        ImageView coverImageView = new ImageView(new Image("/images/dayxi.png"));
+        coverImageView.setFitHeight(160);
+        coverImageView.setFitWidth(160);
+
+        return coverImageView;
+    }
+
+    private String getCurrentCoverImagePath() {
+        ImageView imageView = (ImageView) coverImageChooserButton.getGraphic();
+
+        Image img = imageView.getImage();
+        String path = img.getUrl();
+        if (path.startsWith("file:")) {
+            path = path.substring(5);
+        }
+        return path;
     }
 
     public File getCoverImageFile() {
@@ -121,7 +134,6 @@ public class AddDocumentView {
             coverImage.setFitHeight(160);
             coverImage.setFitWidth(160);
             coverImageChooserButton.setGraphic(coverImage);
-            this.currentCoverImagePath = selectedFile.getAbsolutePath();
         }
     }
 
@@ -186,34 +198,17 @@ public class AddDocumentView {
         String documentPublisher = this.publisher.getText();
         String rawDocumentPublishedYear = this.publishedYear.getText();
         String documentDescription = this.description.getText();
+        String documentCoverImagePath = getCurrentCoverImagePath();
+        System.out.println("added document's cover image path: " + documentCoverImagePath);
 
         try {
             val documentPublishedYear = Short.parseShort(rawDocumentPublishedYear);
             return AddDocumentController.RequestObject.of(documentISBN, documentTitle, documentDescription, documentAuthors,
-                    documentGenres, documentPublishedYear, documentPublisher, currentDocumentContentPath, currentCoverImagePath);
+                    documentGenres, documentPublishedYear, documentPublisher, currentDocumentContentPath, documentCoverImagePath);
 
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();
         }
-    }
-
-    private String getCurrentCoverImageFilePath() {
-        ImageView imageView = (ImageView) coverImageChooserButton.getGraphic();
-        Image image = imageView.getImage();
-        String url = image.getUrl();
-        if (url != null && url.startsWith("file:")) {
-            return url.substring(5);
-        }
-        return url;
-    }
-
-    private @NotNull String getDefaultCoverImageFilePath() {
-        Image tmp = defaultCoverImage.getImage();
-        String url = tmp.getUrl();
-        if (url.startsWith("file:")) {
-            return url.substring(5);
-        }
-        return url;
     }
 
     private void onSuccess() {
@@ -244,7 +239,6 @@ public class AddDocumentView {
 
     private void onCoverImageFilePathInvalid() {
         showErrorMessage("Path to document's cover image is invalid");
-        System.out.println(this.currentCoverImagePath);
     }
 
     private void showErrorMessage(String message) {

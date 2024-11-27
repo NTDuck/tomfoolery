@@ -61,7 +61,7 @@ Text: #24283b (Tokyo night background)
     -fx-cursor: hand;
 }
 
-.search-container {
+.search-field-container {
     -fx-background-color: transparent;
     -fx-alignment: center;
     -fx-padding: 20 10 10 10;
@@ -78,12 +78,12 @@ Text: #24283b (Tokyo night background)
 
 .books-scroll-pane {
     -fx-background-color: white;
-    -fx-background-radius: 15;
+    -fx-background-radius: 8;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, -5, -5);
 }
 
 .books-container {
+    -fx-padding: 10 10 10 10;
     -fx-background-color: white;
-    -fx-alignment: center;
-    -fx-background-radius: 15;
+    -fx-background-radius: 8;
 }

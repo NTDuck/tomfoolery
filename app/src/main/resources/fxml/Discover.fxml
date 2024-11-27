@@ -29,32 +29,14 @@
     </VBox>
 
     <VBox spacing="20" HBox.hgrow="ALWAYS">
-        <HBox prefWidth="800" maxWidth="1600" minHeight="80" styleClass="search-container" spacing="10">
+        <HBox prefWidth="800" maxWidth="1300" minHeight="80" styleClass="search-field-container" spacing="10">
             <TextField HBox.hgrow="ALWAYS" prefHeight="60" promptText="Search for books..."
                        styleClass="search-field" fx:id="searchField"/>
-
-<!--            <ComboBox prefWidth="150" fx:id="criteriaChooser">-->
-<!--                <items>-->
-<!--                    <FXCollections fx:factory="observableArrayList">-->
-<!--                        <String fx:value="Title"/>-->
-<!--                        <String fx:value="Author"/>-->
-<!--                    </FXCollections>-->
-<!--                </items>-->
-<!--            </ComboBox>-->
-
-<!--            <ComboBox prefWidth="150" fx:id="patternChooser">-->
-<!--                <items>-->
-<!--                    <FXCollections fx:factory="observableArrayList">-->
-<!--                        <String fx:value="Prefix"/>-->
-<!--                        <String fx:value="Suffix"/>-->
-<!--                        <String fx:value="Subsequence"/>-->
-<!--                    </FXCollections>-->
-<!--                </items>-->
-<!--            </ComboBox>-->
         </HBox>
 
         <ScrollPane fx:id="scrollPane" styleClass="books-scroll-pane" VBox.vgrow="ALWAYS">
-            <FlowPane styleClass="books-container" hgap="20" vgap="20" fx:id="booksContainer" prefWrapLength="800">
+            <FlowPane styleClass="books-container" fx:id="booksContainer"
+                      hgap="20" vgap="20" prefWrapLength="800">
             </FlowPane>
         </ScrollPane>
     </VBox>
