@@ -1,4 +1,5 @@
 .root-container {
+    -fx-background-color: white;
     -fx-background-radius: 10;
     -fx-border-width: 2;
     -fx-border-color: #6BA3E6;
@@ -10,7 +11,6 @@
 }
 
 .right-side {
-    -fx-background-color: white;
 }
 
 .status-label {

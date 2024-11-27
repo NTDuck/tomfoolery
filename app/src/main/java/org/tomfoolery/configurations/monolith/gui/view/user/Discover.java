@@ -201,7 +201,8 @@ public class Discover {
                 isbn,
                 StageManager.getInstance().getDocumentRepository(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getPatronRepository()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronDocumentView.fxml"));

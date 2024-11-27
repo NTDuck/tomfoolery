@@ -198,6 +198,7 @@ public class StageManager {
         STAFF_DISCOVER,
         STAFF_DOCUMENTS_MANAGEMENT,
         PATRON_DASHBOARD,
+        PATRON_SHOW_BORROWED,
         PATRON_DISCOVER
     }
 

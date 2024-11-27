@@ -22,23 +22,25 @@
          <Image url="/images/jayce97.png"/>
       </ImageView>
 
-      <Label prefHeight="45.0" prefWidth="210.0" text="Rating: 4.67 / 5" styleClass="rating-label" fx:id="ratingLabel">
+      <Label prefHeight="45.0" prefWidth="250.0" text="Rating: 4.67 / 5" styleClass="rating-label" fx:id="ratingLabel">
       </Label>
    </VBox>
 
    <VBox prefHeight="400.0" prefWidth="800.0" HBox.hgrow="ALWAYS" styleClass="right-side">
       <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="800.0" spacing="20.0">
          <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Borrow"
-                 styleClass="action-button" fx:id="borrowButton">
+                 styleClass="action-button" fx:id="borrowButton" HBox.hgrow="ALWAYS">
          </Button>
 
          <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Return"
-                 styleClass="action-button" fx:id="returnButton">
+                 styleClass="action-button" fx:id="returnButton" HBox.hgrow="ALWAYS">
          </Button>
 
          <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Close"
-                 styleClass="action-button" fx:id="closeButton">
+                 styleClass="action-button" fx:id="closeButton" HBox.hgrow="ALWAYS">
          </Button>
+
+         <Label fx:id="message" wrapText="true" maxWidth="300" maxHeight="80" HBox.hgrow="ALWAYS"/>
       </HBox>
 
       <VBox prefWidth="600.0" VBox.vgrow="ALWAYS" styleClass="document-info">
