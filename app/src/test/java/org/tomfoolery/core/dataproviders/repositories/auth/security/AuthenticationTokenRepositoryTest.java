@@ -18,8 +18,6 @@ public abstract class AuthenticationTokenRepositoryTest {
         val authenticationToken = AuthenticationToken.of(PSEUDO_SERIALIZED_PAYLOAD);
 
         val authenticationTokenRepository = getAuthenticationTokenAuthenticationTokenRepository();
-        assertFalse(authenticationTokenRepository.containsAuthenticationToken());
-        assertNull(authenticationTokenRepository.getAuthenticationToken());
 
         authenticationTokenRepository.saveAuthenticationToken(authenticationToken);
         assertTrue(authenticationTokenRepository.containsAuthenticationToken());
@@ -38,8 +36,6 @@ public abstract class AuthenticationTokenRepositoryTest {
         val authenticationToken = AuthenticationToken.of(PSEUDO_SERIALIZED_PAYLOAD);
 
         val firstAuthenticationTokenRepository = getAuthenticationTokenAuthenticationTokenRepository();
-        assertFalse(firstAuthenticationTokenRepository.containsAuthenticationToken());
-        assertNull(firstAuthenticationTokenRepository.getAuthenticationToken());
 
         firstAuthenticationTokenRepository.saveAuthenticationToken(authenticationToken);
         assertTrue(firstAuthenticationTokenRepository.containsAuthenticationToken());

@@ -4,6 +4,7 @@ import com.microsoft.credentialstorage.SecretStore;
 import com.microsoft.credentialstorage.StorageProvider;
 import com.microsoft.credentialstorage.model.StoredToken;
 import com.microsoft.credentialstorage.model.StoredTokenType;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -11,6 +12,7 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
+@NoArgsConstructor(staticName = "of")
 public class SecretStoreAuthenticationTokenRepository implements AuthenticationTokenRepository {
     public static final boolean PERSIST = true;
 
@@ -18,15 +20,7 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
     private static final @NonNull StoredTokenType STORED_TOKEN_TYPE = StoredTokenType.UNKNOWN;
     private static final StorageProvider.SecureOption SECURE_OPTION = StorageProvider.SecureOption.REQUIRED;
 
-    private final @NonNull SecretStore<StoredToken> secretStore;
-
-    public static @NonNull SecretStoreAuthenticationTokenRepository of() {
-        return new SecretStoreAuthenticationTokenRepository();
-    }
-
-    private SecretStoreAuthenticationTokenRepository() {
-        this.secretStore = StorageProvider.getTokenStorage(PERSIST, SECURE_OPTION);
-    }
+    private final @NonNull SecretStore<StoredToken> secretStore = StorageProvider.getTokenStorage(PERSIST, SECURE_OPTION);
 
     @Override
     public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
