@@ -41,8 +41,8 @@ dependencies {
     implementation("com.microsoft:credential-secure-storage:1.0.0")
 
     // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
-    testImplementation("org.slf4j:slf4j-simple:1.7.36")
-    // testImplementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("org.slf4j:slf4j-nop:2.0.9")
 
     // Uses `Zxing` for QR code generation
     implementation("com.google.zxing:core:3.5.1")
@@ -171,6 +171,8 @@ tasks.compileJava {
     options.isIncremental = true
     options.isFork = true
     options.isFailOnError = false
+
+    options.encoding = "UTF-8"
 }
 
 tasks {

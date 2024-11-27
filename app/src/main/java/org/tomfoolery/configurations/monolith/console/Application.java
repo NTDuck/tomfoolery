@@ -62,7 +62,7 @@ import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.r
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.builtin.BuiltinHttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.KeyStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.SecretStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryPatronRepository;
@@ -98,7 +98,7 @@ public class Application implements Runnable, AutoCloseable {
     private final @NonNull UserRepositories userRepositories = UserRepositories.of(administratorRepository, staffRepository, patronRepository);
 
     private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = SecretStoreAuthenticationTokenRepository.of();
     private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
     private final @NonNull Views views = Views.of(
