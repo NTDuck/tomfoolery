@@ -175,6 +175,10 @@ tasks.compileJava {
     options.encoding = "UTF-8"
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
 tasks {
     javadoc {
         options {
@@ -212,6 +216,8 @@ tasks.register<JavaExec>("runJavaFX") {
 tasks.named<Test>("test") {
     // For unit testing
     useTestNG()
+
+    systemProperties["file.encoding"] = "utf-8"
 
     testLogging {
         // Enables console output

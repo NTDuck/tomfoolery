@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.console.adapters.presenters.guest.auth.LogUserInPresenter;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.ConsoleIOProvider;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
@@ -12,7 +13,7 @@ import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.Cr
 import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.DeleteStaffAccountActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.UpdateStaffCredentialsActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.CreatePatronAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInByCredentialsActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.DeletePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.UpdatePatronMetadataActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.UpdatePatronPasswordActionView;
@@ -53,6 +54,7 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInByAuthenticationTokenController;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.ApacheHttpClientDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
@@ -110,7 +112,7 @@ public class Application implements Runnable, AutoCloseable {
 
         // Guest action views
         CreatePatronAccountActionView.of(ioProvider, patronRepository, passwordEncoder),
-        LogUserInActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+        LogUserInByCredentialsActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
 
         // Shared user action views
         LogUserOutActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
@@ -148,27 +150,41 @@ public class Application implements Runnable, AutoCloseable {
 
     @Override
     public void run() {
-        Class<? extends BaseView> viewClass = GuestSelectionView.class;
         BaseView view;
+        Class<? extends BaseView> viewClass = this.getInitialViewClass();
 
         do {
             view = this.views.getViewByClass(viewClass);
             assert view != null;   // Expected
 
             view.run();
-
             viewClass = view.getNextViewClass();
+
         } while (viewClass != null);
     }
 
     @Override
-    @SneakyThrows
-    public void close() {
+    public void close() throws Exception {
         for (val field : this.getClass().getDeclaredFields()) {
             val resource = field.get(this);
 
             if (resource instanceof AutoCloseable autoCloseableResource)
                 autoCloseableResource.close();
+        }
+    }
+
+    private @NonNull Class<? extends BaseView> getInitialViewClass() {
+        val controller = LogUserInByAuthenticationTokenController.of(userRepositories, authenticationTokenGenerator, authenticationTokenRepository);
+        val presenter = LogUserInPresenter.of();
+
+        try {
+            val viewModel = controller.get();
+            val adaptedViewModel = presenter.apply(viewModel);
+
+            return adaptedViewModel.getNextViewClass();
+
+        } catch (Exception exception) {
+            return GuestSelectionView.class;
         }
     }
 
@@ -197,6 +213,7 @@ public class Application implements Runnable, AutoCloseable {
         ));
     }
 
+    @SneakyThrows
     public static void main(String[] args) {
         val application = Application.of();
 

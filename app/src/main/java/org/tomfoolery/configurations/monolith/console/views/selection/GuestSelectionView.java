@@ -5,7 +5,7 @@ import org.tomfoolery.configurations.monolith.console.utils.dataclasses.Selectio
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.views.selection.abc.BaseSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.CreatePatronAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInByCredentialsActionView;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class GuestSelectionView extends BaseSelectionView {
         super(ioProvider, List.of(
             SelectionItem.of("Exit", null),
             SelectionItem.of("Create Patron account", CreatePatronAccountActionView.class),
-            SelectionItem.of("Login", LogUserInActionView.class)
+            SelectionItem.of("Login", LogUserInByCredentialsActionView.class)
         ));
     }
 

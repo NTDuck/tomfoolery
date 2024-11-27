@@ -12,20 +12,20 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 import java.util.Set;
 
-public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<BorrowDocumentUseCase.Request> {
+public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<ReturnDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
-    public static @NonNull BorrowDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new BorrowDocumentUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ReturnDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ReturnDocumentUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private BorrowDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ReturnDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
@@ -38,7 +38,7 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentAlreadyBorrowedException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, DocumentNotBorrowedException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
@@ -46,15 +46,15 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
         val documentId = request.getDocumentId();
         val fragmentaryDocument = this.getFragmentaryDocumentFromId(documentId);
 
-        this.ensureDocumentIsNotBorrowed(patron, documentId);
-        this.markDocumentAsBorrowedByPatron(patron, fragmentaryDocument);
+        this.ensureDocumentIsAlreadyBorrowed(patron, documentId);
+        this.markDocumentAsReturnedByPatron(patron, fragmentaryDocument);
 
         this.documentRepository.saveFragment(fragmentaryDocument);
         this.patronRepository.save(patron);
     }
 
-    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(patronAuthenticationToken);
+    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
+        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
         if (patronId == null)
             throw new AuthenticationTokenInvalidException();
@@ -76,22 +76,22 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
         return fragmentaryDocument;
     }
 
-    private void ensureDocumentIsNotBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentAlreadyBorrowedException {
+    private void ensureDocumentIsAlreadyBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentNotBorrowedException {
         val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
 
-        if (borrowedDocumentIds.contains(documentId))
-            throw new DocumentAlreadyBorrowedException();
+        if (!borrowedDocumentIds.contains(documentId))
+            throw new DocumentNotBorrowedException();
     }
 
-    private void markDocumentAsBorrowedByPatron(@NonNull Patron patron, @NonNull FragmentaryDocument fragmentaryDocument) {
+    private void markDocumentAsReturnedByPatron(@NonNull Patron patron, @NonNull FragmentaryDocument fragmentaryDocument) {
         val patronId = patron.getId();
         val documentId = fragmentaryDocument.getId();
 
         val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
-        borrowedDocumentIds.add(documentId);
+        borrowedDocumentIds.remove(documentId);
 
         val borrowingPatronIds = fragmentaryDocument.getAudit().getBorrowingPatronIds();
-        borrowingPatronIds.add(patronId);
+        borrowingPatronIds.remove(patronId);
     }
 
     @Value(staticConstructor = "of")
@@ -101,5 +101,5 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
 
     public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
-    public static class DocumentAlreadyBorrowedException extends Exception {}
+    public static class DocumentNotBorrowedException extends Exception {}
 }

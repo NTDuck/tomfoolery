@@ -124,17 +124,17 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
         documentAuthors.forEach(documentAuthor -> this.documentsByAuthors.remove(documentAuthor, fragmentaryDocument));
         documentGenres.forEach(documentGenre -> this.documentsByGenres.remove(documentGenre, fragmentaryDocument));
 
-        if (!this.documentsByTitles.containsKey(documentTitle))
-            this.documentTitles.remove(documentTitle);
-
-        documentAuthors.forEach(documentAuthor -> {
-            if (!this.documentsByAuthors.containsKey(documentAuthor))
-                this.documentAuthors.remove(documentAuthor);
-        });
-
-        documentGenres.forEach(documentGenre -> {
-            if (!this.documentsByGenres.containsKey(documentGenre))
-                this.documentGenres.remove(documentGenre);
-        });
+        // if (!this.documentsByTitles.containsKey(documentTitle))
+        //     this.documentTitles.remove(documentTitle);
+        //
+        // documentAuthors.forEach(documentAuthor -> {
+        //     if (!this.documentsByAuthors.containsKey(documentAuthor))
+        //         this.documentAuthors.remove(documentAuthor);
+        // });
+        //
+        // documentGenres.forEach(documentGenre -> {
+        //     if (!this.documentsByGenres.containsKey(documentGenre))
+        //         this.documentGenres.remove(documentGenre);
+        // });
     }
 }

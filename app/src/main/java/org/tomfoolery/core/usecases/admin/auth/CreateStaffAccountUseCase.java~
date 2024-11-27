@@ -55,8 +55,8 @@ public final class CreateStaffAccountUseCase extends AuthenticatedUserUseCase im
         this.staffRepository.save(staff);
     }
 
-    private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken administratorAuthenticationToken) throws AuthenticationTokenInvalidException {
-        val administratorId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(administratorAuthenticationToken);
+    private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
+        val administratorId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(authenticationToken);
 
         if (administratorId == null)
             throw new AuthenticationTokenInvalidException();

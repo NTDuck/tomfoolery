@@ -75,7 +75,7 @@ public final class Document implements ddd.Entity<Document.Id> {
         }
     }
 
-    @Data(staticConstructor = "of")
+    @Value(staticConstructor = "of")
     public static class QrCode implements ddd.ValueObject {
         byte @NonNull [] buffer;
     }

@@ -1,0 +1,37 @@
+package org.tomfoolery.infrastructures.adapters.controllers.guest.auth.abc;
+
+import lombok.Value;
+import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.domain.auth.Administrator;
+import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.usecases.guest.auth.abc.LogUserInUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInByCredentialsController;
+
+import java.util.Map;
+
+public abstract class LogUserInController {
+    protected static final @NonNull Map<Class<? extends BaseUser>, LogUserInByCredentialsController.UserType> userTypesByUserClasses = Map.of(
+        Administrator.class, UserType.ADMINISTRATOR,
+        Patron.class, UserType.PATRON,
+        Staff.class, UserType.STAFF
+    );
+
+    public enum UserType {
+        ADMINISTRATOR, PATRON, STAFF,
+    }
+
+    @Value
+    public static class ViewModel {
+        @NonNull UserType userType;
+
+        public static @NonNull ViewModel fromResponseModel(LogUserInUseCase.@NonNull Response responseModel) {
+            val userClass = responseModel.getLoggedInUserClass();
+            val userType = userTypesByUserClasses.get(userClass);
+
+            return new ViewModel(userType);
+        }
+    }
+}
