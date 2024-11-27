@@ -13,6 +13,7 @@ import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.Cr
 import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.DeleteStaffAccountActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.UpdateStaffCredentialsActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.CreatePatronAccountActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInByAuthenticationTokenActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInByCredentialsActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.DeletePatronAccountActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.UpdatePatronMetadataActionView;
@@ -113,6 +114,7 @@ public class Application implements Runnable, AutoCloseable {
         // Guest action views
         CreatePatronAccountActionView.of(ioProvider, patronRepository, passwordEncoder),
         LogUserInByCredentialsActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+        LogUserInByAuthenticationTokenActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
 
         // Shared user action views
         LogUserOutActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
@@ -151,7 +153,7 @@ public class Application implements Runnable, AutoCloseable {
     @Override
     public void run() {
         BaseView view;
-        Class<? extends BaseView> viewClass = this.getInitialViewClass();
+        Class<? extends BaseView> viewClass = LogUserInByAuthenticationTokenActionView.class;
 
         do {
             view = this.views.getViewByClass(viewClass);
@@ -170,21 +172,6 @@ public class Application implements Runnable, AutoCloseable {
 
             if (resource instanceof AutoCloseable autoCloseableResource)
                 autoCloseableResource.close();
-        }
-    }
-
-    private @NonNull Class<? extends BaseView> getInitialViewClass() {
-        val controller = LogUserInByAuthenticationTokenController.of(userRepositories, authenticationTokenGenerator, authenticationTokenRepository);
-        val presenter = LogUserInPresenter.of();
-
-        try {
-            val viewModel = controller.get();
-            val adaptedViewModel = presenter.apply(viewModel);
-
-            return adaptedViewModel.getNextViewClass();
-
-        } catch (Exception exception) {
-            return GuestSelectionView.class;
         }
     }
 
