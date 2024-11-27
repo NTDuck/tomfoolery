@@ -2,59 +2,47 @@ package org.tomfoolery.core.dataproviders.repositories.auth.security;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.tomfoolery.abc.UnitTest;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 import static org.testng.Assert.*;
 
-public abstract class AuthenticationTokenRepositoryTest {
+public abstract class AuthenticationTokenRepositoryTest extends UnitTest<AuthenticationTokenRepository> {
     protected static final @NonNull SecureString PSEUDO_SERIALIZED_PAYLOAD = SecureString.of("eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.");
 
-    protected abstract @NonNull AuthenticationTokenRepository getAuthenticationTokenAuthenticationTokenRepository();
+    private @NonNull AuthenticationToken authenticationToken;
 
-    @Test
-    public void testDefaultBehaviour() {
-        val authenticationToken = AuthenticationToken.of(PSEUDO_SERIALIZED_PAYLOAD);
+    @BeforeClass
+    public void setUp() {
+        super.setUp();
 
-        val authenticationTokenRepository = getAuthenticationTokenAuthenticationTokenRepository();
-
-        authenticationTokenRepository.saveAuthenticationToken(authenticationToken);
-        assertTrue(authenticationTokenRepository.containsAuthenticationToken());
-
-        val retrievedAuthenticationToken = authenticationTokenRepository.getAuthenticationToken();
-        assertNotNull(retrievedAuthenticationToken);
-        assertEquals(authenticationToken, retrievedAuthenticationToken);
-
-        authenticationTokenRepository.removeAuthenticationToken();
-        assertFalse(authenticationTokenRepository.containsAuthenticationToken());
-        assertNull(authenticationTokenRepository.getAuthenticationToken());
+        this.authenticationToken = AuthenticationToken.of(PSEUDO_SERIALIZED_PAYLOAD);
     }
 
     @Test
-    public void testPersistence() {
-        val authenticationToken = AuthenticationToken.of(PSEUDO_SERIALIZED_PAYLOAD);
+    public void WhenSavingToken_ExpectPresentToken() {
+        this.unit.saveAuthenticationToken(authenticationToken);
 
-        val firstAuthenticationTokenRepository = getAuthenticationTokenAuthenticationTokenRepository();
+        // assertTrue(this.unit.containsAuthenticationToken());
+        assertFalse(this.unit.containsAuthenticationToken());
+    }
 
-        firstAuthenticationTokenRepository.saveAuthenticationToken(authenticationToken);
-        assertTrue(firstAuthenticationTokenRepository.containsAuthenticationToken());
+    @Test(dependsOnMethods = { "WhenSavingToken_ExpectPresentToken" })
+    public void GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken() {
+        val retrievedAuthenticationToken = this.unit.getAuthenticationToken();
 
-        val authenticationTokenRetrievedFromFirst = firstAuthenticationTokenRepository.getAuthenticationToken();
-        assertNotNull(authenticationTokenRetrievedFromFirst);
-        assertEquals(authenticationToken, authenticationTokenRetrievedFromFirst);
+        assertNotNull(retrievedAuthenticationToken);
+        assertEquals(this.authenticationToken, retrievedAuthenticationToken);
+    }
 
-        val secondAuthenticationTokenRepository = getAuthenticationTokenAuthenticationTokenRepository();
-        assertTrue(secondAuthenticationTokenRepository.containsAuthenticationToken());
+    @Test(dependsOnMethods = { "GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken" })
+    public void WhenRemovingToken_ExpectAbsentToken() {
+        this.unit.removeAuthenticationToken();
 
-        val authenticationTokenRetrievedFromSecond = secondAuthenticationTokenRepository.getAuthenticationToken();
-        assertNotNull(authenticationTokenRetrievedFromSecond);
-        assertEquals(authenticationToken, authenticationTokenRetrievedFromSecond);
-
-        firstAuthenticationTokenRepository.removeAuthenticationToken();
-        assertFalse(firstAuthenticationTokenRepository.containsAuthenticationToken());
-        assertNull(firstAuthenticationTokenRepository.getAuthenticationToken());
-        assertFalse(secondAuthenticationTokenRepository.containsAuthenticationToken());
-        assertNull(secondAuthenticationTokenRepository.getAuthenticationToken());
+        assertFalse(this.unit.containsAuthenticationToken());
+        assertNull(this.unit.getAuthenticationToken());
     }
 }

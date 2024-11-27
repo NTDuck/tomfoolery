@@ -1,3 +1,5 @@
+import com.adarshr.gradle.testlogger.theme.ThemeType
+
 plugins {
     // Implicitly includes `java` and `distribution` plugins
     // Eases Java compilation, testing, and bundling
@@ -12,6 +14,9 @@ plugins {
     // JavaFX plugins and extras
     id("org.openjfx.javafxplugin") version "0.1.0"
     // id ("org.javamodularity.moduleplugin") version "1.8.12"
+
+    // Test Logger plugin
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 repositories {
@@ -109,6 +114,26 @@ java {
 javafx {
     version = "22"
     modules("javafx.base", "javafx.graphics", "javafx.controls", "javafx.fxml")
+}
+
+testlogger {
+    theme = ThemeType.MOCHA
+    showExceptions = true
+    showStackTraces = true
+    showFullStackTraces = false
+    showCauses = true
+    slowThreshold = 2000
+    showSummary = true
+    showSimpleNames = false
+    showPassed = true
+    showSkipped = true
+    showFailed = true
+    showOnlySlow = false
+    showStandardStreams = false
+    showPassedStandardStreams = true
+    showSkippedStandardStreams = true
+    showFailedStandardStreams = true
+    logLevel = LogLevel.LIFECYCLE
 }
 
 publishing {
@@ -219,11 +244,6 @@ tasks.named<Test>("test") {
 
     systemProperties["file.encoding"] = "utf-8"
 
-    testLogging {
-        // Enables console output
-        showStandardStreams = true
-    }
-    
     // Prevents failing tests from failing builds
     ignoreFailures = true
 }
