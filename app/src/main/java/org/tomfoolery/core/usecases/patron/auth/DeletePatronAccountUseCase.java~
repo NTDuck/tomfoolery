@@ -58,8 +58,8 @@ public final class DeletePatronAccountUseCase extends AuthenticatedUserUseCase i
         this.patronRepository.delete(patronId);
     }
 
-    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(patronAuthenticationToken);
+    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
+        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
         if (patronId == null)
             throw new AuthenticationTokenInvalidException();

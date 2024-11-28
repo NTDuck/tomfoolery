@@ -8,21 +8,23 @@ import org.tomfoolery.core.dataproviders.repositories.auth.security.Authenticati
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.core.utils.helpers.adapters.Codec;
+import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.UUID;
 
 public class KeyStoreAuthenticationTokenRepository implements AuthenticationTokenRepository {
-    private static final @NonNull String KEYSTORE_NAME = ".tomfoolery.p12";
     private static final @NonNull String KEYSTORE_TYPE = "pkcs12";
-    private static final @NonNull String KEYSTORE_PASSWORD = "lethality-yorick";
+    private static final @NonNull String KEYSTORE_EXTENSION = ".p12";
     private static final @NonNull String KEYSTORE_ENTRY_ALIAS = "auth-token";
-
     private static final @NonNull String SECRET_KEY_ALGORITHM = "AES";
+
+    private final @NonNull String keyStoreName;
+    private final @NonNull String keyStorePassword = UUID.randomUUID().toString();   // KeyStore terminated when application ends
 
     private final @NonNull KeyStore keyStore;
 
@@ -33,11 +35,12 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
     @SneakyThrows
     private KeyStoreAuthenticationTokenRepository() {
         this.keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
+        this.keyStoreName = FileManager.save(KEYSTORE_EXTENSION, new byte[0]);
 
-        try (val fileInputStream = new FileInputStream(KEYSTORE_NAME)) {
-            loadKeystoreFromInputStream(fileInputStream);
-        } catch (FileNotFoundException exception) {
-            createEmptyKeystore();
+        try (val fileInputStream = new FileInputStream(this.keyStoreName)) {
+            this.loadKeystoreFromInputStream(fileInputStream);
+        } catch (Exception exception) {
+            this.createEmptyKeystore();
         }
     }
 
@@ -45,11 +48,11 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
     @SneakyThrows
     public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
         val secretKeyEntry = getSecretKeyEntryFromToken(authenticationToken);
-        val protectionParameter = getProtectionParameter();
+        val protectionParameter = this.getProtectionParameter();
 
         this.keyStore.setEntry(KEYSTORE_ENTRY_ALIAS, secretKeyEntry, protectionParameter);
 
-        saveToFile();
+        this.saveToFile();
     }
 
     @Override
@@ -57,13 +60,13 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
     public void removeAuthenticationToken() {
         this.keyStore.deleteEntry(KEYSTORE_ENTRY_ALIAS);
 
-        saveToFile();
+        this.saveToFile();
     }
 
     @Override
     @SneakyThrows
     public @Nullable AuthenticationToken getAuthenticationToken() {
-        val protectionParameter = getProtectionParameter();
+        val protectionParameter = this.getProtectionParameter();
         val entry = (KeyStore.SecretKeyEntry) this.keyStore.getEntry(KEYSTORE_ENTRY_ALIAS, protectionParameter);
 
         if (entry == null)
@@ -90,12 +93,12 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
         this.keyStore.load(null, passwordCharArray);
     }
 
-    private static char @NonNull [] getPasswordCharArray() {
-        return KEYSTORE_PASSWORD.toCharArray();
+    private char @NonNull [] getPasswordCharArray() {
+        return this.keyStorePassword.toCharArray();
     }
 
-    private static KeyStore.@NonNull ProtectionParameter getProtectionParameter() {
-        val passwordCharArray = getPasswordCharArray();
+    private KeyStore.@NonNull ProtectionParameter getProtectionParameter() {
+        val passwordCharArray = this.getPasswordCharArray();
         return new KeyStore.PasswordProtection(passwordCharArray);
     }
 
@@ -121,9 +124,9 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @SneakyThrows
     private void saveToFile() {
-        val passwordCharArray = getPasswordCharArray();
+        val passwordCharArray = this.getPasswordCharArray();
 
-        try (val fileOutputStream = new FileOutputStream(KEYSTORE_NAME)) {
+        try (val fileOutputStream = new FileOutputStream(this.keyStoreName)) {
             this.keyStore.store(fileOutputStream, passwordCharArray);
         }
     }

@@ -46,6 +46,7 @@ public abstract class BaseSelectionView extends BaseView {
 
     @SneakyThrows
     private void displayTitle() {
+        this.ioProvider.writeLine("");
         val formattedTitle = FontFormatter.format(TITLE, FontFormatter.Font.ANSI_SHADOW);
         this.ioProvider.writeLine(formattedTitle);
     }

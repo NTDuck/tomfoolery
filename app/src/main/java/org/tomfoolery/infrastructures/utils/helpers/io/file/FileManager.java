@@ -17,7 +17,7 @@ public final class FileManager {
         val baseFileName = getRandomBaseFileName();
         val normalizedFileExtension = getNormalizedFileExtension(fileExtension);
 
-        val filePath = Files.createTempFile(baseFileName, normalizedFileExtension);
+        val filePath = Files.createTempFile(baseFileName, normalizedFileExtension).toAbsolutePath();
         Files.write(filePath, content);
 
         val file = filePath.toFile();
@@ -27,22 +27,25 @@ public final class FileManager {
     }
 
     public static void open(@NonNull String filePathName) throws IOException {
-        val desktop = Desktop.getDesktop();
-
-        if (!Desktop.isDesktopSupported() || !desktop.isSupported(Desktop.Action.OPEN))
+        if (!Desktop.isDesktopSupported())
             throw new IOException();
 
-        val filePath = Path.of(filePathName);
-        val file = filePath.toFile();
+        val desktop = Desktop.getDesktop();
+
+        if (!desktop.isSupported(Desktop.Action.OPEN))
+            throw new IOException();
+
+        val filePath = Path.of(filePathName).toAbsolutePath();
 
         if (!Files.exists(filePath))
             throw new IOException();
 
+        val file = filePath.toFile();
         desktop.open(file);
     }
 
     public static byte @NonNull [] read(@NonNull String filePathName) throws IOException {
-        val filePath = Path.of(filePathName);
+        val filePath = Path.of(filePathName).toAbsolutePath();
 
         try {
             return Files.readAllBytes(filePath);
@@ -57,9 +60,6 @@ public final class FileManager {
     }
 
     private static @NonNull String getNormalizedFileExtension(@NonNull String fileExtension) {
-        if (!fileExtension.startsWith("."))
-            return "." + fileExtension;
-
-        return fileExtension;
+        return fileExtension.startsWith(".") ? fileExtension : String.format(".%s", fileExtension);
     }
 }

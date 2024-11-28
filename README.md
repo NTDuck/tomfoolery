@@ -7,6 +7,8 @@
 ### Build and run
 ```
 gradle clean build
+// gradle clean build --refresh-dependencies
+// gradle test --rerun-tasks
 
 // Choose one
 gradle runConsole --console=plain
