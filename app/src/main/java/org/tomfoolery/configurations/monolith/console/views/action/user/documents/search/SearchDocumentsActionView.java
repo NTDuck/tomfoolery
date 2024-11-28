@@ -52,7 +52,6 @@ public final class SearchDocumentsActionView extends UserActionView {
             this.onSearchPatternIndexInvalidException();
         } catch (PageIndexInvalidException exception) {
             this.onPageIndexInvalidException();
-
         } catch (SearchDocumentsUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
         } catch (SearchDocumentsUseCase.AuthenticationTokenInvalidException exception) {

@@ -11,6 +11,7 @@
 }
 
 .right-side {
+    -fx-padding: 10 0 10 0;
 }
 
 .status-label {
@@ -26,10 +27,11 @@
 }
 
 .action-button {
+    -fx-alignment: center;
     -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 20;
-    -fx-pref-height: 50;
-    -fx-pref-width: 100;
+    -fx-font-size: 16;
+    -fx-pref-height: 40;
+    -fx-pref-width: 80;
     -fx-background-color: white;
     -fx-background-radius: 8;
     -fx-border-width: 1;
@@ -51,4 +53,20 @@
     -fx-pref-width: 800;
     -fx-font-family: "Segoe UI Variable";
     -fx-font-size: 24;
+}
+
+.description-scroll-pane {
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: gray;
+    -fx-background-color: transparent;
+}
+
+.description {
+    -fx-background-color: transparent;
+    -fx-alignment: top-left;
+    -fx-wrap-text: true;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
+    -fx-padding: 10 0 10 10;
 }

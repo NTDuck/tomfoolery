@@ -3,8 +3,10 @@ package org.tomfoolery.configurations.monolith.gui.view.patron;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -80,10 +82,14 @@ public class PatronDocumentView {
     private Label yearPublishedLabel;
 
     @FXML
+    private ScrollPane descriptionScrollPane;
+
+    @FXML
     private Label descriptionArea;
 
     @FXML
     public void initialize() {
+        descriptionScrollPane.setFitToWidth(true);
         loadInfo();
         borrowButton.setOnAction(event -> borrowDocument());
         returnButton.setOnAction(event -> returnDocument());
@@ -121,7 +127,7 @@ public class PatronDocumentView {
         isbnLabel.setText("ISBN: " + this.documentISBN);
         publisherLabel.setText("Publisher: " + fragmentaryDocument.getDocumentPublisher());
         yearPublishedLabel.setText("Year Published: " + String.valueOf(fragmentaryDocument.getDocumentPublishedYear()));
-        descriptionArea.setText("Description: " + fragmentaryDocument.getDocumentDescription());
+        descriptionArea.setText(fragmentaryDocument.getDocumentDescription());
 
         String coverImagePath = fragmentaryDocument.getDocumentCoverImageFilePath();
         System.out.println("image path in patron document view: " + coverImagePath);
@@ -158,7 +164,7 @@ public class PatronDocumentView {
     private void onBorrowingSuccess() {
         message.setVisible(true);
         setSuccessStyleForMessage(message);
-        message.setText("Document borrowed successfully!");
+        message.setText("Document borrowed!");
     }
 
     private void onDocumentAlreadyBorrowedException() {
@@ -178,6 +184,7 @@ public class PatronDocumentView {
 
         try {
             this.returnDocumentController.accept(requestObject);
+            this.onReturningSuccess();
         } catch (ReturnDocumentUseCase.AuthenticationTokenNotFoundException exception) {
             System.err.println("how is auth token not found!?");
         } catch (ReturnDocumentUseCase.AuthenticationTokenInvalidException exception) {
@@ -189,6 +196,12 @@ public class PatronDocumentView {
         } catch (ReturnDocumentUseCase.DocumentNotBorrowedException exception) {
             this.onDocumentNotBorrowedException();
         }
+    }
+
+    private void onReturningSuccess() {
+        message.setVisible(true);
+        setSuccessStyleForMessage(message);
+        message.setText("Document returned!");
     }
 
     private void onDocumentNotBorrowedException() {
@@ -203,14 +216,13 @@ public class PatronDocumentView {
 
     private void closeView() {
         StageManager.getInstance().getRootStackPane().getChildren().removeLast();
-        StageManager.getInstance().getRootStackPane().getChildren().getFirst().setMouseTransparent(false);
     }
 
     private void setSuccessStyleForMessage(@NotNull Label label) {
-        label.setStyle("-fx-text-fill: green; -fx-font-family: \"Segoe UI Variable\"; -fx-font-size: 18; -fx-background-color: transparent;");
+        label.setStyle("-fx-text-fill: green; -fx-font-family: \"Segoe UI Variable\"; -fx-font-size: 16; -fx-background-color: transparent;");
     }
 
     private void setErrorStyleForMessage(@NotNull Label label) {
-        label.setStyle("-fx-text-fill: red; -fx-font-family: \"Segoe UI Variable\"; -fx-font-size: 18; -fx-background-color: transparent;");
+        label.setStyle("-fx-text-fill: red; -fx-font-family: \"Segoe UI Variable\"; -fx-font-size: 16; -fx-background-color: transparent;");
     }
 }

@@ -10,13 +10,13 @@ import javafx.scene.control.TableView;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ShowBorrowedDocumentsController;
-
 import java.util.function.Consumer;
 
 public class ShowBorrowedDocumentsView {
@@ -62,7 +62,7 @@ public class ShowBorrowedDocumentsView {
         loadDocuments();
     }
 
-    private void addButtonToColumn(TableColumn<DocumentViewModel, Void> column, String buttonText, Consumer<DocumentViewModel> action) {
+    private void addButtonToColumn(@NonNull TableColumn<DocumentViewModel, Void> column, String buttonText, Consumer<DocumentViewModel> action) {
         column.setCellFactory(param -> new TableCell<>() {
             private final Button button = new Button(buttonText);
 

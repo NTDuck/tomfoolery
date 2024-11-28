@@ -10,71 +10,68 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox prefHeight="720.0" prefWidth="1200.0" spacing="20.0" maxHeight="720" maxWidth="1200"
-      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
-      stylesheets="/css/Patron/DocumentView.css" styleClass="root-container">
-   <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="600.0" spacing="20.0"
-         HBox.hgrow="ALWAYS" styleClass="left-side">
-      <Label prefHeight="50.0" prefWidth="230.0" text="Not borrowed" styleClass="status-label" fx:id="statusLabel">
-      </Label>
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
+      stylesheets="/css/Patron/DocumentView.css" prefHeight="720" prefWidth="1280"
+      style="-fx-padding: 80 200 80 200; -fx-alignment: center; -fx-background-color: transparent">
+   <HBox prefHeight="560.0" prefWidth="880.0" spacing="20.0" styleClass="root-container" HBox.hgrow="ALWAYS">
+      <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="600.0" spacing="20.0"
+            HBox.hgrow="ALWAYS" styleClass="left-side">
+         <Label prefHeight="50.0" prefWidth="230.0" text="Not borrowed" styleClass="status-label" fx:id="statusLabel"
+            VBox.vgrow="ALWAYS"/>
 
-      <ImageView fitHeight="540.0" fitWidth="310.0" pickOnBounds="true" preserveRatio="true" fx:id="coverImage">
-         <Image url="/images/jayce97.png"/>
-      </ImageView>
+         <ImageView fitHeight="540" fitWidth="310" preserveRatio="true" fx:id="coverImage"
+            VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+            <Image url="/images/jayce97.png"/>
+         </ImageView>
 
-      <Label prefHeight="45.0" prefWidth="250.0" text="Rating: 4.67 / 5" styleClass="rating-label" fx:id="ratingLabel">
-      </Label>
-   </VBox>
-
-   <VBox prefHeight="400.0" prefWidth="800.0" HBox.hgrow="ALWAYS" styleClass="right-side">
-      <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="800.0" spacing="20.0">
-         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Borrow"
-                 styleClass="action-button" fx:id="borrowButton" HBox.hgrow="ALWAYS">
-         </Button>
-
-         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Return"
-                 styleClass="action-button" fx:id="returnButton" HBox.hgrow="ALWAYS">
-         </Button>
-
-         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Close"
-                 styleClass="action-button" fx:id="closeButton" HBox.hgrow="ALWAYS">
-         </Button>
-
-         <Label fx:id="message" wrapText="true" maxWidth="300" maxHeight="80" HBox.hgrow="ALWAYS"/>
-      </HBox>
-
-      <VBox prefWidth="600.0" VBox.vgrow="ALWAYS" styleClass="document-info">
-         <Label text="Title: thrill of the hunt" styleClass="document-info-label" fx:id="titleLabel"/>
-
-         <Label text="Authors: Duy, Hieu" styleClass="document-info-label" fx:id="authorsLabel"/>
-
-         <Label text="Genres: LoL, Science" styleClass="document-info-label" fx:id="genresLabel"/>
-
-         <Label text="ISBN: 12378312" styleClass="document-info-label" fx:id="isbnLabel"/>
-
-         <Label text="Publisher: Duck" styleClass="document-info-label" fx:id="publisherLabel"/>
-
-         <Label text="Year Published: 2023" styleClass="document-info-label" fx:id="yearPublishedLabel"/>
-
-         <Label prefHeight="17.0" prefWidth="670.0" text="Description:">
-            <font>
-               <Font name="Segoe UI Variable" size="24.0" />
-            </font>
-         </Label>
-
-         <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="230.0" prefWidth="800.0"
-                     style="-fx-background-color: transparent;">
-            <Label alignment="TOP_LEFT" prefHeight="4000.0" prefWidth="800.0"
-                   style="-fx-border-color: gray; -fx-border-radius: 10;" text="this is description" wrapText="true"
-                   fx:id="descriptionArea">
-               <font>
-                  <Font name="Calibri" size="20.0"/>
-               </font>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-               </padding>
-            </Label>
-         </ScrollPane>
+         <Label prefHeight="45.0" prefWidth="250.0" text="Rating: 4.67 / 5" styleClass="rating-label" fx:id="ratingLabel"
+            VBox.vgrow="ALWAYS"/>
       </VBox>
-   </VBox>
+
+      <VBox prefHeight="400.0" prefWidth="800.0" HBox.hgrow="ALWAYS" styleClass="right-side">
+         <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0" spacing="10.0">
+            <Button mnemonicParsing="false" text="Borrow"
+                    styleClass="action-button" fx:id="borrowButton" HBox.hgrow="ALWAYS">
+            </Button>
+
+            <Button mnemonicParsing="false" text="Return"
+                    styleClass="action-button" fx:id="returnButton" HBox.hgrow="ALWAYS">
+            </Button>
+
+            <Button mnemonicParsing="false" text="Close"
+                    styleClass="action-button" fx:id="closeButton" HBox.hgrow="ALWAYS">
+            </Button>
+         </HBox>
+
+         <VBox prefWidth="600.0" VBox.vgrow="ALWAYS" styleClass="document-info">
+            <Label fx:id="message" prefHeight="40" VBox.vgrow="ALWAYS"/>
+            <Label text="Title: thrill of the hunt" styleClass="document-info-label" fx:id="titleLabel" VBox.vgrow="ALWAYS"/>
+
+            <Label text="Authors: Duy, Hieu" styleClass="document-info-label" fx:id="authorsLabel" VBox.vgrow="ALWAYS"/>
+
+            <Label text="Genres: LoL, Science" styleClass="document-info-label" fx:id="genresLabel" VBox.vgrow="ALWAYS"/>
+
+            <Label text="ISBN: 12378312" styleClass="document-info-label" fx:id="isbnLabel" VBox.vgrow="ALWAYS"/>
+
+            <Label text="Publisher: Duck" styleClass="document-info-label" fx:id="publisherLabel" VBox.vgrow="ALWAYS"/>
+
+            <Label text="Year Published: 2023" styleClass="document-info-label" fx:id="yearPublishedLabel" VBox.vgrow="ALWAYS"/>
+
+            <Label prefHeight="17.0" prefWidth="670.0" text="Description:" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font name="Segoe UI Variable" size="24.0" />
+               </font>
+            </Label>
+
+            <ScrollPane hbarPolicy="NEVER" prefHeight="230" styleClass="description-scroll-pane"
+                        fx:id="descriptionScrollPane" VBox.vgrow="ALWAYS">
+               <Label styleClass="description" fx:id="descriptionArea"/>
+            </ScrollPane>
+
+            <VBox.margin>
+               <Insets top="10.0" />
+            </VBox.margin>
+         </VBox>
+      </VBox>
+   </HBox>
 </HBox>

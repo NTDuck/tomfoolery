@@ -15,6 +15,7 @@ import javafx.scene.shape.Rectangle;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.patron.PatronDocumentView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -81,6 +82,10 @@ public class Discover {
         criteriaTitleCheckBox.setOnAction(event -> checkOnTitleBox());
         criteriaGenreCheckBox.setOnAction(event -> checkOnGenreBox());
         criteriaAuthorCheckBox.setOnAction(event -> checkOnAuthorBox());
+        patternPrefixCheckBox.setOnAction(event -> checkOnPrefixBox());
+        patternSuffixCheckBox.setOnAction(event -> checkOnSuffixBox());
+        patternSubsequenceCheckBox.setOnAction(event -> checkOnSubsequenceBox());
+
         searchBooks();
     }
 
@@ -93,7 +98,6 @@ public class Discover {
                  SearchDocumentsUseCase.AuthenticationTokenInvalidException e) {
             System.err.println("Authentication invalid or not found");
         } catch (SearchDocumentsUseCase.PaginationInvalidException e) {
-            System.err.println("Pagination Invalid");
             booksContainer.getChildren().clear();
         }
     }
@@ -103,8 +107,7 @@ public class Discover {
         val searchPattern = getChosePattern();
         String searchText = searchField.getText();
 
-        return SearchDocumentsController.RequestObject.of(searchCriterion, searchPattern,
-                searchText, 1, Integer.MAX_VALUE);
+        return SearchDocumentsController.RequestObject.of(searchCriterion, searchPattern, searchText, 1, 1000);
     }
 
     private SearchDocumentsController.@NonNull SearchCriterion getChoseCriterion() {
@@ -143,18 +146,18 @@ public class Discover {
 
     private void onSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
         booksContainer.getChildren().clear();
-
-        viewModel.getPaginatedFragmentaryDocuments()
-                .forEach(fragmentaryDocument -> {
-                    String authors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
-                    String documentTitle = fragmentaryDocument.getDocumentTitle();
-                    String isbn = fragmentaryDocument.getISBN();
-                    String coverImagePath = fragmentaryDocument.getDocumentCoverImageFilePath();
-                    booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, coverImagePath));
-                });
+        System.out.println("number of docs: " + viewModel.getPaginatedFragmentaryDocuments().size());
+        viewModel.getPaginatedFragmentaryDocuments().forEach(fragmentaryDocument ->
+        {
+            String authors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
+            String documentTitle = fragmentaryDocument.getDocumentTitle();
+            String isbn = fragmentaryDocument.getISBN();
+            String coverImagePath = fragmentaryDocument.getDocumentCoverImageFilePath();
+            booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, coverImagePath));
+        });
     }
 
-    private VBox createDocumentTileWithImage(String authors, String title, String isbn, String coverImagePath) {
+    private @NonNull VBox createDocumentTileWithImage(String authors, String title, String isbn, String coverImagePath) {
         VBox documentTile = new VBox();
         documentTile.setMaxHeight(300);
         documentTile.setMaxWidth(210);
@@ -171,7 +174,6 @@ public class Discover {
         isbnLabel.setVisible(false);
 
         try {
-            System.out.println("found document's cover image path: " + coverImagePath);
             File imgFile = new File(coverImagePath);
             Image image = new Image(imgFile.toURI().toString(), 160, 240, true, true, true);
             ImageView coverImage = new ImageView(image);
@@ -210,7 +212,6 @@ public class Discover {
         HBox hbox = loader.load();
 
         StackPane rootStackPane = StageManager.getInstance().getRootStackPane();
-        rootStackPane.getChildren().getFirst().setMouseTransparent(true);
         rootStackPane.getChildren().add(hbox);
     }
 
