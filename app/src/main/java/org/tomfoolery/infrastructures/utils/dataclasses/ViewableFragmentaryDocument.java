@@ -7,7 +7,6 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
 import org.tomfoolery.infrastructures.utils.helpers.loaders.ResourceLoader;
 
@@ -43,7 +42,7 @@ public class ViewableFragmentaryDocument {
         val documentMetadata = fragmentaryDocument.getMetadata();
         val documentAudit = fragmentaryDocument.getAudit();
 
-        val documentCoverImageFilePath = saveDocumentCoverImageAndGetPath(documentMetadata.getCoverImage().getBuffer());
+        val documentCoverImageFilePath = saveDocumentCoverImageAndGetPath(documentMetadata.getCoverImage().getBytes());
 
         return ViewableFragmentaryDocument.builder()
             .setISBN(documentId.getISBN())

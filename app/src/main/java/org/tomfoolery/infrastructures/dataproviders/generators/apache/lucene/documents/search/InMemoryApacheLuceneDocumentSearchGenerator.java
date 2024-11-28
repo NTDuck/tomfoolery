@@ -3,7 +3,6 @@ package org.tomfoolery.infrastructures.dataproviders.generators.apache.lucene.do
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 
 import java.time.Instant;
 import java.util.List;

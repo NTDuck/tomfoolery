@@ -7,12 +7,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 
 public final class Staff extends ModifiableUser {
-    public static @NonNull Staff of(@NonNull Id id, @NonNull Credentials credentials, @NonNull Audit audit) {
-        return new Staff(id, credentials, audit);
+    public static @NonNull Staff of(@NonNull Id id, @NonNull Audit audit, @NonNull Credentials credentials) {
+        return new Staff(id, audit, credentials);
     }
 
-    private Staff(@NonNull Id id, @NonNull Credentials credentials, @NonNull Audit audit) {
-        super(id, credentials, audit);
+    private Staff(@NonNull Id id, @NonNull Audit audit, @NonNull Credentials credentials) {
+        super(id, audit, credentials);
     }
 
     @Override

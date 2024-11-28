@@ -6,7 +6,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseSynchronizableRepository;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.core.utils.dataclasses.common.Page;
 
 import java.util.List;

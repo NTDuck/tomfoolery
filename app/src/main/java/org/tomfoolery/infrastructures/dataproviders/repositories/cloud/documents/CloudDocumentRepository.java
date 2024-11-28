@@ -1,7 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
@@ -52,13 +51,13 @@ public class CloudDocumentRepository implements DocumentRepository {
             stmt.setArray(5, connection.createArrayOf("TEXT", document.getMetadata().getGenres().toArray()));
             stmt.setInt(6, document.getMetadata().getPublishedYear().getValue());
             stmt.setString(7, document.getMetadata().getPublisher());
-            stmt.setBytes(8, document.getMetadata().getCoverImage().getBuffer());
+            stmt.setBytes(8, document.getMetadata().getCoverImage().getBytes());
             stmt.setBytes(9, document.getContent().getBytes());
-            stmt.setString(10, String.valueOf(document.getAudit().getCreatedByStaffId().getValue()));
+            stmt.setString(10, String.valueOf(document.getAudit().getCreatedByStaffId().getUuid()));
             stmt.setString(11, document.getAudit().getLastModifiedByStaffId() != null
-                    ? String.valueOf(document.getAudit().getLastModifiedByStaffId().getValue()) : null);
+                    ? String.valueOf(document.getAudit().getLastModifiedByStaffId().getUuid()) : null);
             stmt.setArray(12, connection.createArrayOf("TEXT", document.getAudit().getBorrowingPatronIds().stream()
-                    .map(Patron.Id::getValue).toArray()));
+                    .map(Patron.Id::getUuid).toArray()));
             stmt.setDouble(13, document.getAudit().getRating().getValue());
             stmt.setTimestamp(14, Timestamp.from(document.getAudit().getTimestamps().getCreated()));
             stmt.setTimestamp(15, document.getAudit().getTimestamps().getLastModified() != null

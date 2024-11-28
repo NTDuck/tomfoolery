@@ -2,7 +2,6 @@ package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documen
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.abc.BaseInMemorySynchronizedGenerator;
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 

@@ -14,5 +14,7 @@ public interface ddd {
         @NonNull EntityId getId();
     }
 
+    interface ValueObject {}
+
     interface Repository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> {}
 }

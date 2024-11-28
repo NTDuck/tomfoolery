@@ -8,7 +8,6 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 
 import java.net.URISyntaxException;
 import java.time.format.DateTimeFormatter;

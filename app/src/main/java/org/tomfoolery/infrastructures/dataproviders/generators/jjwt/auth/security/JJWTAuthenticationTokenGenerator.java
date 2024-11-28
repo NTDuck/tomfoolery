@@ -84,7 +84,7 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     }
 
     private static @NonNull Serializable generateSerializableFromUserId(BaseUser.@NonNull Id userId) {
-        return userId.getValue().toString();
+        return userId.getUuid().toString();
     }
 
     private static BaseUser.@NonNull Id getUserIdFromSerializable(@NonNull Object serializable) {

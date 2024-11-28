@@ -1,14 +1,11 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation;
 
 import lombok.NoArgsConstructor;
-import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.abc.InMemoryLinearDocumentGenerator;
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -8,8 +8,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.time.Instant;
 
 public class ModifiableUser extends BaseUser {
-    protected ModifiableUser(@NonNull Id id, @NonNull Credentials credentials, @NonNull Audit audit) {
-        super(id, credentials, audit);
+    protected ModifiableUser(@NonNull Id id,@NonNull Audit audit, @NonNull Credentials credentials) {
+        super(id, audit, credentials);
     }
 
     @Override

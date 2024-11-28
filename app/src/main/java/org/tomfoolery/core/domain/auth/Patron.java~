@@ -9,12 +9,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
 import org.tomfoolery.core.domain.documents.Document;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Getter @Setter
 public final class Patron extends ModifiableUser {

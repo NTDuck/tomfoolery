@@ -84,4 +84,9 @@ public final class Document implements ddd.Entity<Document.Id> {
     public static class QrCode {
         byte @NonNull [] bytes;
     }
+
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    private static class Binary {
+        protected static byte @NonNull [] EMPTY_BYTES = new byte[0];
+    }
 }

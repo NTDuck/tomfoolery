@@ -11,7 +11,6 @@ import org.quinto.dawg.DAWGSet;
 import org.quinto.dawg.ModifiableDAWGSet;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.abc.BaseInMemorySynchronizedGenerator;
 
 import java.util.List;

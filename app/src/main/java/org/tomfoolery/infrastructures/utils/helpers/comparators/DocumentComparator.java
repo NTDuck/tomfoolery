@@ -3,7 +3,6 @@ package org.tomfoolery.infrastructures.utils.helpers.comparators;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
 
 import java.time.Instant;
 import java.util.Comparator;

@@ -1,6 +1,9 @@
 package org.tomfoolery.core.domain.auth.abc;
 
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.utils.contracts.ddd.ddd;
@@ -12,23 +15,17 @@ import java.util.UUID;
 @Data
 public class BaseUser implements ddd.Entity<BaseUser.Id> {
     private final @NonNull Id id;
+    private final @NonNull Audit audit;
 
     private @NonNull Credentials credentials;
-    private final @NonNull Audit audit;
 
     @Value(staticConstructor = "of")
     public static class Id implements ddd.EntityId {
-        @NonNull UUID value;
-    }
-
-    @Data(staticConstructor = "of")
-    public static class Credentials implements ddd.ValueObject{
-        private @NonNull String username;
-        @With private @NonNull SecureString password;
+        @NonNull UUID uuid;
     }
 
     @Getter @Setter
-    public static class Audit implements ddd.ValueObject {
+    public static class Audit {
         private final @NonNull Timestamps timestamps;
 
         public static @NonNull Audit of(@NonNull Timestamps timestamps) {
@@ -40,7 +37,7 @@ public class BaseUser implements ddd.Entity<BaseUser.Id> {
         }
 
         @Getter @Setter
-        public static class Timestamps implements ddd.ValueObject {
+        public static class Timestamps {
             private final @NonNull Instant created;
             private @Nullable Instant lastLogin;
             private @Nullable Instant lastLogout;
@@ -53,5 +50,11 @@ public class BaseUser implements ddd.Entity<BaseUser.Id> {
                 this.created = created;
             }
         }
+    }
+
+    @Value(staticConstructor = "of")
+    public static class Credentials {
+        @NonNull String username;
+        @NonNull SecureString password;
     }
 }
