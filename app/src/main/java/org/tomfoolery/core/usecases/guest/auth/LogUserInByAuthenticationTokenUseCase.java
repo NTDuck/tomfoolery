@@ -11,7 +11,7 @@ import org.tomfoolery.core.usecases.guest.auth.abc.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.common.UserAndRepository;
+import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
 
 @RequiredArgsConstructor(staticName = "of")
 public final class LogUserInByAuthenticationTokenUseCase extends LogUserInUseCase implements ThrowableSupplier<LogUserInByAuthenticationTokenUseCase.Response> {

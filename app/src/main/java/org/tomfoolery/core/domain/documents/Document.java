@@ -1,15 +1,13 @@
 package org.tomfoolery.core.domain.documents;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Value;
+import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.helpers.adapters.documents.ISBNAdapter;
 
 import java.time.Instant;
 import java.time.Year;
@@ -19,21 +17,25 @@ import java.util.List;
 import java.util.Set;
 
 @Data(staticConstructor = "of")
+@RequiredArgsConstructor(staticName = "of")
+@AllArgsConstructor(staticName = "of")
 public final class Document implements ddd.Entity<Document.Id> {
-    public static byte @NonNull [] EMPTY_BYTES = new byte[0];
-
     private final @NonNull Id id;
     private final @NonNull Audit audit;
 
     private @NonNull Metadata metadata;
     private @NonNull Rating rating;
 
-    private @NonNull Content content;
-    private @NonNull CoverImage coverImage;
+    private @Nullable Content content;
+    private @Nullable CoverImage coverImage;
 
     @Value(staticConstructor = "of")
     public static class Id implements ddd.EntityId {
-        @NonNull String ISBN;
+        @NonNull String ISBN10;
+
+        public @NonNull String getISBN13() {
+            return ISBNAdapter.toISBN13(ISBN10);
+        }
     }
 
     @Data(staticConstructor = "of")

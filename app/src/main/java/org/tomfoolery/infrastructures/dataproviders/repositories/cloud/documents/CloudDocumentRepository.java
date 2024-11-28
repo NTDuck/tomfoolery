@@ -44,7 +44,7 @@ public class CloudDocumentRepository implements DocumentRepository {
         try (Connection connection = dbConfig.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
-            stmt.setString(1, document.getId().getISBN());
+            stmt.setString(1, document.getId().getISBN10());
             stmt.setString(2, document.getMetadata().getTitle());
             stmt.setString(3, document.getMetadata().getDescription());
             stmt.setArray(4, connection.createArrayOf("TEXT", document.getMetadata().getAuthors().toArray()));
@@ -80,7 +80,7 @@ public class CloudDocumentRepository implements DocumentRepository {
         try (Connection connection = dbConfig.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
-            stmt.setString(1, id.getISBN());
+            stmt.setString(1, id.getISBN10());
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -117,7 +117,7 @@ public class CloudDocumentRepository implements DocumentRepository {
         try (Connection connection = dbConfig.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
-            stmt.setString(1, id.getISBN());
+            stmt.setString(1, id.getISBN10());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -14,7 +14,7 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.common.Page;
+import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.Set;
 import java.util.stream.Collectors;

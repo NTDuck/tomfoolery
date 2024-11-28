@@ -12,7 +12,7 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.core.utils.dataclasses.common.UserAndRepository;
+import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
 

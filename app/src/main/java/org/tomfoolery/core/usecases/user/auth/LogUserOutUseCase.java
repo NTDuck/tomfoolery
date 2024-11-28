@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.common.UserAndRepository;
+import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
 
 import java.time.Instant;
 

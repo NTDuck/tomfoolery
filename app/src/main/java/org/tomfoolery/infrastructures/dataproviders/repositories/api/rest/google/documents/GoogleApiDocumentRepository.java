@@ -13,7 +13,6 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
-import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.time.Year;
 import java.util.List;
@@ -55,7 +54,7 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
     public @Nullable Document getById(Document.@NonNull Id entityId) {
         try {
             val httpResponse = this.httpClientProvider.sendSynchronousGET(
-                String.format("%s?q=isbn:%s", ENDPOINT_URL, entityId.getISBN()),
+                String.format("%s?q=isbn:%s", ENDPOINT_URL, entityId.getISBN10()),
                 HttpClientProvider.Headers.builder().build()
             );
 

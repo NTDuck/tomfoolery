@@ -66,9 +66,8 @@ public final class Patron extends ModifiableUser {
 
         @Value(staticConstructor = "of")
         public static class Address {
-            @NonNull String street;
             @NonNull String city;
-            @Unsigned short postalCode;
+            @NonNull String country;
         }
     }
 }
