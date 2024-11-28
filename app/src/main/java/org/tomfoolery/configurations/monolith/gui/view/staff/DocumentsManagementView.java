@@ -65,8 +65,7 @@ public class DocumentsManagementView extends ShowDocumentsView{
             loader.setController(controller);
             VBox v = loader.load();
 
-            StackPane rootStackPane = StageManager.getInstance().getRootStackPane();
-            rootStackPane.getChildren().add(v);
+            StageManager.getInstance().getRootStackPane().getChildren().add(v);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

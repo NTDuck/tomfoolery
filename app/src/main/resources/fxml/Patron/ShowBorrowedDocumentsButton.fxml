@@ -9,7 +9,7 @@
         styleClass="sidebar-button" fx:id="controlCenterButton">
     <graphic>
         <ImageView fitHeight="40" fitWidth="40">
-            <Image url="/images/controlcenter.png"/>
+            <Image url="/images/book.png"/>
         </ImageView>
     </graphic>
 </Button>

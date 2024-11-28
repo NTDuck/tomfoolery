@@ -12,7 +12,7 @@
 <VBox minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS"
       prefHeight="720.0" prefWidth="1200.0" spacing="20.0" stylesheets="/css/Patron/ShowBorrowedDocumentsView.css"
       styleClass="root" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-    <Label prefHeight="70.0" prefWidth="1160.0" style="-fx-border-color: gray; -fx-border-width: 0 0 2 0;"
+    <Label prefHeight="70.0" prefWidth="4000" style="-fx-border-color: gray; -fx-border-width: 0 0 2 0;"
            text="Borrowed documents">
         <font>
           <Font name="Segoe UI Variable" size="40.0"/>
@@ -20,33 +20,32 @@
     </Label>
     <TableView prefHeight="600.0" prefWidth="1160.0" styleClass="documents-table" fx:id="documentsTable">
       <columns>
-          <TableColumn text="Number" fx:id="numberColumn">
-
+          <TableColumn prefWidth="100" text="Number" fx:id="numberColumn">
           </TableColumn>
 
-          <TableColumn prefWidth="100" text="ISBN">
+          <TableColumn prefWidth="150" text="ISBN">
               <cellValueFactory>
                   <PropertyValueFactory property="ISBN"/>
               </cellValueFactory>
           </TableColumn>
-          <TableColumn prefWidth="400.0" text="Title">
+          <TableColumn prefWidth="400" text="Title">
               <cellValueFactory>
                   <PropertyValueFactory property="title"/>
               </cellValueFactory>
           </TableColumn>
-          <TableColumn prefWidth="300.0" text="Authors">
+          <TableColumn prefWidth="210.0" text="Authors">
               <cellValueFactory>
                   <PropertyValueFactory property="authors"/>
               </cellValueFactory>
           </TableColumn>
 
-          <TableColumn prefWidth="70.0" fx:id="readColumn">
+          <TableColumn prefWidth="100.0" fx:id="readColumn">
 
           </TableColumn>
-          <TableColumn prefWidth="70.0" fx:id="rateColumn">
+          <TableColumn prefWidth="100.0" fx:id="rateColumn">
 
           </TableColumn>
-          <TableColumn prefWidth="70.0" fx:id="returnColumn">
+          <TableColumn prefWidth="100.0" fx:id="returnColumn">
 
           </TableColumn>
       </columns>

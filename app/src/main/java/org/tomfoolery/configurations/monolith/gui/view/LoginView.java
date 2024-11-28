@@ -13,16 +13,16 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncode
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInController;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInByCredentialsController;
 
 public class LoginView {
-    private final @NonNull LogUserInController controller;
+    private final @NonNull LogUserInByCredentialsController controller;
 
     public LoginView(@NonNull UserRepositories userRepositories,
                      @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
                      @NonNull AuthenticationTokenRepository authenticationTokenRepository,
                      @NonNull PasswordEncoder passwordEncoder) {
-        this.controller = LogUserInController.of(
+        this.controller = LogUserInByCredentialsController.of(
                 userRepositories,
                 authenticationTokenGenerator,
                 authenticationTokenRepository,
@@ -59,7 +59,7 @@ public class LoginView {
         String password = passwordTextField.getText();
         char[] passwordCharArray = password.toCharArray();
 
-        val requestObject = LogUserInController.RequestObject.of(username, passwordCharArray);
+        val requestObject = LogUserInByCredentialsController.RequestObject.of(username, passwordCharArray);
 
         try {
             val viewModel = this.controller.apply(requestObject);
@@ -70,13 +70,13 @@ public class LoginView {
         }
     }
 
-    private void onSuccess(LogUserInController.ViewModel viewModel) {
+    private void onSuccess(LogUserInByCredentialsController.ViewModel viewModel) {
         val userType = viewModel.getUserType();
 
-        if (userType.equals(LogUserInController.UserType.ADMINISTRATOR)) {
+        if (userType.equals(LogUserInByCredentialsController.UserType.ADMINISTRATOR)) {
             StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
         }
-        else if (userType.equals(LogUserInController.UserType.STAFF)) {
+        else if (userType.equals(LogUserInByCredentialsController.UserType.STAFF)) {
             StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DASHBOARD);
         }
         else StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_DASHBOARD);

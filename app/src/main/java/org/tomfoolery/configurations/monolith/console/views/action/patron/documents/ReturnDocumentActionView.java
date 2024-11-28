@@ -50,6 +50,7 @@ public final class ReturnDocumentActionView extends UserActionView {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
         return ReturnDocumentController.RequestObject.of(ISBN);
+
     }
 
     private void onSuccess() {

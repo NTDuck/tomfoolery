@@ -9,19 +9,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.AddDocumentController;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class AddDocumentView {
@@ -89,6 +88,8 @@ public class AddDocumentView {
 
         coverImageChooserButton.setGraphic(getDefaultCoverImage());
         chosePdfInfo.setText("No file selected");
+
+//        this.populateExampleDocuments();
     }
 
     private ImageView getDefaultCoverImage() {
@@ -166,7 +167,6 @@ public class AddDocumentView {
     }
 
     public void closeView() {
-        StageManager.getInstance().getRootStackPane().getChildren().getFirst().setMouseTransparent(false);
         StageManager.getInstance().getRootStackPane().getChildren().removeLast();
     }
 
@@ -247,4 +247,50 @@ public class AddDocumentView {
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}
+
+    @SneakyThrows
+    private void populateExampleDocuments() {
+        String authors = "Duy, Hieu";
+        String genres = "Horror, Science";
+        AddDocumentController.RequestObject requestObject1 = AddDocumentController.RequestObject.of(
+                "123456",
+                "thrill of the hunt",
+                "abcxyz",
+                Arrays.asList(authors.split(",")),
+                Arrays.asList(genres.split(",")),
+                Short.parseShort("2023"),
+                "Duck",
+                "/home/adnope/test.pdf",
+                "/home/adnope/test.png"
+        );
+        AddDocumentController.RequestObject requestObject2 = AddDocumentController.RequestObject.of(
+                "12346",
+                "thrill of the hunt",
+                "abcxyz",
+                Arrays.asList(authors.split(",")),
+                Arrays.asList(genres.split(",")),
+                Short.parseShort("2023"),
+                "Duck",
+                "/home/adnope/test.pdf",
+                "/home/adnope/test.png"
+        );
+        AddDocumentController.RequestObject requestObject3 = AddDocumentController.RequestObject.of(
+                "1234567",
+                "thrill of the hunt",
+                "abcxyz",
+                Arrays.asList(authors.split(",")),
+                Arrays.asList(genres.split(",")),
+                Short.parseShort("2023"),
+                "Duck",
+                "/home/adnope/test.pdf",
+                "/home/adnope/test.png"
+        );
+        List<AddDocumentController.RequestObject> requestObjects = new ArrayList<>(
+                Arrays.asList(requestObject1, requestObject2, requestObject3)
+        );
+
+        for (AddDocumentController.RequestObject requestObject : requestObjects) {
+            this.controller.accept(requestObject);
+        }
+    }
 }

@@ -15,29 +15,21 @@
         <Image url="/images/user.png" />
     </ImageView>
 
-    <Pane prefHeight="80" />
-
     <VBox style="-fx-background-color: transparent" prefHeight="110" prefWidth="480" spacing="10">
         <Label text="Username" styleClass="textbox-label" />
         <TextField styleClass="input-field" fx:id="usernameTextField" />
     </VBox>
 
-    <Pane prefHeight="30" />
-
     <VBox style="-fx-background-color: transparent" prefHeight="145" prefWidth="480" spacing="10">
         <Label text="Password" styleClass="textbox-label" />
         <PasswordField styleClass="input-field" fx:id="passwordTextField" />
         <Label visible="false"
-            style="-fx-label-padding: 0 0 0 10; -fx-text-fill: #BF616A; -fx-font-size: 15;
+            style="-fx-label-padding: 0 0 0 10; -fx-text-fill: #BF616A; -fx-font-size: 20;
         -fx-background-color: transparent; -fx-font-family: 'Segoe UI Variable'"
             fx:id="errorMessage" />
     </VBox>
 
-    <Pane prefHeight="30" />
-
     <Button text="LOGIN" styleClass="login-button" fx:id="loginButton" />
-
-    <Pane prefHeight="30" />
 
     <Button text="Sign up?" styleClass="register-button" fx:id="registerButton" />
 </VBox>

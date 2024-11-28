@@ -28,8 +28,10 @@ import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
+import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryLinearDocumentSearchGenerator;
@@ -42,6 +44,8 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.docume
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.Year;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 

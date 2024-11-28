@@ -130,7 +130,6 @@ public class PatronDocumentView {
         descriptionArea.setText(fragmentaryDocument.getDocumentDescription());
 
         String coverImagePath = fragmentaryDocument.getDocumentCoverImageFilePath();
-        System.out.println("image path in patron document view: " + coverImagePath);
         File coverImageFile = new File(coverImagePath);
         coverImage.setImage(new Image(coverImageFile.toURI().toString()));
         coverImage.setFitHeight(540);
