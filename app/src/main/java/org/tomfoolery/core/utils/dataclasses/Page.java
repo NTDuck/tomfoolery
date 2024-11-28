@@ -52,7 +52,7 @@ public class Page<T> implements Iterable<T> {
             return null;
 
         val pageOffset = (pageIndex - MIN_PAGE_INDEX) * maxPageSize;
-        val maxPageIndex = performUpperRoundedDivision(unpaginatedItems.size(), maxPageSize);
+        val maxPageIndex = Math.ceilDiv(unpaginatedItems.size(), maxPageSize);
 
         if (pageOffset < 0 || maxPageIndex < pageIndex)
             return null;
@@ -63,10 +63,6 @@ public class Page<T> implements Iterable<T> {
             .collect(Collectors.toUnmodifiableList());
 
         return Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
-    }
-
-    private static @Unsigned int performUpperRoundedDivision(@Unsigned int numerator, @Unsigned int denominator) {
-        return (numerator + denominator - 1) / denominator;
     }
 
     public int getPageSize() {

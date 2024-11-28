@@ -1,9 +1,6 @@
 package org.tomfoolery.core.domain.auth.abc;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
+import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.utils.contracts.ddd.ddd;
@@ -55,6 +52,6 @@ public class BaseUser implements ddd.Entity<BaseUser.Id> {
     @Value(staticConstructor = "of")
     public static class Credentials {
         @NonNull String username;
-        @NonNull SecureString password;
+        @With @NonNull SecureString password;
     }
 }

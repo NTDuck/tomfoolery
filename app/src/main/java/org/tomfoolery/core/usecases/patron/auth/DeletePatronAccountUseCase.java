@@ -94,7 +94,7 @@ public final class DeletePatronAccountUseCase extends AuthenticatedUserUseCase i
     }
 
     private void removePatronFromBorrowedDocument(Patron.@NonNull Id patronId, Document.@NonNull Id borrowedDocumentId) {
-        val fragmentaryBorrowedDocument = this.documentRepository.getFragmentById(borrowedDocumentId);
+        val fragmentaryBorrowedDocument = this.documentRepository.getByIdWithoutContent(borrowedDocumentId);
 
         if (fragmentaryBorrowedDocument == null)
             return;

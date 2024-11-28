@@ -37,7 +37,7 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
 
     @Override
     @SneakyThrows(URISyntaxException.class)
-    public @NonNull String generateUrlFromFragmentaryDocument(@NonNull FragmentaryDocument fragmentaryDocument) {
+    public @NonNull String generateUrlFromDocument(@NonNull FragmentaryDocument fragmentaryDocument) {
         val parameterPairs = generateParameterPairsFromFragmentaryDocument(fragmentaryDocument);
 
         URIBuilder uriBuilder = new URIBuilder()

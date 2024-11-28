@@ -1,6 +1,7 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
@@ -20,7 +21,7 @@ public class CloudDocumentRepository implements DocumentRepository {
     }
 
     @Override
-    public void save(Document document) {
+    public void save(@NotNull Document document) {
         String query = """
             INSERT INTO Document (
                 id, title, description, authors, genres, publishedYear, publisher, coverImage, content,
@@ -75,7 +76,7 @@ public class CloudDocumentRepository implements DocumentRepository {
     }
 
     @Override
-    public Document getById(Document.Id id) {
+    public Document getById(Document.@NotNull Id id) {
         String query = "SELECT * FROM Document WHERE id = ?";
         try (Connection connection = dbConfig.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {

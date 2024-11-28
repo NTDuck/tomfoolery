@@ -60,7 +60,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
     }
 
     private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getFragmentById(documentId);
+        val fragmentaryDocument = this.documentRepository.getByIdWithoutContent(documentId);
 
         if (fragmentaryDocument == null)
             throw new DocumentNotFoundException();

@@ -38,7 +38,7 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
     }
 
     private @NonNull Page<FragmentaryDocument> getPaginatedFragmentaryDocuments(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedFragments(pageIndex, maxPageSize);
+        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedWithoutContent(pageIndex, maxPageSize);
 
         if (paginatedFragmentaryDocuments == null)
             throw new PaginationInvalidException();
