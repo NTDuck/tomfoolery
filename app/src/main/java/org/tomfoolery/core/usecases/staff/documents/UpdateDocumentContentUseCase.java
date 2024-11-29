@@ -11,7 +11,6 @@ import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.time.Instant;
 import java.util.Set;
@@ -35,28 +34,28 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
-        val staffId = this.getStaffIdFromAuthenticationToken(staffAuthenticationToken);
+        val staffId = this.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
-        val documentId = request.getDocumentId();
-        val newDocumentContent = request.getNewDocumentContent();
-
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
         val document = this.getDocumentById(documentId);
 
+        val newDocumentContent = request.getNewDocumentContent();
         this.updateDocumentContentAndMarkAsLastModifiedByStaff(document, newDocumentContent, staffId);
 
         this.documentRepository.save(document);
     }
 
-    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
-        val staffId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
 
-        if (staffId == null)
-            throw new AuthenticationTokenInvalidException();
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
 
-        return staffId;
+        return documentId;
     }
 
     private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
@@ -80,9 +79,10 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
         Document.@NonNull Content newDocumentContent;
     }
 
+    public static class DocumentISBNInvalidException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
 }

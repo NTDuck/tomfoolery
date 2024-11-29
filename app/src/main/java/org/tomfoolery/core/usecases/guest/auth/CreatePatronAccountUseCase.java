@@ -7,11 +7,17 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.domain.auth.Patron;
+import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.AddressVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.DateOfBirthVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.EmailVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.PhoneNumberVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.security.CredentialsVerifier;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor(staticName = "of")
 public final class CreatePatronAccountUseCase implements ThrowableConsumer<CreatePatronAccountUseCase.Request> {
@@ -19,13 +25,15 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
     private final @NonNull PasswordEncoder passwordEncoder;
 
     @Override
-    public void accept(@NonNull Request request) throws PatronCredentialsInvalidException, PatronAlreadyExistsException {
+    public void accept(@NonNull Request request) throws PatronCredentialsInvalidException, PatronAlreadyExistsException, AddressInvalidException, DateOfBirthInvalidException, EmailInvalidException, PhoneNumberInvalidException {
         val rawPatronCredentials = request.getRawPatronCredentials();
         val patronMetadata = request.getPatronMetadata();
 
         this.ensurePatronCredentialsAreValid(rawPatronCredentials);
+        this.ensurePatronMetadataIsValid(patronMetadata);
+
         this.ensurePatronDoesNotExist(rawPatronCredentials);
-        val encodedPatronCredentials = this.passwordEncoder.encodeCredentials(rawPatronCredentials);
+        val encodedPatronCredentials = this.encodePatronCredentials(rawPatronCredentials);
 
         val patron = this.createPatron(encodedPatronCredentials, patronMetadata);
 
@@ -33,8 +41,32 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
     }
 
     private void ensurePatronCredentialsAreValid(Patron.@NonNull Credentials rawPatronCredentials) throws PatronCredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(rawPatronCredentials))
+        if (!CredentialsVerifier.verify(rawPatronCredentials))
             throw new PatronCredentialsInvalidException();
+    }
+
+    private void ensurePatronMetadataIsValid(Patron.@NonNull Metadata newPatronMetadata) throws AddressInvalidException, DateOfBirthInvalidException, EmailInvalidException, PhoneNumberInvalidException {
+        val futureOfAddressVerification = CompletableFuture.runAsync(() -> {
+            if (!AddressVerifier.verify(newPatronMetadata.getAddress()))
+                throw new AddressInvalidException();
+        });
+
+        val futureOfDateOfBirthVerification = CompletableFuture.runAsync(() -> {
+            if (!DateOfBirthVerifier.verify(newPatronMetadata.getDateOfBirth()))
+                throw new DateOfBirthInvalidException();
+        });
+
+        val futureOfEmailVerification = CompletableFuture.runAsync(() -> {
+            if (!EmailVerifier.verify(newPatronMetadata.getEmail()))
+                throw new EmailInvalidException();
+        });
+
+        val futureOfPhoneNumberVerification = CompletableFuture.runAsync(() -> {
+            if (!PhoneNumberVerifier.verify(newPatronMetadata.getPhoneNumber()))
+                throw new PhoneNumberInvalidException();
+        });
+
+        CompletableFuture.allOf(futureOfAddressVerification, futureOfDateOfBirthVerification, futureOfEmailVerification, futureOfPhoneNumberVerification).join();
     }
 
     private void ensurePatronDoesNotExist(Patron.@NonNull Credentials patronCredentials) throws PatronAlreadyExistsException {
@@ -44,12 +76,19 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
             throw new PatronAlreadyExistsException();
     }
 
+    private Patron.@NonNull Credentials encodePatronCredentials(Staff.@NonNull Credentials rawPatronCredentials) {
+        val rawPatronPassword = rawPatronCredentials.getPassword();
+        val encodedPatronPassword = this.passwordEncoder.encodePassword(rawPatronPassword);
+
+        return rawPatronCredentials.withPassword(encodedPatronPassword);
+    }
+
     private @NonNull Patron createPatron(Patron.@NonNull Credentials encodedPatronCredentials, Patron.@NonNull Metadata patronMetadata) {
         val patronId = Patron.Id.of(UUID.randomUUID());
         val patronAuditTimestamps = Patron.Audit.Timestamps.of(Instant.now());
         val patronAudit = Patron.Audit.of(patronAuditTimestamps);
 
-        return Patron.of(patronId, encodedPatronCredentials, patronAudit, patronMetadata);
+        return Patron.of(patronId, patronAudit, encodedPatronCredentials, patronMetadata);
     }
 
     @Value(staticConstructor = "of")
@@ -58,6 +97,12 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
         Patron.@NonNull Metadata patronMetadata;
     }
 
+    public static class AddressInvalidException extends PatronMetadataInvalidException {}
+    public static class DateOfBirthInvalidException extends PatronMetadataInvalidException {}
+    public static class EmailInvalidException extends PatronMetadataInvalidException {}
+    public static class PhoneNumberInvalidException extends PatronMetadataInvalidException {}
+
+    public static class PatronMetadataInvalidException extends RuntimeException {}
     public static class PatronCredentialsInvalidException extends Exception {}
     public static class PatronAlreadyExistsException extends Exception {}
 }

@@ -12,8 +12,7 @@ import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.security.CredentialsVerifier;
 
 import java.time.Instant;
 import java.util.Set;
@@ -42,11 +41,11 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, StaffCredentialsInvalidException, StaffNotFoundException {
         val administratorAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(administratorAuthenticationToken);
-        val administratorId = this.getAdministratorIdFromAuthenticationToken(administratorAuthenticationToken);
+        val administratorId = this.getUserIdFromAuthenticationToken(administratorAuthenticationToken);
 
         val rawNewStaffCredentials = request.getRawNewStaffCredentials();
         this.ensureStaffCredentialsAreValid(rawNewStaffCredentials);
-        val encodedNewStaffCredentials = this.passwordEncoder.encodeCredentials(rawNewStaffCredentials);
+        val encodedNewStaffCredentials = this.encodeStaffCredentials(rawNewStaffCredentials);
 
         val staffId = request.getStaffId();
         val staff = this.getStaffFromId(staffId);
@@ -56,18 +55,16 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
         this.staffRepository.save(staff);
     }
 
-    private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken administratorAuthenticationToken) throws AuthenticationTokenInvalidException {
-        val administratorId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(administratorAuthenticationToken);
-
-        if (administratorId == null)
-            throw new AuthenticationTokenInvalidException();
-
-        return administratorId;
+    private void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials rawStaffCredentials) throws StaffCredentialsInvalidException {
+        if (!CredentialsVerifier.verify(rawStaffCredentials))
+            throw new StaffCredentialsInvalidException();
     }
 
-    private void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials rawStaffCredentials) throws StaffCredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(rawStaffCredentials))
-            throw new StaffCredentialsInvalidException();
+    private Staff.@NonNull Credentials encodeStaffCredentials(Staff.@NonNull Credentials rawStaffCredentials) {
+        val rawStaffPassword = rawStaffCredentials.getPassword();
+        val encodedStaffPassword = this.passwordEncoder.encodePassword(rawStaffPassword);
+
+        return rawStaffCredentials.withPassword(encodedStaffPassword);
     }
 
     private @NonNull Staff getStaffFromId(Staff.@NonNull Id staffId) throws StaffNotFoundException {

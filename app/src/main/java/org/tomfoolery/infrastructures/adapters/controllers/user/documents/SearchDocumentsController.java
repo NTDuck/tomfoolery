@@ -81,7 +81,7 @@ public final class SearchDocumentsController implements ThrowableFunction<Search
         @NonNull int maxPageIndex;
 
         private static @NonNull ViewModel fromResponseModel(SearchDocumentsUseCase.@NonNull Response responseModel) {
-            val paginatedFragmentaryDocuments = responseModel.getPaginatedFragmentaryDocuments();
+            val paginatedFragmentaryDocuments = responseModel.getPaginatedDocumentsWithoutContent();
 
             val viewablePaginatedFragmentaryDocuments = StreamSupport.stream(paginatedFragmentaryDocuments.spliterator(), true)
                 .map(ViewableFragmentaryDocument::of)

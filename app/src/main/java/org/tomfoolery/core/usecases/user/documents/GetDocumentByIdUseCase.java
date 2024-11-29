@@ -7,6 +7,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
@@ -24,34 +25,45 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException {
         val authenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(authenticationToken);
 
-        val documentId = request.getDocumentId();
-        val fragmentaryDocument = this.getFragmentaryDocumentFromId(documentId);
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
+        val documentWithoutContent = this.getDocumentWithoutContentById(documentId);
 
-        return Response.of(fragmentaryDocument);
+        return Response.of(documentWithoutContent);
     }
 
-    private @NonNull FragmentaryDocument getFragmentaryDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getByIdWithoutContent(documentId);
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
 
-        if (fragmentaryDocument == null)
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
+
+        return documentId;
+    }
+
+    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
+
+        if (documentWithoutContent == null)
             throw new DocumentNotFoundException();
 
-        return fragmentaryDocument;
+        return documentWithoutContent;
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
     }
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull FragmentaryDocument fragmentaryDocument;
+        @NonNull DocumentWithoutContent documentWithoutContent;
     }
 
+    public static class DocumentISBNInvalidException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
 }

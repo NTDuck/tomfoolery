@@ -11,9 +11,8 @@ import org.tomfoolery.core.domain.auth.Administrator;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.security.CredentialsVerifier;
 
 import java.time.Instant;
 import java.util.Set;
@@ -43,29 +42,20 @@ public final class CreateStaffAccountUseCase extends AuthenticatedUserUseCase im
     public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, StaffCredentialsInvalidException, StaffAlreadyExistsException {
         val administratorAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(administratorAuthenticationToken);
-        val administratorId = this.getAdministratorIdFromAuthenticationToken(administratorAuthenticationToken);
+        val administratorId = this.getUserIdFromAuthenticationToken(administratorAuthenticationToken);
 
         val rawStaffCredentials = request.getRawStaffCredentials();
         this.ensureStaffCredentialsAreValid(rawStaffCredentials);
         this.ensureStaffDoesNotExist(rawStaffCredentials);
 
-        val encodedStaffCredentials = this.passwordEncoder.encodeCredentials(rawStaffCredentials);
+        val encodedStaffCredentials = this.encodeStaffCredentials(rawStaffCredentials);
         val staff = this.createStaffAndMarkAsCreatedByAdministrator(encodedStaffCredentials, administratorId);
 
         this.staffRepository.save(staff);
     }
 
-    private Administrator.@NonNull Id getAdministratorIdFromAuthenticationToken(@NonNull AuthenticationToken administratorAuthenticationToken) throws AuthenticationTokenInvalidException {
-        val administratorId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(administratorAuthenticationToken);
-
-        if (administratorId == null)
-            throw new AuthenticationTokenInvalidException();
-
-        return administratorId;
-    }
-
     private void ensureStaffCredentialsAreValid(Staff.@NonNull Credentials rawStaffCredentials) throws StaffCredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(rawStaffCredentials))
+        if (!CredentialsVerifier.verify(rawStaffCredentials))
             throw new StaffCredentialsInvalidException();
     }
 
@@ -76,12 +66,19 @@ public final class CreateStaffAccountUseCase extends AuthenticatedUserUseCase im
             throw new StaffAlreadyExistsException();
     }
 
+    private Staff.@NonNull Credentials encodeStaffCredentials(Staff.@NonNull Credentials rawStaffCredentials) {
+        val rawStaffPassword = rawStaffCredentials.getPassword();
+        val encodedStaffPassword = this.passwordEncoder.encodePassword(rawStaffPassword);
+
+        return rawStaffCredentials.withPassword(encodedStaffPassword);
+    }
+
     private @NonNull Staff createStaffAndMarkAsCreatedByAdministrator(Staff.@NonNull Credentials encodedStaffCredentials, Administrator.@NonNull Id administratorId) {
         val staffId = Staff.Id.of(UUID.randomUUID());
         val staffAuditTimestamps = Staff.Audit.Timestamps.of(Instant.now());
         val staffAudit = Staff.Audit.of(staffAuditTimestamps, administratorId);
 
-        return Staff.of(staffId, encodedStaffCredentials, staffAudit);
+        return Staff.of(staffId, staffAudit, encodedStaffCredentials);
     }
 
     @Value(staticConstructor = "of")

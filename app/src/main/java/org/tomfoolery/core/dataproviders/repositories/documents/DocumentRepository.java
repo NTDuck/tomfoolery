@@ -15,6 +15,16 @@ public interface DocumentRepository extends BaseSynchronizableRepository<Documen
     @Nullable DocumentWithoutContent getByIdWithoutContent(Document.@NonNull Id documentId);
     @NonNull List<DocumentWithoutContent> showWithoutContent();
 
+    default void save(@NonNull DocumentWithoutContent documentWithoutContent) {
+        val documentId = documentWithoutContent.getId();
+        val document = this.getById(documentId);
+
+        if (document == null)
+            this.save(documentWithoutContent.withContent(null));
+        else
+            this.save(documentWithoutContent.withContent(document.getContent()));
+    }
+
     default @Nullable Page<DocumentWithoutContent> showPaginatedWithoutContent(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val unpaginatedDocumentsWithoutContent = this.showWithoutContent();
         return Page.fromUnpaginated(unpaginatedDocumentsWithoutContent, pageIndex, maxPageSize);

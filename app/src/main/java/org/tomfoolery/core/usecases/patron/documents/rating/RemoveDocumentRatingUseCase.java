@@ -11,6 +11,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
@@ -38,33 +39,39 @@ public final class RemoveDocumentRatingUseCase extends AuthenticatedUserUseCase 
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, PatronRatingNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentISBNInvalidException, DocumentNotFoundException, PatronRatingNotFoundException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
 
-        val documentId = request.getDocumentId();
-        val document = this.getDocumentFromId(documentId);
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
+        val documentWithoutContent = this.getDocumentWithoutContentById(documentId);
+
         val patronRating = this.getPatronRatingFromDocument(patron, documentId);
+        this.removePatronRatingFromDocument(documentWithoutContent, patron, patronRating);
 
-        this.removePatronRatingFromDocument(document, patron, patronRating);
-
-        this.documentRepository.save(document);
+        this.documentRepository.save(documentWithoutContent);
         this.patronRepository.save(patron);
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-
-        if (patronId == null)
-            throw new AuthenticationTokenInvalidException();
-
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
         val patron = patronRepository.getById(patronId);
 
         if (patron == null)
             throw new PatronNotFoundException();
 
         return patron;
+    }
+
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
+
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
+
+        return documentId;
     }
 
     private @Unsigned double getPatronRatingFromDocument(@NonNull Patron patron, Document.@NonNull Id documentId) throws PatronRatingNotFoundException {
@@ -77,32 +84,32 @@ public final class RemoveDocumentRatingUseCase extends AuthenticatedUserUseCase 
         return patronRating;
     }
 
-    private @NonNull Document getDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
 
-        if (document == null)
+        if (documentWithoutContent == null)
             throw new DocumentNotFoundException();
 
-        return document;
+        return documentWithoutContent;
     }
 
-    private void removePatronRatingFromDocument(@NonNull Document document, @NonNull Patron patron, @Unsigned double patronRating) {
+    private void removePatronRatingFromDocument(@NonNull DocumentWithoutContent documentWithoutContent, @NonNull Patron patron, @Unsigned double patronRating) {
         val patronAudit = patron.getAudit();
         val patronRatingValues = patronAudit.getRatingsByDocumentIds();
 
-        val documentId = document.getId();
-        val documentAudit = document.getAudit();
-        val documentRating = documentAudit.getRating();
+        val documentId = documentWithoutContent.getId();
+        val documentRating = documentWithoutContent.getRating();
 
         patronRatingValues.remove(documentId);
-        documentRating.removeRating(patronRating);
+        documentRating.remove(patronRating);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
     }
 
+    public static class DocumentISBNInvalidException extends Exception {}
     public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
     public static class PatronRatingNotFoundException extends Exception {}

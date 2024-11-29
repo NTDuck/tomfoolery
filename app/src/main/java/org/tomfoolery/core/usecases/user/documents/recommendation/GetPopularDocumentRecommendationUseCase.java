@@ -5,6 +5,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.usecases.user.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public final class GetPopularDocumentRecommendationUseCase extends GetDocumentRe
     }
 
     @Override
-    protected @NonNull Supplier<List<FragmentaryDocument>> getDocumentRecommendationSupplier() {
+    protected @NonNull Supplier<List<DocumentWithoutContent>> getDocumentRecommendationSupplier() {
         return this.documentRecommendationGenerator::getPopularDocumentRecommendation;
     }
 }

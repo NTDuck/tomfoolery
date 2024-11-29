@@ -11,14 +11,17 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 
 import java.util.Set;
 
 public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<AddDocumentRatingUseCase.Request> {
+    private static final @Unsigned int MIN_RATING = 0;
+    private static final @Unsigned int MAX_RATING = 5;
+
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull PatronRepository patronRepository;
 
@@ -39,7 +42,7 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentNotFoundException, RatingValueInvalidException, PatronRatingAlreadyExistsException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentISBNInvalidException, DocumentNotFoundException, RatingValueInvalidException, PatronRatingAlreadyExistsException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
@@ -47,22 +50,19 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
         val patronRating = request.getPatronRating();
         this.ensurePatronRatingIsValid(patronRating);
 
-        val documentId = request.getDocumentId();
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
         this.ensurePatronRatingDoesNotExist(patron, documentId);
 
-        val document = this.getDocumentFromId(documentId);
-        this.addPatronRatingToDocument(document, patron, patronRating);
+        val documentWithoutContent = this.getDocumentWithoutContentById(documentId);
+        this.addPatronRatingToDocument(documentWithoutContent, patron, patronRating);
 
-        this.documentRepository.save(document);
+        this.documentRepository.save(documentWithoutContent);
         this.patronRepository.save(patron);
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-
-        if (patronId == null)
-            throw new AuthenticationTokenInvalidException();
-
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
         val patron = patronRepository.getById(patronId);
 
         if (patron == null)
@@ -72,8 +72,17 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
     }
 
     private void ensurePatronRatingIsValid(@Unsigned double patronRating) throws RatingValueInvalidException {
-        if (!AverageRating.isValid(patronRating))
+        if (patronRating < MIN_RATING || patronRating > MAX_RATING)
             throw new RatingValueInvalidException();
+    }
+
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
+
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
+
+        return documentId;
     }
 
     private void ensurePatronRatingDoesNotExist(@NonNull Patron patron, Document.@NonNull Id documentId) throws PatronRatingAlreadyExistsException {
@@ -83,31 +92,32 @@ public final class AddDocumentRatingUseCase extends AuthenticatedUserUseCase imp
             throw new PatronRatingAlreadyExistsException();
     }
 
-    private @NonNull Document getDocumentFromId(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
 
-        if (document == null)
+        if (documentWithoutContent == null)
             throw new DocumentNotFoundException();
 
-        return document;
+        return documentWithoutContent;
     }
 
-    private void addPatronRatingToDocument(@NonNull Document document, @NonNull Patron patron, @Unsigned double rating) {
+    private void addPatronRatingToDocument(@NonNull DocumentWithoutContent documentWithoutContent, @NonNull Patron patron, @Unsigned double rating) {
         val patronRatingsByDocumentIds = patron.getAudit().getRatingsByDocumentIds();
 
-        val documentId = document.getId();
-        val documentRating = document.getAudit().getRating();
+        val documentId = documentWithoutContent.getId();
+        val documentRating = documentWithoutContent.getRating();
 
         patronRatingsByDocumentIds.put(documentId, rating);
-        documentRating.addRating(rating);
+        documentRating.add(rating);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
         @Unsigned double patronRating;
     }
 
+    public static class DocumentISBNInvalidException extends Exception {}
     public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
     public static class RatingValueInvalidException extends Exception {}

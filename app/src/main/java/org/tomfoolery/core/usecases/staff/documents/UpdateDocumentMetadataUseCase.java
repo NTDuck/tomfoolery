@@ -11,7 +11,7 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.helpers.verifiers.StringVerifier;
 
 import java.time.Instant;
 import java.util.Set;
@@ -35,43 +35,66 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, TitleInvalidException, DescriptionInvalidException, AuthorInvalidException, GenreInvalidException, PublisherInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
-        val staffId = this.getStaffIdFromAuthenticationToken(staffAuthenticationToken);
+        val staffId = this.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
-        val documentId = request.getDocumentId();
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
+        val document = this.getDocumentById(documentId);
+
         val newDocumentMetadata = request.getNewDocumentMetadata();
+        this.ensureDocumentMetadataIsValid(newDocumentMetadata);
 
-        val fragmentaryDocument = this.getFragmentaryDocumentById(documentId);
+        this.updateDocumentMetadataAndMarkAsLastModifiedByStaff(document, newDocumentMetadata, staffId);
 
-        this.updateDocumentMetadataAndMarkAsLastModifiedByStaff(fragmentaryDocument, newDocumentMetadata, staffId);
-
-        this.documentRepository.saveFragment(fragmentaryDocument);
+        this.documentRepository.save(document);
     }
 
-    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
-        val staffId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
 
-        if (staffId == null)
-            throw new AuthenticationTokenInvalidException();
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
 
-        return staffId;
+        return documentId;
     }
 
-    private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getByIdWithoutContent(documentId);
+    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val document = this.documentRepository.getById(documentId);
 
-        if (fragmentaryDocument == null)
+        if (document == null)
             throw new DocumentNotFoundException();
 
-        return fragmentaryDocument;
+        return document;
     }
 
-    private void updateDocumentMetadataAndMarkAsLastModifiedByStaff(@NonNull FragmentaryDocument fragmentaryDocument, Document.@NonNull Metadata newDocumentMetadata, Staff.@NonNull Id staffId) {
-        fragmentaryDocument.setMetadata(newDocumentMetadata);
+    private void ensureDocumentMetadataIsValid(Document.@NonNull Metadata documentMetadata) throws TitleInvalidException, DescriptionInvalidException, AuthorInvalidException, GenreInvalidException, PublisherInvalidException {
+        if (!StringVerifier.verify(documentMetadata.getTitle()))
+            throw new TitleInvalidException();
 
-        val documentAudit = fragmentaryDocument.getAudit();
+        if (!StringVerifier.verify(documentMetadata.getDescription()))
+            throw new DescriptionInvalidException();
+
+        documentMetadata.getAuthors().forEach(author -> {
+            if (!StringVerifier.verify(author))
+                throw new AuthorInvalidException();
+        });
+
+        documentMetadata.getGenres().forEach(genre -> {
+            if (!StringVerifier.verify(genre))
+                throw new GenreInvalidException();
+        });
+
+        if (!StringVerifier.verify(documentMetadata.getPublisher()))
+            throw new PublisherInvalidException();
+    }
+
+    private void updateDocumentMetadataAndMarkAsLastModifiedByStaff(@NonNull Document document, Document.@NonNull Metadata newDocumentMetadata, Staff.@NonNull Id staffId) {
+        document.setMetadata(newDocumentMetadata);
+
+        val documentAudit = document.getAudit();
         val documentAuditTimestamps = documentAudit.getTimestamps();
 
         documentAudit.setLastModifiedByStaffId(staffId);
@@ -80,9 +103,18 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
         Document.@NonNull Metadata newDocumentMetadata;
     }
 
+    public static class DocumentISBNInvalidException extends Exception {}
+
+    public static class TitleInvalidException extends DocumentMetadataInvalidException {}
+    public static class DescriptionInvalidException extends DocumentMetadataInvalidException {}
+    public static class AuthorInvalidException extends DocumentMetadataInvalidException {}
+    public static class GenreInvalidException extends DocumentMetadataInvalidException {}
+    public static class PublisherInvalidException extends DocumentMetadataInvalidException {}
+
+    public static class DocumentMetadataInvalidException extends RuntimeException {}
     public static class DocumentNotFoundException extends Exception {}
 }

@@ -41,11 +41,7 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
     }
 
     private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        val userId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(authenticationToken);
-
-        if (userId == null)
-            throw new AuthenticationTokenInvalidException();
-
+        val userId = this.getUserIdFromAuthenticationToken(authenticationToken);
         UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUserId(userId);
 
         if (userAndRepository == null)

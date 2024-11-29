@@ -9,6 +9,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.dataclasses.Page;
@@ -38,11 +39,13 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
 
         this.synchronizeGeneratorIfIntervalIsElapsed();
 
-        val searchTerm = request.getSearchTerm().toLowerCase();
+        val searchTerm = request.getSearchTerm();
+        val normalizedSearchTerm = this.normalizeSearchTerm(searchTerm);
+
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedFragmentaryDocuments = this.searchDocuments(searchTerm, pageIndex, maxPageSize);
+        val paginatedFragmentaryDocuments = this.searchDocuments(normalizedSearchTerm, pageIndex, maxPageSize);
 
         return Response.of(paginatedFragmentaryDocuments);
     }
@@ -52,7 +55,11 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
             CompletableFuture.runAsync(() -> this.documentSearchGenerator.synchronizeWithRepository(this.documentRepository));
     }
 
-    private @NonNull Page<FragmentaryDocument> searchDocuments(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+    private @NonNull String normalizeSearchTerm(@NonNull String searchTerm) {
+        return searchTerm.trim().toLowerCase();
+    }
+
+    private @NonNull Page<DocumentWithoutContent> searchDocuments(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
         val documentSearchFunction = this.getDocumentSearchFunction();
         val paginatedFragmentaryDocuments = documentSearchFunction.apply(searchTerm, pageIndex, maxPageSize);
 
@@ -65,19 +72,20 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
     @Value(staticConstructor = "of")
     public static class Request {
         @NonNull String searchTerm;
+
         @Unsigned int pageIndex;
         @Unsigned int maxPageSize;
     }
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<FragmentaryDocument> paginatedFragmentaryDocuments;
+        @NonNull Page<DocumentWithoutContent> paginatedDocumentsWithoutContent;
     }
 
     public static class PaginationInvalidException extends Exception {}
 
     @FunctionalInterface
     protected interface DocumentSearchFunction {
-        @Nullable Page<FragmentaryDocument> apply(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize);
+        @Nullable Page<DocumentWithoutContent> apply(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize);
     }
 }

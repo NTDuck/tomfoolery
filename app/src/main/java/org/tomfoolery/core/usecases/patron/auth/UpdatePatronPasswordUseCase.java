@@ -13,7 +13,7 @@ import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.security.PasswordVerifier;
 
 import java.time.Instant;
 import java.util.Set;
@@ -58,11 +58,7 @@ public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase 
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-
-        if (patronId == null)
-            throw new AuthenticationTokenInvalidException();
-
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
         val patron = this.patronRepository.getById(patronId);
 
         if (patron == null)
@@ -72,7 +68,7 @@ public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase 
     }
 
     private void ensurePasswordIsValid(@NonNull SecureString rawPassword) throws PasswordInvalidException {
-        if (!CredentialsVerifier.verifyPassword(rawPassword))
+        if (!PasswordVerifier.verify(rawPassword))
             throw new PasswordInvalidException();
     }
 
@@ -85,8 +81,9 @@ public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase 
     }
 
     private void updatePatronPassword(@NonNull Patron patron, @NonNull SecureString encodedNewPatronPassword) {
-        val oldEncodedPatronCredentials = patron.getCredentials();
-        oldEncodedPatronCredentials.setPassword(encodedNewPatronPassword);
+        val encodedOldPatronCredentials = patron.getCredentials();
+        val encodedNewPatronCredentials = encodedOldPatronCredentials.withPassword(encodedNewPatronPassword);
+        patron.setCredentials(encodedNewPatronCredentials);
 
         val patronAuditTimestamps = patron.getAudit().getTimestamps();
         patronAuditTimestamps.setLastModified(Instant.now());

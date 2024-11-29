@@ -11,8 +11,7 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
+import org.tomfoolery.core.utils.helpers.verifiers.StringVerifier;
 
 import java.time.Instant;
 import java.util.Set;
@@ -36,29 +35,55 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentAlreadyExistsException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, TitleInvalidException, DescriptionInvalidException, AuthorInvalidException, GenreInvalidException, PublisherInvalidException, DocumentAlreadyExistsException {
         val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
-        val staffId = this.getStaffIdFromAuthenticationToken(staffAuthenticationToken);
+        val staffId = this.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
-        val documentId = request.getDocumentId();
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
+
+        val documentMetadata = request.getDocumentMetadata();
+        this.ensureDocumentMetadataIsValid(documentMetadata);
+
         this.ensureDocumentDoesNotExist(documentId);
 
         val documentContent = request.getDocumentContent();
-        val documentMetadata = request.getDocumentMetadata();
+        val documentCoverImage = request.getDocumentCoverImage();
 
-        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentContent, documentMetadata, staffId);
+        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentContent, documentCoverImage, documentMetadata, staffId);
 
         this.documentRepository.save(document);
     }
 
-    private Staff.@NonNull Id getStaffIdFromAuthenticationToken(@NonNull AuthenticationToken staffAuthenticationToken) throws AuthenticationTokenInvalidException {
-        val staffId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(staffAuthenticationToken);
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
 
-        if (staffId == null)
-            throw new AuthenticationTokenInvalidException();
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
 
-        return staffId;
+        return documentId;
+    }
+
+    private void ensureDocumentMetadataIsValid(Document.@NonNull Metadata documentMetadata) throws TitleInvalidException, DescriptionInvalidException, AuthorInvalidException, GenreInvalidException, PublisherInvalidException {
+        if (!StringVerifier.verify(documentMetadata.getTitle()))
+            throw new TitleInvalidException();
+
+        if (!StringVerifier.verify(documentMetadata.getDescription()))
+            throw new DescriptionInvalidException();
+
+        documentMetadata.getAuthors().forEach(author -> {
+            if (!StringVerifier.verify(author))
+                throw new AuthorInvalidException();
+        });
+
+        documentMetadata.getGenres().forEach(genre -> {
+            if (!StringVerifier.verify(genre))
+                throw new GenreInvalidException();
+        });
+
+        if (!StringVerifier.verify(documentMetadata.getPublisher()))
+            throw new PublisherInvalidException();
     }
 
     private void ensureDocumentDoesNotExist(Document.@NonNull Id documentId) throws DocumentAlreadyExistsException {
@@ -66,20 +91,32 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
             throw new DocumentAlreadyExistsException();
     }
 
-    private @NonNull Document createDocumentAndMarkAsCreatedByStaff(Document.@NonNull Id documentId, Document.@NonNull Content documentContent, Document.@NonNull Metadata documentMetadata, Staff.@NonNull Id staffId) {
+    private @NonNull Document createDocumentAndMarkAsCreatedByStaff(Document.@NonNull Id documentId, Document.@NonNull Content documentContent, Document.@NonNull CoverImage documentCoverImage, Document.@NonNull Metadata documentMetadata, Staff.@NonNull Id staffId) {
         val documentAuditTimestamps = Document.Audit.Timestamps.of(Instant.now());
-        val documentRating = AverageRating.of();
-        val documentAudit = Document.Audit.of(staffId, documentRating, documentAuditTimestamps);
+        val documentRating = Document.Rating.of();
+        val documentAudit = Document.Audit.of(documentAuditTimestamps, staffId);
 
-        return Document.of(documentId, documentContent, documentMetadata, documentAudit);
+        return Document.of(documentId, documentAudit, documentMetadata, documentRating, documentContent, documentCoverImage);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
+
         Document.@NonNull Content documentContent;
+        Document.@NonNull CoverImage documentCoverImage;
         Document.@NonNull Metadata documentMetadata;
     }
+
+    public static class DocumentISBNInvalidException extends Exception {}
+
+    public static class TitleInvalidException extends DocumentMetadataInvalidException {}
+    public static class DescriptionInvalidException extends DocumentMetadataInvalidException {}
+    public static class AuthorInvalidException extends DocumentMetadataInvalidException {}
+    public static class GenreInvalidException extends DocumentMetadataInvalidException {}
+    public static class PublisherInvalidException extends DocumentMetadataInvalidException {}
+
+    public static class DocumentMetadataInvalidException extends RuntimeException {}
 
     public static class DocumentAlreadyExistsException extends Exception {}
 }

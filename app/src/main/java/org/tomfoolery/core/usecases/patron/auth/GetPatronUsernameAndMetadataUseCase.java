@@ -45,11 +45,7 @@ public final class GetPatronUsernameAndMetadataUseCase extends AuthenticatedUser
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-
-        if (patronId == null)
-            throw new AuthenticationTokenInvalidException();
-
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
         val patron = this.patronRepository.getById(patronId);
 
         if (patron == null)

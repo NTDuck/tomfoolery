@@ -13,4 +13,8 @@ public class DocumentWithoutContent {
     Document.@NonNull Rating rating;
 
     Document.@Nullable CoverImage coverImage;
+
+    public @NonNull Document withContent(Document.@Nullable Content content) {
+        return Document.of(id, audit, metadata, rating, content, coverImage);
+    }
 }

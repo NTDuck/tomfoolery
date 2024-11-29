@@ -11,6 +11,7 @@ import org.tomfoolery.core.domain.auth.Patron;
 import org.tomfoolery.core.domain.auth.Staff;
 import org.tomfoolery.core.domain.auth.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
@@ -37,30 +38,40 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException {
         val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
 
-        val documentId = request.getDocumentId();
-        val fragmentaryDocument = this.getFragmentaryDocumentById(documentId);
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
+        val documentWithoutContent = this.getDocumentWithoutContentById(documentId);
 
-        this.cascadeRemoveDocumentFromBorrowingPatrons(fragmentaryDocument);
+        this.cascadeRemoveDocumentFromBorrowingPatrons(documentWithoutContent);
 
         this.documentRepository.delete(documentId);
     }
 
-    private @NonNull FragmentaryDocument getFragmentaryDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val fragmentaryDocument = this.documentRepository.getByIdWithoutContent(documentId);
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
 
-        if (fragmentaryDocument == null)
-            throw new DocumentNotFoundException();
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
 
-        return fragmentaryDocument;
+        return documentId;
     }
 
-    private void cascadeRemoveDocumentFromBorrowingPatrons(@NonNull FragmentaryDocument fragmentaryDocument) {
-        val documentId = fragmentaryDocument.getId();
-        val borrowingPatronIds = fragmentaryDocument.getAudit().getBorrowingPatronIds();
+    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
+
+        if (documentWithoutContent == null)
+            throw new DocumentNotFoundException();
+
+        return documentWithoutContent;
+    }
+
+    private void cascadeRemoveDocumentFromBorrowingPatrons(@NonNull DocumentWithoutContent documentWithoutContent) {
+        val documentId = documentWithoutContent.getId();
+        val borrowingPatronIds = documentWithoutContent.getAudit().getBorrowingPatronIds();
 
         for (val borrowingPatronId : borrowingPatronIds)
             this.removeDocumentFromBorrowingPatron(documentId, borrowingPatronId);
@@ -80,8 +91,9 @@ public final class RemoveDocumentUseCase extends AuthenticatedUserUseCase implem
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
     }
 
+    public static class DocumentISBNInvalidException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
 }

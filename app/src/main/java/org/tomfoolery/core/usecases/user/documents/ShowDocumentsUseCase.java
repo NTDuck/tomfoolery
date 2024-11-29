@@ -7,6 +7,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.Page;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
@@ -32,12 +33,12 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedFragmentaryDocuments = this.getPaginatedFragmentaryDocuments(pageIndex, maxPageSize);
+        val paginatedDocumentsWithoutContent = this.getPaginatedDocumentsWithoutContent(pageIndex, maxPageSize);
 
-        return Response.of(paginatedFragmentaryDocuments);
+        return Response.of(paginatedDocumentsWithoutContent);
     }
 
-    private @NonNull Page<FragmentaryDocument> getPaginatedFragmentaryDocuments(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+    private @NonNull Page<DocumentWithoutContent> getPaginatedDocumentsWithoutContent(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
         val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedWithoutContent(pageIndex, maxPageSize);
 
         if (paginatedFragmentaryDocuments == null)
@@ -54,7 +55,7 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<FragmentaryDocument> paginatedFragmentaryDocuments;
+        @NonNull Page<DocumentWithoutContent> paginatedDocumentsWithoutContent;
     }
 
     public static class PaginationInvalidException extends Exception {}

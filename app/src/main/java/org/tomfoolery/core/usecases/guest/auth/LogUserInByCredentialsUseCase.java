@@ -14,7 +14,7 @@ import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.security.CredentialsVerifier;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -54,7 +54,7 @@ public final class LogUserInByCredentialsUseCase extends LogUserInUseCase implem
     }
 
     private <User extends BaseUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials rawUserCredentials) throws CredentialsInvalidException {
-        if (!CredentialsVerifier.verifyCredentials(rawUserCredentials))
+        if (!CredentialsVerifier.verify(rawUserCredentials))
             throw new CredentialsInvalidException();
     }
 

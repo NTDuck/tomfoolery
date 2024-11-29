@@ -15,7 +15,7 @@ import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.core.utils.helpers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.auth.security.PasswordVerifier;
 
 import java.util.Set;
 
@@ -59,11 +59,7 @@ public final class DeletePatronAccountUseCase extends AuthenticatedUserUseCase i
     }
 
     private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-
-        if (patronId == null)
-            throw new AuthenticationTokenInvalidException();
-
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
         val patron = this.patronRepository.getById(patronId);
 
         if (patron == null)
@@ -73,7 +69,7 @@ public final class DeletePatronAccountUseCase extends AuthenticatedUserUseCase i
     }
 
     private void ensurePasswordIsValid(@NonNull SecureString rawPatronPassword) throws PasswordInvalidException {
-        if (!CredentialsVerifier.verifyPassword(rawPatronPassword))
+        if (!PasswordVerifier.verify(rawPatronPassword))
             throw new PasswordInvalidException();
     }
 
@@ -90,19 +86,19 @@ public final class DeletePatronAccountUseCase extends AuthenticatedUserUseCase i
         val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
 
         for (val borrowedDocumentId : borrowedDocumentIds)
-            removePatronFromBorrowedDocument(patronId, borrowedDocumentId);
+            this.removePatronFromBorrowedDocument(patronId, borrowedDocumentId);
     }
 
     private void removePatronFromBorrowedDocument(Patron.@NonNull Id patronId, Document.@NonNull Id borrowedDocumentId) {
-        val fragmentaryBorrowedDocument = this.documentRepository.getByIdWithoutContent(borrowedDocumentId);
+        val borrowedDocumentWithoutContent = this.documentRepository.getByIdWithoutContent(borrowedDocumentId);
 
-        if (fragmentaryBorrowedDocument == null)
+        if (borrowedDocumentWithoutContent == null)
             return;
 
-        val borrowingPatronIds = fragmentaryBorrowedDocument.getAudit().getBorrowingPatronIds();
+        val borrowingPatronIds = borrowedDocumentWithoutContent.getAudit().getBorrowingPatronIds();
         borrowingPatronIds.remove(patronId);
 
-        this.documentRepository.saveFragment(fragmentaryBorrowedDocument);
+        this.documentRepository.save(borrowedDocumentWithoutContent);
     }
 
     @Value(staticConstructor = "of")
