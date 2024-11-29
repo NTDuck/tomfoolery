@@ -26,7 +26,7 @@
 
             <VBox alignment="TOP_CENTER" spacing="20" styleClass="cover-image-and-pdf-vbox" HBox.hgrow="ALWAYS">
                 <Label text="Choose the book's cover image" style="-fx-font-family: 'Segoe UI Variable';
-                -fx-font-weight: bold; -fx-text-fill: #24273A; -fx-font-size: 18" prefWidth="300"/>
+                -fx-font-weight: bold; -fx-text-fill: #3A4151; -fx-font-size: 18" prefWidth="300"/>
                 <Button fx:id="coverImageChooserButton">
                 </Button>
 
@@ -43,7 +43,7 @@
                   prefWidth="Infinity" prefHeight="300" VBox.vgrow="ALWAYS"/>
 
         <HBox styleClass="buttons-container" prefHeight="50" VBox.vgrow="ALWAYS">
-            <Label fx:id="errorMessage" style="-fx-font-family: 'Segoe UI Variable'; -fx-font-size: 15; -fx-text-fill: red"/>
+            <Label fx:id="errorMessage" style="-fx-font-family: 'Segoe UI Variable'; -fx-font-size: 15; -fx-text-fill: #BF606A"/>
             <Button fx:id="cancelButton">
                 <graphic>
                     <Label text="Cancel" styleClass="button-label"/>

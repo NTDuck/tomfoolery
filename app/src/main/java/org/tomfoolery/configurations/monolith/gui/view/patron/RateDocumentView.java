@@ -13,7 +13,10 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.rating.AddDocumentRatingUseCase;
+import org.tomfoolery.core.usecases.patron.documents.rating.RemoveDocumentRatingUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.AddDocumentRatingController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.RemoveDocumentRatingController;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,7 @@ public class RateDocumentView {
 
     private final @NonNull String documentISBN;
     private final @NonNull AddDocumentRatingController controller;
+    private final @NonNull RemoveDocumentRatingController removeDocumentRatingController;
 
     private int currentRating;
 
@@ -33,6 +37,7 @@ public class RateDocumentView {
                             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
                             @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         this.controller = AddDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.removeDocumentRatingController = RemoveDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.documentISBN = isbn;
     }
 
@@ -52,6 +57,9 @@ public class RateDocumentView {
     private ImageView star5;
 
     @FXML
+    private Button removeRatingButton;
+
+    @FXML
     private Button cancelButton;
 
     @FXML
@@ -69,7 +77,7 @@ public class RateDocumentView {
         this.stars.add(star5);
         this.resetStars();
 
-
+        removeRatingButton.setOnAction(event -> removeDocumentRating());
         cancelButton.setOnAction(event -> closeView());
         confirmButton.setOnAction(event -> rateDocument());
 
@@ -95,6 +103,7 @@ public class RateDocumentView {
     }
 
     private void onPatronRatingAlreadyExistsException() {
+        errorMessage.setText("You have already rated this document");
         errorMessage.setVisible(true);
     }
 
@@ -109,6 +118,24 @@ public class RateDocumentView {
 
     private void closeView() {
         StageManager.getInstance().getRootStackPane().getChildren().removeLast();
+    }
+
+    private void removeDocumentRating() {
+        val requestObject = RemoveDocumentRatingController.RequestObject.of(documentISBN);
+
+        try {
+            this.removeDocumentRatingController.accept(requestObject);
+            closeView();
+        } catch (RemoveDocumentRatingUseCase.AuthenticationTokenNotFoundException exception) {
+            System.err.println("user doesn't exist?");
+        } catch (RemoveDocumentRatingUseCase.AuthenticationTokenInvalidException exception) {
+            System.err.println("user isn't invalid?");
+        } catch (RemoveDocumentRatingUseCase.PatronNotFoundException |
+                 RemoveDocumentRatingUseCase.DocumentNotFoundException exception) {
+        } catch (RemoveDocumentRatingUseCase.PatronRatingNotFoundException exception) {
+            errorMessage.setText("You haven't rated this document");
+            errorMessage.setVisible(true);
+        }
     }
 
     private void setUpStarsUpdate() {

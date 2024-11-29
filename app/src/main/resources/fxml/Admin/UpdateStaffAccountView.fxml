@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+
+<?import javafx.scene.control.PasswordField?>
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="/css/Admin/CreateStaffAccountView.css"
+      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+   <VBox alignment="CENTER" prefHeight="400.0" spacing="20.0" styleClass="main">
+      <effect>
+         <DropShadow height="20.0" radius="9.5" width="20.0">
+            <color>
+               <Color red="0.18039216101169586" green="0.20392157137393951" blue="0.24705882370471954"/>
+            </color>
+         </DropShadow>
+      </effect>
+
+      <Label text="Update this Staff account" styleClass="header"/>
+
+      <VBox prefHeight="100.0" prefWidth="400.0">
+         <Label text="New Username" textFill="#424c5e">
+            <font>
+               <Font size="18.0"/>
+            </font>
+            <padding>
+               <Insets left="5.0"/>
+            </padding>
+         </Label>
+         <TextField prefHeight="50.0" prefWidth="400.0" fx:id="usernameTextField"
+                    style="-fx-background-color: transparent; -fx-background-radius: 15; -fx-border-color: #D8DEE8; -fx-border-radius: 15; -fx-border-width: 3;">
+            <font>
+               <Font size="18.0"/>
+            </font>
+         </TextField>
+      </VBox>
+
+      <VBox prefHeight="100.0" prefWidth="400.0">
+         <Label text="New Password" textFill="#424c5e">
+            <font>
+               <Font size="18.0"/>
+            </font>
+            <padding>
+               <Insets left="5.0"/>
+            </padding>
+         </Label>
+         <PasswordField prefHeight="50.0" prefWidth="400.0" fx:id="passwordTextField"
+                    style="-fx-background-color: transparent; -fx-background-radius: 15; -fx-border-color: #D8DEE8; -fx-border-radius: 15; -fx-border-width: 3;">
+            <font>
+               <Font size="18.0"/>
+            </font>
+         </PasswordField>
+      </VBox>
+
+      <HBox alignment="CENTER" prefHeight="70.0" prefWidth="400.0" spacing="20.0">
+         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" text="Cancel" styleClass="button" fx:id="cancelButton"/>
+         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" text="Confirm" styleClass="button" fx:id="confirmButton"/>
+      </HBox>
+
+      <Label text="Staff account already exists!" fx:id="errorMessage" visible="false" styleClass="error-message"/>
+   </VBox>
+</VBox>

@@ -20,7 +20,7 @@
 
         <Button style="-fx-background-color: transparent" fx:id="viewAccountsButton">
             <graphic>
-                <Label text="Accounts" styleClass="option"/>
+                <Label text="Staffs" styleClass="option"/>
             </graphic>
         </Button>
     </VBox>

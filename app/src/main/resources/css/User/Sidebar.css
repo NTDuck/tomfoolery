@@ -1,7 +1,7 @@
 .sidebar {
     -fx-padding: 25 0 25 0;
     -fx-spacing: 25;
-    -fx-background-color: #6096BA;
+    -fx-background-color: #87BFD0;
 }
 
 .sidebar-button {
@@ -12,6 +12,6 @@
 }
 
 .sidebar-button:hover {
-    -fx-background-color: #A3CEF1;
+    -fx-background-color: #80A0C0;
     -fx-cursor: hand;
 }

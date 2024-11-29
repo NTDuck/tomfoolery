@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class ControlCenter {
     private final DocumentsDisplayView documentsDisplayView;
-    private final AccountsDisplayView accountsDisplayView;
+    private final StaffAccountsManagementView accountsDisplayView;
 
     public ControlCenter() {
         documentsDisplayView = new DocumentsDisplayView(
@@ -18,7 +18,11 @@ public class ControlCenter {
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()
         );
-        accountsDisplayView = new AccountsDisplayView();
+        accountsDisplayView = new StaffAccountsManagementView(
+                StageManager.getInstance().getStaffRepository(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository()
+        );
     }
 
     @FXML
@@ -52,7 +56,7 @@ public class ControlCenter {
 
     private void viewAccounts() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/AccountsDisplay.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/StaffAccountsManagementView.fxml"));
             loader.setController(accountsDisplayView);
             VBox v = loader.load();
 

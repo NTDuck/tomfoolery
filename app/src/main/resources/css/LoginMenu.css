@@ -1,6 +1,6 @@
 .login-menu {
     -fx-alignment: top-center;
-    -fx-background-color: #2E3440;
+    -fx-background-color: #3A4151;
     -fx-pref-width: 600;
     -fx-pref-height: 800;
     -fx-padding: 50 60 70 60;
@@ -24,7 +24,7 @@
     -fx-pref-height: 90;
     -fx-background-radius: 20;
     -fx-background-color: #d8dee9;
-    -fx-text-fill: black;
+    -fx-text-fill: #2E343F;
     -fx-font-family: "Segoe UI Variable";
     -fx-font-size: 22;
 }

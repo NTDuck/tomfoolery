@@ -21,7 +21,7 @@
       <VBox alignment="TOP_CENTER" prefHeight="80.0" prefWidth="200.0">
          <Label text="Rate this document" VBox.vgrow="ALWAYS" styleClass="header"/>
 
-         <Label text="you have already rated this document" visible="false" fx:id="errorMessage" styleClass="error-message"/>
+         <Label visible="false" fx:id="errorMessage" styleClass="error-message"/>
       </VBox>
 
       <HBox alignment="CENTER" prefHeight="90.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
@@ -43,6 +43,7 @@
       </HBox>
 
       <HBox alignment="CENTER" prefHeight="85.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
+         <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="Unrate" styleClass="button" fx:id="removeRatingButton"/>
          <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="Cancel" styleClass="button" fx:id="cancelButton"/>
          <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="Confirm" styleClass="button" fx:id="confirmButton"/>
       </HBox>

@@ -19,7 +19,7 @@ Text: #24283b (Tokyo night background)
 .optionPanel {
     -fx-padding: 30 0 0 0;
     -fx-background-radius: 0 15 15 0;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 5, 0);
+    -fx-effect: dropshadow(gaussian, rgba(46, 52, 63, 0.3), 15, 0, 5, 0);
     -fx-background-color: white;
     -fx-spacing: 10;
 }

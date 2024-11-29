@@ -1,25 +1,12 @@
-/*
-The color palette:
-Background: #E7ECEF
-Background-selected: #A3CEF1
-Foreground: #D8DEE9
-Accent color: #88C0D0
-Foreground-secondary: #81A1C1
-Error: #BF616A
-Success: #A3BE8C
-Border and separator: #4C566A
-Text: #24283b (Tokyo night background)
-*/
-
 .main {
-    -fx-background-color: #E7ECEF;
+    -fx-background-color: #E4E8F0;
     -fx-spacing: 20;
 }
 
 .side-panel {
     -fx-background-radius: 0 15 15 0;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 5, 0);
-    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(46, 52, 63, 0.3), 15, 0, 5, 0);
+    -fx-background-color: #E4E8F0;
 }
 
 .side-panel-child {
@@ -31,8 +18,8 @@ Text: #24283b (Tokyo night background)
     -fx-label-padding: 0 0 0 10;
     -fx-pref-width: 300;
     -fx-text-alignment: center;
-    -fx-text-fill: #24283b;
-    -fx-background-color: #7cb0d3;
+    -fx-text-fill: #EBEEF4;
+    -fx-background-color: #80A0C0;
     -fx-background-radius: 0 15 0 0;
     -fx-font-size: 30;
     -fx-font-family: "Segoe UI Variable";
@@ -45,20 +32,8 @@ Text: #24283b (Tokyo night background)
     -fx-pref-width: 300;
     -fx-pref-height: 40;
     -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: #3A4151;
     -fx-font-size: 25;
-}
-
-.category-option {
-    -fx-background-radius: 15;
-    -fx-padding: 10 10 10 10;
-    -fx-text-fill: rgba(36, 40, 59, 0.7);
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 25;
-}
-
-.category-option:hover {
-    -fx-background-color: #a3cef1;
-    -fx-cursor: hand;
 }
 
 .search-field-container {
@@ -68,22 +43,22 @@ Text: #24283b (Tokyo night background)
 }
 
 .search-field {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, 5, 5);
+    -fx-effect: dropshadow(gaussian, #2E343F4D, 15, 0, 5, 5);
     -fx-background-radius: 15;
-    -fx-background-color: white;
-    -fx-prompt-text-fill: rgba(0, 0, 0, 0.4);
+    -fx-background-color: #E4E8F0;
+    -fx-prompt-text-fill: rgba(46, 52, 63, 0.5);
     -fx-font-size: 30;
     -fx-font-family: "Segoe UI Variable";
 }
 
 .books-scroll-pane {
-    -fx-background-color: white;
+    -fx-background-color: #E4E8F0;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, -5, -5);
+    -fx-effect: dropshadow(gaussian, #2E343F4D, 15, 0, -5, -5);
 }
 
 .books-container {
     -fx-padding: 10 10 10 10;
-    -fx-background-color: white;
+    -fx-background-color: #E4E8F0;
     -fx-background-radius: 8;
 }

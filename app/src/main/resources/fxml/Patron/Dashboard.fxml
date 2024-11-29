@@ -56,19 +56,19 @@
    <VBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS">
       <Label text="Welcome to Tomfoolery, Duy" styleClass="welcome-text" VBox.vgrow="ALWAYS" prefWidth="Infinity"/>
       <HBox styleClass="content" prefWidth="Infinity" prefHeight="400">
-         <VBox style="-fx-background-color: #007bff;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+         <VBox style="-fx-background-color: #8EBCBB;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
             <Label text="13" styleClass="dashboard-tile-number"/>
             <Label text="students" styleClass="dashboard-tile-text"/>
          </VBox>
-         <VBox style="-fx-background-color: #28a745;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+         <VBox style="-fx-background-color: #8EBCBB;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
             <Label text="0" styleClass="dashboard-tile-number"/>
             <Label text="borrowed books" styleClass="dashboard-tile-text"/>
          </VBox>
-         <VBox style="-fx-background-color: #28a745;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+         <VBox style="-fx-background-color: #8EBCBB;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
             <Label text="0" styleClass="dashboard-tile-number"/>
             <Label text="books overdue" styleClass="dashboard-tile-text"/>
          </VBox>
-         <VBox style="-fx-background-color: #28a745;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+         <VBox style="-fx-background-color: #8EBCBB;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
             <Label text="0" styleClass="dashboard-tile-number"/>
             <Label text="returned books" styleClass="dashboard-tile-text"/>
          </VBox>
