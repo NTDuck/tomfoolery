@@ -1,6 +1,5 @@
 package org.tomfoolery.configurations.monolith.gui.view;
 
-import io.jsonwebtoken.security.Password;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,7 +13,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.core.usecases.users.account.patron.persistence.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
 
 public class SignupView {

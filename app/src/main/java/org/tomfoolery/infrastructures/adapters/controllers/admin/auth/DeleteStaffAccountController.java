@@ -6,8 +6,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.usecases.admin.auth.DeleteStaffAccountUseCase;
+import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.usecases.users.account.staff.persistence.DeleteStaffAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 import java.util.UUID;

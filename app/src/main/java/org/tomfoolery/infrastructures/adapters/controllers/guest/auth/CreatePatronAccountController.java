@@ -5,9 +5,8 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.domain.auth.Patron;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
-import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
+import org.tomfoolery.core.domain.users.Patron;
+import org.tomfoolery.core.usecases.users.account.patron.persistence.CreatePatronAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 

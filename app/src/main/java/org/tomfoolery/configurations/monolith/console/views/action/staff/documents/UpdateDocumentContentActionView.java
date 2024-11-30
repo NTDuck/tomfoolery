@@ -10,7 +10,7 @@ import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelec
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.staff.documents.UpdateDocumentContentUseCase;
+import org.tomfoolery.core.usecases.documents.modification.UpdateDocumentContentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.UpdateDocumentContentController;
 
 public final class UpdateDocumentContentActionView extends UserActionView {

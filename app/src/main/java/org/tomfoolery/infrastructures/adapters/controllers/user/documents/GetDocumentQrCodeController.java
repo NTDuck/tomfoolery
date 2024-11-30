@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.usecases.user.documents.references.GetDocumentQrCodeUseCase;
+import org.tomfoolery.core.usecases.documents.retrieval.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
 

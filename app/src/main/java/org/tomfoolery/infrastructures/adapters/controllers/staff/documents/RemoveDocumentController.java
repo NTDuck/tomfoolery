@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.usecases.staff.documents.RemoveDocumentUseCase;
+import org.tomfoolery.core.usecases.documents.persistence.RemoveDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 public final class RemoveDocumentController implements ThrowableConsumer<RemoveDocumentController.RequestObject> {

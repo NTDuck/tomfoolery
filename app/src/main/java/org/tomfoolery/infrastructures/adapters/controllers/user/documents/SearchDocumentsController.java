@@ -8,8 +8,8 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.user.documents.search.*;
-import org.tomfoolery.core.usecases.user.documents.search.abc.SearchDocumentsUseCase;
+import org.tomfoolery.core.usecases.documents.retrieval.search.*;
+import org.tomfoolery.core.usecases.documents.retrieval.search.abc.SearchDocumentsUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 

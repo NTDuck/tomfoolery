@@ -9,7 +9,7 @@ import org.tomfoolery.configurations.monolith.console.views.selection.Administra
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.admin.auth.DeleteStaffAccountUseCase;
+import org.tomfoolery.core.usecases.users.account.staff.persistence.DeleteStaffAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.DeleteStaffAccountController;
 
 public final class DeleteStaffAccountActionView extends UserActionView {

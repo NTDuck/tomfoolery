@@ -7,8 +7,8 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.usecases.admin.auth.CreateStaffAccountUseCase;
+import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.usecases.users.account.staff.persistence.CreateStaffAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 

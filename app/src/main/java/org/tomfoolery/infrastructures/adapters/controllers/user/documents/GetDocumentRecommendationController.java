@@ -7,10 +7,10 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.user.documents.recommendation.abc.GetDocumentRecommendationUseCase;
-import org.tomfoolery.core.usecases.user.documents.recommendation.GetLatestDocumentRecommendationUseCase;
-import org.tomfoolery.core.usecases.user.documents.recommendation.GetPopularDocumentRecommendationUseCase;
-import org.tomfoolery.core.usecases.user.documents.recommendation.GetTopRatedDocumentRecommendationUseCase;
+import org.tomfoolery.core.usecases.documents.retrieval.recommendation.abc.GetDocumentRecommendationUseCase;
+import org.tomfoolery.core.usecases.documents.retrieval.recommendation.GetLatestDocumentRecommendationUseCase;
+import org.tomfoolery.core.usecases.documents.retrieval.recommendation.GetPopularDocumentRecommendationUseCase;
+import org.tomfoolery.core.usecases.documents.retrieval.recommendation.GetTopRatedDocumentRecommendationUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 

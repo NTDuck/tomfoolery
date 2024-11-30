@@ -7,7 +7,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.user.documents.ShowDocumentsUseCase;
+import org.tomfoolery.core.usecases.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 

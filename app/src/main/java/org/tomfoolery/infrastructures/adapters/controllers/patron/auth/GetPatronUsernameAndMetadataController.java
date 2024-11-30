@@ -6,7 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.patron.auth.GetPatronUsernameAndMetadataUseCase;
+import org.tomfoolery.core.usecases.users.account.patron.retrieval.GetPatronUsernameAndMetadataUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
 
 public final class GetPatronUsernameAndMetadataController implements ThrowableSupplier<GetPatronUsernameAndMetadataController.ViewModel> {

@@ -3,8 +3,8 @@ package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.document
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.domain.auth.Patron;
-import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.users.Patron;
+import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
 import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;

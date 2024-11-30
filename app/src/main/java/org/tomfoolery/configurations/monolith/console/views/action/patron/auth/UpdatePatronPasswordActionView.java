@@ -11,7 +11,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.patron.auth.UpdatePatronPasswordUseCase;
+import org.tomfoolery.core.usecases.users.account.patron.modification.UpdatePatronPasswordUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.auth.UpdatePatronPasswordController;
 
 public final class UpdatePatronPasswordActionView extends UserActionView {

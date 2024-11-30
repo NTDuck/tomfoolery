@@ -9,24 +9,24 @@ import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.usecases.patron.documents.rating.AddDocumentRatingUseCase;
+import org.tomfoolery.core.usecases.documents.review.AddDocumentReviewUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 public final class AddDocumentRatingController implements ThrowableConsumer<AddDocumentRatingController.RequestObject> {
-    private final @NonNull AddDocumentRatingUseCase addDocumentRatingUseCase;
+    private final @NonNull AddDocumentReviewUseCase addDocumentReviewUseCase;
 
     public static @NonNull AddDocumentRatingController of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new AddDocumentRatingController(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     private AddDocumentRatingController(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.addDocumentRatingUseCase = AddDocumentRatingUseCase.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.addDocumentReviewUseCase = AddDocumentReviewUseCase.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws AddDocumentRatingUseCase.AuthenticationTokenNotFoundException, AddDocumentRatingUseCase.AuthenticationTokenInvalidException, AddDocumentRatingUseCase.PatronNotFoundException, AddDocumentRatingUseCase.DocumentNotFoundException, AddDocumentRatingUseCase.RatingValueInvalidException, AddDocumentRatingUseCase.PatronRatingAlreadyExistsException {
+    public void accept(@NonNull RequestObject requestObject) throws AddDocumentReviewUseCase.AuthenticationTokenNotFoundException, AddDocumentReviewUseCase.AuthenticationTokenInvalidException, AddDocumentReviewUseCase.PatronNotFoundException, AddDocumentReviewUseCase.DocumentNotFoundException, AddDocumentReviewUseCase.RatingValueInvalidException, AddDocumentReviewUseCase.PatronRatingAlreadyExistsException {
         val requestModel = requestObject.toRequestModel();
-        this.addDocumentRatingUseCase.accept(requestModel);
+        this.addDocumentReviewUseCase.accept(requestModel);
     }
 
     @Value(staticConstructor = "of")
@@ -34,10 +34,10 @@ public final class AddDocumentRatingController implements ThrowableConsumer<AddD
         @NonNull String ISBN;
         @Unsigned double rating;
 
-        private AddDocumentRatingUseCase.@NonNull Request toRequestModel() {
+        private AddDocumentReviewUseCase.@NonNull Request toRequestModel() {
             val documentId = Document.Id.of(ISBN);
 
-            return AddDocumentRatingUseCase.Request.of(documentId, rating);
+            return AddDocumentReviewUseCase.Request.of(documentId, rating);
         }
     }
 }

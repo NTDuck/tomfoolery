@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.patron.documents.rating.AddDocumentRatingUseCase;
+import org.tomfoolery.core.usecases.documents.review.AddDocumentReviewUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.AddDocumentRatingController;
 
 public final class AddDocumentRatingActionView extends UserActionView {
@@ -36,17 +36,17 @@ public final class AddDocumentRatingActionView extends UserActionView {
         } catch (RatingInvalidException exception) {
             this.onRatingInvalidException();
 
-        } catch (AddDocumentRatingUseCase.AuthenticationTokenNotFoundException exception) {
+        } catch (AddDocumentReviewUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
-        } catch (AddDocumentRatingUseCase.AuthenticationTokenInvalidException exception) {
+        } catch (AddDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (AddDocumentRatingUseCase.PatronNotFoundException exception) {
+        } catch (AddDocumentReviewUseCase.PatronNotFoundException exception) {
             this.onPatronNotFoundException();
-        } catch (AddDocumentRatingUseCase.DocumentNotFoundException exception) {
+        } catch (AddDocumentReviewUseCase.DocumentNotFoundException exception) {
             this.onDocumentNotFoundException();
-        } catch (AddDocumentRatingUseCase.RatingValueInvalidException exception) {
+        } catch (AddDocumentReviewUseCase.RatingValueInvalidException exception) {
             this.onRatingValueInvalidException();
-        } catch (AddDocumentRatingUseCase.PatronRatingAlreadyExistsException exception) {
+        } catch (AddDocumentReviewUseCase.PatronRatingAlreadyExistsException exception) {
             this.onPatronRatingAlreadyExistsException();
         }
     }

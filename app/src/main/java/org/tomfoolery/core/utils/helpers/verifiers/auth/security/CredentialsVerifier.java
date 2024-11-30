@@ -3,7 +3,7 @@ package org.tomfoolery.core.utils.helpers.verifiers.auth.security;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.helpers.verifiers.auth.UsernameVerifier;
 
 @NoArgsConstructor(access = AccessLevel.NONE)

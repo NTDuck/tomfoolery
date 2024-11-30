@@ -3,11 +3,11 @@ package org.tomfoolery.infrastructures.adapters.controllers.guest.auth.abc;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.domain.auth.Administrator;
-import org.tomfoolery.core.domain.auth.Patron;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
-import org.tomfoolery.core.usecases.guest.auth.abc.LogUserInUseCase;
+import org.tomfoolery.core.domain.users.Administrator;
+import org.tomfoolery.core.domain.users.Patron;
+import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.core.usecases.users.authentication.LogUserInUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInByCredentialsController;
 
 import java.util.Map;

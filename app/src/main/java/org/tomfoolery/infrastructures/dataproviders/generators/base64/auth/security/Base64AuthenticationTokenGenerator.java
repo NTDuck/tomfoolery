@@ -8,7 +8,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Codec;

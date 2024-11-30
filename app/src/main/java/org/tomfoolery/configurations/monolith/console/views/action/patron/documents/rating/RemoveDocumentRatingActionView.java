@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.patron.documents.rating.RemoveDocumentRatingUseCase;
+import org.tomfoolery.core.usecases.documents.review.RemoveDocumentReviewUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.RemoveDocumentRatingController;
 
 public final class RemoveDocumentRatingActionView extends UserActionView {
@@ -34,15 +34,15 @@ public final class RemoveDocumentRatingActionView extends UserActionView {
             this.controller.accept(requestObject);
             this.onSuccess();
 
-        } catch (RemoveDocumentRatingUseCase.AuthenticationTokenNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
-        } catch (RemoveDocumentRatingUseCase.AuthenticationTokenInvalidException exception) {
+        } catch (RemoveDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (RemoveDocumentRatingUseCase.PatronNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.PatronNotFoundException exception) {
             this.onPatronNotFoundException();
-        } catch (RemoveDocumentRatingUseCase.DocumentNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.DocumentNotFoundException exception) {
             this.onDocumentNotFoundException();
-        } catch (RemoveDocumentRatingUseCase.PatronRatingNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.PatronRatingNotFoundException exception) {
             this.onPatronRatingNotFoundException();
         }
     }
