@@ -44,7 +44,7 @@
          </HBox>
 
          <VBox prefWidth="600.0" VBox.vgrow="ALWAYS" styleClass="document-info">
-            <Label fx:id="message" prefHeight="40" VBox.vgrow="ALWAYS"/>
+            <Label fx:id="message" prefHeight="20" VBox.vgrow="ALWAYS"/>
             <Label text="Title: thrill of the hunt" styleClass="document-info-label" fx:id="titleLabel" VBox.vgrow="ALWAYS"/>
 
             <Label text="Authors: Duy, Hieu" styleClass="document-info-label" fx:id="authorsLabel" VBox.vgrow="ALWAYS"/>
@@ -57,16 +57,18 @@
 
             <Label text="Year Published: 2023" styleClass="document-info-label" fx:id="yearPublishedLabel" VBox.vgrow="ALWAYS"/>
 
-            <Label prefHeight="17.0" prefWidth="670.0" text="Description:" VBox.vgrow="ALWAYS">
-               <font>
-                  <Font name="Segoe UI Variable" size="24.0" />
-               </font>
-            </Label>
+            <VBox VBox.vgrow="ALWAYS">
+               <Label prefHeight="17.0" prefWidth="670.0" text="Description:" VBox.vgrow="ALWAYS">
+                  <font>
+                     <Font name="Segoe UI Variable" size="18.0" />
+                  </font>
+               </Label>
 
-            <ScrollPane hbarPolicy="NEVER" prefHeight="230" styleClass="description-scroll-pane"
-                        fx:id="descriptionScrollPane" VBox.vgrow="ALWAYS">
-               <Label styleClass="description" fx:id="descriptionArea"/>
-            </ScrollPane>
+               <ScrollPane hbarPolicy="NEVER" prefHeight="230" styleClass="description-scroll-pane"
+                           fx:id="descriptionScrollPane" VBox.vgrow="ALWAYS">
+                  <Label styleClass="description" fx:id="descriptionArea"/>
+               </ScrollPane>
+            </VBox>
 
             <VBox.margin>
                <Insets top="10.0" />

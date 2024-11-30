@@ -2,17 +2,11 @@ package org.tomfoolery.configurations.monolith.gui.view.staff;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.configurations.monolith.gui.view.user.LogOutView;
 import org.tomfoolery.configurations.monolith.gui.view.user.ShowDocumentsView;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
@@ -47,28 +41,41 @@ public class DocumentsManagementView extends ShowDocumentsView{
         showDocuments();
     }
 
+    @SneakyThrows
     private void openDeleteDocumentDialog() {
+        String selectedDocumentISBN = documentsTable.getSelectionModel().getSelectedItem().getISBN();
+
+        DeleteDocumentPopup deleteDocumentPopupController = new DeleteDocumentPopup(
+                selectedDocumentISBN,
+                StageManager.getInstance().getDocumentRepository(),
+                StageManager.getInstance().getPatronRepository(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository()
+        );
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/DeleteDocumentPopup.fxml"));
+        loader.setController(deleteDocumentPopupController);
+        VBox v = loader.load();
+
+        StageManager.getInstance().getRootStackPane().getChildren().add(v);
     }
 
     private void openEditDocumentDialog() {
     }
 
+    @SneakyThrows
     private void openAddDocumentMenu() {
-        try {
-            AddDocumentView controller = new AddDocumentView(
-                    StageManager.getInstance().getDocumentRepository(),
-                    StageManager.getInstance().getAuthenticationTokenGenerator(),
-                    StageManager.getInstance().getAuthenticationTokenRepository(),
-                    this
-            );
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentMenu.fxml"));
-            loader.setController(controller);
-            VBox v = loader.load();
+        AddDocumentView controller = new AddDocumentView(
+                StageManager.getInstance().getDocumentRepository(),
+                StageManager.getInstance().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getAuthenticationTokenRepository(),
+                this
+        );
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentMenu.fxml"));
+        loader.setController(controller);
+        VBox v = loader.load();
 
-            StageManager.getInstance().getRootStackPane().getChildren().add(v);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
+        StageManager.getInstance().getRootStackPane().getChildren().add(v);
     }
 
     private void updateDocument(ShowDocumentsView.DocumentViewModel documentViewModel) {}

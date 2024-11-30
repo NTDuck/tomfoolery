@@ -4,9 +4,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import lombok.SneakyThrows;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-
-import java.io.IOException;
 
 public class ControlCenter {
     private final DocumentsDisplayView documentsDisplayView;
@@ -41,29 +40,23 @@ public class ControlCenter {
         viewDocuments();
     }
 
+    @SneakyThrows
     private void viewDocuments() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/DocumentsDisplay.fxml"));
-            loader.setController(documentsDisplayView);
-            VBox v = loader.load();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/DocumentsDisplay.fxml"));
+        loader.setController(documentsDisplayView);
+        VBox v = loader.load();
 
-            tableDisplay.getChildren().clear();
-            tableDisplay.getChildren().setAll(v);
-        } catch (IOException e) {
-            System.err.println("Error loading documents display view fxml");
-        }
+        tableDisplay.getChildren().clear();
+        tableDisplay.getChildren().setAll(v);
     }
 
+    @SneakyThrows
     private void viewAccounts() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/StaffAccountsManagementView.fxml"));
-            loader.setController(accountsDisplayView);
-            VBox v = loader.load();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/StaffAccountsManagementView.fxml"));
+        loader.setController(accountsDisplayView);
+        VBox v = loader.load();
 
-            tableDisplay.getChildren().clear();
-            tableDisplay.getChildren().setAll(v);
-        } catch (IOException e) {
-            System.err.println("Error loading documents display view fxml");
-        }
+        tableDisplay.getChildren().clear();
+        tableDisplay.getChildren().setAll(v);
     }
 }

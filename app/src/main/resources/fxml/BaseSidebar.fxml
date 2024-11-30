@@ -37,13 +37,5 @@
                 </ImageView>
             </graphic>
         </Button>
-
-        <Button styleClass="sidebar-button" fx:id="profileButton">
-            <graphic>
-                <ImageView fitHeight="32" fitWidth="32">
-                    <Image url="/images/user.png"/>
-                </ImageView>
-            </graphic>
-        </Button>
     </VBox>
 </VBox>

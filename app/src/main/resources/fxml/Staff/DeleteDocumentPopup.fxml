@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="/css/Staff/DeleteDocumentPopup.css"
+      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <VBox alignment="CENTER" prefHeight="300.0" prefWidth="100.0" spacing="20.0" styleClass="main">
+        <effect>
+            <DropShadow height="30.0" radius="14.5" width="30.0">
+                <color>
+                    <Color red="0.18039216101169586" green="0.20392157137393951" blue="0.24705882370471954"/>
+                </color>
+            </DropShadow>
+        </effect>
+
+        <Label text="Do you really want to delete this document?" textAlignment="CENTER"
+               wrapText="true" styleClass="header"/>
+
+        <HBox alignment="CENTER" prefHeight="130.0" prefWidth="480.0" spacing="40.0">
+            <Button mnemonicParsing="false" prefHeight="78.0" prefWidth="150.0"
+                    text="NO" styleClass="button" fx:id="noButton"/>
+
+            <Button mnemonicParsing="false" prefHeight="78.0" prefWidth="150.0"
+                    text="YES" styleClass="button" fx:id="yesButton"/>
+        </HBox>
+    </VBox>
+</VBox>

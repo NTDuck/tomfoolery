@@ -213,8 +213,8 @@ public class AddDocumentView {
 
     private void onSuccess() {
         errorMessage.setVisible(false);
-        closeView();
         parentView.showDocuments();
+        closeView();
     }
 
     private void onDocumentAlreadyExistsException() {

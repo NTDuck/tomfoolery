@@ -18,26 +18,18 @@ public abstract class BaseSidebar {
     protected Button discoverButton;
 
     @FXML
-    protected Button profileButton;
-
-    @FXML
     protected Button logoutButton;
 
     @FXML
     public void initialize() {
         dashboardButton.setOnAction(event -> goToDashboard());
         discoverButton.setOnAction(event -> goToDiscover());
-        profileButton.setOnAction(event -> openProfileView());
         logoutButton.setOnAction(event -> openLogOutView());
     }
 
     public abstract void goToDiscover();
 
     public abstract void goToDashboard();
-
-    public void openProfileView() {
-        System.out.println("sike! this is profile view");
-    }
 
     @SneakyThrows
     public void openLogOutView() {

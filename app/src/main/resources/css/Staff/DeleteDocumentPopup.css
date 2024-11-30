@@ -1,0 +1,28 @@
+.root {
+    -fx-padding: 0 400 0 400;
+    -fx-background-color: transparent;
+}
+
+.main {
+    -fx-background-color: #EBEEF4;
+    -fx-background-radius: 10;
+}
+
+.header {
+    -fx-text-fill: #2E343F;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 30;
+}
+
+.button {
+    -fx-text-fill: #2E343F;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 30;
+    -fx-background-color: transparent;
+    -fx-background-radius: 40;
+}
+
+.button:hover {
+    -fx-background-color: #80A0C04D;
+    -fx-cursor: hand;
+}
