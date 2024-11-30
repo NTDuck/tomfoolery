@@ -20,7 +20,7 @@ public class InMemoryApacheLuceneDocumentSearchGenerator implements DocumentSear
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByTitleSubsequence(@NonNull String title) {
+    public @NonNull List<FragmentaryDocument> searchByTitle(@NonNull String title) {
         return List.of();
     }
 
@@ -35,7 +35,7 @@ public class InMemoryApacheLuceneDocumentSearchGenerator implements DocumentSear
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByAuthorSubsequence(@NonNull String author) {
+    public @NonNull List<FragmentaryDocument> searchByAuthor(@NonNull String author) {
         return List.of();
     }
 
@@ -50,7 +50,7 @@ public class InMemoryApacheLuceneDocumentSearchGenerator implements DocumentSear
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByGenreSubsequence(@NonNull String genre) {
+    public @NonNull List<FragmentaryDocument> searchByGenre(@NonNull String genre) {
         return List.of();
     }
 

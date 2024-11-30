@@ -3,9 +3,9 @@ package org.tomfoolery.core.usecases.users.account.patron.persistence;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.users.Patron;
@@ -77,7 +77,7 @@ public final class DeletePatronAccountUseCase extends AuthenticatedUserUseCase i
         val patronEncodedCredentials = patron.getCredentials();
         val patronEncodedPassword = patronEncodedCredentials.getPassword();
 
-        if (!this.passwordEncoder.verifyPassword(rawPatronPassword, patronEncodedPassword))
+        if (!this.passwordEncoder.verify(rawPatronPassword, patronEncodedPassword))
             throw new PasswordMismatchException();
     }
 

@@ -20,7 +20,7 @@ import java.time.Instant;
 public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGenerator {
     @Override
     @SneakyThrows
-    public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
+    public @NonNull AuthenticationToken generate(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val payload = Payload.of(userId, userClass, expiryTimestamp);
         val serializedPayload = Base64Codec.encode(payload);
         val wrappedSerializedPayload = SecureString.of(serializedPayload);
@@ -29,12 +29,12 @@ public class Base64AuthenticationTokenGenerator implements AuthenticationTokenGe
     }
 
     @Override
-    public void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public void invalidate(@NonNull AuthenticationToken authenticationToken) {
 
     }
 
     @Override
-    public boolean verifyAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public boolean verify(@NonNull AuthenticationToken authenticationToken) {
         val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
         if (payload == null)

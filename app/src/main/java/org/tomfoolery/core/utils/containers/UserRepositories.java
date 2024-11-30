@@ -3,39 +3,21 @@ package org.tomfoolery.core.utils.containers;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.dataproviders.repositories.auth.abc.UserRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.abc.UserRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class UserRepositories implements Iterable<UserRepository<?>> {
-    private final @NonNull Iterable<UserRepository<?>> userRepositories;
-
-    private UserRepositories(@NonNull UserRepository<?>... userRepositories) {
-        this.userRepositories = List.of(userRepositories);
-    }
-
-    public static @NonNull UserRepositories of(@NonNull UserRepository<?>... userRepositories) {
-        return new UserRepositories(userRepositories);
-    }
-
+    private final @NonNull Set<UserRepository<?>> userRepositories;
     @Override
     public @NonNull Iterator<UserRepository<?>> iterator() {
         return this.userRepositories.iterator();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <User extends BaseUser> @Nullable UserRepository<User> getUserRepositoryByUser(@NonNull User user) {
-        return (UserRepository<User>) this.getUserRepositoryByUserClass(user.getClass());
-    }
-
-    @SuppressWarnings("unchecked")
-    public <User extends BaseUser> @Nullable UserRepository<User> getUserRepositoryByUserClass(@NonNull Class<User> userClass) {
-        return (UserRepository<User>) this.getUserRepositoryByPredicate(userRepository -> userRepository.getUserClass().equals(userClass));
     }
 
     @SuppressWarnings("unchecked")

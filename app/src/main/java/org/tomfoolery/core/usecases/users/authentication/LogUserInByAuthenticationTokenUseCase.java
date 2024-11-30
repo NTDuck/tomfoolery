@@ -5,7 +5,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
@@ -45,7 +45,7 @@ public final class LogUserInByAuthenticationTokenUseCase extends LogUserInUseCas
     }
 
     private void ensureUserAuthenticationTokenIsValid(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(authenticationToken))
+        if (!this.authenticationTokenGenerator.verify(authenticationToken))
             throw new AuthenticationTokenInvalidException();
     }
 

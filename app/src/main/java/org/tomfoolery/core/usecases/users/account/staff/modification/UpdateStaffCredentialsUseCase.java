@@ -3,9 +3,9 @@ package org.tomfoolery.core.usecases.users.account.staff.modification;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.Staff;
@@ -62,7 +62,7 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
 
     private Staff.@NonNull Credentials encodeStaffCredentials(Staff.@NonNull Credentials rawStaffCredentials) {
         val rawStaffPassword = rawStaffCredentials.getPassword();
-        val encodedStaffPassword = this.passwordEncoder.encodePassword(rawStaffPassword);
+        val encodedStaffPassword = this.passwordEncoder.encode(rawStaffPassword);
 
         return rawStaffCredentials.withPassword(encodedStaffPassword);
     }

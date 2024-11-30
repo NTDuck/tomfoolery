@@ -4,7 +4,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Expresses explicitly pseudo-DDD concepts.
- *
  * @see <a href="https://github.com/xmolecules/jmolecules">jmolecules-ddd</a>
  */
 public interface ddd {
@@ -13,6 +12,4 @@ public interface ddd {
     interface Entity<EntityId extends ddd.EntityId> {
         @NonNull EntityId getId();
     }
-
-    interface Repository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> {}
 }

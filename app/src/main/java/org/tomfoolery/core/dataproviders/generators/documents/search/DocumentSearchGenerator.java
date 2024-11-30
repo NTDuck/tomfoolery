@@ -6,23 +6,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.abc.BaseSynchronizedGenerator;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.domain.documents.DocumentWithoutContent;
 import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.List;
 
 public interface DocumentSearchGenerator extends BaseSynchronizedGenerator<Document, Document.Id> {
-    @NonNull List<DocumentWithoutContent> searchDocumentsByTitlePrefix(@NonNull String title);
-    @NonNull List<DocumentWithoutContent> searchDocumentsByTitleSuffix(@NonNull String title);
-    @NonNull List<DocumentWithoutContent> searchDocumentsByTitleSubsequence(@NonNull String title);
-
-    @NonNull List<DocumentWithoutContent> searchDocumentsByAuthorPrefix(@NonNull String author);
-    @NonNull List<DocumentWithoutContent> searchDocumentsByAuthorSuffix(@NonNull String author);
-    @NonNull List<DocumentWithoutContent> searchDocumentsByAuthorSubsequence(@NonNull String author);
-
-    @NonNull List<DocumentWithoutContent> searchDocumentsByGenrePrefix(@NonNull String genre);
-    @NonNull List<DocumentWithoutContent> searchDocumentsByGenreSuffix(@NonNull String genre);
-    @NonNull List<DocumentWithoutContent> searchDocumentsByGenreSubsequence(@NonNull String genre);
+    @NonNull List<Document> searchByTitle(@NonNull String title);
+    @NonNull List<Document> searchByAuthor(@NonNull String author);
+    @NonNull List<Document> searchByGenre(@NonNull String genre);
 
     default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByTitlePrefix(@NonNull String title, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val unpaginatedDocumentWithoutContents = this.searchDocumentsByTitlePrefix(title);
@@ -35,7 +26,7 @@ public interface DocumentSearchGenerator extends BaseSynchronizedGenerator<Docum
     }
 
     default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByTitleSubsequence(@NonNull String title, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByTitleSubsequence(title);
+        val unpaginatedDocumentWithoutContents = this.searchByTitle(title);
         return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
     }
 
@@ -50,7 +41,7 @@ public interface DocumentSearchGenerator extends BaseSynchronizedGenerator<Docum
     }
 
     default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByAuthorSubsequence(@NonNull String author, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByAuthorSubsequence(author);
+        val unpaginatedDocumentWithoutContents = this.searchByAuthor(author);
         return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
     }
 
@@ -65,7 +56,7 @@ public interface DocumentSearchGenerator extends BaseSynchronizedGenerator<Docum
     }
 
     default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByGenreSubsequence(@NonNull String genre, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByGenreSubsequence(genre);
+        val unpaginatedDocumentWithoutContents = this.searchByGenre(genre);
         return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
     }
 }

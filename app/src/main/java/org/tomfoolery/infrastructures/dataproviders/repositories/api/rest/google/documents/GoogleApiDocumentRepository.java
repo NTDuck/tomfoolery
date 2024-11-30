@@ -54,7 +54,7 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
     public @Nullable Document getById(Document.@NonNull Id entityId) {
         try {
             val httpResponse = this.httpClientProvider.sendSynchronousGET(
-                String.format("%s?q=isbn:%s", ENDPOINT_URL, entityId.getISBN10()),
+                String.format("%s?q=isbn:%s", ENDPOINT_URL, entityId.getISBN_10()),
                 HttpClientProvider.Headers.builder().build()
             );
 

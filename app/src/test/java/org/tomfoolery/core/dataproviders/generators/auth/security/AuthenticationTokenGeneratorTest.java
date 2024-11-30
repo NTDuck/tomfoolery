@@ -22,9 +22,9 @@ public abstract class AuthenticationTokenGeneratorTest {
         val userClass = Administrator.class;
         val expiryTimestamp = Instant.now().plusSeconds(1);
 
-        val token = authenticationTokenGenerator.generateAuthenticationToken(userId, userClass, expiryTimestamp);
+        val token = authenticationTokenGenerator.generate(userId, userClass, expiryTimestamp);
 
-        val isTokenValid = authenticationTokenGenerator.verifyAuthenticationToken(token);
+        val isTokenValid = authenticationTokenGenerator.verify(token);
         assertTrue(isTokenValid);
 
         val extractedUserId = authenticationTokenGenerator.getUserIdFromAuthenticationToken(token);

@@ -40,7 +40,7 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByTitleSubsequence(@NonNull String title) {
+    public @NonNull List<FragmentaryDocument> searchByTitle(@NonNull String title) {
         return searchDocuments(title, this.documentTitles::getStringsWithSubstring, this.documentsByTitles);
     }
 
@@ -55,7 +55,7 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByAuthorSubsequence(@NonNull String author) {
+    public @NonNull List<FragmentaryDocument> searchByAuthor(@NonNull String author) {
         return searchDocuments(author, this.documentAuthors::getStringsWithSubstring, this.documentsByAuthors);
     }
 
@@ -70,7 +70,7 @@ public class InMemoryIndexedDocumentSearchGenerator extends BaseInMemorySynchron
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByGenreSubsequence(@NonNull String genre) {
+    public @NonNull List<FragmentaryDocument> searchByGenre(@NonNull String genre) {
         return searchDocuments(genre, this.documentGenres::getStringsWithSubstring, this.documentsByGenres);
     }
 

@@ -10,7 +10,7 @@ import org.tomfoolery.infrastructures.utils.helpers.base64.Base64Codec;
 @NoArgsConstructor(staticName = "of")
 public class Base64PasswordEncoder implements PasswordEncoder {
     @Override
-    public @NonNull SecureString encodePassword(@NonNull SecureString rawPassword) {
+    public @NonNull SecureString encode(@NonNull SecureString rawPassword) {
         val encodedPasswordCharSequence = Base64Codec.encode(rawPassword);
         return SecureString.of(encodedPasswordCharSequence);
     }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.utils.containers.UserRepositories;
@@ -70,7 +70,7 @@ public final class LogUserInByCredentialsUseCase extends LogUserInUseCase implem
         val credentials = user.getCredentials();
         val encodedPassword = credentials.getPassword();
 
-        if (!this.passwordEncoder.verifyPassword(rawPassword, encodedPassword))
+        if (!this.passwordEncoder.verify(rawPassword, encodedPassword))
             throw new PasswordMismatchException();
     }
 
@@ -79,7 +79,7 @@ public final class LogUserInByCredentialsUseCase extends LogUserInUseCase implem
         val userClass = user.getClass();
         val expiryTimestamp = Instant.now().plus(AUTHENTICATION_TOKEN_LIFESPAN);
 
-        return this.authenticationTokenGenerator.generateAuthenticationToken(userId, userClass, expiryTimestamp);
+        return this.authenticationTokenGenerator.generate(userId, userClass, expiryTimestamp);
     }
 
     private void saveAuthenticationTokenToRepository(@NonNull AuthenticationToken authenticationToken) {

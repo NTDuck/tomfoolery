@@ -15,7 +15,7 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
     private static final int COST = 12;
 
     @Override
-    public @NonNull SecureString encodePassword(@NonNull SecureString rawPassword) {
+    public @NonNull SecureString encode(@NonNull SecureString rawPassword) {
         val rawPasswordChars = rawPassword.getChars();
         val encodedChars = encoder.hashToChar(COST, rawPasswordChars);
 
@@ -23,7 +23,7 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
     }
 
     @Override
-    public boolean verifyPassword(@NonNull SecureString rawPassword, @NonNull SecureString encodedPassword) {
+    public boolean verify(@NonNull SecureString rawPassword, @NonNull SecureString encodedPassword) {
         val rawPasswordChars = rawPassword.getChars();
 
         return verifyer.verify(rawPasswordChars, encodedPassword).verified;

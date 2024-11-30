@@ -1,4 +1,4 @@
-package org.tomfoolery.core.dataproviders.repositories.auth.security;
+package org.tomfoolery.core.dataproviders.repositories.users.security;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;

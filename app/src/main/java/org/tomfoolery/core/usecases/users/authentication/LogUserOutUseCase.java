@@ -2,7 +2,7 @@ package org.tomfoolery.core.usecases.users.authentication;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
@@ -56,7 +56,7 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
     }
 
     private void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
-        this.authenticationTokenGenerator.invalidateAuthenticationToken(authenticationToken);
+        this.authenticationTokenGenerator.invalidate(authenticationToken);
         this.authenticationTokenRepository.removeAuthenticationToken();
     }
 }

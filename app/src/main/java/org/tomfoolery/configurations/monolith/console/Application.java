@@ -40,11 +40,11 @@ import org.tomfoolery.core.dataproviders.generators.documents.recommendation.Doc
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.AdministratorRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.domain.users.Administrator;
@@ -180,20 +180,20 @@ public class Application implements Runnable, AutoCloseable {
     private void populateUserRepositories() {
         this.administratorRepository.save(Administrator.of(
             BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encode(SecureString.of("Root_123"))),
             BaseUser.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH))
         ));
 
         this.patronRepository.save(Patron.of(
             BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("patron_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+            BaseUser.Credentials.of("patron_123", this.passwordEncoder.encode(SecureString.of("Root_123"))),
             Patron.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
             Patron.Metadata.of("", "", "")
         ));
 
         this.staffRepository.save(Staff.of(
             BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("staff_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+            BaseUser.Credentials.of("staff_123", this.passwordEncoder.encode(SecureString.of("Root_123"))),
             Staff.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH), Administrator.Id.of(UUID.randomUUID()))
         ));
     }

@@ -3,7 +3,7 @@ package org.tomfoolery.core.usecases.abc;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
@@ -35,7 +35,7 @@ public abstract class AuthenticatedUserUseCase {
     }
 
     protected void ensureAuthenticationTokenIsValid(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(authenticationToken))
+        if (!this.authenticationTokenGenerator.verify(authenticationToken))
             throw new AuthenticationTokenInvalidException();
 
         val allowedUserClasses = this.getAllowedUserClasses();

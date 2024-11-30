@@ -3,9 +3,9 @@ package org.tomfoolery.core.usecases.users.account.patron.modification;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
@@ -50,7 +50,7 @@ public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase 
 
         val rawNewPatronPassword = request.getRawNewPatronPassword();
         this.ensurePasswordIsValid(rawNewPatronPassword);
-        val encodedNewPatronPassword = this.passwordEncoder.encodePassword(rawNewPatronPassword);
+        val encodedNewPatronPassword = this.passwordEncoder.encode(rawNewPatronPassword);
 
         this.updatePatronPassword(patron, encodedNewPatronPassword);
 
@@ -76,7 +76,7 @@ public final class UpdatePatronPasswordUseCase extends AuthenticatedUserUseCase 
         val encodedPatronCredentials = patron.getCredentials();
         val encodedPatronPassword = encodedPatronCredentials.getPassword();
 
-        if (!this.passwordEncoder.verifyPassword(rawPatronPassword, encodedPatronPassword))
+        if (!this.passwordEncoder.verify(rawPatronPassword, encodedPatronPassword))
             throw new PasswordMismatchException();
     }
 

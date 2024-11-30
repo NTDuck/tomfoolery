@@ -24,7 +24,7 @@ public class InMemoryLinearDocumentSearchGenerator extends InMemoryLinearDocumen
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByTitleSubsequence(@NonNull String title) {
+    public @NonNull List<FragmentaryDocument> searchByTitle(@NonNull String title) {
         return this.searchDocumentsByPredicate(document -> isSubsequence(title, document.getMetadata().getTitle()));
     }
 
@@ -39,7 +39,7 @@ public class InMemoryLinearDocumentSearchGenerator extends InMemoryLinearDocumen
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByAuthorSubsequence(@NonNull String author) {
+    public @NonNull List<FragmentaryDocument> searchByAuthor(@NonNull String author) {
         return this.searchDocumentsByPredicate(document -> isSubsequence(author, document.getMetadata().getAuthors()));
     }
 
@@ -54,7 +54,7 @@ public class InMemoryLinearDocumentSearchGenerator extends InMemoryLinearDocumen
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> searchDocumentsByGenreSubsequence(@NonNull String genre) {
+    public @NonNull List<FragmentaryDocument> searchByGenre(@NonNull String genre) {
         return this.searchDocumentsByPredicate(document -> isSubsequence(genre, document.getMetadata().getGenres()));
     }
 

@@ -23,7 +23,7 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     private static final @NonNull String EXPIRATION_CLAIM_LABEL = "expl";
 
     @Override
-    public @NonNull AuthenticationToken generateAuthenticationToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
+    public @NonNull AuthenticationToken generate(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
         val serializedPayload = Jwts.builder()
             .claim(USER_ID_CLAIM_LABEL, generateSerializableFromUserId(userId))
             .claim(USER_CLASS_CLAIM_LABEL, generateSerializableFromUserClass(userClass))
@@ -36,12 +36,12 @@ public class JJWTAuthenticationTokenGenerator implements AuthenticationTokenGene
     }
 
     @Override
-    public void invalidateAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public void invalidate(@NonNull AuthenticationToken authenticationToken) {
 
     }
 
     @Override
-    public boolean verifyAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public boolean verify(@NonNull AuthenticationToken authenticationToken) {
         val payload = getPayloadFromAuthenticationToken(authenticationToken);
 
         if (payload == null)
