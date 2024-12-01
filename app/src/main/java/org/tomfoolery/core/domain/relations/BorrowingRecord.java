@@ -3,7 +3,6 @@ package org.tomfoolery.core.domain.relations;
 import lombok.Data;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.domain.relations.abc.PatronDocumentRelation;
 
 import java.time.Instant;
 

@@ -6,11 +6,11 @@ import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.users.account.staff.modification.UpdateStaffCredentialsUseCase;
+import org.tomfoolery.core.usecases.admin.users.persistence.UpdateStaffCredentialsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.UpdateStaffCredentialsController;
 
 public final class UpdateStaffCredentialsActionView extends UserActionView {

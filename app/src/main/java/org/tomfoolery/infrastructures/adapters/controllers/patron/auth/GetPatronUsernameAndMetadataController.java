@@ -3,10 +3,10 @@ package org.tomfoolery.infrastructures.adapters.controllers.patron.auth;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.users.account.patron.retrieval.GetPatronUsernameAndMetadataUseCase;
+import org.tomfoolery.core.usecases.patron.users.GetPatronUsernameAndMetadataUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
 
 public final class GetPatronUsernameAndMetadataController implements ThrowableSupplier<GetPatronUsernameAndMetadataController.ViewModel> {

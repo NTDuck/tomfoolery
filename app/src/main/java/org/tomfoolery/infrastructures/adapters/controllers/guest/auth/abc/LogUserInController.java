@@ -7,7 +7,7 @@ import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.usecases.users.authentication.LogUserInUseCase;
+import org.tomfoolery.core.usecases.guest.users.LogUserInUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInByCredentialsController;
 
 import java.util.Map;

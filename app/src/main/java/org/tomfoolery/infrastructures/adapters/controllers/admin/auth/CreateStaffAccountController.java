@@ -3,12 +3,12 @@ package org.tomfoolery.infrastructures.adapters.controllers.admin.auth;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Staff;
-import org.tomfoolery.core.usecases.users.account.staff.persistence.CreateStaffAccountUseCase;
+import org.tomfoolery.core.usecases.admin.users.persistence.CreateStaffAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 

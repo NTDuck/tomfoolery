@@ -3,11 +3,11 @@ package org.tomfoolery.infrastructures.adapters.controllers.staff.documents;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.usecases.documents.modification.UpdateDocumentContentUseCase;
+import org.tomfoolery.core.usecases.staff.documents.UpdateDocumentContentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
 

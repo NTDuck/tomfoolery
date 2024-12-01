@@ -3,11 +3,11 @@ package org.tomfoolery.infrastructures.adapters.controllers.patron.auth;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Patron;
-import org.tomfoolery.core.usecases.users.account.patron.modification.UpdatePatronMetadataUseCase;
+import org.tomfoolery.core.usecases.patron.users.UpdatePatronMetadataUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
 public final class UpdatePatronMetadataController implements ThrowableConsumer<UpdatePatronMetadataController.RequestObject> {

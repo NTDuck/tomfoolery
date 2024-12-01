@@ -6,10 +6,10 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.documents.retrieval.ShowDocumentsUseCase;
+import org.tomfoolery.core.usecases.shared.documents.ShowDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.user.documents.ShowDocumentsController;
 
 public final class ShowDocumentsActionView extends UserActionView {

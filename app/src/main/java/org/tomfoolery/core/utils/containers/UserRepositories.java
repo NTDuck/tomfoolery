@@ -1,5 +1,6 @@
 package org.tomfoolery.core.utils.containers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -8,11 +9,11 @@ import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+@RequiredArgsConstructor(staticName = "of")
 public class UserRepositories implements Iterable<UserRepository<?>> {
     private final @NonNull Set<UserRepository<?>> userRepositories;
     @Override

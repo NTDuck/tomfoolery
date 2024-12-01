@@ -1,16 +1,23 @@
 package org.tomfoolery.core.utils.dataclasses;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 @Value
 public class Page<T> implements Iterable<T> {
+    private final static @Unsigned int MIN_PAGE_INDEX = 1;
+
     @Getter(value = AccessLevel.NONE)
     @Setter(value = AccessLevel.NONE)
     @NonNull List<T> paginatedItems;
@@ -43,10 +50,10 @@ public class Page<T> implements Iterable<T> {
         if (pageIndex < 0)
             return null;
 
-        val pageOffset = (pageIndex - 1) * maxPageSize;
-        val maxPageIndex = unpaginatedItems.size() / maxPageSize;
+        val pageOffset = (pageIndex - MIN_PAGE_INDEX) * maxPageSize;
+        val maxPageIndex = Math.ceilDiv(unpaginatedItems.size(), maxPageSize);
 
-        if (maxPageIndex < pageIndex)
+        if (pageOffset < 0 || maxPageIndex < pageIndex)
             return null;
 
         val paginatedItems = unpaginatedItems.parallelStream()

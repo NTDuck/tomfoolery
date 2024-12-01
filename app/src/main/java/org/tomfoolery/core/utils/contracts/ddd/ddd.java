@@ -12,4 +12,12 @@ public interface ddd {
     interface Entity<EntityId extends ddd.EntityId> {
         @NonNull EntityId getId();
     }
+
+    /**
+     * Order does not matter.
+     */
+    interface Relation<FirstEntityId extends ddd.EntityId, SecondEntityId extends ddd.EntityId> {
+        @NonNull FirstEntityId getFirstId();
+        @NonNull SecondEntityId getSecondId();
+    }
 }

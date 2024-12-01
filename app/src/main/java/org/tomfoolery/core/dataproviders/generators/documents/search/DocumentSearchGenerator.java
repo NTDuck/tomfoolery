@@ -15,48 +15,18 @@ public interface DocumentSearchGenerator extends BaseSynchronizedGenerator<Docum
     @NonNull List<Document> searchByAuthor(@NonNull String author);
     @NonNull List<Document> searchByGenre(@NonNull String genre);
 
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByTitlePrefix(@NonNull String title, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByTitlePrefix(title);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
+    default @Nullable Page<Document> searchPaginatedByTitle(@NonNull String title, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val unpaginatedDocuments = this.searchByTitle(title);
+        return Page.fromUnpaginated(unpaginatedDocuments, pageIndex, maxPageSize);
     }
 
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByTitleSuffix(@NonNull String title, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByTitleSuffix(title);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
+    default @Nullable Page<Document> searchPaginatedByAuthor(@NonNull String author, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val unpaginatedDocuments = this.searchByAuthor(author);
+        return Page.fromUnpaginated(unpaginatedDocuments, pageIndex, maxPageSize);
     }
 
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByTitleSubsequence(@NonNull String title, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchByTitle(title);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
-    }
-
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByAuthorPrefix(@NonNull String author, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByAuthorPrefix(author);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
-    }
-
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByAuthorSuffix(@NonNull String author, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByAuthorSuffix(author);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
-    }
-
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByAuthorSubsequence(@NonNull String author, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchByAuthor(author);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
-    }
-
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByGenrePrefix(@NonNull String genre, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByGenrePrefix(genre);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
-    }
-
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByGenreSuffix(@NonNull String genre, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchDocumentsByGenreSuffix(genre);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
-    }
-
-    default @Nullable Page<DocumentWithoutContent> searchPaginatedDocumentsByGenreSubsequence(@NonNull String genre, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentWithoutContents = this.searchByGenre(genre);
-        return Page.fromUnpaginated(unpaginatedDocumentWithoutContents, pageIndex, maxPageSize);
+    default @Nullable Page<Document> searchPaginatedByGenre(@NonNull String genre, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val unpaginatedDocuments = this.searchByGenre(genre);
+        return Page.fromUnpaginated(unpaginatedDocuments, pageIndex, maxPageSize);
     }
 }
