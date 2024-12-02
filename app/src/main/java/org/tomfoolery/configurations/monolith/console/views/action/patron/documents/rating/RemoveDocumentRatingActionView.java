@@ -42,7 +42,7 @@ public final class RemoveDocumentRatingActionView extends UserActionView {
             this.onPatronNotFoundException();
         } catch (RemoveDocumentReviewUseCase.DocumentNotFoundException exception) {
             this.onDocumentNotFoundException();
-        } catch (RemoveDocumentReviewUseCase.PatronRatingNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.ReviewNotFoundException exception) {
             this.onPatronRatingNotFoundException();
         }
     }

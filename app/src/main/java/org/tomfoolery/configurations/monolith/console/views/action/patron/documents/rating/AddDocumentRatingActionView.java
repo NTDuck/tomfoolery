@@ -44,9 +44,9 @@ public final class AddDocumentRatingActionView extends UserActionView {
             this.onPatronNotFoundException();
         } catch (AddDocumentReviewUseCase.DocumentNotFoundException exception) {
             this.onDocumentNotFoundException();
-        } catch (AddDocumentReviewUseCase.RatingValueInvalidException exception) {
+        } catch (AddDocumentReviewUseCase.RatingInvalidException exception) {
             this.onRatingValueInvalidException();
-        } catch (AddDocumentReviewUseCase.PatronRatingAlreadyExistsException exception) {
+        } catch (AddDocumentReviewUseCase.ReviewAlreadyExistsException exception) {
             this.onPatronRatingAlreadyExistsException();
         }
     }

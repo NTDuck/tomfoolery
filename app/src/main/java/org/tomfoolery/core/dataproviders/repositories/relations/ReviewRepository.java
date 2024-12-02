@@ -6,5 +6,4 @@ import org.tomfoolery.core.domain.relations.Review;
 import org.tomfoolery.core.domain.users.Patron;
 
 public interface ReviewRepository extends BaseBiRepository<Review, Review.Id, Document.Id, Patron.Id> {
-
 }

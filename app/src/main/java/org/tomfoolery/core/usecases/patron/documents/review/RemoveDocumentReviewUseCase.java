@@ -3,33 +3,32 @@ package org.tomfoolery.core.usecases.patron.documents.review;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.domain.relations.Review;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.util.Set;
 
 public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<RemoveDocumentReviewUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
-    private final @NonNull PatronRepository patronRepository;
+    private final @NonNull ReviewRepository reviewRepository;
 
-    public static @NonNull RemoveDocumentReviewUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new RemoveDocumentReviewUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull RemoveDocumentReviewUseCase of(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new RemoveDocumentReviewUseCase(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private RemoveDocumentReviewUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private RemoveDocumentReviewUseCase(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
-        this.patronRepository = patronRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @Override
@@ -38,30 +37,19 @@ public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase 
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentISBNInvalidException, DocumentNotFoundException, PatronRatingNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, ReviewNotFoundException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
-        val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
 
         val documentISBN = request.getDocumentISBN();
         val documentId = this.getDocumentIdFromISBN(documentISBN);
-        val documentWithoutContent = this.getDocumentWithoutContentById(documentId);
+        this.ensureDocumentExists(documentId);
 
-        val patronRating = this.getPatronRatingFromDocument(patron, documentId);
-        this.removePatronRatingFromDocument(documentWithoutContent, patron, patronRating);
+        val reviewId = Review.Id.of(documentId, patronId);
+        this.ensureReviewExists(reviewId);
 
-        this.documentRepository.save(documentWithoutContent);
-        this.patronRepository.save(patron);
-    }
-
-    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-        val patron = patronRepository.getById(patronId);
-
-        if (patron == null)
-            throw new PatronNotFoundException();
-
-        return patron;
+        this.reviewRepository.delete(reviewId);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -73,34 +61,14 @@ public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase 
         return documentId;
     }
 
-    private @Unsigned double getPatronRatingFromDocument(@NonNull Patron patron, Document.@NonNull Id documentId) throws PatronRatingNotFoundException {
-        val patronRatingsByDocumentIds = patron.getAudit().getRatingsByDocumentIds();
-        val patronRating = patronRatingsByDocumentIds.get(documentId);
-
-        if (patronRating == null)
-            throw new PatronRatingNotFoundException();
-
-        return patronRating;
-    }
-
-    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
-
-        if (documentWithoutContent == null)
+    private void ensureDocumentExists(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        if (!this.documentRepository.contains(documentId))
             throw new DocumentNotFoundException();
-
-        return documentWithoutContent;
     }
 
-    private void removePatronRatingFromDocument(@NonNull DocumentWithoutContent documentWithoutContent, @NonNull Patron patron, @Unsigned double patronRating) {
-        val patronAudit = patron.getAudit();
-        val patronRatingValues = patronAudit.getRatingsByDocumentIds();
-
-        val documentId = documentWithoutContent.getId();
-        val documentRating = documentWithoutContent.getRating();
-
-        patronRatingValues.remove(documentId);
-        documentRating.remove(patronRating);
+    private void ensureReviewExists(Review.@NonNull Id reviewId) throws ReviewNotFoundException {
+        if (!this.reviewRepository.contains(reviewId))
+            throw new ReviewNotFoundException();
     }
 
     @Value(staticConstructor = "of")
@@ -109,7 +77,6 @@ public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase 
     }
 
     public static class DocumentISBNInvalidException extends Exception {}
-    public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
-    public static class PatronRatingNotFoundException extends Exception {}
+    public static class ReviewNotFoundException extends Exception {}
 }

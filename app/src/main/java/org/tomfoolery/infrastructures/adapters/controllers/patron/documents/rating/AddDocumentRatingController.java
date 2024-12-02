@@ -24,7 +24,7 @@ public final class AddDocumentRatingController implements ThrowableConsumer<AddD
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws AddDocumentReviewUseCase.AuthenticationTokenNotFoundException, AddDocumentReviewUseCase.AuthenticationTokenInvalidException, AddDocumentReviewUseCase.PatronNotFoundException, AddDocumentReviewUseCase.DocumentNotFoundException, AddDocumentReviewUseCase.RatingValueInvalidException, AddDocumentReviewUseCase.PatronRatingAlreadyExistsException {
+    public void accept(@NonNull RequestObject requestObject) throws AddDocumentReviewUseCase.AuthenticationTokenNotFoundException, AddDocumentReviewUseCase.AuthenticationTokenInvalidException, AddDocumentReviewUseCase.PatronNotFoundException, AddDocumentReviewUseCase.DocumentNotFoundException, AddDocumentReviewUseCase.RatingInvalidException, AddDocumentReviewUseCase.ReviewAlreadyExistsException {
         val requestModel = requestObject.toRequestModel();
         this.addDocumentReviewUseCase.accept(requestModel);
     }

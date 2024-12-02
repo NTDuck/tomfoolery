@@ -53,7 +53,7 @@ public final class ShowBorrowedDocumentsController implements ThrowableFunction<
         @Unsigned int maxPageIndex;
 
         private static @NonNull ViewModel fromResponseModel(ShowBorrowedDocumentsUseCase.@NonNull Response responseModel) {
-            val paginatedFragmentaryDocuments = responseModel.getPaginatedDocumentsWithoutContent();
+            val paginatedFragmentaryDocuments = responseModel.getPaginatedBorrowedDocuments();
 
             val viewablePaginatedFragmentaryDocuments = StreamSupport.stream(paginatedFragmentaryDocuments.spliterator(), true)
                 .map(ViewableFragmentaryDocument::of)

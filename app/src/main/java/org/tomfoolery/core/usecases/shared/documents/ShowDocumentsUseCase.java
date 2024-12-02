@@ -33,12 +33,12 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedDocumentsWithoutContent = this.getPaginatedDocumentsWithoutContent(pageIndex, maxPageSize);
+        val paginatedDocuments = this.getPaginatedDocuments(pageIndex, maxPageSize);
 
-        return Response.of(paginatedDocumentsWithoutContent);
+        return Response.of(paginatedDocuments);
     }
 
-    private @NonNull Page<Document> getPaginatedDocumentsWithoutContent(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+    private @NonNull Page<Document> getPaginatedDocuments(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
         val paginatedFragmentaryDocuments = this.documentRepository.showPaginated(pageIndex, maxPageSize);
 
         if (paginatedFragmentaryDocuments == null)

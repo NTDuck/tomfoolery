@@ -13,24 +13,24 @@ import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.util.Set;
 
 public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ReadBorrowedDocumentUseCase.Request, ReadBorrowedDocumentUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
-    private final @NonNull DocumentContentRepository
+    private final @NonNull DocumentContentRepository documentContentRepository;
     private final @NonNull BorrowingRecordRepository borrowingRecordRepository;
 
-    public static @NonNull ReadBorrowedDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ReadBorrowedDocumentUseCase(documentRepository, borrowingRecordRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ReadBorrowedDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ReadBorrowedDocumentUseCase(documentRepository, documentContentRepository, borrowingRecordRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ReadBorrowedDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ReadBorrowedDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
+        this.documentContentRepository = documentContentRepository;
         this.borrowingRecordRepository = borrowingRecordRepository;
     }
 
@@ -40,29 +40,20 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentNotBorrowedException, DocumentContentNotFoundException {
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentNotBorrowedException, DocumentContentNotFoundException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
-        val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
 
         val documentISBN = request.getDocumentISBN();
         val documentId = this.getDocumentIdFromISBN(documentISBN);
-        val document = this.getDocumentById(documentId);
 
-        this.ensureDocumentIsAlreadyBorrowed(patron, documentId);
-        val documentContent = this.getDocumentContentByDocumentId(document);
+        this.ensureDocumentExists(documentId);
+        this.ensureDocumentIsAlreadyBorrowed(documentId, patronId);
+
+        val documentContent = this.getDocumentContentByDocumentId(documentId);
 
         return Response.of(documentContent);
-    }
-
-    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-        val patron = this.patronRepository.getById(patronId);
-
-        if (patron == null)
-            throw new PatronNotFoundException();
-
-        return patron;
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -74,13 +65,9 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
         return documentId;
     }
 
-    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
-
-        if (document == null)
+    private void ensureDocumentExists(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        if (!this.documentRepository.contains(documentId))
             throw new DocumentNotFoundException();
-
-        return document;
     }
 
     private void ensureDocumentIsAlreadyBorrowed(Document.@NonNull Id documentId, Patron.@NonNull Id patronId) throws DocumentNotFoundException {
@@ -88,8 +75,9 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
             throw new DocumentNotFoundException();
     }
 
-    private @NonNull DocumentContent getDocumentContentByDocumentId(@NonNull Document document) throws DocumentContentNotFoundException {
-        val documentContent = document.getContent();
+    private @NonNull DocumentContent getDocumentContentByDocumentId(Document.@NonNull Id documentId) throws DocumentContentNotFoundException {
+        val documentContentId = DocumentContent.Id.of(documentId);
+        val documentContent = this.documentContentRepository.getById(documentContentId);
 
         if (documentContent == null)
             throw new DocumentContentNotFoundException();

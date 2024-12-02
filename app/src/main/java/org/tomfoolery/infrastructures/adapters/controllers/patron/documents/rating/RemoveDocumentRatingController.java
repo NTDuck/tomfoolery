@@ -23,7 +23,7 @@ public final class RemoveDocumentRatingController implements ThrowableConsumer<R
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws RemoveDocumentReviewUseCase.AuthenticationTokenNotFoundException, RemoveDocumentReviewUseCase.AuthenticationTokenInvalidException, RemoveDocumentReviewUseCase.PatronNotFoundException, RemoveDocumentReviewUseCase.DocumentNotFoundException, RemoveDocumentReviewUseCase.PatronRatingNotFoundException {
+    public void accept(@NonNull RequestObject requestObject) throws RemoveDocumentReviewUseCase.AuthenticationTokenNotFoundException, RemoveDocumentReviewUseCase.AuthenticationTokenInvalidException, RemoveDocumentReviewUseCase.PatronNotFoundException, RemoveDocumentReviewUseCase.DocumentNotFoundException, RemoveDocumentReviewUseCase.ReviewNotFoundException {
         val requestModel = requestObject.toRequestModel();
         this.removeDocumentReviewUseCase.accept(requestModel);
     }

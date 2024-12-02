@@ -74,7 +74,7 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     private void ensureDocumentBorrowLimitNotExceeded(Patron.@NonNull Id patronId) throws DocumentBorrowLimitExceeded {
-        val numberOfCurrentlyBorrowedDocumentsByPatron = this.borrowingRecordRepository.getNumberOfCurrentlyBorrowedByPatron(patronId);
+        val numberOfCurrentlyBorrowedDocumentsByPatron = this.borrowingRecordRepository.getNumberOfCurrentlyBorrowedDocumentsByPatron(patronId);
 
         if (numberOfCurrentlyBorrowedDocumentsByPatron >= MAX_BORROWED_DOCUMENTS_PER_PATRON)
             throw new DocumentBorrowLimitExceeded();
