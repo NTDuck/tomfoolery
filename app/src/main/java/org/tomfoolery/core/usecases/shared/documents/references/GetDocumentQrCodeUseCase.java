@@ -37,21 +37,21 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
         this.ensureAuthenticationTokenIsValid(authenticationToken);
 
         val documentId = request.getDocumentId();
-        val fragmentaryDocument = this.getDocumentWithoutContentById(documentId);
+        val document = this.getDocumentById(documentId);
 
-        val documentUrl = this.documentUrlGenerator.generateUrlFromDocument(fragmentaryDocument);
+        val documentUrl = this.documentUrlGenerator.generateUrlFromDocument(document);
         val documentQrCode = this.documentQrCodeGenerator.generateQrCodeFromUrl(documentUrl);
 
         return Response.of(documentQrCode);
     }
 
-    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
+    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val document = this.documentRepository.getById(documentId);
 
-        if (documentWithoutContent == null)
+        if (document == null)
             throw new DocumentNotFoundException();
 
-        return documentWithoutContent;
+        return document;
     }
 
     @Value(staticConstructor = "of")

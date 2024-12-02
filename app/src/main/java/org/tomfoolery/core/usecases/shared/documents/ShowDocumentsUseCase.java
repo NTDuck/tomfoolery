@@ -7,6 +7,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.dataclasses.Page;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
@@ -37,8 +38,8 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
         return Response.of(paginatedDocumentsWithoutContent);
     }
 
-    private @NonNull Page<DocumentWithoutContent> getPaginatedDocumentsWithoutContent(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val paginatedFragmentaryDocuments = this.documentRepository.showPaginatedWithoutContent(pageIndex, maxPageSize);
+    private @NonNull Page<Document> getPaginatedDocumentsWithoutContent(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val paginatedFragmentaryDocuments = this.documentRepository.showPaginated(pageIndex, maxPageSize);
 
         if (paginatedFragmentaryDocuments == null)
             throw new PaginationInvalidException();
@@ -54,7 +55,7 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<DocumentWithoutContent> paginatedDocumentsWithoutContent;
+        @NonNull Page<Document> paginatedDocuments;
     }
 
     public static class PaginationInvalidException extends Exception {}

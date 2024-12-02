@@ -52,7 +52,7 @@ public final class ShowDocumentsController implements ThrowableFunction<ShowDocu
         @Unsigned int maxPageIndex;
 
         private static @NonNull ViewModel fromResponseModel(ShowDocumentsUseCase.@NonNull Response responseModel) {
-            val paginatedFragmentaryDocuments = responseModel.getPaginatedDocumentsWithoutContent();
+            val paginatedFragmentaryDocuments = responseModel.getPaginatedDocuments();
 
             val viewablePaginatedFragmentaryDocuments = StreamSupport.stream(paginatedFragmentaryDocuments.spliterator(), true)
                 .map(ViewableFragmentaryDocument::of)

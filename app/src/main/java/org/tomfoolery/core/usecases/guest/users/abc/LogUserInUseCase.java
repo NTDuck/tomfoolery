@@ -1,4 +1,4 @@
-package org.tomfoolery.core.usecases.guest.users;
+package org.tomfoolery.core.usecases.guest.users.abc;
 
 import lombok.Value;
 import lombok.val;

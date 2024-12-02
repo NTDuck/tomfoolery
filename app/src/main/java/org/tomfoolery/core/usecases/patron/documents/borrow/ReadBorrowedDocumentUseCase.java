@@ -4,9 +4,11 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingRecordRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.domain.relations.DocumentContent;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Patron;
@@ -18,17 +20,18 @@ import java.util.Set;
 
 public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ReadBorrowedDocumentUseCase.Request, ReadBorrowedDocumentUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
-    private final @NonNull PatronRepository patronRepository;
+    private final @NonNull DocumentContentRepository
+    private final @NonNull BorrowingRecordRepository borrowingRecordRepository;
 
-    public static @NonNull ReadBorrowedDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ReadBorrowedDocumentUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ReadBorrowedDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ReadBorrowedDocumentUseCase(documentRepository, borrowingRecordRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ReadBorrowedDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ReadBorrowedDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
-        this.patronRepository = patronRepository;
+        this.borrowingRecordRepository = borrowingRecordRepository;
     }
 
     @Override
@@ -47,7 +50,7 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
         val document = this.getDocumentById(documentId);
 
         this.ensureDocumentIsAlreadyBorrowed(patron, documentId);
-        val documentContent = this.getDocumentContentFromDocument(document);
+        val documentContent = this.getDocumentContentByDocumentId(document);
 
         return Response.of(documentContent);
     }
@@ -80,14 +83,12 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
         return document;
     }
 
-    private void ensureDocumentIsAlreadyBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentNotBorrowedException {
-        val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
-
-        if (!borrowedDocumentIds.contains(documentId))
-            throw new DocumentNotBorrowedException();
+    private void ensureDocumentIsAlreadyBorrowed(Document.@NonNull Id documentId, Patron.@NonNull Id patronId) throws DocumentNotFoundException {
+        if (!this.borrowingRecordRepository.containsCurrentlyBorrowedRecord(documentId, patronId))
+            throw new DocumentNotFoundException();
     }
 
-    private Document.@NonNull Content getDocumentContentFromDocument(@NonNull Document document) throws DocumentContentNotFoundException {
+    private @NonNull DocumentContent getDocumentContentByDocumentId(@NonNull Document document) throws DocumentContentNotFoundException {
         val documentContent = document.getContent();
 
         if (documentContent == null)
@@ -103,11 +104,10 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
 
     @Value(staticConstructor = "of")
     public static class Response {
-        Document.@NonNull Content documentContent;
+        @NonNull DocumentContent documentContent;
     }
 
     public static class DocumentISBNInvalidException extends Exception {}
-    public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
     public static class DocumentNotBorrowedException extends Exception {}
     public static class DocumentContentNotFoundException extends Exception {}

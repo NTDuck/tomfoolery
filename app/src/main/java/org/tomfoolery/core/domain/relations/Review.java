@@ -16,7 +16,7 @@ public final class Review implements ddd.BiRelation<Review.Id, Document.Id, Patr
 
     @Value(staticConstructor = "of")
     public static class Id implements ddd.BiRelationId<Document.Id, Patron.Id> {
-        Document.@NonNull Id firstId;
-        Patron.@NonNull Id secondId;
+        Document.@NonNull Id firstEntityId;
+        Patron.@NonNull Id secondEntityId;
     }
 }

@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.utils.contracts.ddd;
+import org.tomfoolery.core.utils.helpers.adapters.documents.ISBNAdapter;
+import org.tomfoolery.core.utils.helpers.verifiers.documents.ISBNVerifier;
 
 import java.time.Instant;
 import java.time.Year;
@@ -23,9 +26,24 @@ public final class Document implements ddd.Entity<Document.Id> {
     private @NonNull Metadata metadata;
     private @Nullable CoverImage coverImage;
 
-    @Value(staticConstructor = "of")
+    @Value(staticConstructor = "ofISBN10")
     public static class Id implements ddd.EntityId {
         @NonNull String ISBN_10;
+
+        public static @Nullable Id of(@NonNull String ISBN) {
+            if (ISBNVerifier.verifyISBN10(ISBN))
+                return Id.ofISBN10(ISBN);
+
+            if (ISBNVerifier.verifyISBN13(ISBN))
+                return Id.ofISBN13(ISBN);
+
+            return null;
+        }
+
+        public static @Nullable Id ofISBN13(@NonNull String ISBN_13) {
+            val ISBN_10 = ISBNAdapter.toISBN10(ISBN_13);
+            return Id.ofISBN10(ISBN_10);
+        }
     }
 
     @Data(staticConstructor = "of")

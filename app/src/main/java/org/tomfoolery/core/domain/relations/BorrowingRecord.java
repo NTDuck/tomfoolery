@@ -14,12 +14,19 @@ import java.time.Instant;
 public final class BorrowingRecord implements ddd.BiRelation<BorrowingRecord.Id, Document.Id, Patron.Id> {
     private final @NonNull Id id;
 
-    private final @NonNull Instant borrowedTimestamp;
+    private final @NonNull Instant dueTimestamp;
     private @Nullable Instant returnedTimestamp;
+
+    public boolean isCurrentlyBorrowed() {
+        return this.returnedTimestamp == null
+            && Instant.now().isBefore(this.dueTimestamp);
+    }
 
     @Value(staticConstructor = "of")
     public static class Id implements ddd.BiRelationId<Document.Id, Patron.Id> {
-        Document.@NonNull Id firstId;
-        Patron.@NonNull Id secondId;
+        Document.@NonNull Id firstEntityId;
+        Patron.@NonNull Id secondEntityId;
+
+        @NonNull Instant borrowedTimestamp;
     }
 }

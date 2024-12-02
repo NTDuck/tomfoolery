@@ -8,6 +8,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.dataclasses.Page;
@@ -37,14 +38,14 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
         return Response.of(paginatedFragmentaryDocuments);
     }
 
-    private @NonNull Page<DocumentWithoutContent> searchDocuments(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+    private @NonNull Page<Document> searchDocuments(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
         val documentSearchFunction = this.getDocumentSearchFunction();
-        val paginatedFragmentaryDocuments = documentSearchFunction.apply(searchTerm, pageIndex, maxPageSize);
+        val paginatedDocuments = documentSearchFunction.apply(searchTerm, pageIndex, maxPageSize);
 
-        if (paginatedFragmentaryDocuments == null)
+        if (paginatedDocuments == null)
             throw new PaginationInvalidException();
 
-        return paginatedFragmentaryDocuments;
+        return paginatedDocuments;
     }
 
     @Value(staticConstructor = "of")
@@ -57,13 +58,13 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<DocumentWithoutContent> paginatedDocumentsWithoutContent;
+        @NonNull Page<Document> paginatedDocuments;
     }
 
     public static class PaginationInvalidException extends Exception {}
 
     @FunctionalInterface
     protected interface DocumentSearchFunction {
-        @Nullable Page<DocumentWithoutContent> apply(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize);
+        @Nullable Page<Document> apply(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize);
     }
 }

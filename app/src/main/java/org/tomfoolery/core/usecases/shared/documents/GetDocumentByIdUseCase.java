@@ -30,9 +30,9 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
 
         val documentISBN = request.getDocumentISBN();
         val documentId = this.getDocumentIdFromISBN(documentISBN);
-        val documentWithoutContent = this.getDocumentWithoutContentById(documentId);
+        val document = this.getDocumentById(documentId);
 
-        return Response.of(documentWithoutContent);
+        return Response.of(document);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -44,13 +44,13 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
         return documentId;
     }
 
-    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
+    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val document = this.documentRepository.getById(documentId);
 
-        if (documentWithoutContent == null)
+        if (document == null)
             throw new DocumentNotFoundException();
 
-        return documentWithoutContent;
+        return document;
     }
 
     @Value(staticConstructor = "of")
@@ -60,7 +60,7 @@ public final class GetDocumentByIdUseCase extends AuthenticatedUserUseCase imple
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull DocumentWithoutContent documentWithoutContent;
+        @NonNull Document document;
     }
 
     public static class DocumentISBNInvalidException extends Exception {}

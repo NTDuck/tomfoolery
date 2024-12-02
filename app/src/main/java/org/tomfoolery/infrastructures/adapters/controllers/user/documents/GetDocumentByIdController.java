@@ -47,7 +47,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         @NonNull ViewableFragmentaryDocument fragmentaryDocument;
 
         private static @NonNull ViewModel fromResponseModel(GetDocumentByIdUseCase.@NonNull Response responseModel) {
-            val fragmentaryDocument = responseModel.getDocumentWithoutContent();
+            val fragmentaryDocument = responseModel.getDocument();
             val viewableFragmentaryDocument = ViewableFragmentaryDocument.of(fragmentaryDocument);
 
             return new ViewModel(viewableFragmentaryDocument);

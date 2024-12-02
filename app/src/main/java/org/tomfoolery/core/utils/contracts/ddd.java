@@ -13,9 +13,15 @@ public interface ddd {
         @NonNull EntityId getId();
     }
 
+    interface UniRelationId<EntityId extends ddd.EntityId> extends ddd.EntityId {
+        @NonNull EntityId getEntityId();
+    }
+
+    interface UniRelation<UniRelationId extends ddd.EntityId, EntityId extends ddd.EntityId> extends ddd.Entity<UniRelationId> {}
+
     interface BiRelationId<FirstEntityId extends ddd.EntityId, SecondEntityId extends ddd.EntityId> extends ddd.EntityId {
-        @NonNull FirstEntityId getFirstId();
-        @NonNull SecondEntityId getSecondId();
+        @NonNull FirstEntityId getFirstEntityId();
+        @NonNull SecondEntityId getSecondEntityId();
     }
 
     interface BiRelation<BiRelationId extends ddd.BiRelationId<FirstEntityId, SecondEntityId>, FirstEntityId extends ddd.EntityId, SecondEntityId extends ddd.EntityId> extends ddd.Entity<BiRelationId> {}

@@ -42,16 +42,13 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
 
         val documentISBN = request.getDocumentISBN();
         val documentId = this.getDocumentIdFromISBN(documentISBN);
+        this.ensureDocumentDoesNotExist(documentId);
 
         val documentMetadata = request.getDocumentMetadata();
         this.ensureDocumentMetadataIsValid(documentMetadata);
 
-        this.ensureDocumentDoesNotExist(documentId);
-
-        val documentContent = request.getDocumentContent();
         val documentCoverImage = request.getDocumentCoverImage();
-
-        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentContent, documentCoverImage, documentMetadata, staffId);
+        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentCoverImage, documentMetadata, staffId);
 
         this.documentRepository.save(document);
     }
@@ -91,19 +88,17 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
             throw new DocumentAlreadyExistsException();
     }
 
-    private @NonNull Document createDocumentAndMarkAsCreatedByStaff(Document.@NonNull Id documentId, Document.@NonNull Content documentContent, Document.@NonNull CoverImage documentCoverImage, Document.@NonNull Metadata documentMetadata, Staff.@NonNull Id staffId) {
+    private @NonNull Document createDocumentAndMarkAsCreatedByStaff(Document.@NonNull Id documentId, Document.@NonNull CoverImage documentCoverImage, Document.@NonNull Metadata documentMetadata, Staff.@NonNull Id staffId) {
         val documentAuditTimestamps = Document.Audit.Timestamps.of(Instant.now());
-        val documentRating = Document.Rating.of();
         val documentAudit = Document.Audit.of(documentAuditTimestamps, staffId);
 
-        return Document.of(documentId, documentAudit, documentMetadata, documentRating, documentContent, documentCoverImage);
+        return Document.of(documentId, documentAudit, documentMetadata, documentCoverImage);
     }
 
     @Value(staticConstructor = "of")
     public static class Request {
         @NonNull String documentISBN;
 
-        Document.@NonNull Content documentContent;
         Document.@NonNull CoverImage documentCoverImage;
         Document.@NonNull Metadata documentMetadata;
     }
@@ -117,6 +112,5 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
     public static class PublisherInvalidException extends DocumentMetadataInvalidException {}
 
     public static class DocumentMetadataInvalidException extends RuntimeException {}
-
     public static class DocumentAlreadyExistsException extends Exception {}
 }

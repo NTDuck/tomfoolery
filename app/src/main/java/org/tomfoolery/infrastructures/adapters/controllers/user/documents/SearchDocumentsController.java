@@ -29,13 +29,13 @@ public final class SearchDocumentsController implements ThrowableFunction<Search
         Map<SearchCriterionAndPattern, SearchDocumentsUseCaseInitializer> searchDocumentsUseCaseInitializersBySearchCriteriaAndPatterns = Map.of(
             SearchCriterionAndPattern.of(SearchCriterion.TITLE, SearchPattern.PREFIX), SearchDocumentsByTitlePrefixUseCase::of,
             SearchCriterionAndPattern.of(SearchCriterion.TITLE, SearchPattern.SUFFIX), SearchDocumentsByTitleSuffixUseCase::of,
-            SearchCriterionAndPattern.of(SearchCriterion.TITLE, SearchPattern.SUBSEQUENCE), SearchDocumentsByTitleSubsequenceUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.TITLE, SearchPattern.SUBSEQUENCE), SearchDocumentsByTitleUseCase::of,
             SearchCriterionAndPattern.of(SearchCriterion.AUTHOR, SearchPattern.PREFIX), SearchDocumentsByAuthorPrefixUseCase::of,
             SearchCriterionAndPattern.of(SearchCriterion.AUTHOR, SearchPattern.SUFFIX), SearchDocumentsByAuthorSuffixUseCase::of,
-            SearchCriterionAndPattern.of(SearchCriterion.AUTHOR, SearchPattern.SUBSEQUENCE), SearchDocumentsByAuthorSubsequenceUseCase::of,
+            SearchCriterionAndPattern.of(SearchCriterion.AUTHOR, SearchPattern.SUBSEQUENCE), SearchDocumentsByAuthorUseCase::of,
             SearchCriterionAndPattern.of(SearchCriterion.GENRE, SearchPattern.PREFIX), SearchDocumentsByGenrePrefixUseCase::of,
             SearchCriterionAndPattern.of(SearchCriterion.GENRE, SearchPattern.SUFFIX), SearchDocumentsByGenreSuffixUseCase::of,
-            SearchCriterionAndPattern.of(SearchCriterion.GENRE, SearchPattern.SUBSEQUENCE), SearchDocumentsByGenreSubsequenceUseCase::of
+            SearchCriterionAndPattern.of(SearchCriterion.GENRE, SearchPattern.SUBSEQUENCE), SearchDocumentsByGenreUseCase::of
         );
 
         this.searchDocumentsUseCasesBySearchCriteria = searchDocumentsUseCaseInitializersBySearchCriteriaAndPatterns.entrySet().parallelStream()
@@ -81,7 +81,7 @@ public final class SearchDocumentsController implements ThrowableFunction<Search
         @NonNull int maxPageIndex;
 
         private static @NonNull ViewModel fromResponseModel(SearchDocumentsUseCase.@NonNull Response responseModel) {
-            val paginatedFragmentaryDocuments = responseModel.getPaginatedDocumentsWithoutContent();
+            val paginatedFragmentaryDocuments = responseModel.getPaginatedDocuments();
 
             val viewablePaginatedFragmentaryDocuments = StreamSupport.stream(paginatedFragmentaryDocuments.spliterator(), true)
                 .map(ViewableFragmentaryDocument::of)

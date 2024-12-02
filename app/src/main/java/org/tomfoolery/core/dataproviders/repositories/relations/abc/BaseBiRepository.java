@@ -5,6 +5,6 @@ import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.utils.contracts.ddd;
 
 public interface BaseBiRepository<BiRelation extends ddd.BiRelation<BiRelationId, FirstEntityId, SecondEntityId>, BiRelationId extends ddd.BiRelationId<FirstEntityId, SecondEntityId>, FirstEntityId extends ddd.EntityId, SecondEntityId extends ddd.EntityId> extends BaseRepository<BiRelation, BiRelationId> {
-    void synchronizeDeletedFirstEntity(@NonNull FirstEntityId firstEntityId);
-    void synchronizeDeletedSecondEntity(@NonNull SecondEntityId secondEntityId);
+    void synchronizeDeletedFirstEntity(@NonNull FirstEntityId entityId);
+    void synchronizeDeletedSecondEntity(@NonNull SecondEntityId entityId);
 }

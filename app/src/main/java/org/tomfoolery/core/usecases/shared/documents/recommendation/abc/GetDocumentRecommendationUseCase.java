@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
+import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
 
@@ -21,7 +22,7 @@ public abstract class GetDocumentRecommendationUseCase extends AuthenticatedUser
         this.documentRecommendationGenerator = documentRecommendationGenerator;
     }
 
-    protected abstract @NonNull Supplier<List<DocumentWithoutContent>> getDocumentRecommendationSupplier();
+    protected abstract @NonNull Supplier<List<Document>> getDocumentRecommendationSupplier();
 
     @Override
     public @NonNull Response get() throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException {
@@ -36,6 +37,6 @@ public abstract class GetDocumentRecommendationUseCase extends AuthenticatedUser
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull List<DocumentWithoutContent> documentRecommendation;
+        @NonNull List<Document> documentRecommendation;
     }
 }

@@ -4,6 +4,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
+import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.shared.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public final class GetLatestDocumentRecommendationUseCase extends GetDocumentRec
     }
 
     @Override
-    protected @NonNull Supplier<List<DocumentWithoutContent>> getDocumentRecommendationSupplier() {
+    protected @NonNull Supplier<List<Document>> getDocumentRecommendationSupplier() {
         return this.documentRecommendationGenerator::getLatestDocumentRecommendation;
     }
 }

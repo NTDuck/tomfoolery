@@ -5,33 +5,36 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingRecordRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.domain.relations.BorrowingRecord;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Set;
 
 public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<BorrowDocumentUseCase.Request> {
-    private static final @Unsigned int MAX_BORROWED_DOCUMENTS_PER_PATRON = 10;
-
     private final @NonNull DocumentRepository documentRepository;
-    private final @NonNull PatronRepository patronRepository;
+    private final @NonNull BorrowingRecordRepository borrowingRecordRepository;
 
-    public static @NonNull BorrowDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new BorrowDocumentUseCase(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private static final @Unsigned int MAX_BORROWED_DOCUMENTS_PER_PATRON = 10;
+    private static final @NonNull Duration BORROWING_PERIOD = Duration.ofDays(30);
+
+    public static @NonNull BorrowDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new BorrowDocumentUseCase(documentRepository, borrowingRecordRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private BorrowDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private BorrowDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
-        this.patronRepository = patronRepository;
+        this.borrowingRecordRepository = borrowingRecordRepository;
     }
 
     @Override
@@ -40,32 +43,20 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PatronNotFoundException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentBorrowLimitExceeded, DocumentAlreadyBorrowedException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentBorrowLimitExceeded, DocumentAlreadyBorrowedException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
-        val patron = this.getPatronFromAuthenticationToken(patronAuthenticationToken);
+        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
 
         val documentISBN = request.getDocumentISBN();
         val documentId = this.getDocumentIdFromISBN(documentISBN);
-        val documentWithoutContent = this.getDocumentWithoutContentById(documentId);
+        this.ensureDocumentExists(documentId);
 
-        this.ensureDocumentBorrowLimitNotExceeded(patron);
-        this.ensureDocumentIsNotBorrowed(patron, documentId);
+        this.ensureDocumentBorrowLimitNotExceeded(patronId);
+        this.ensureDocumentNotBorrowed(documentId, patronId);
 
-        this.markDocumentAsBorrowedByPatron(patron, documentWithoutContent);
-
-        this.documentRepository.save(documentWithoutContent);
-        this.patronRepository.save(patron);
-    }
-
-    private @NonNull Patron getPatronFromAuthenticationToken(@NonNull AuthenticationToken patronAuthenticationToken) throws AuthenticationTokenInvalidException, PatronNotFoundException {
-        val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
-        val patron = this.patronRepository.getById(patronId);
-
-        if (patron == null)
-            throw new PatronNotFoundException();
-
-        return patron;
+        val borrowingRecord = this.createBorrowingRecord(documentId, patronId);
+        this.borrowingRecordRepository.save(borrowingRecord);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -77,38 +68,30 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
         return documentId;
     }
 
-    private @NonNull DocumentWithoutContent getDocumentWithoutContentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val documentWithoutContent = this.documentRepository.getByIdWithoutContent(documentId);
-
-        if (documentWithoutContent == null)
+    private void ensureDocumentExists(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        if (!this.documentRepository.contains(documentId))
             throw new DocumentNotFoundException();
-
-        return documentWithoutContent;
     }
 
-    private void ensureDocumentBorrowLimitNotExceeded(@NonNull Patron patron) throws DocumentBorrowLimitExceeded {
-        val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
+    private void ensureDocumentBorrowLimitNotExceeded(Patron.@NonNull Id patronId) throws DocumentBorrowLimitExceeded {
+        val numberOfCurrentlyBorrowedDocumentsByPatron = this.borrowingRecordRepository.getNumberOfCurrentlyBorrowedByPatron(patronId);
 
-        if (borrowedDocumentIds.size() >= MAX_BORROWED_DOCUMENTS_PER_PATRON)
+        if (numberOfCurrentlyBorrowedDocumentsByPatron >= MAX_BORROWED_DOCUMENTS_PER_PATRON)
             throw new DocumentBorrowLimitExceeded();
     }
 
-    private void ensureDocumentIsNotBorrowed(@NonNull Patron patron, Document.@NonNull Id documentId) throws DocumentAlreadyBorrowedException {
-        val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
-
-        if (borrowedDocumentIds.contains(documentId))
+    private void ensureDocumentNotBorrowed(Document.@NonNull Id documentId, Patron.@NonNull Id patronId) throws DocumentAlreadyBorrowedException {
+        if (this.borrowingRecordRepository.containsCurrentlyBorrowedRecord(documentId, patronId))
             throw new DocumentAlreadyBorrowedException();
     }
 
-    private void markDocumentAsBorrowedByPatron(@NonNull Patron patron, @NonNull DocumentWithoutContent documentWithoutContent) {
-        val patronId = patron.getId();
-        val documentId = documentWithoutContent.getId();
+    private @NonNull BorrowingRecord createBorrowingRecord(Document.@NonNull Id documentId, Patron.@NonNull Id patronId) {
+        val borrowedTimestamp = Instant.now();
+        val dueTimestamp = borrowedTimestamp.plus(BORROWING_PERIOD);
 
-        val borrowedDocumentIds = patron.getAudit().getBorrowedDocumentIds();
-        borrowedDocumentIds.add(documentId);
+        val borrowingRecordId = BorrowingRecord.Id.of(documentId, patronId, borrowedTimestamp);
 
-        val borrowingPatronIds = documentWithoutContent.getAudit().getBorrowingPatronIds();
-        borrowingPatronIds.add(patronId);
+        return BorrowingRecord.of(borrowingRecordId, dueTimestamp);
     }
 
     @Value(staticConstructor = "of")
@@ -117,8 +100,7 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     }
 
     public static class DocumentISBNInvalidException extends Exception {}
-    public static class PatronNotFoundException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
-    public static class DocumentAlreadyBorrowedException extends Exception {}
     public static class DocumentBorrowLimitExceeded extends Exception {}
+    public static class DocumentAlreadyBorrowedException extends Exception {}
 }
