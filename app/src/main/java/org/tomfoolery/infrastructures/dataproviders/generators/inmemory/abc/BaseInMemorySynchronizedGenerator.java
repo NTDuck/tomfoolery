@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.abc.BaseSynchronizedGenerator;
-import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.contracts.ddd;
 
 import java.time.Instant;
 

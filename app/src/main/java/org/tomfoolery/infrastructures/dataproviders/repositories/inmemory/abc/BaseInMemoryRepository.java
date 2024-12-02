@@ -4,7 +4,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
-import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.contracts.ddd;
 
 import java.util.HashMap;
 import java.util.List;

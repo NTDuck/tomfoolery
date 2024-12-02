@@ -1,4 +1,4 @@
-package org.tomfoolery.core.utils.contracts.ddd;
+package org.tomfoolery.core.utils.contracts;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -13,11 +13,10 @@ public interface ddd {
         @NonNull EntityId getId();
     }
 
-    /**
-     * Order does not matter.
-     */
-    interface Relation<FirstEntityId extends ddd.EntityId, SecondEntityId extends ddd.EntityId> {
+    interface BiRelationId<FirstEntityId extends ddd.EntityId, SecondEntityId extends ddd.EntityId> extends ddd.EntityId {
         @NonNull FirstEntityId getFirstId();
         @NonNull SecondEntityId getSecondId();
     }
+
+    interface BiRelation<BiRelationId extends ddd.BiRelationId<FirstEntityId, SecondEntityId>, FirstEntityId extends ddd.EntityId, SecondEntityId extends ddd.EntityId> extends ddd.Entity<BiRelationId> {}
 }

@@ -7,7 +7,7 @@ import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.users.Staff;
-import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.contracts.ddd;
 
 import java.time.Instant;
 import java.time.Year;

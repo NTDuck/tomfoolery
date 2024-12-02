@@ -3,7 +3,7 @@ package org.tomfoolery.core.domain.documents;
 import lombok.Data;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.contracts.ddd;
 
 @Data(staticConstructor = "of")
 public final class DocumentContent implements ddd.Entity<DocumentContent.Id> {
