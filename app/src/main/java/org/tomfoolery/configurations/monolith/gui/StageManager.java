@@ -197,7 +197,8 @@ public class StageManager {
         STAFF_DOCUMENTS_MANAGEMENT,
         PATRON_DASHBOARD,
         PATRON_SHOW_BORROWED,
-        PATRON_DISCOVER
+        PATRON_DISCOVER,
+        PATRON_ACCOUNT_CENTER
     }
 
     public void populateUserRepositories() {

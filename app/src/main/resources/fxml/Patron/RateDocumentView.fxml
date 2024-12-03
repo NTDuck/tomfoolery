@@ -9,13 +9,18 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.paint.Color?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0"
             prefWidth="1280.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             stylesheets="/css/Patron/RateDocumentView.css" styleClass="root">
    <VBox alignment="TOP_CENTER" layoutX="440.0" layoutY="235.0" prefHeight="250.0" prefWidth="400.0" styleClass="main"
          AnchorPane.bottomAnchor="235.0" AnchorPane.leftAnchor="440.0" AnchorPane.rightAnchor="440.0" AnchorPane.topAnchor="235.0">
       <effect>
-         <DropShadow blurType="GAUSSIAN" height="10.0" radius="7.0" width="20.0"/>
+         <DropShadow height="30.0" radius="14.5" width="30.0">
+            <color>
+               <Color red="0.18039216101169586" green="0.20392157137393951" blue="0.24705882370471954"/>
+            </color>
+         </DropShadow>
       </effect>
 
       <VBox alignment="TOP_CENTER" prefHeight="80.0" prefWidth="200.0">
