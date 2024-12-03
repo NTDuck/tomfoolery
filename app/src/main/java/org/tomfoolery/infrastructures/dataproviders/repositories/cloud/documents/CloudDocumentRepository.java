@@ -7,7 +7,6 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
-import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 import java.sql.*;
 import java.time.Instant;
 import java.time.Year;
@@ -24,9 +23,9 @@ public class CloudDocumentRepository implements DocumentRepository {
     public void save(@NotNull Document document) {
         String query = """
             INSERT INTO Document (
-                id, title, description, authors, genres, publishedYear, publisher, coverImage, content,
-                createdByStaffId, lastModifiedByStaffId, borrowingPatronIds, rating, created, lastModified
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                id, title, description, authors, genres, publishedYear, publisher, coverImage,
+                createdByStaffId, lastModifiedByStaffId, created, lastModified
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (id) DO UPDATE SET
                 title = EXCLUDED.title,
                 description = EXCLUDED.description,
@@ -35,10 +34,7 @@ public class CloudDocumentRepository implements DocumentRepository {
                 publishedYear = EXCLUDED.publishedYear,
                 publisher = EXCLUDED.publisher,
                 coverImage = EXCLUDED.coverImage,
-                content = EXCLUDED.content,
                 lastModifiedByStaffId = EXCLUDED.lastModifiedByStaffId,
-                borrowingPatronIds = EXCLUDED.borrowingPatronIds,
-                rating = EXCLUDED.rating,
                 lastModified = EXCLUDED.lastModified;
         """;
 
@@ -52,16 +48,12 @@ public class CloudDocumentRepository implements DocumentRepository {
             stmt.setArray(5, connection.createArrayOf("TEXT", document.getMetadata().getGenres().toArray()));
             stmt.setInt(6, document.getMetadata().getPublishedYear().getValue());
             stmt.setString(7, document.getMetadata().getPublisher());
-            stmt.setBytes(8, document.getMetadata().getCoverImage().getBytes());
-            stmt.setBytes(9, document.getContent().getBytes());
-            stmt.setString(10, String.valueOf(document.getAudit().getCreatedByStaffId().getUuid()));
-            stmt.setString(11, document.getAudit().getLastModifiedByStaffId() != null
+            stmt.setBytes(8, document.getCoverImage().getBytes());
+            stmt.setString(9, String.valueOf(document.getAudit().getCreatedByStaffId().getUuid()));
+            stmt.setString(10, document.getAudit().getLastModifiedByStaffId() != null
                     ? String.valueOf(document.getAudit().getLastModifiedByStaffId().getUuid()) : null);
-            stmt.setArray(12, connection.createArrayOf("TEXT", document.getAudit().getBorrowingPatronIds().stream()
-                    .map(Patron.Id::getUuid).toArray()));
-            stmt.setDouble(13, document.getAudit().getRating().getValue());
-            stmt.setTimestamp(14, Timestamp.from(document.getAudit().getTimestamps().getCreated()));
-            stmt.setTimestamp(15, document.getAudit().getTimestamps().getLastModified() != null
+            stmt.setTimestamp(11, Timestamp.from(document.getAudit().getTimestamps().getCreated()));
+            stmt.setTimestamp(12, document.getAudit().getTimestamps().getLastModified() != null
                     ? Timestamp.from(document.getAudit().getTimestamps().getLastModified()) : null);
 
             stmt.executeUpdate();
@@ -71,8 +63,17 @@ public class CloudDocumentRepository implements DocumentRepository {
     }
 
     @Override
-    public void delete(Document.@NonNull Id entityId) {
+    public void delete(Document.@NonNull Id id) {
+        String query = "DELETE FROM Document WHERE id = ?";
 
+        try (Connection connection = dbConfig.connect();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            stmt.setString(1, id.getISBN_10());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -112,46 +113,6 @@ public class CloudDocumentRepository implements DocumentRepository {
         return documents;
     }
 
-    public void deleteById(Document.Id id) {
-        String query = "DELETE FROM Document WHERE id = ?";
-
-        try (Connection connection = dbConfig.connect();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-
-            stmt.setString(1, id.getISBN_10());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    @NonNull
-    public Set<Document> getSavedEntitiesSince(@NonNull Instant fromTimestamp) {
-        Set<Document> documents = new HashSet<>();
-        String query = "SELECT * FROM Document WHERE created >= ?";
-
-        try (Connection connection = dbConfig.connect();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-
-            stmt.setTimestamp(1, Timestamp.from(fromTimestamp));
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                documents.add(mapResultSetToDocument(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return documents;
-    }
-
-    @Override
-    @NonNull
-    public Set<Document> getDeletedEntitiesSince(@NonNull Instant fromTimestamp) {
-        return new HashSet<>();
-    }
-
     private Document mapResultSetToDocument(ResultSet rs) throws SQLException {
         Document.Id id = Document.Id.of(rs.getString("id"));
         Document.Metadata metadata = Document.Metadata.of(
@@ -160,21 +121,17 @@ public class CloudDocumentRepository implements DocumentRepository {
                 Arrays.asList((String[]) rs.getArray("authors").getArray()),
                 Arrays.asList((String[]) rs.getArray("genres").getArray()),
                 Year.of(rs.getInt("publishedYear")),
-                rs.getString("publisher"),
-                Document.Metadata.CoverImage.of(rs.getBytes("coverImage"))
+                rs.getString("publisher")
         );
 
+        Document.CoverImage coverImage = rs.getBytes("coverImage") != null
+                ? Document.CoverImage.of(rs.getBytes("coverImage"))
+                : null;
 
         Document.Audit audit = Document.Audit.of(
-                Staff.Id.of(UUID.fromString(rs.getString("createdByStaffId"))),
-                AverageRating.of(rs.getDouble("rating")),
-                Document.Audit.Timestamps.of(
-                        rs.getTimestamp("created").toInstant()
-                )
+                Document.Audit.Timestamps.of(rs.getTimestamp("created").toInstant()),
+                Staff.Id.of(UUID.fromString(rs.getString("createdByStaffId")))
         );
-
-        Document.Content content = Document.Content.of(rs.getBytes("content"));
-
-        return Document.of(id, content, metadata, audit);
+        return Document.of(id, audit, metadata);
     }
 }
