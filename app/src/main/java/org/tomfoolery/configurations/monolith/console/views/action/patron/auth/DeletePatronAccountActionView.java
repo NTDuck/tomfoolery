@@ -13,7 +13,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.users.persistence.DeletePatronAccountUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.auth.DeletePatronAccountController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.DeletePatronAccountController;
 
 public final class DeletePatronAccountActionView extends UserActionView {
     private final @NonNull DeletePatronAccountController controller;

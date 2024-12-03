@@ -9,7 +9,7 @@ import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.usecases.guest.users.persistence.CreatePatronAccountUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.users.persistence.CreatePatronAccountController;
 
 public final class CreatePatronAccountActionView extends BaseActionView {
     private final @NonNull CreatePatronAccountController controller;

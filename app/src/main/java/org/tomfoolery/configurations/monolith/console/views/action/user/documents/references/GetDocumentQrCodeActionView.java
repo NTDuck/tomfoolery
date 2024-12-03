@@ -10,8 +10,8 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.shared.documents.references.GetDocumentQrCodeUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentQrCodeController;
+import org.tomfoolery.core.usecases.common.documents.references.GetDocumentQrCodeUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.references.GetDocumentQrCodeController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;

@@ -11,10 +11,10 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.AddDocumentRatingController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.AddDocumentReviewController;
 
 public final class AddDocumentRatingActionView extends UserActionView {
-    private final @NonNull AddDocumentRatingController controller;
+    private final @NonNull AddDocumentReviewController controller;
 
     public static @NonNull AddDocumentRatingActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new AddDocumentRatingActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
@@ -23,7 +23,7 @@ public final class AddDocumentRatingActionView extends UserActionView {
     private AddDocumentRatingActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.controller = AddDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = AddDocumentReviewController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -51,11 +51,11 @@ public final class AddDocumentRatingActionView extends UserActionView {
         }
     }
 
-    private AddDocumentRatingController.@NonNull RequestObject collectRequestObject() throws RatingInvalidException {
+    private AddDocumentReviewController.@NonNull RequestObject collectRequestObject() throws RatingInvalidException {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
         val rating = this.collectRating();
 
-        return AddDocumentRatingController.RequestObject.of(ISBN, rating);
+        return AddDocumentReviewController.RequestObject.of(ISBN, rating);
     }
 
     private double collectRating() throws RatingInvalidException {

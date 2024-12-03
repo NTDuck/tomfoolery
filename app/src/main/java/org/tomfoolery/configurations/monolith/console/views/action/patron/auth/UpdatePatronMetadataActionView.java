@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.patron.users.persistence.UpdatePatronMetadataUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.auth.UpdatePatronMetadataController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.UpdatePatronMetadataController;
 
 public final class UpdatePatronMetadataActionView extends UserActionView {
     private final @NonNull UpdatePatronMetadataController controller;

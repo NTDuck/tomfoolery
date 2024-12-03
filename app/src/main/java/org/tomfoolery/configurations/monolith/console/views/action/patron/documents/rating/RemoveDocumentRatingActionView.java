@@ -11,10 +11,10 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.RemoveDocumentRatingController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.RemoveDocumentReviewController;
 
 public final class RemoveDocumentRatingActionView extends UserActionView {
-    private final @NonNull RemoveDocumentRatingController controller;
+    private final @NonNull RemoveDocumentReviewController controller;
 
     public static @NonNull RemoveDocumentRatingActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new RemoveDocumentRatingActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
@@ -23,7 +23,7 @@ public final class RemoveDocumentRatingActionView extends UserActionView {
     private RemoveDocumentRatingActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.controller = RemoveDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = RemoveDocumentReviewController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -47,10 +47,10 @@ public final class RemoveDocumentRatingActionView extends UserActionView {
         }
     }
 
-    private RemoveDocumentRatingController.@NonNull RequestObject collectRequestObject() {
+    private RemoveDocumentReviewController.@NonNull RequestObject collectRequestObject() {
         val ISBN = this.ioProvider.readLine(Message.Format.PROMPT, "document ISBN");
 
-        return RemoveDocumentRatingController.RequestObject.of(ISBN);
+        return RemoveDocumentReviewController.RequestObject.of(ISBN);
     }
 
     private void onSuccess() {

@@ -7,7 +7,7 @@ import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.users.abc.ModifiableUser;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter @Setter
 public final class Patron extends ModifiableUser {
@@ -42,7 +42,7 @@ public final class Patron extends ModifiableUser {
     public static class Metadata {
         private @NonNull Name name;
 
-        private @NonNull Date dateOfBirth;
+        private @NonNull LocalDate dateOfBirth;
         private @NonNull String phoneNumber;
 
         private @NonNull Address address;

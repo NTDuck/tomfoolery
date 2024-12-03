@@ -12,7 +12,7 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.patron.users.persistence.UpdatePatronPasswordUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.auth.UpdatePatronPasswordController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.UpdatePatronPasswordController;
 
 public final class UpdatePatronPasswordActionView extends UserActionView {
     private final @NonNull UpdatePatronPasswordController controller;

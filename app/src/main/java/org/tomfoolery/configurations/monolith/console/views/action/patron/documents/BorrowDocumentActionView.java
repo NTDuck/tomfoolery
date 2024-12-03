@@ -11,7 +11,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.BorrowDocumentUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.BorrowDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
 
 public final class BorrowDocumentActionView extends UserActionView {
     private final @NonNull BorrowDocumentController controller;
