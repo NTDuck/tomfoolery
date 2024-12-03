@@ -27,7 +27,6 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
     private GetDocumentRecommendationController(@NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         Map<RecommendationType, GetDocumentRecommendationUseCaseInitializer> getDocumentRecommendationUseCaseInitializersByRecommendationTypes = Map.of(
             RecommendationType.LATEST, GetLatestDocumentRecommendationUseCase::of,
-            RecommendationType.POPULAR, GetPopularDocumentRecommendationUseCase::of,
             RecommendationType.TOP_RATED, GetTopRatedDocumentRecommendationUseCase::of
         );
 

@@ -11,8 +11,7 @@ import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.administrator.users.persistence.UpdateStaffCredentialsUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-
-import java.util.UUID;
+import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
 public final class UpdateStaffCredentialsController implements ThrowableConsumer<UpdateStaffCredentialsController.RequestObject> {
     private final @NonNull UpdateStaffCredentialsUseCase updateStaffCredentialsUseCase;
@@ -26,13 +25,13 @@ public final class UpdateStaffCredentialsController implements ThrowableConsumer
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws UpdateStaffCredentialsUseCase.AuthenticationTokenNotFoundException, UpdateStaffCredentialsUseCase.AuthenticationTokenInvalidException, UpdateStaffCredentialsUseCase.StaffCredentialsInvalidException, UpdateStaffCredentialsUseCase.StaffNotFoundException {
+    public void accept(@NonNull RequestObject requestObject) throws UserIdBiAdapter.UserUuidInvalidException, UpdateStaffCredentialsUseCase.AuthenticationTokenNotFoundException, UpdateStaffCredentialsUseCase.AuthenticationTokenInvalidException, UpdateStaffCredentialsUseCase.StaffCredentialsInvalidException, UpdateStaffCredentialsUseCase.StaffNotFoundException {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         this.updateStaffCredentialsUseCase.accept(requestModel);
     }
 
-    private static UpdateStaffCredentialsUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) {
-        val staffId = Staff.Id.of(UUID.fromString(requestObject.getStaffId()));
+    private static UpdateStaffCredentialsUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) throws UserIdBiAdapter.UserUuidInvalidException {
+        val staffId = UserIdBiAdapter.parse(requestObject.getStaffUuid());
 
         val newStaffPassword = SecureString.of(requestObject.getNewStaffPassword());
         val newStaffCredentials = Staff.Credentials.of(requestObject.getNewStaffUsername(), newStaffPassword);
@@ -42,7 +41,7 @@ public final class UpdateStaffCredentialsController implements ThrowableConsumer
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        @NonNull String staffId;
+        @NonNull String staffUuid;
 
         @NonNull String newStaffUsername;
         char @NonNull [] newStaffPassword;
