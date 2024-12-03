@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
 import java.time.Year;
@@ -64,7 +64,7 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
 
         private static byte @NonNull [] readDocumentContentFromFilePath(@NonNull String documentContentFilePath) throws DocumentContentFilePathInvalidException {
             try {
-                return FileManager.read(documentContentFilePath);
+                return TemporaryFileProvider.read(documentContentFilePath);
             } catch (IOException exception) {
                 throw new DocumentContentFilePathInvalidException();
             }
@@ -72,7 +72,7 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
 
         private static byte @NonNull [] readDocumentCoverImageFromFilePath(@NonNull String documentCoverImageFilePath) throws DocumentCoverImageFilePathInvalidException {
             try {
-                return FileManager.read(documentCoverImageFilePath);
+                return TemporaryFileProvider.read(documentCoverImageFilePath);
             } catch (IOException exception) {
                 throw new DocumentCoverImageFilePathInvalidException();
             }

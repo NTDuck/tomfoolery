@@ -12,7 +12,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.shared.documents.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentQrCodeController;
-import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
 
@@ -57,7 +57,7 @@ public final class GetDocumentQrCodeActionView extends UserActionView {
 
     private void displayViewModel(GetDocumentQrCodeController.@NonNull ViewModel viewModel) throws IOException {
         val documentQrCodeFilePath = viewModel.getDocumentQrCodeFilePath();
-        FileManager.open(documentQrCodeFilePath);
+        TemporaryFileProvider.open(documentQrCodeFilePath);
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "The QR code should be opened promptly");
     }

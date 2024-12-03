@@ -12,7 +12,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReadBorrowedDocumentController;
-import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
 
@@ -61,7 +61,7 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
 
     private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws IOException {
         val documentContentFilePath = viewModel.getDocumentContentFilePath();
-        FileManager.open(documentContentFilePath);
+        TemporaryFileProvider.open(documentContentFilePath);
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "The document should be opened promptly");
     }

@@ -11,7 +11,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.shared.documents.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
 
@@ -61,7 +61,7 @@ public final class GetDocumentQrCodeController implements ThrowableFunction<GetD
 
         private static @NonNull String saveDocumentQrCodeAndGetPath(byte @NonNull [] rawDocumentQrCode) throws DocumentQrCodeUnavailable {
             try {
-                return FileManager.save(".png", rawDocumentQrCode);
+                return TemporaryFileProvider.save(".png", rawDocumentQrCode);
             } catch (IOException exception) {
                 throw new DocumentQrCodeUnavailable();
             }

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.infrastructures.utils.helpers.loaders.ResourceLoader;
+import org.tomfoolery.infrastructures.dataproviders.providers.resources.ResourceProvider;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class FontFormatter {
     public static @NonNull String format(@NonNull String content, @NonNull Font font) throws IOException, URISyntaxException {
-        val fontAbsolutePath = ResourceLoader.getAbsolutePath(font.getPath());
+        val fontAbsolutePath = ResourceProvider.getResourceAbsolutePath(font.getPath());
         return FigletFont.convertOneLine(fontAbsolutePath, content);
     }
 

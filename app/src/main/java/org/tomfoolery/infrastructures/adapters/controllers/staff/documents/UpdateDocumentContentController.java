@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentContentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
 
@@ -46,7 +46,7 @@ public final class UpdateDocumentContentController implements ThrowableConsumer<
 
         private static byte @NonNull [] readDocumentContentFromFilePath(@NonNull String documentContentFilePath) throws DocumentContentFilePathInvalidException {
             try {
-                return FileManager.read(documentContentFilePath);
+                return TemporaryFileProvider.read(documentContentFilePath);
             } catch (IOException exception) {
                 throw new DocumentContentFilePathInvalidException();
             }

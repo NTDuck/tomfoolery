@@ -9,7 +9,6 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.shared.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.shared.documents.recommendation.GetLatestDocumentRecommendationUseCase;
-import org.tomfoolery.core.usecases.shared.documents.recommendation.GetPopularDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.shared.documents.recommendation.GetTopRatedDocumentRecommendationUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;

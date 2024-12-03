@@ -13,18 +13,18 @@ import org.tomfoolery.core.utils.dataclasses.Page;
 import java.util.List;
 
 public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
-    private final @NonNull BaseRepository<Entity, EntityId> repository;
+    protected final @NonNull BaseRepository<Entity, EntityId> repository;
 
-    private final @NonNull List<BaseSynchronizedGenerator<Entity, EntityId>> generators;
+    private final @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators;
 
-    private final @NonNull List<BaseUniRepository<?, ?, EntityId>> uniRepositories;
+    private final @NonNull List<? extends BaseUniRepository<?, ?, EntityId>> uniRepositories;
     private final @NonNull BaseBiRepositories<EntityId> biRepositories;
 
-    public static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull BaseSynchronizedRepository<Entity, EntityId> of(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<BaseSynchronizedGenerator<Entity, EntityId>> generators, List<BaseUniRepository<?, ?, EntityId>> uniRepositories, @NonNull BaseBiRepositories<EntityId> biRepositories) {
+    public static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull BaseSynchronizedRepository<Entity, EntityId> of(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators, List<? extends BaseUniRepository<?, ?, EntityId>> uniRepositories, @NonNull BaseBiRepositories<EntityId> biRepositories) {
         return new BaseSynchronizedRepository<>(repository, generators, uniRepositories, biRepositories);
     }
 
-    protected BaseSynchronizedRepository(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<BaseSynchronizedGenerator<Entity, EntityId>> generators, @NonNull List<BaseUniRepository<?, ?, EntityId>> uniRepositories, @NonNull BaseBiRepositories<EntityId> biRepositories) {
+    protected BaseSynchronizedRepository(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators, @NonNull List<? extends BaseUniRepository<?, ?, EntityId>> uniRepositories, @NonNull BaseBiRepositories<EntityId> biRepositories) {
         this.repository = repository;
 
         this.generators = generators;

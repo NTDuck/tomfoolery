@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface DocumentRecommendationGenerator extends BaseSynchronizedGenerator<Document, Document.Id> {
     @NonNull List<Document> getLatestDocumentRecommendation();
-    @NonNull List<Document> getPopularDocumentRecommendation();
     @NonNull List<Document> getTopRatedDocumentRecommendation();
 }

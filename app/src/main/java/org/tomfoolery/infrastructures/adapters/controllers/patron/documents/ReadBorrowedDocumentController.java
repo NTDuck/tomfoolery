@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
 
@@ -60,7 +60,7 @@ public final class ReadBorrowedDocumentController implements ThrowableFunction<R
 
         private static @NonNull String saveDocumentContentAndGetPath(byte @NonNull [] rawDocumentContent) throws DocumentContentUnavailable {
             try {
-                return FileManager.save(".pdf", rawDocumentContent);
+                return TemporaryFileProvider.save(".pdf", rawDocumentContent);
             } catch (IOException exception) {
                 throw new DocumentContentUnavailable();
             }

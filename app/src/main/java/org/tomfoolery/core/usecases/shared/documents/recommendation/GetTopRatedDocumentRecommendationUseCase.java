@@ -21,6 +21,6 @@ public final class GetTopRatedDocumentRecommendationUseCase extends GetDocumentR
 
     @Override
     protected @NonNull Supplier<List<Document>> getDocumentRecommendationSupplier() {
-        return this.documentRecommendationGenerator::getLatestDocumentRecommendation;
+        return this.documentRecommendationGenerator::getTopRatedDocumentRecommendation;
     }
 }

@@ -7,8 +7,8 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.infrastructures.utils.helpers.io.file.FileManager;
-import org.tomfoolery.infrastructures.utils.helpers.loaders.ResourceLoader;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.resources.ResourceProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -70,9 +70,9 @@ public class ViewableFragmentaryDocument {
     @SneakyThrows
     private static @NonNull String saveDocumentCoverImageAndGetPath(byte @NonNull [] rawDocumentCoverImage) {
         try {
-            return FileManager.save(".png", rawDocumentCoverImage);
+            return TemporaryFileProvider.save(".png", rawDocumentCoverImage);
         } catch (IOException exception) {
-            return ResourceLoader.getAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH);
+            return ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH);
         }
     }
 }
