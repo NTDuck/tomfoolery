@@ -6,9 +6,9 @@ import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.utils.helpers.EnumResolver;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
-import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
-import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.shared.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentRecommendationController;

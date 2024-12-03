@@ -2,8 +2,8 @@ package org.tomfoolery.core.usecases.abc;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;

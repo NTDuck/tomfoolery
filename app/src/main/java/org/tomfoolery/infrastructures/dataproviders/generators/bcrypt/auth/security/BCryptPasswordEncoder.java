@@ -4,7 +4,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.users.auth.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 
 @NoArgsConstructor(staticName = "of")
