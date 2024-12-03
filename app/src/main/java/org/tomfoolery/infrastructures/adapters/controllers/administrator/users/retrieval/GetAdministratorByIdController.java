@@ -41,18 +41,7 @@ public final class GetAdministratorByIdController implements ThrowableFunction<G
     }
 
     private static @NonNull ViewModel mapResponseModelToViewModel(GetAdministratorByIdUseCase.@NonNull Response<Administrator> responseModel) {
-        val administrator = responseModel.getUser();
-        val administratorAuditTimestamps = administrator.getAudit().getTimestamps();
-
-        return ViewModel.builder()
-            .administratorUuid(UserIdBiAdapter.serialize(administrator.getId()))
-            .administratorUsername(administrator.getCredentials().getUsername())
-            .creationTimestamp(TimestampBiAdapter.serialize(administratorAuditTimestamps.getCreated()))
-            .lastLoginTimestamp(administratorAuditTimestamps.getLastLogin() == null ? "null"
-                : TimestampBiAdapter.serialize(administratorAuditTimestamps.getLastLogin()))
-            .lastLogoutTimestamp(administratorAuditTimestamps.getLastLogout() == null ? "null"
-                : TimestampBiAdapter.serialize(administratorAuditTimestamps.getLastLogout()))
-            .build();
+        return ViewModel.of(responseModel.getUser());
     }
 
     @Value(staticConstructor = "of")
@@ -69,5 +58,19 @@ public final class GetAdministratorByIdController implements ThrowableFunction<G
         @NonNull String creationTimestamp;
         @NonNull String lastLoginTimestamp;
         @NonNull String lastLogoutTimestamp;
+
+        public static @NonNull ViewModel of(@NonNull Administrator administrator) {
+            val administratorAuditTimestamps = administrator.getAudit().getTimestamps();
+
+            return ViewModel.builder()
+                .administratorUuid(UserIdBiAdapter.serialize(administrator.getId()))
+                .administratorUsername(administrator.getCredentials().getUsername())
+                .creationTimestamp(TimestampBiAdapter.serialize(administratorAuditTimestamps.getCreated()))
+                .lastLoginTimestamp(administratorAuditTimestamps.getLastLogin() == null ? "null"
+                    : TimestampBiAdapter.serialize(administratorAuditTimestamps.getLastLogin()))
+                .lastLogoutTimestamp(administratorAuditTimestamps.getLastLogout() == null ? "null"
+                    : TimestampBiAdapter.serialize(administratorAuditTimestamps.getLastLogout()))
+                .build();
+        }
     }
 }

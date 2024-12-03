@@ -68,7 +68,7 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
     }
 
     public enum RecommendationType {
-        LATEST, POPULAR, TOP_RATED,
+        LATEST, TOP_RATED,
     }
 
     @FunctionalInterface
