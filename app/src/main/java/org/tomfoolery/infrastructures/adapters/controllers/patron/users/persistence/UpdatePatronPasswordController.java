@@ -24,20 +24,20 @@ public final class UpdatePatronPasswordController implements ThrowableConsumer<U
 
     @Override
     public void accept(@NonNull RequestObject requestObject) throws UpdatePatronPasswordUseCase.AuthenticationTokenNotFoundException, UpdatePatronPasswordUseCase.AuthenticationTokenInvalidException, UpdatePatronPasswordUseCase.PatronNotFoundException, UpdatePatronPasswordUseCase.PasswordInvalidException, UpdatePatronPasswordUseCase.PasswordMismatchException {
-        val requestModel = requestObject.toRequestModel();
+        val requestModel = mapRequestObjectToRequestModel(requestObject);
         this.updatePatronPasswordUseCase.accept(requestModel);
+    }
+
+    private static UpdatePatronPasswordUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) {
+        return UpdatePatronPasswordUseCase.Request.of(
+            SecureString.of(requestObject.getOldPatronPassword()),
+            SecureString.of(requestObject.getNewPatronPassword())
+        );
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
         char @NonNull [] oldPatronPassword;
         char @NonNull [] newPatronPassword;
-
-        private UpdatePatronPasswordUseCase.@NonNull Request toRequestModel() {
-            val oldPatronPassword = SecureString.of(this.oldPatronPassword);
-            val newPatronPassword = SecureString.of(this.newPatronPassword);
-
-            return UpdatePatronPasswordUseCase.Request.of(oldPatronPassword, newPatronPassword);
-        }
     }
 }

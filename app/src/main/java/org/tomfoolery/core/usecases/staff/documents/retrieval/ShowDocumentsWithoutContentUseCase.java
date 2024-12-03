@@ -19,15 +19,15 @@ import org.tomfoolery.core.utils.dataclasses.Page;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class ShowDocumentsWithoutContent extends AuthenticatedUserUseCase implements ThrowableFunction<ShowDocumentsWithoutContent.Request, ShowDocumentsWithoutContent.Response> {
+public final class ShowDocumentsWithoutContentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ShowDocumentsWithoutContentUseCase.Request, ShowDocumentsWithoutContentUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull DocumentContentRepository documentContentRepository;
 
-    public static @NonNull ShowDocumentsWithoutContent of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowDocumentsWithoutContent(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowDocumentsWithoutContentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowDocumentsWithoutContentUseCase(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowDocumentsWithoutContent(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowDocumentsWithoutContentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
@@ -40,7 +40,7 @@ public final class ShowDocumentsWithoutContent extends AuthenticatedUserUseCase 
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws Exception {
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PaginationInvalidException {
         val authenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(authenticationToken);
 

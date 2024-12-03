@@ -10,9 +10,8 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentMetadataUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
-import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.Year;
 import java.util.List;
 
@@ -28,14 +27,29 @@ public final class UpdateDocumentMetadataController implements ThrowableConsumer
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws DocumentCoverImageFilePathInvalidException, UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException, UpdateDocumentMetadataUseCase.AuthenticationTokenInvalidException, UpdateDocumentMetadataUseCase.DocumentNotFoundException {
-        val requestModel = requestObject.toRequestModel();
+    public void accept(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException, UpdateDocumentMetadataUseCase.AuthenticationTokenInvalidException, UpdateDocumentMetadataUseCase.DocumentISBNInvalidException, UpdateDocumentMetadataUseCase.DocumentNotFoundException {
+        val requestModel = mapRequestObjectToRequestModel(requestObject);
         this.updateDocumentMetadataUseCase.accept(requestModel);
+    }
+
+    private static UpdateDocumentMetadataUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException {
+        val documentPublishedYear = parseDocumentPublishedYear(requestObject.getDocumentPublishedYear());
+        val newDocumentMetadata = Document.Metadata.of(requestObject.getDocumentTitle(), requestObject.getDocumentDescription(), requestObject.getDocumentAuthors(), requestObject.getDocumentGenres(), documentPublishedYear, requestObject.getDocumentPublisher());
+
+        return UpdateDocumentMetadataUseCase.Request.of(requestObject.getDocumentISBN(), newDocumentMetadata);
+    }
+
+    private static @NonNull Year parseDocumentPublishedYear(@Unsigned short rawDocumentPublishedYear) throws DocumentPublishedYearInvalidException {
+        try {
+            return Year.of(rawDocumentPublishedYear);
+        } catch (DateTimeException exception) {
+            throw new DocumentPublishedYearInvalidException();
+        }
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
-        @NonNull String ISBN;
+        @NonNull String documentISBN;
 
         @NonNull String documentTitle;
         @NonNull String documentDescription;
@@ -44,29 +58,7 @@ public final class UpdateDocumentMetadataController implements ThrowableConsumer
 
         @Unsigned short documentPublishedYear;
         @NonNull String documentPublisher;
-
-        @NonNull String documentCoverImageFilePath;
-
-        private UpdateDocumentMetadataUseCase.@NonNull Request toRequestModel() throws DocumentCoverImageFilePathInvalidException {
-            val rawDocumentCoverImage = readDocumentCoverImageFromFilePath(this.documentCoverImageFilePath);
-
-            val documentId = Document.Id.of(ISBN);
-            val documentMetadata = Document.Metadata.of(
-                documentTitle, documentDescription, documentAuthors, documentGenres,
-                Year.of(documentPublishedYear), documentPublisher, Document.Metadata.CoverImage.of(rawDocumentCoverImage)
-            );
-
-            return UpdateDocumentMetadataUseCase.Request.of(documentId, documentMetadata);
-        }
-
-        private static byte @NonNull [] readDocumentCoverImageFromFilePath(@NonNull String documentCoverImageFilePath) throws DocumentCoverImageFilePathInvalidException {
-            try {
-                return TemporaryFileProvider.read(documentCoverImageFilePath);
-            } catch (IOException exception) {
-                throw new DocumentCoverImageFilePathInvalidException();
-            }
-        }
     }
 
-    public static class DocumentCoverImageFilePathInvalidException extends Exception {}
+    public static class DocumentPublishedYearInvalidException extends Exception {}
 }
