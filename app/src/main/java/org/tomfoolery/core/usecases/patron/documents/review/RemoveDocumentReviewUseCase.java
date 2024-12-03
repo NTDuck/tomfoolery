@@ -44,12 +44,16 @@ public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase 
 
         val documentISBN = request.getDocumentISBN();
         val documentId = this.getDocumentIdFromISBN(documentISBN);
-        this.ensureDocumentExists(documentId);
+        val document = this.getDocumentById(documentId);
 
         val reviewId = Review.Id.of(documentId, patronId);
         this.ensureReviewExists(reviewId);
 
         this.reviewRepository.delete(reviewId);
+
+        val documentRating = this.calculateDocumentRating(documentId);
+        document.setRating(documentRating);
+        this.documentRepository.save(document);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -61,14 +65,25 @@ public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase 
         return documentId;
     }
 
-    private void ensureDocumentExists(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        if (!this.documentRepository.contains(documentId))
+    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val document = this.documentRepository.getById(documentId);
+
+        if (document == null)
             throw new DocumentNotFoundException();
+
+        return document;
     }
 
     private void ensureReviewExists(Review.@NonNull Id reviewId) throws ReviewNotFoundException {
         if (!this.reviewRepository.contains(reviewId))
             throw new ReviewNotFoundException();
+    }
+
+    private Document.@NonNull Rating calculateDocumentRating(Document.@NonNull Id documentId) {
+        val averageRating = this.reviewRepository.calculateAverageRating(documentId);
+        val numberOfRatings = this.reviewRepository.countNumberOfRatings(documentId);
+
+        return Document.Rating.of(averageRating, numberOfRatings);
     }
 
     @Value(staticConstructor = "of")

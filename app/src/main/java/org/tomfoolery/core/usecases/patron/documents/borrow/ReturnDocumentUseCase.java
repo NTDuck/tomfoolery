@@ -4,32 +4,31 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingRecordRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.domain.relations.BorrowingRecord;
+import org.tomfoolery.core.domain.relations.BorrowingSession;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 
-import java.time.Instant;
 import java.util.Set;
 
 public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<ReturnDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
-    private final @NonNull BorrowingRecordRepository borrowingRecordRepository;
+    private final @NonNull BorrowingSessionRepository borrowingSessionRepository;
 
-    public static @NonNull ReturnDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ReturnDocumentUseCase(documentRepository, borrowingRecordRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ReturnDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ReturnDocumentUseCase(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ReturnDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ReturnDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
-        this.borrowingRecordRepository = borrowingRecordRepository;
+        this.borrowingSessionRepository = borrowingSessionRepository;
     }
 
     @Override
@@ -45,11 +44,14 @@ public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implem
 
         val documentISBN = request.getDocumentISBN();
         val documentId = this.getDocumentIdFromISBN(documentISBN);
+        this.ensureDocumentExists(documentId);
 
-        val borrowingRecord = this.getMostRecentlyAndCurrentlyBorrowedRecord(documentId, patronId);
-        this.markBorrowingRecordAsReturned(borrowingRecord);
-        this.borrowingRecordRepository.save(borrowingRecord);
+        val borrowingSessionId = BorrowingSession.Id.of(documentId, patronId);
+        this.ensureDocumentIsAlreadyBorrowed(borrowingSessionId);
+
+        this.borrowingSessionRepository.delete(borrowingSessionId);
     }
+
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
         val documentId = Document.Id.of(documentISBN);
 
@@ -64,18 +66,9 @@ public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implem
             throw new DocumentNotFoundException();
     }
 
-    private @NonNull BorrowingRecord getMostRecentlyAndCurrentlyBorrowedRecord(Document.@NonNull Id documentId, Patron.@NonNull Id patronId) throws DocumentNotBorrowedException {
-        val borrowingRecord = this.borrowingRecordRepository.getMostRecentlyAndCurrentlyBorrowedRecord(documentId, patronId);
-
-        if (borrowingRecord == null)
-            throw new DocumentNotBorrowedException();
-
-        return borrowingRecord;
-    }
-
-    private void markBorrowingRecordAsReturned(@NonNull BorrowingRecord borrowingRecord) {
-        val currentTimestamp = Instant.now();
-        borrowingRecord.setReturnedTimestamp(currentTimestamp);
+    private void ensureDocumentIsAlreadyBorrowed(BorrowingSession.@NonNull Id borrowingSessionId) throws DocumentNotFoundException {
+        if (!this.borrowingSessionRepository.contains(borrowingSessionId))
+            throw new DocumentNotFoundException();
     }
 
     @Value(staticConstructor = "of")

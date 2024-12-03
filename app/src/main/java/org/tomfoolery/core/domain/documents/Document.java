@@ -7,6 +7,7 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.utils.contracts.ddd;
 import org.tomfoolery.core.utils.helpers.adapters.documents.ISBNAdapter;
@@ -24,6 +25,8 @@ public final class Document implements ddd.Entity<Document.Id> {
     private final @NonNull Audit audit;
 
     private @NonNull Metadata metadata;
+
+    private @Nullable Rating rating;
     private @Nullable CoverImage coverImage;
 
     @Value(staticConstructor = "ofISBN10")
@@ -69,6 +72,12 @@ public final class Document implements ddd.Entity<Document.Id> {
 
         @NonNull Year publishedYear;
         @NonNull String publisher;
+    }
+
+    @Value(staticConstructor = "of")
+    public static class Rating {
+        @Unsigned double averageRating;
+        @Unsigned int numberOfRatings;
     }
 
     @Value(staticConstructor = "of")

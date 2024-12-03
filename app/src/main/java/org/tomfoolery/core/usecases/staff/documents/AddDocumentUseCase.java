@@ -92,7 +92,7 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         val documentAuditTimestamps = Document.Audit.Timestamps.of(Instant.now());
         val documentAudit = Document.Audit.of(documentAuditTimestamps, staffId);
 
-        return Document.of(documentId, documentAudit, documentMetadata, documentCoverImage);
+        return Document.of(documentId, documentAudit, documentMetadata, null, documentCoverImage);
     }
 
     @Value(staticConstructor = "of")

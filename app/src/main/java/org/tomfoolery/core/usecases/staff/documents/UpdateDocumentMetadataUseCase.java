@@ -47,8 +47,8 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
         val newDocumentMetadata = request.getNewDocumentMetadata();
         this.ensureDocumentMetadataIsValid(newDocumentMetadata);
 
-        this.updateDocumentMetadataAndMarkAsLastModifiedByStaff(document, newDocumentMetadata, staffId);
-
+        document.setMetadata(newDocumentMetadata);
+        this.markAsLastModifiedByStaff(document, staffId);
         this.documentRepository.save(document);
     }
 
@@ -91,9 +91,7 @@ public final class UpdateDocumentMetadataUseCase extends AuthenticatedUserUseCas
             throw new PublisherInvalidException();
     }
 
-    private void updateDocumentMetadataAndMarkAsLastModifiedByStaff(@NonNull Document document, Document.@NonNull Metadata newDocumentMetadata, Staff.@NonNull Id staffId) {
-        document.setMetadata(newDocumentMetadata);
-
+    private void markAsLastModifiedByStaff(@NonNull Document document, Staff.@NonNull Id staffId) {
         val documentAudit = document.getAudit();
         val documentAuditTimestamps = documentAudit.getTimestamps();
 

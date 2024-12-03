@@ -4,11 +4,11 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingRecordRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.generators.users.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.domain.relations.BorrowingRecord;
+import org.tomfoolery.core.domain.relations.BorrowingSession;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
@@ -22,17 +22,17 @@ import java.util.stream.Collectors;
 
 public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ShowBorrowedDocumentsUseCase.Request, ShowBorrowedDocumentsUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
-    private final @NonNull BorrowingRecordRepository borrowingRecordRepository;
+    private final @NonNull BorrowingSessionRepository borrowingSessionRepository;
 
-    public static @NonNull ShowBorrowedDocumentsUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowBorrowedDocumentsUseCase(documentRepository, borrowingRecordRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowBorrowedDocumentsUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowBorrowedDocumentsUseCase(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowBorrowedDocumentsUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingRecordRepository borrowingRecordRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowBorrowedDocumentsUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
-        this.borrowingRecordRepository = borrowingRecordRepository;
+        this.borrowingSessionRepository = borrowingSessionRepository;
     }
 
     @Override
@@ -56,12 +56,12 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
         return Response.of(paginatedBorrowedDocuments);
     }
 
-    private @NonNull List<BorrowingRecord> getCurrentlyBorrowedRecordsByPatron(Patron.@NonNull Id patronId) {
-        return this.borrowingRecordRepository.showCurrentlyBorrowedRecordsByPatron(patronId);
+    private @NonNull List<BorrowingSession> getCurrentlyBorrowedRecordsByPatron(Patron.@NonNull Id patronId) {
+        return this.borrowingSessionRepository.show(patronId);
     }
 
-    private @NonNull Page<Document.Id> getPaginatedBorrowedDocumentIds(@NonNull List<BorrowingRecord> borrowingRecords, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val unpaginatedBorrowedDocumentIds = borrowingRecords.parallelStream()
+    private @NonNull Page<Document.Id> getPaginatedBorrowedDocumentIds(@NonNull List<BorrowingSession> borrowingSessions, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val unpaginatedBorrowedDocumentIds = borrowingSessions.parallelStream()
             .map(borrowingRecord -> borrowingRecord.getId().getFirstEntityId())
             .collect(Collectors.toUnmodifiableList());
         val paginatedBorrowedDocumentIds = Page.fromUnpaginated(unpaginatedBorrowedDocumentIds, pageIndex, maxPageSize);
