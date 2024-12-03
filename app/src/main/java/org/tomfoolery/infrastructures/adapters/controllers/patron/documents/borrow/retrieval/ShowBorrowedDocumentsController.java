@@ -8,10 +8,9 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,41 +28,42 @@ public final class ShowBorrowedDocumentsController implements ThrowableFunction<
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws AuthenticatedUserUseCase.AuthenticationTokenNotFoundException, AuthenticatedUserUseCase.AuthenticationTokenInvalidException, ShowBorrowedDocumentsUseCase.PaginationInvalidException {
-        val requestModel = requestObject.toRequestModel();
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ShowBorrowedDocumentsUseCase.AuthenticationTokenInvalidException, ShowBorrowedDocumentsUseCase.AuthenticationTokenNotFoundException, ShowBorrowedDocumentsUseCase.PaginationInvalidException {
+        val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.showBorrowedDocumentsUseCase.apply(requestModel);
-        val viewModel = ViewModel.fromResponseModel(responseModel);
+        val viewModel = mapResponseModelToViewModel(responseModel);
 
         return viewModel;
+    }
+
+    private static ShowBorrowedDocumentsUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) {
+        return ShowBorrowedDocumentsUseCase.Request.of(requestObject.getPageIndex(), requestObject.getMaxPageSize());
+    }
+
+    private static @NonNull ViewModel mapResponseModelToViewModel(ShowBorrowedDocumentsUseCase.@NonNull Response responseModel) {
+        val page = responseModel.getPaginatedBorrowedDocuments();
+
+        val paginatedBorrowedDocuments = StreamSupport.stream(page.spliterator(), true)
+            .map(GetDocumentByIdController.ViewModel::of)
+            .collect(Collectors.toUnmodifiableList());
+
+        val pageIndex = page.getPageIndex();
+        val maxPageIndex = page.getMaxPageIndex();
+
+        return ViewModel.of(paginatedBorrowedDocuments, pageIndex, maxPageIndex);
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @Unsigned int pageIndex;
         @Unsigned int maxPageSize;
-
-        private ShowBorrowedDocumentsUseCase.@NonNull Request toRequestModel() {
-            return ShowBorrowedDocumentsUseCase.Request.of(pageIndex, maxPageSize);
-        }
     }
 
-    @Value
+    @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<ViewableFragmentaryDocument> paginatedFragmentaryDocuments;
+        @NonNull List<GetDocumentByIdController.ViewModel> paginatedBorrowedDocuments;
+
         @Unsigned int pageIndex;
         @Unsigned int maxPageIndex;
-
-        private static @NonNull ViewModel fromResponseModel(ShowBorrowedDocumentsUseCase.@NonNull Response responseModel) {
-            val paginatedFragmentaryDocuments = responseModel.getPaginatedBorrowedDocuments();
-
-            val viewablePaginatedFragmentaryDocuments = StreamSupport.stream(paginatedFragmentaryDocuments.spliterator(), true)
-                .map(ViewableFragmentaryDocument::of)
-                .collect(Collectors.toUnmodifiableList());
-
-            val pageIndex = paginatedFragmentaryDocuments.getPageIndex();
-            val maxPageIndex = paginatedFragmentaryDocuments.getMaxPageIndex();
-
-            return new ViewModel(viewablePaginatedFragmentaryDocuments, pageIndex, maxPageIndex);
-        }
     }
 }

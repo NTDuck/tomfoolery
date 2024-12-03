@@ -8,7 +8,6 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.common.documents.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
@@ -27,45 +26,41 @@ public final class GetDocumentQrCodeController implements ThrowableFunction<GetD
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws GetDocumentQrCodeUseCase.AuthenticationTokenNotFoundException, GetDocumentQrCodeUseCase.AuthenticationTokenInvalidException, GetDocumentQrCodeUseCase.DocumentNotFoundException, DocumentQrCodeUnavailable {
-        val requestModel = requestObject.toRequestModel();
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws GetDocumentQrCodeUseCase.AuthenticationTokenNotFoundException, GetDocumentQrCodeUseCase.AuthenticationTokenInvalidException, GetDocumentQrCodeUseCase.DocumentISBNInvalidException, GetDocumentQrCodeUseCase.DocumentNotFoundException, DocumentQrCodeUnavailable {
+        val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.getDocumentQrCodeUseCase.apply(requestModel);
-        val viewModel = ViewModel.fromResponseModel(responseModel);
+        val viewModel = mapResponseModelToViewModel(responseModel);
 
         return viewModel;
     }
 
-    @Value(staticConstructor = "of")
-    public static class RequestObject {
-        @NonNull String ISBN;
+    private static GetDocumentQrCodeUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) {
+        return GetDocumentQrCodeUseCase.Request.of(requestObject.getDocumentISBN());
+    }
 
-        private GetDocumentQrCodeUseCase.@NonNull Request toRequestModel() {
-            val documentId = Document.Id.of(ISBN);
+    private static @NonNull ViewModel mapResponseModelToViewModel(GetDocumentQrCodeUseCase.@NonNull Response responseModel) throws DocumentQrCodeUnavailable {
+        val documentQrCode = responseModel.getDocumentQrCode();
+        val documentQrCodeFilePath = saveDocumentQrCodeAndGetPath(documentQrCode.getBytes());
 
-            return GetDocumentQrCodeUseCase.Request.of(documentId);
+        return ViewModel.of(documentQrCodeFilePath);
+    }
+
+    private static @NonNull String saveDocumentQrCodeAndGetPath(byte @NonNull [] rawDocumentQrCode) throws DocumentQrCodeUnavailable {
+        try {
+            return TemporaryFileProvider.save(".png", rawDocumentQrCode);
+        } catch (IOException exception) {
+            throw new DocumentQrCodeUnavailable();
         }
     }
 
-    @Value
+    @Value(staticConstructor = "of")
+    public static class RequestObject {
+        @NonNull String documentISBN;
+    }
+
+    @Value(staticConstructor = "of")
     public static class ViewModel {
         @NonNull String documentQrCodeFilePath;
-
-        private static @NonNull ViewModel fromResponseModel(GetDocumentQrCodeUseCase.@NonNull Response responseModel) throws DocumentQrCodeUnavailable {
-            val documentQrCode = responseModel.getDocumentQrCode();
-            val rawDocumentQrCode = documentQrCode.getBuffer();
-
-            val documentQrCodeFilePath = saveDocumentQrCodeAndGetPath(rawDocumentQrCode);
-
-            return new ViewModel(documentQrCodeFilePath);
-        }
-
-        private static @NonNull String saveDocumentQrCodeAndGetPath(byte @NonNull [] rawDocumentQrCode) throws DocumentQrCodeUnavailable {
-            try {
-                return TemporaryFileProvider.save(".png", rawDocumentQrCode);
-            } catch (IOException exception) {
-                throw new DocumentQrCodeUnavailable();
-            }
-        }
     }
 
     public static class DocumentQrCodeUnavailable extends Exception {}

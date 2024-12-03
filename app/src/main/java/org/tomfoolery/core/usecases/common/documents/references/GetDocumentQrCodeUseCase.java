@@ -32,17 +32,27 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentNotFoundException {
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException {
         val authenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(authenticationToken);
 
-        val documentId = request.getDocumentId();
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
         val document = this.getDocumentById(documentId);
 
         val documentUrl = this.documentUrlGenerator.generateUrlFromDocument(document);
         val documentQrCode = this.documentQrCodeGenerator.generateQrCodeFromUrl(documentUrl);
 
         return Response.of(documentQrCode);
+    }
+
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        val documentId = Document.Id.of(documentISBN);
+
+        if (documentId == null)
+            throw new DocumentISBNInvalidException();
+
+        return documentId;
     }
 
     private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
@@ -56,7 +66,7 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
 
     @Value(staticConstructor = "of")
     public static class Request {
-        Document.@NonNull Id documentId;
+        @NonNull String documentISBN;
     }
 
     @Value(staticConstructor = "of")
@@ -64,5 +74,6 @@ public final class GetDocumentQrCodeUseCase extends AuthenticatedUserUseCase imp
         Document.@NonNull QrCode documentQrCode;
     }
 
+    public static class DocumentISBNInvalidException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
 }

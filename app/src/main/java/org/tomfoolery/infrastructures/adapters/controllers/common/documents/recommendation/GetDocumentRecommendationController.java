@@ -11,7 +11,7 @@ import org.tomfoolery.core.usecases.common.documents.recommendation.abc.GetDocum
 import org.tomfoolery.core.usecases.common.documents.recommendation.GetLatestDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.common.documents.recommendation.GetTopRatedDocumentRecommendationUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 
 import java.util.List;
 import java.util.Map;
@@ -31,9 +31,8 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
         );
 
         this.getScheduledDocumentRecommendationUseCasesByRecommendationTypes = getDocumentRecommendationUseCaseInitializersByRecommendationTypes.entrySet().parallelStream()
-            .collect(Collectors.toUnmodifiableMap(
-                Map.Entry::getKey,
-                entry -> entry.getValue().apply(documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository)
+            .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey,
+                entry -> entry.getValue().apply(documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository)
             ));
     }
 
@@ -43,28 +42,27 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
         val getScheduledDocumentRecommendationUseCase = this.getScheduledDocumentRecommendationUseCasesByRecommendationTypes.get(recommendationType);
 
         val responseModel = getScheduledDocumentRecommendationUseCase.get();
-        val viewModel = ViewModel.fromResponseModel(responseModel);
+        val viewModel = mapResponseModelToViewModel(responseModel);
 
         return viewModel;
     }
 
+    private static @NonNull ViewModel mapResponseModelToViewModel(GetDocumentRecommendationUseCase.@NonNull Response responseModel) {
+        val documentRecommendation = responseModel.getDocumentRecommendation().parallelStream()
+            .map(GetDocumentByIdController.ViewModel::of)
+            .collect(Collectors.toUnmodifiableList());
+
+        return ViewModel.of(documentRecommendation);
+    }
+    
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @NonNull RecommendationType recommendationType;
     }
 
-    @Value
+    @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<ViewableFragmentaryDocument> documentRecommendation;
-
-        public static @NonNull ViewModel fromResponseModel(GetDocumentRecommendationUseCase.@NonNull Response responseModel) {
-            val documentRecommendation = responseModel.getDocumentRecommendation();
-            val viewableDocumentRecommendation = documentRecommendation.parallelStream()
-                .map(ViewableFragmentaryDocument::of)
-                .collect(Collectors.toUnmodifiableList());
-
-            return new ViewModel(viewableDocumentRecommendation);
-        }
+        @NonNull List<GetDocumentByIdController.ViewModel> documentRecommendation;
     }
 
     public enum RecommendationType {
@@ -73,6 +71,6 @@ public final class GetDocumentRecommendationController implements ThrowableFunct
 
     @FunctionalInterface
     private interface GetDocumentRecommendationUseCaseInitializer {
-        @NonNull GetDocumentRecommendationUseCase apply(@NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository);
+        @NonNull GetDocumentRecommendationUseCase apply(@NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository);
     }
 }

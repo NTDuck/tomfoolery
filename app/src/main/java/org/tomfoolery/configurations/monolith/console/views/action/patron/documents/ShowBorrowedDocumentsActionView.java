@@ -78,7 +78,7 @@ public final class ShowBorrowedDocumentsActionView extends UserActionView {
 
         this.ioProvider.writeLine("Showing borrowed documents, page %d of %d", pageIndex, maxPageIndex);
 
-        viewModel.getPaginatedFragmentaryDocuments()
+        viewModel.getPaginatedBorrowedDocuments()
             .forEach(fragmentaryDocument -> {
                 val ISBN = fragmentaryDocument.getISBN();
                 val documentTitle = fragmentaryDocument.getDocumentTitle();

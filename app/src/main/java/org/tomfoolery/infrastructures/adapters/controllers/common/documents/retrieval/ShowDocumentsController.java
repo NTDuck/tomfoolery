@@ -9,7 +9,6 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.common.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.utils.dataclasses.ViewableFragmentaryDocument;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,40 +27,41 @@ public final class ShowDocumentsController implements ThrowableFunction<ShowDocu
 
     @Override
     public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ShowDocumentsUseCase.AuthenticationTokenInvalidException, ShowDocumentsUseCase.AuthenticationTokenNotFoundException, ShowDocumentsUseCase.PaginationInvalidException {
-        val requestModel = requestObject.toRequestModel();
+        val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.showDocumentsUseCase.apply(requestModel);
-        val viewModel = ViewModel.fromResponseModel(responseModel);
+        val viewModel = mapResponseModelToViewModel(responseModel);
 
         return viewModel;
+    }
+
+    private static ShowDocumentsUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) {
+        return ShowDocumentsUseCase.Request.of(requestObject.getPageIndex(), requestObject.getMaxPageSize());
+    }
+
+    private static @NonNull ViewModel mapResponseModelToViewModel(ShowDocumentsUseCase.@NonNull Response responseModel) {
+        val page = responseModel.getPaginatedDocuments();
+
+        val paginatedDocuments = StreamSupport.stream(page.spliterator(), true)
+            .map(GetDocumentByIdController.ViewModel::of)
+            .collect(Collectors.toUnmodifiableList());
+
+        val pageIndex = page.getPageIndex();
+        val maxPageIndex = page.getMaxPageIndex();
+
+        return ViewModel.of(paginatedDocuments, pageIndex, maxPageIndex);
     }
 
     @Value(staticConstructor = "of")
     public static class RequestObject {
         @Unsigned int pageIndex;
         @Unsigned int maxPageSize;
-
-        private ShowDocumentsUseCase.@NonNull Request toRequestModel() {
-            return ShowDocumentsUseCase.Request.of(pageIndex, maxPageSize);
-        }
     }
 
-    @Value
+    @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<ViewableFragmentaryDocument> paginatedFragmentaryDocuments;
+        @NonNull List<GetDocumentByIdController.ViewModel> paginatedDocuments;
+
         @Unsigned int pageIndex;
         @Unsigned int maxPageIndex;
-
-        private static @NonNull ViewModel fromResponseModel(ShowDocumentsUseCase.@NonNull Response responseModel) {
-            val paginatedFragmentaryDocuments = responseModel.getPaginatedDocuments();
-
-            val viewablePaginatedFragmentaryDocuments = StreamSupport.stream(paginatedFragmentaryDocuments.spliterator(), true)
-                .map(ViewableFragmentaryDocument::of)
-                .collect(Collectors.toUnmodifiableList());
-
-            val pageIndex = paginatedFragmentaryDocuments.getPageIndex();
-            val maxPageIndex = paginatedFragmentaryDocuments.getMaxPageIndex();
-
-            return new ViewModel(viewablePaginatedFragmentaryDocuments, pageIndex, maxPageIndex);
-        }
     }
 }

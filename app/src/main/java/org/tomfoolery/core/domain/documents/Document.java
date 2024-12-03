@@ -47,6 +47,10 @@ public final class Document implements ddd.Entity<Document.Id> {
             val ISBN_10 = ISBNAdapter.toISBN10(ISBN_13);
             return Id.ofISBN10(ISBN_10);
         }
+
+        public @NonNull String getISBN_13() {
+            return ISBNAdapter.toISBN13(ISBN_10);
+        }
     }
 
     @Data(staticConstructor = "of")

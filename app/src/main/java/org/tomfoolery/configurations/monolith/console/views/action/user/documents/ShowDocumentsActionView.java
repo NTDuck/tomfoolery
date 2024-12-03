@@ -75,7 +75,7 @@ public final class ShowDocumentsActionView extends UserActionView {
 
         this.ioProvider.writeLine("Showing documents, page %d of %d", pageIndex, maxPageIndex);
 
-        viewModel.getPaginatedFragmentaryDocuments()
+        viewModel.getPaginatedDocuments()
             .forEach(fragmentaryDocument -> {
                 val ISBN = fragmentaryDocument.getISBN();
                 val documentTitle = fragmentaryDocument.getDocumentTitle();
