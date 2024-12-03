@@ -25,10 +25,8 @@ public class CloudDatabaseConfig {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         supabaseConnection = properties.getProperty("SUPABASE_CONNECTION");
     }
-
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(supabaseConnection);
     }

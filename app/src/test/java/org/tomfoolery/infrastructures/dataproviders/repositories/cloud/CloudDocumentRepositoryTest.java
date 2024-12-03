@@ -1,97 +1,88 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
 
+import lombok.val;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.tomfoolery.abc.UnitTest;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
+import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.Year;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.testng.Assert.*;
 
-public class CloudDocumentRepositoryTest {
-    private CloudDocumentRepository repository;
+public abstract class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepository> {
+    private static final @NonNull String SAMPLE_ISBN = "1234567890";
+    private static final @NonNull String SAMPLE_TITLE = "Sample Book";
+    private static final @NonNull String SAMPLE_DESCRIPTION = "A sample description for the book.";
+    private static final @NonNull List<String> SAMPLE_AUTHORS = List.of("Author1", "Author2");
+    private static final @NonNull List<String> SAMPLE_GENRES = List.of("Fiction", "Adventure");
+    private static final int SAMPLE_YEAR = 2023;
+    private static final @NonNull String SAMPLE_PUBLISHER = "Sample Publisher";
+
+    private @NonNull Document sampleDocument;
 
     @BeforeClass
-    public void setup() throws IOException {
-        Path configFilePath = Path.of("src/main/resources/config.properties");
-        CloudDatabaseConfig dbConfig = new CloudDatabaseConfig(configFilePath.toString());
-        repository = new CloudDocumentRepository(dbConfig);
+    public void setUp() {
+        super.setUp();
+
+        val audit = Document.Audit.of(
+                Document.Audit.Timestamps.of(Instant.now()),
+                Staff.Id.of(UUID.randomUUID())
+        );
+
+        val metadata = Document.Metadata.of(
+                SAMPLE_TITLE,
+                SAMPLE_DESCRIPTION,
+                SAMPLE_AUTHORS,
+                SAMPLE_GENRES,
+                Year.of(SAMPLE_YEAR),
+                SAMPLE_PUBLISHER
+        );
+
+        this.sampleDocument = Document.of(
+                Document.Id.of(SAMPLE_ISBN),
+                audit,
+                metadata
+        );
     }
 
     @Test
-    public void testSaveAndGetById() {
-        Document.Id docId = Document.Id.of("ISBN-TEST-001");
-        Document.Metadata metadata = Document.Metadata.of(
-                "Test Book",
-                "A test description",
-                List.of("Test Author"),
-                List.of("Test Genre"),
-                Year.of(2023),
-                "Test Publisher",
-                Document.Metadata.CoverImage.of("test cover image".getBytes())
-        );
+    public void WhenSavingDocument_ExpectDocumentToExist() {
+        this.unit.save(sampleDocument);
 
-        Document.Content content = Document.Content.of("Test content".getBytes(StandardCharsets.UTF_8));
-
-        Document.Audit audit = Document.Audit.of(
-                Staff.Id.of(UUID.randomUUID()),
-                AverageRating.of(4.5),
-                Document.Audit.Timestamps.of(Instant.now())
-        );
-
-        Document testDocument = Document.of(docId, content, metadata, audit);
-
-        repository.save(testDocument);
-
-        Document retrievedDocument = repository.getById(docId);
-
-        assertNotNull(retrievedDocument);
-        assertEquals(retrievedDocument.getId(), docId);
-        assertEquals(retrievedDocument.getMetadata().getTitle(), "Test Book");
+        val retrievedDocument = this.unit.getById(sampleDocument.getId());
+        assertNotNull(retrievedDocument, "Document should exist after saving.");
+        assertEquals(sampleDocument.getId(), retrievedDocument.getId(), "Saved document ID should match.");
     }
 
+    @Test(dependsOnMethods = { "WhenSavingDocument_ExpectDocumentToExist" })
+    public void WhenRetrievingDocument_ExpectMatchingData() {
+        val retrievedDocument = this.unit.getById(sampleDocument.getId());
+        assertNotNull(retrievedDocument, "Retrieved document should not be null.");
+        assertEquals(sampleDocument.getMetadata(), retrievedDocument.getMetadata(), "Metadata should match.");
+    }
+
+    @Test(dependsOnMethods = { "WhenRetrievingDocument_ExpectMatchingData" })
+    public void WhenDeletingDocument_ExpectDocumentToBeAbsent() {
+        this.unit.delete(sampleDocument.getId());
+
+        val retrievedDocument = this.unit.getById(sampleDocument.getId());
+        assertNull(retrievedDocument, "Document should be null after deletion.");
+    }
 
     @Test
-    public void testDeleteById() {
-        Document.Id docId = Document.Id.of("ISBN-TEST-DELETE");
-        Document.Metadata metadata = Document.Metadata.of(
-                "Delete Test Book",
-                "A book to be deleted",
-                List.of("Delete Author"),
-                List.of("Delete Genre"),
-                Year.of(2023),
-                "Delete Publisher",
-                Document.Metadata.CoverImage.of("delete cover image".getBytes())
-        );
+    public void WhenListingDocuments_ExpectNonEmptyList() {
+        this.unit.save(sampleDocument);
 
-        Document.Content content = Document.Content.of("Delete content".getBytes(StandardCharsets.UTF_8));
-
-        Document.Audit audit = Document.Audit.of(
-                Staff.Id.of(UUID.randomUUID()),
-                AverageRating.of(3.5),
-                Document.Audit.Timestamps.of(Instant.now())
-        );
-
-        Document testDocument = Document.of(docId, content, metadata, audit);
-
-        repository.save(testDocument);
-
-        repository.deleteById(docId);
-
-        Document deletedDocument = repository.getById(docId);
-
-        assertNull(deletedDocument, "Document should be deleted");
+        val documents = this.unit.show();
+        assertTrue(documents.size() > 0, "Document list should not be empty.");
+        assertTrue(documents.stream().anyMatch(doc -> doc.getId().equals(sampleDocument.getId())),
+                "Saved document should be in the list.");
     }
 }
