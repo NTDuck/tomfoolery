@@ -5,6 +5,7 @@ import io.github.jan.supabase.postgrest.Postgrest;
 import io.github.jan.supabase.SupabaseClient;
 import io.github.jan.supabase.SupabaseClientBuilder;
 
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -15,18 +16,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+@NoArgsConstructor(staticName = "of")
 public class CloudDatabaseConfig {
-    private final @NonNull String supabaseConnection;
+    private @NonNull String supabaseConnection;
 
-    public CloudDatabaseConfig(String configFilePath) throws IOException {
+    public void init() throws IOException {
         Properties properties = new Properties();
-        try (FileInputStream input = new FileInputStream(configFilePath)) {
+        try (FileInputStream input = new FileInputStream("src/main/resources/config.properties")) {
             properties.load(input);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         supabaseConnection = properties.getProperty("SUPABASE_CONNECTION");
     }
+
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(supabaseConnection);
     }

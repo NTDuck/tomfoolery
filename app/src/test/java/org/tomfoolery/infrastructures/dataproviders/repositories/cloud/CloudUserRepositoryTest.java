@@ -2,6 +2,7 @@ package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.tomfoolery.abc.UnitTest;
@@ -23,14 +24,14 @@ public class CloudUserRepositoryTest extends UnitTest<CloudUserRepository<BaseUs
     private static final @NonNull char[] SAMPLE_PASSWORD = "securePass".toCharArray();
 
     private @NonNull BaseUser sampleUser;
-    private CloudDatabaseConfig cloudDatabaseConfig;
+    private final CloudDatabaseConfig cloudDatabaseConfig = CloudDatabaseConfig.of();
 
     @Override
     protected @NonNull CloudUserRepository<BaseUser> instantiate() {
         try {
-            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
+            cloudDatabaseConfig.init();
         } catch (IOException e) {
-            fail("Failed to load database config: " + e.getMessage());
+            throw new RuntimeException(e);
         }
         return new CloudUserRepository<>(cloudDatabaseConfig);
     }
@@ -83,4 +84,20 @@ public class CloudUserRepositoryTest extends UnitTest<CloudUserRepository<BaseUs
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(sampleUser.getId())),
                 "Saved user should be in the list.");
     }
+
+    @AfterClass
+    public void tearDownClass() {
+        try {
+            this.unit.delete(sampleUser.getId());
+
+            val users = this.unit.show();
+            for (BaseUser user : users) {
+                this.unit.delete(user.getId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to clean up users after tests: " + e.getMessage());
+        }
+    }
+
 }

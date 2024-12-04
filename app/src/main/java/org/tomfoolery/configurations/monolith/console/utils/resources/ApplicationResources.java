@@ -1,6 +1,7 @@
 package org.tomfoolery.configurations.monolith.console.utils.resources;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.ConsoleIOProvider;
@@ -78,151 +79,155 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.sync
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.SecretStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+@NoArgsConstructor(staticName = "of")
 public class ApplicationResources implements AutoCloseable {
     // Providers
-    protected final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
-    protected final @NonNull HttpClientProvider httpClientProvider = BuiltinHttpClientProvider.of();
+    private final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
+    private final @NonNull HttpClientProvider httpClientProvider = BuiltinHttpClientProvider.of();
 
     // Synchronized Generators
-    protected final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
-    protected final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
+    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
+    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
 
-    protected final @NonNull UserSearchGenerator<Administrator> administratorSearchGenerator = InMemoryUserSearchGenerator.of();
-    protected final @NonNull UserSearchGenerator<Patron> patronSearchGenerator = InMemoryUserSearchGenerator.of();
-    protected final @NonNull UserSearchGenerator<Staff> staffSearchGenerator = InMemoryUserSearchGenerator.of();
+    private final @NonNull UserSearchGenerator<Administrator> administratorSearchGenerator = InMemoryUserSearchGenerator.of();
+    private final @NonNull UserSearchGenerator<Patron> patronSearchGenerator = InMemoryUserSearchGenerator.of();
+    private final @NonNull UserSearchGenerator<Staff> staffSearchGenerator = InMemoryUserSearchGenerator.of();
 
     // Relation Repositories
-    protected final @NonNull DocumentContentRepository documentContentRepository = InMemoryDocumentContentRepository.of();
-    protected final @NonNull ReviewRepository reviewRepository = InMemoryReviewRepository.of();
-    protected final @NonNull BorrowingSessionRepository borrowingSessionRepository = InMemoryBorrowingSessionRepository.of();
+    private final @NonNull DocumentContentRepository documentContentRepository = InMemoryDocumentContentRepository.of();
+    private final @NonNull ReviewRepository reviewRepository = InMemoryReviewRepository.of();
+    private final @NonNull BorrowingSessionRepository borrowingSessionRepository = InMemoryBorrowingSessionRepository.of();
+
+    // Cloud Database Configuration
+    private final @NonNull CloudDatabaseConfig cloudDatabaseConfig = CloudDatabaseConfig.of();
+
+    // Cloud Document Repository
+    private final @NonNull CloudDocumentRepository cloudDocumentRepository = CloudDocumentRepository.of(cloudDatabaseConfig);
 
     // Repositories
-    protected final @NonNull DocumentRepository documentRepository = HybridDocumentRepository.of(
-        List.of(
-            SynchronizedDocumentRepository.of(
-                InMemoryDocumentRepository.of(),
-                List.of(documentSearchGenerator, documentRecommendationGenerator),
-                documentContentRepository,
-                borrowingSessionRepository,
-                reviewRepository
+    private final @NonNull DocumentRepository documentRepository = HybridDocumentRepository.of(
+            List.of(
+                    SynchronizedDocumentRepository.of(
+                            InMemoryDocumentRepository.of(),
+                            List.of(documentSearchGenerator, documentRecommendationGenerator),
+                            documentContentRepository,
+                            borrowingSessionRepository,
+                            reviewRepository
+                    )
+            ),
+            List.of(
+                    GoogleApiDocumentRepository.of(httpClientProvider),
+                    cloudDocumentRepository // Add CloudDocumentRepository here
             )
-        ),
-        List.of(
-            GoogleApiDocumentRepository.of(httpClientProvider)
-        )
     );
 
-    protected final @NonNull AdministratorRepository administratorRepository = SynchronizedAdministratorRepository.of(
-        InMemoryAdministratorRepository.of(),
-        List.of(administratorSearchGenerator),
-        borrowingSessionRepository,
-        reviewRepository
+    private final @NonNull AdministratorRepository administratorRepository = SynchronizedAdministratorRepository.of(
+            InMemoryAdministratorRepository.of(),
+            List.of(administratorSearchGenerator),
+            borrowingSessionRepository,
+            reviewRepository
     );
-    protected final @NonNull PatronRepository patronRepository = SynchronizedPatronRepository.of(
-        InMemoryPatronRepository.of(),
-        List.of(patronSearchGenerator),
-        borrowingSessionRepository,
-        reviewRepository
+    private final @NonNull PatronRepository patronRepository = SynchronizedPatronRepository.of(
+            InMemoryPatronRepository.of(),
+            List.of(patronSearchGenerator),
+            borrowingSessionRepository,
+            reviewRepository
     );
-    protected final @NonNull StaffRepository staffRepository = SynchronizedStaffRepository.of(
-        InMemoryStaffRepository.of(),
-        List.of(staffSearchGenerator),
-        borrowingSessionRepository,
-        reviewRepository
+    private final @NonNull StaffRepository staffRepository = SynchronizedStaffRepository.of(
+            InMemoryStaffRepository.of(),
+            List.of(staffSearchGenerator),
+            borrowingSessionRepository,
+            reviewRepository
     );
 
-    protected final @NonNull UserRepositories userRepositories = UserRepositories.of(Set.of(
-        administratorRepository, patronRepository, staffRepository
+    private final @NonNull UserRepositories userRepositories = UserRepositories.of(Set.of(
+            administratorRepository, patronRepository, staffRepository
     ));
 
     // Others
-    protected final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = ZxingDocumentQrCodeGenerator.of();
-    protected final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
+    private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = ZxingDocumentQrCodeGenerator.of();
+    private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
 
-    protected final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
-    protected final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
+    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = SecretStoreAuthenticationTokenRepository.of();
 
-    protected final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
+    private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
     @Getter
-    protected final @NonNull Views views = Views.of(
-        GuestSelectionView.of(ioProvider),
+    private final @NonNull Views views = Views.of(
+            GuestSelectionView.of(ioProvider),
 
-        AdministratorSelectionView.of(ioProvider),
-        PatronSelectionView.of(ioProvider),
-        StaffSelectionView.of(ioProvider),
+            AdministratorSelectionView.of(ioProvider),
+            PatronSelectionView.of(ioProvider),
+            StaffSelectionView.of(ioProvider),
 
-        // Guest action views
-        CreatePatronAccountActionView.of(ioProvider, patronRepository, passwordEncoder),
-        LogUserInByCredentialsActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
-        LogUserInByAuthenticationTokenActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
+            // Guest action views
+            CreatePatronAccountActionView.of(ioProvider, patronRepository, passwordEncoder),
+            LogUserInByCredentialsActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+            LogUserInByAuthenticationTokenActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
 
-        // Shared user action views
-        LogUserOutActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
+            // Shared user action views
+            LogUserOutActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
 
-        GetDocumentByIdActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        SearchDocumentsActionView.of(ioProvider, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
-        GetDocumentQrCodeActionView.of(ioProvider, documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository),
-        ShowDocumentsActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        GetDocumentRecommendationActionView.of(ioProvider, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+            GetDocumentByIdActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            SearchDocumentsActionView.of(ioProvider, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+            GetDocumentQrCodeActionView.of(ioProvider, documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+            ShowDocumentsActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            GetDocumentRecommendationActionView.of(ioProvider, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository),
 
-        // Administrator action views
-        CreateStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
-        DeleteStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdateStaffCredentialsActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+            // Administrator action views
+            CreateStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+            DeleteStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            UpdateStaffCredentialsActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
 
-        GetAdministratorByIdActionView.of(ioProvider, administratorRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        GetPatronByIdActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        GetStaffByIdActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ShowAdministratorAccountsActionView.of(ioProvider, administratorRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ShowPatronAccountsActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ShowStaffAccountsActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        SearchAdministratorsByUsernameActionView.of(ioProvider, administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
-        SearchPatronsByUsernameActionView.of(ioProvider, patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
-        SearchStaffByUsernameActionView.of(ioProvider, staffSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+            GetAdministratorByIdActionView.of(ioProvider, administratorRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            GetPatronByIdActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            GetStaffByIdActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            ShowAdministratorAccountsActionView.of(ioProvider, administratorRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            ShowPatronAccountsActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            ShowStaffAccountsActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            SearchAdministratorsByUsernameActionView.of(ioProvider, administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+            SearchPatronsByUsernameActionView.of(ioProvider, patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
+            SearchStaffByUsernameActionView.of(ioProvider, staffSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository),
 
-        // Patron action views
-        GetPatronUsernameAndMetadataActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        DeletePatronAccountActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
-        UpdatePatronMetadataActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdatePatronPasswordActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+            // Patron action views
+            GetPatronUsernameAndMetadataActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            DeletePatronAccountActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
+            UpdatePatronMetadataActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            UpdatePatronPasswordActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
 
-        BorrowDocumentActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ReadBorrowedDocumentActionView.of(ioProvider, documentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ReturnDocumentActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        ShowBorrowedDocumentsActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        GetDocumentBorrowStatusActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            BorrowDocumentActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            ReadBorrowedDocumentActionView.of(ioProvider, documentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            ReturnDocumentActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            ShowBorrowedDocumentsActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            GetDocumentBorrowStatusActionView.of(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository),
 
-        AddDocumentReviewActionView.of(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        RemoveDocumentRatingActionView.of(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            AddDocumentReviewActionView.of(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            RemoveDocumentRatingActionView.of(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository),
 
-        // Staff action views
-        AddDocumentActionView.of(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        RemoveDocumentRatingActionView.of(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdateDocumentContentActionView.of(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdateDocumentCoverImageActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
-        UpdateDocumentMetadataActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository)
+            // Staff action views
+            AddDocumentActionView.of(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            RemoveDocumentRatingActionView.of(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            UpdateDocumentContentActionView.of(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            UpdateDocumentCoverImageActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
+            UpdateDocumentMetadataActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository)
     );
-
-    public static @NonNull ApplicationResources of() {
-        return new ApplicationResources();
-    }
-
-    protected ApplicationResources() {}
 
     @Override
     public void close() throws Exception {
         for (val field : this.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
             val resource = field.get(this);
 
             if (resource instanceof AutoCloseable autoCloseableResource)

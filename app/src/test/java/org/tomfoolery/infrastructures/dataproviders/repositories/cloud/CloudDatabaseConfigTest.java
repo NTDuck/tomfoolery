@@ -19,14 +19,13 @@ import java.util.Properties;
 import static org.testng.Assert.*;
 
 public class CloudDatabaseConfigTest extends UnitTest<CloudDatabaseConfig> {
-    private @NonNull CloudDatabaseConfig cloudDatabaseConfig;
+    private final @NonNull CloudDatabaseConfig cloudDatabaseConfig = CloudDatabaseConfig.of();
+
 
     @Override
     protected @NonNull CloudDatabaseConfig instantiate() {
-        Path configFilePath = Path.of("src/main/resources/config.properties");
-
         try {
-            cloudDatabaseConfig = new CloudDatabaseConfig(configFilePath.toString());
+            cloudDatabaseConfig.init();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -36,11 +35,6 @@ public class CloudDatabaseConfigTest extends UnitTest<CloudDatabaseConfig> {
     @BeforeClass
     public void setUp() {
         super.setUp();
-        try {
-            this.cloudDatabaseConfig = new CloudDatabaseConfig("src/main/resources/config.properties");
-        } catch (IOException e) {
-            fail("Failed to load database config: " + e.getMessage());
-        }
     }
 
     @Test

@@ -2,6 +2,7 @@ package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.tomfoolery.abc.UnitTest;
@@ -11,6 +12,8 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.Cl
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
 import java.time.Year;
 import java.util.List;
@@ -26,20 +29,22 @@ public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepositor
     private static final @NonNull List<String> SAMPLE_GENRES = List.of("Fiction", "Adventure");
     private static final int SAMPLE_YEAR = 2023;
     private static final @NonNull String SAMPLE_PUBLISHER = "Sample Publisher";
+    private static final double SAMPLE_AVERAGE_RATING = 4.5;
+    private static final int SAMPLE_NUMBER_OF_RATINGS = 100;
+    private static final byte[] SAMPLE_COVER_IMAGE = "SampleImageData".getBytes();
 
     private @NonNull Document sampleDocument;
 
-    private CloudDatabaseConfig cloudDatabaseConfig;
+    private final @NonNull CloudDatabaseConfig cloudDatabaseConfig = CloudDatabaseConfig.of();
 
     @Override
     protected @NonNull CloudDocumentRepository instantiate() {
         try {
-            this.cloudDatabaseConfig = new CloudDatabaseConfig("src/main/resources/config.properties");
+            cloudDatabaseConfig.init();
         } catch (IOException e) {
-            fail("Failed to load database config: " + e.getMessage());
+            throw new RuntimeException(e);
         }
-
-        return new CloudDocumentRepository(cloudDatabaseConfig);
+        return CloudDocumentRepository.of(cloudDatabaseConfig);
     }
 
     @BeforeClass
@@ -60,12 +65,18 @@ public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepositor
                 SAMPLE_PUBLISHER
         );
 
+        val rating = Document.Rating.of(SAMPLE_AVERAGE_RATING, SAMPLE_NUMBER_OF_RATINGS);
+        val coverImage = Document.CoverImage.of(SAMPLE_COVER_IMAGE);
+
         this.sampleDocument = Document.of(
                 Document.Id.of(SAMPLE_ISBN),
                 audit,
-                metadata
+                metadata,
+                rating,
+                coverImage
         );
     }
+
 
     @Test
     public void WhenSavingDocument_ExpectDocumentToExist() {
@@ -100,4 +111,22 @@ public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepositor
         assertTrue(documents.stream().anyMatch(doc -> doc.getId().equals(sampleDocument.getId())),
                 "Saved document should be in the list.");
     }
+
+//    @AfterClass
+//    public void tearDown() {
+//        try {
+//            // Delete the sample document after all tests are finished
+//            this.unit.delete(sampleDocument.getId());
+//
+//            // Verify deletion
+//            val retrievedDocument = this.unit.getById(sampleDocument.getId());
+//            assertNull(retrievedDocument, "Document should be null after deletion.");
+//            System.out.println("Sample document successfully deleted from the database.");
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            fail("Failed to delete the sample document: " + e.getMessage());
+//        }
+//    }
+
 }
