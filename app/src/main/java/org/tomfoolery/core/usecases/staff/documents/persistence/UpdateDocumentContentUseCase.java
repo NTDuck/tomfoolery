@@ -47,7 +47,8 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
        val documentId = this.getDocumentIdFromISBN(documentISBN);
        val document = this.getDocumentById(documentId);
 
-       val newDocumentContent = request.getNewDocumentContent();
+       val rawNewDocumentContent = request.getNewDocumentContent();
+       val newDocumentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawNewDocumentContent);
        this.documentContentRepository.save(newDocumentContent);
 
        this.markDocumentAsLastModifiedByStaff(document, staffId);
@@ -83,7 +84,7 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
    @Value(staticConstructor = "of")
    public static class Request {
        @NonNull String documentISBN;
-       @NonNull DocumentContent newDocumentContent;
+       byte @NonNull [] newDocumentContent;
    }
 
    public static class DocumentISBNInvalidException extends Exception {}

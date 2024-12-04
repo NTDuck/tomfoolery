@@ -2,19 +2,31 @@ package org.tomfoolery.infrastructures.utils.helpers.comparators;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.core.domain.documents.Document;
 
-import java.time.Instant;
 import java.util.Comparator;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class DocumentComparator {
-    public static final @NonNull Comparator<FragmentaryDocument> byIdAscending = Comparator.comparing(fragmentaryDocument -> fragmentaryDocument.getId().getISBN());
-    public static final @NonNull Comparator<FragmentaryDocument> byCreationTimestampAscending = Comparator.<FragmentaryDocument, Instant>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getTimestamps().getCreated());
-    public static final @NonNull Comparator<FragmentaryDocument> byNumberOfBorrowingPatronsAscending = Comparator.<FragmentaryDocument, Integer>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getBorrowingPatronIds().size());
-    public static final @NonNull Comparator<FragmentaryDocument> byRatingAscending = Comparator.<FragmentaryDocument, Double>comparing(fragmentaryDocument -> fragmentaryDocument.getAudit().getRating().getValue());
+    public static final @NonNull Comparator<Document> byIdAscending = Comparator.comparing(
+        document -> document.getId().getISBN_10()
+    );
 
-    public static final @NonNull Comparator<FragmentaryDocument> byCreationTimestampDescending = byCreationTimestampAscending.reversed();
-    public static final @NonNull Comparator<FragmentaryDocument> byNumberOfBorrowingPatronsDescending = byNumberOfBorrowingPatronsAscending.reversed();
-    public static final @NonNull Comparator<FragmentaryDocument> byRatingDescending = byRatingAscending.reversed();
+    public static final @NonNull Comparator<Document> byCreationTimestampAscending = Comparator.comparing(
+        document -> document.getAudit().getTimestamps().getCreated()
+    );
+
+    public static final @NonNull Comparator<Document> byAverageRatingAscending = Comparator.comparing(document -> {
+        val documentRating = document.getRating();
+
+        if (documentRating == null)
+            return Double.MAX_VALUE;
+
+        return documentRating.getAverageRating();
+    });
+
+    public static final @NonNull Comparator<Document> byCreationTimestampDescending = byCreationTimestampAscending.reversed();
+    public static final @NonNull Comparator<Document> byAverageRatingDescending = byAverageRatingAscending.reversed();
 }

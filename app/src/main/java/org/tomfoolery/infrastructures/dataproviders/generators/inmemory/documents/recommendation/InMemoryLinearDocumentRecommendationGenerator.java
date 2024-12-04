@@ -3,6 +3,7 @@ package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documen
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
+import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.abc.InMemoryLinearDocumentGenerator;
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
@@ -15,7 +16,7 @@ public class InMemoryLinearDocumentRecommendationGenerator extends InMemoryLinea
     private static final int DOCUMENT_COUNT_PER_RECOMMENDATION = 10;
 
     @Override
-    public @NonNull List<FragmentaryDocument> getLatestDocumentRecommendation() {
+    public @NonNull List<Document> getLatestDocumentRecommendation() {
         return generateDocumentRecommendationByComparator(
             DocumentComparator.byCreationTimestampDescending
                 .thenComparing(DocumentComparator.byIdAscending)
@@ -23,23 +24,15 @@ public class InMemoryLinearDocumentRecommendationGenerator extends InMemoryLinea
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> getPopularDocumentRecommendation() {
+    public @NonNull List<Document> getTopRatedDocumentRecommendation() {
         return generateDocumentRecommendationByComparator(
-            DocumentComparator.byNumberOfBorrowingPatronsDescending
+            DocumentComparator.byAverageRatingDescending
                 .thenComparing(DocumentComparator.byIdAscending)
         );
     }
 
-    @Override
-    public @NonNull List<FragmentaryDocument> getTopRatedDocumentRecommendation() {
-        return generateDocumentRecommendationByComparator(
-            DocumentComparator.byRatingDescending
-                .thenComparing(DocumentComparator.byIdAscending)
-        );
-    }
-
-    private @NonNull List<FragmentaryDocument> generateDocumentRecommendationByComparator(@NonNull Comparator<FragmentaryDocument> comparator) {
-        return super.fragmentaryDocuments.parallelStream()
+    private @NonNull List<Document> generateDocumentRecommendationByComparator(@NonNull Comparator<Document> comparator) {
+        return super.cachedDocuments.parallelStream()
             .sorted(comparator)
             .limit(DOCUMENT_COUNT_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());

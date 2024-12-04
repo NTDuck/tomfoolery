@@ -13,14 +13,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
-    protected final @NonNull List<BaseRepository<Entity, EntityId>> persistenceRepositories;
-    protected final @NonNull List<BaseRepository<Entity, EntityId>> retrievalRepositories;
+    protected final @NonNull List<? extends BaseRepository<Entity, EntityId>> persistenceRepositories;
+    protected final @NonNull List<? extends BaseRepository<Entity, EntityId>> retrievalRepositories;
 
-    public static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull BaseHybridRepository<Entity, EntityId> of(@NonNull List<BaseRepository<Entity, EntityId>> persistenceRepositories, @NonNull List<BaseRepository<Entity, EntityId>> retrievalRepositories) {
-        return new BaseHybridRepository<>(persistenceRepositories, retrievalRepositories);
-    }
-
-    protected BaseHybridRepository(@NonNull List<BaseRepository<Entity, EntityId>> persistenceRepositories, @NonNull List<BaseRepository<Entity, EntityId>> retrievalRepositories) {
+    protected BaseHybridRepository(@NonNull List<? extends BaseRepository<Entity, EntityId>> persistenceRepositories, @NonNull List<? extends BaseRepository<Entity, EntityId>> retrievalRepositories) {
         this.persistenceRepositories = persistenceRepositories;
         this.retrievalRepositories = retrievalRepositories;
     }
@@ -78,23 +74,23 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
         return Boolean.TRUE.equals(containsFromRetrievalRepositories);
     }
 
-    private @Nullable Entity getById(@NonNull List<BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {
+    private @Nullable Entity getById(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {
         return apply(repositories, repository -> repository.getById(entityId));
     }
 
-    private boolean contains(@NonNull List<BaseRepository<Entity, EntityId>> repositories, @Nullable EntityId entityId) {
+    private boolean contains(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @Nullable EntityId entityId) {
         val contains = apply(repositories, repository -> repository.contains(entityId));
         return contains != null ? contains : false;
     }
 
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> @Nullable T apply(@NonNull List<BaseRepository<Entity, EntityId>> repositories, @NonNull Function<BaseRepository<Entity, EntityId>, T> function) {
+    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> @Nullable T apply(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull Function<BaseRepository<Entity, EntityId>, T> function) {
         return repositories.parallelStream()
             .map(function)
             .findAny()
             .orElse(null);
     }
 
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> void accept(@NonNull List<BaseRepository<Entity, EntityId>> repositories, @NonNull Consumer<BaseRepository<Entity, EntityId>> consumer) {
+    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> void accept(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull Consumer<BaseRepository<Entity, EntityId>> consumer) {
         repositories.parallelStream()
             .forEach(consumer);
     }
