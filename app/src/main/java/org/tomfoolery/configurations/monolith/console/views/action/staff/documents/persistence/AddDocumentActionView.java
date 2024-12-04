@@ -6,49 +6,42 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.AddDocumentController;
 
 import java.util.Arrays;
 
 public final class AddDocumentActionView extends UserActionView {
-    private final @NonNull AddDocumentController controller;
+    private final @NonNull AddDocumentController addDocumentController;
 
-    public static @NonNull AddDocumentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull AddDocumentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private AddDocumentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.controller = AddDocumentController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.addDocumentController = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
     public void run() {
         try {
             val requestObject = this.collectRequestObject();
-            this.controller.accept(requestObject);
+            this.addDocumentController.accept(requestObject);
             this.onSuccess();
 
-        } catch (DocumentPublishedYearInvalidException exception) {
-            this.onDocumentPublishedYearInvalidException();
-
-        } catch (AddDocumentController.DocumentCoverImageFilePathInvalidException exception) {
-            this.onDocumentContentFilePathInvalidException();
-        } catch (AddDocumentController.DocumentContentFilePathInvalidException exception) {
-            this.onDocumentCoverImageFilePathInvalidException();
-
-        } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (AddDocumentUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (AddDocumentUseCase.DocumentAlreadyExistsException exception) {
-            this.onDocumentAlreadyExistsException();
+        } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException | AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
+            this.onException(exception, GuestSelectionView.class);
+        } catch (DocumentPublishedYearInvalidException | AddDocumentController.DocumentPublishedYearInvalidException | AddDocumentController.DocumentContentFilePathInvalidException | AddDocumentController.DocumentCoverImageFilePathInvalidException | AddDocumentUseCase.DocumentISBNInvalidException | AddDocumentUseCase.DocumentAlreadyExistsException exception) {
+            this.onException(exception);
         }
     }
 
@@ -63,8 +56,8 @@ public final class AddDocumentActionView extends UserActionView {
         val documentPublishedYear = this.collectDocumentPublishedYear();
         val documentPublisher = this.ioProvider.readLine(Message.Format.PROMPT, "document publisher");
 
-        val documentAuthors = Arrays.asList(rawDocumentAuthors.split(","));
-        val documentGenres = Arrays.asList(rawDocumentGenres.split(","));
+        val documentAuthors = Arrays.asList(Arrays.stream(rawDocumentAuthors.split(",")).parallel().map(String::trim).toArray(String[]::new));
+        val documentGenres = Arrays.asList(Arrays.stream(rawDocumentGenres.split(",")).parallel().map(String::trim).toArray(String[]::new));
 
         val documentContentFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document file path");
         val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document cover image file path");
@@ -87,30 +80,6 @@ public final class AddDocumentActionView extends UserActionView {
         this.nextViewClass = StaffSelectionView.class;
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "Document added");
-    }
-
-    private void onDocumentPublishedYearInvalidException() {
-        this.nextViewClass = StaffSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Document published year must be a positive integer");
-    }
-
-    private void onDocumentContentFilePathInvalidException() {
-        this.nextViewClass = StaffSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document");
-    }
-
-    private void onDocumentCoverImageFilePathInvalidException() {
-        this.nextViewClass = StaffSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open cover image");
-    }
-
-    private void onDocumentAlreadyExistsException() {
-        this.nextViewClass = StaffSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Document already exists");
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}

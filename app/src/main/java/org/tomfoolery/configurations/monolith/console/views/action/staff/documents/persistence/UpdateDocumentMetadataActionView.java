@@ -6,11 +6,13 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentMetadataUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentMetadataController;
 
@@ -36,18 +38,10 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
             this.controller.accept(requestObject);
             this.onSuccess();
 
-        } catch (DocumentPublishedYearInvalidException e) {
-            this.onDocumentPublishedYearInvalidException();
-
-        } catch (UpdateDocumentMetadataController.DocumentCoverImageFilePathInvalidException e) {
-            this.onDocumentCoverImageFilePathInvalidException();
-
-        } catch (UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (UpdateDocumentMetadataUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (UpdateDocumentMetadataUseCase.DocumentNotFoundException exception) {
-            this.onDocumentNotFoundException();
+        } catch (UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException | AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
+            this.onException(exception, GuestSelectionView.class);
+        } catch (DocumentPublishedYearInvalidException | UpdateDocumentMetadataController.DocumentPublishedYearInvalidException | UpdateDocumentMetadataUseCase.DocumentISBNInvalidException | UpdateDocumentMetadataUseCase.DocumentNotFoundException exception) {
+            this.onException(exception);
         }
     }
 
@@ -62,12 +56,10 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
         val documentPublishedYear = this.collectDocumentPublishedYear();
         val documentPublisher = this.ioProvider.readLine(Message.Format.PROMPT, "document publisher");
 
-        val documentAuthors = Arrays.asList(rawDocumentAuthors.split(","));
-        val documentGenres = Arrays.asList(rawDocumentGenres.split(","));
+        val documentAuthors = Arrays.asList(Arrays.stream(rawDocumentAuthors.split(",")).parallel().map(String::trim).toArray(String[]::new));
+        val documentGenres = Arrays.asList(Arrays.stream(rawDocumentGenres.split(",")).parallel().map(String::trim).toArray(String[]::new));
 
-        val documentCoverImageFilePath = this.ioProvider.readLine(Message.Format.PROMPT, "document cover image file path");
-
-        return UpdateDocumentMetadataController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentCoverImageFilePath);
+        return UpdateDocumentMetadataController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher);
     }
 
     private @Unsigned short collectDocumentPublishedYear() throws DocumentPublishedYearInvalidException {
@@ -82,28 +74,9 @@ public final class UpdateDocumentMetadataActionView extends UserActionView {
     }
 
     private void onSuccess() {
-        this.nextViewClass = PatronSelectionView.class;
+        this.nextViewClass = StaffSelectionView.class;
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "Document metadata updated");
     }
-
-    private void onDocumentPublishedYearInvalidException() {
-        this.nextViewClass = StaffSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Document published year must be a positive integer");
-    }
-
-    private void onDocumentCoverImageFilePathInvalidException() {
-        this.nextViewClass = StaffSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open cover image");
-    }
-
-    private void onDocumentNotFoundException() {
-        this.nextViewClass = StaffSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
-    }
-
     private static class DocumentPublishedYearInvalidException extends Exception {}
 }
