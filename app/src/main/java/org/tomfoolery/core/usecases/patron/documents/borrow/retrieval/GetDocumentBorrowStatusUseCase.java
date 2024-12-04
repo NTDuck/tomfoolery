@@ -37,7 +37,7 @@ public final class GetDocumentBorrowStatusUseCase extends AuthenticatedUserUseCa
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException {
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentNotBorrowedException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
@@ -47,9 +47,9 @@ public final class GetDocumentBorrowStatusUseCase extends AuthenticatedUserUseCa
         this.ensureDocumentExists(documentId);
 
         val borowingSessionId = BorrowingSession.Id.of(documentId, patronId);
-        val isDocumentBorrowed = this.checkIfDocumentIsBorrowed(borowingSessionId);
+        val borrowingSession = this.getBorrowingSessionById(borowingSessionId);
 
-        return Response.of(isDocumentBorrowed);
+        return Response.of(borrowingSession);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -66,8 +66,13 @@ public final class GetDocumentBorrowStatusUseCase extends AuthenticatedUserUseCa
             throw new DocumentNotFoundException();
     }
 
-    private boolean checkIfDocumentIsBorrowed(BorrowingSession.@NonNull Id borrowingSessionId) {
-        return this.borrowingSessionRepository.contains(borrowingSessionId);
+    private @NonNull BorrowingSession getBorrowingSessionById(BorrowingSession.@NonNull Id borrowingSessionId) throws DocumentNotBorrowedException {
+        val borrowingSession = this.borrowingSessionRepository.getById(borrowingSessionId);
+
+        if (borrowingSession == null)
+            throw new DocumentNotBorrowedException();
+
+        return borrowingSession;
     }
 
     @Value(staticConstructor = "of")
@@ -77,9 +82,10 @@ public final class GetDocumentBorrowStatusUseCase extends AuthenticatedUserUseCa
 
     @Value(staticConstructor = "of")
     public static class Response {
-        boolean isDocumentBorrowed;
+        @NonNull BorrowingSession borrowingSession;
     }
 
     public static class DocumentISBNInvalidException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
+    public static class DocumentNotBorrowedException extends Exception {}
 }

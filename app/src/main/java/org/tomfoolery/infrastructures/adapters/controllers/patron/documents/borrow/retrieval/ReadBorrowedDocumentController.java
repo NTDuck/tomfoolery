@@ -26,7 +26,7 @@ public final class ReadBorrowedDocumentController implements ThrowableFunction<R
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException, ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException, ReadBorrowedDocumentUseCase.DocumentISBNInvalidException, ReadBorrowedDocumentUseCase.DocumentNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotBorrowedException, ReadBorrowedDocumentUseCase.DocumentContentNotFoundException, DocumentContentUnavailable {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException, ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException, ReadBorrowedDocumentUseCase.DocumentISBNInvalidException, ReadBorrowedDocumentUseCase.DocumentNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotBorrowedException, ReadBorrowedDocumentUseCase.DocumentOverdueException, ReadBorrowedDocumentUseCase.DocumentContentNotFoundException, DocumentContentUnavailable {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.readBorrowedDocumentUseCase.apply(requestModel);
         val viewModel = mapResponseModelToViewModel(responseModel);
