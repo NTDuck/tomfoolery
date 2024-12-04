@@ -27,7 +27,7 @@ public abstract class BaseView implements Runnable {
             return;
 
         this.ioProvider.writeLine("Hints:");
-        this.ioProvider.writeLine("-" + String.join("\n- ", hints));
+        this.ioProvider.writeLine("- " + String.join("\n- ", hints));
     }
 
     protected void onException(@NonNull Exception exception, @NonNull Class<? extends BaseView> nextViewClass, @NonNull String... hints) {

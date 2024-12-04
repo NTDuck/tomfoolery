@@ -38,7 +38,7 @@ public final class GetDocumentByIdActionView extends UserActionView {
 
         } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException | GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
             this.onException(exception, GuestSelectionView.class);
-        } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException | GetDocumentByIdUseCase.DocumentNotFoundException | DocumentCoverImageNotOpenableException exception) {
+        } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException | GetDocumentByIdUseCase.DocumentNotFoundException exception) {
             this.onException(exception);
         }
     }
@@ -49,14 +49,8 @@ public final class GetDocumentByIdActionView extends UserActionView {
         return GetDocumentByIdController.RequestObject.of(ISBN);
     }
 
-    private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageNotOpenableException {
+    private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) {
         val documentCoverImageFilePath = viewModel.getDocumentCoverImageFilePath();
-
-        try {
-            TemporaryFileProvider.open(documentCoverImageFilePath);
-        } catch (IOException exception) {
-            throw new DocumentCoverImageNotOpenableException();
-        }
 
         this.ioProvider.writeLine("""
             Document Details:
@@ -79,13 +73,17 @@ public final class GetDocumentByIdActionView extends UserActionView {
             viewModel.getAverageRating(),
             viewModel.getNumberOfRatings()
         );
+
+        try {
+            TemporaryFileProvider.open(documentCoverImageFilePath);
+        } catch (IOException exception) {
+            this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document cover image");
+        }
     }
 
-    private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageNotOpenableException {
+    private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
         this.nextViewClass = cachedViewClass;
 
         this.displayViewModel(viewModel);
     }
-
-    private static class DocumentCoverImageNotOpenableException extends Exception {}
 }
