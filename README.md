@@ -5,7 +5,6 @@
 > a LMS made with care.
 
 
-<a id="about"></a>
 ## About
 
 The project was completed as the **OOP (*2425II_INT2204_18*)** final-term assignment under the instruction of **MSc. Nguyễn Thu Trang**.
@@ -16,7 +15,23 @@ Team members:
 - [23021554] [Phạm Trung Hiếu](https://github.com/FearOfTheSea)
 
 
-<a id="license"></a>
+## Prerequisites
+- Java 22.0.2
+- Gradle 8.10
+
+
+## Build and run
+```
+gradle clean build
+// gradle clean build --refresh-dependencies
+// gradle test --rerun-tasks
+
+// Choose one
+gradle runConsole --console=plain
+gradle runJavaFX
+```
+
+
 ## License
 
 This project is licensed under the [BSD-3-Clause license](LICENSE).
