@@ -1,7 +1,6 @@
 package org.tomfoolery.configurations.monolith.console.utils.resources;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.ConsoleIOProvider;
@@ -88,27 +87,26 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.
 import java.util.List;
 import java.util.Set;
 
-@NoArgsConstructor(staticName = "of")
 public class ApplicationResources implements AutoCloseable {
     // Providers
-    private final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
-    private final @NonNull HttpClientProvider httpClientProvider = BuiltinHttpClientProvider.of();
+    protected final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
+    protected final @NonNull HttpClientProvider httpClientProvider = BuiltinHttpClientProvider.of();
 
     // Synchronized Generators
-    private final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
-    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
+    protected final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
+    protected final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = InMemoryIndexedDocumentRecommendationGenerator.of();
 
-    private final @NonNull UserSearchGenerator<Administrator> administratorSearchGenerator = InMemoryUserSearchGenerator.of();
-    private final @NonNull UserSearchGenerator<Patron> patronSearchGenerator = InMemoryUserSearchGenerator.of();
-    private final @NonNull UserSearchGenerator<Staff> staffSearchGenerator = InMemoryUserSearchGenerator.of();
+    protected final @NonNull UserSearchGenerator<Administrator> administratorSearchGenerator = InMemoryUserSearchGenerator.of();
+    protected final @NonNull UserSearchGenerator<Patron> patronSearchGenerator = InMemoryUserSearchGenerator.of();
+    protected final @NonNull UserSearchGenerator<Staff> staffSearchGenerator = InMemoryUserSearchGenerator.of();
 
     // Relation Repositories
-    private final @NonNull DocumentContentRepository documentContentRepository = InMemoryDocumentContentRepository.of();
-    private final @NonNull ReviewRepository reviewRepository = InMemoryReviewRepository.of();
-    private final @NonNull BorrowingSessionRepository borrowingSessionRepository = InMemoryBorrowingSessionRepository.of();
+    protected final @NonNull DocumentContentRepository documentContentRepository = InMemoryDocumentContentRepository.of();
+    protected final @NonNull ReviewRepository reviewRepository = InMemoryReviewRepository.of();
+    protected final @NonNull BorrowingSessionRepository borrowingSessionRepository = InMemoryBorrowingSessionRepository.of();
 
     // Repositories
-    private final @NonNull DocumentRepository documentRepository = HybridDocumentRepository.of(
+    protected final @NonNull DocumentRepository documentRepository = HybridDocumentRepository.of(
         List.of(
             SynchronizedDocumentRepository.of(
                 InMemoryDocumentRepository.of(),
@@ -123,40 +121,40 @@ public class ApplicationResources implements AutoCloseable {
         )
     );
 
-    private final @NonNull AdministratorRepository administratorRepository = SynchronizedAdministratorRepository.of(
+    protected final @NonNull AdministratorRepository administratorRepository = SynchronizedAdministratorRepository.of(
         InMemoryAdministratorRepository.of(),
         List.of(administratorSearchGenerator),
         borrowingSessionRepository,
         reviewRepository
     );
-    private final @NonNull PatronRepository patronRepository = SynchronizedPatronRepository.of(
+    protected final @NonNull PatronRepository patronRepository = SynchronizedPatronRepository.of(
         InMemoryPatronRepository.of(),
         List.of(patronSearchGenerator),
         borrowingSessionRepository,
         reviewRepository
     );
-    private final @NonNull StaffRepository staffRepository = SynchronizedStaffRepository.of(
+    protected final @NonNull StaffRepository staffRepository = SynchronizedStaffRepository.of(
         InMemoryStaffRepository.of(),
         List.of(staffSearchGenerator),
         borrowingSessionRepository,
         reviewRepository
     );
 
-    private final @NonNull UserRepositories userRepositories = UserRepositories.of(Set.of(
+    protected final @NonNull UserRepositories userRepositories = UserRepositories.of(Set.of(
         administratorRepository, patronRepository, staffRepository
     ));
 
     // Others
-    private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = ZxingDocumentQrCodeGenerator.of();
-    private final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
+    protected final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = ZxingDocumentQrCodeGenerator.of();
+    protected final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
 
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = SecretStoreAuthenticationTokenRepository.of();
+    protected final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
+    protected final @NonNull AuthenticationTokenRepository authenticationTokenRepository = SecretStoreAuthenticationTokenRepository.of();
 
-    private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
+    protected final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
     @Getter
-    private final @NonNull Views views = Views.of(
+    protected final @NonNull Views views = Views.of(
         GuestSelectionView.of(ioProvider),
 
         AdministratorSelectionView.of(ioProvider),
@@ -214,6 +212,12 @@ public class ApplicationResources implements AutoCloseable {
         UpdateDocumentCoverImageActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
         UpdateDocumentMetadataActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository)
     );
+
+    public static @NonNull ApplicationResources of() {
+        return new ApplicationResources();
+    }
+
+    protected ApplicationResources() {}
 
     @Override
     public void close() throws Exception {

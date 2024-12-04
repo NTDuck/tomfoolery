@@ -35,7 +35,7 @@ public abstract class BaseView implements Runnable {
     }
 
     private static @NonNull String getMessageFromException(@NonNull Exception exception) {
-        return String.format("%s (%s)", exception.getClass().getSimpleName(),
-            exception.getLocalizedMessage() != null ? exception.getLocalizedMessage() : "");
+        return String.format("%s%s", exception.getClass().getSimpleName(),
+            exception.getLocalizedMessage() != null ? String.format(" (%s)", exception.getLocalizedMessage()) : "");
     }
 }

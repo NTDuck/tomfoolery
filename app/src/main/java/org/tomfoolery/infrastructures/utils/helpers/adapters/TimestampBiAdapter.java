@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
@@ -25,7 +26,8 @@ public final class TimestampBiAdapter {
     }
 
     public static @NonNull String serialize(@NonNull Instant timestamp) {
-        return SERIALIZATION_FORMATTER.format(timestamp);
+        val zonedDateTime = timestamp.atZone(ZoneId.systemDefault());
+        return SERIALIZATION_FORMATTER.format(zonedDateTime);
     }
 
     public static class TimestampInvalidException extends Exception {}

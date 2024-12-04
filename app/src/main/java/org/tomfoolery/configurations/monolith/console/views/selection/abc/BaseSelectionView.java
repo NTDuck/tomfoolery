@@ -74,9 +74,14 @@ public abstract class BaseSelectionView extends BaseView {
 
     private SelectionController.@NonNull RequestObject collectRequestObject() throws SelectionItemIndexInvalidException {
         val rawSelectionItemIndex = this.ioProvider.readLine();
-        val selectionItemIndex = Integer.parseInt(rawSelectionItemIndex);
 
-        return SelectionController.RequestObject.of(selectionItemIndex);
+        try {
+            val selectionItemIndex = Integer.parseInt(rawSelectionItemIndex);
+            return SelectionController.RequestObject.of(selectionItemIndex);
+
+        } catch (NumberFormatException exception) {
+            throw new SelectionItemIndexInvalidException();
+        }
     }
 
     private void onSuccess(SelectionController.@NonNull ResponseModel responseModel) {
