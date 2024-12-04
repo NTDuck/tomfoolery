@@ -4,7 +4,6 @@ import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.abc.BaseInMemorySynchronizedGenerator;
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
 import java.util.List;
@@ -13,68 +12,44 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(staticName = "of")
-public class InMemoryIndexedDocumentRecommendationGenerator extends BaseInMemorySynchronizedGenerator<Document, Document.Id> implements DocumentRecommendationGenerator {
-    private static final int DOCUMENT_COUNT_PER_RECOMMENDATION = 10;
+public class InMemoryIndexedDocumentRecommendationGenerator implements DocumentRecommendationGenerator {
+    private static final int NUMBER_OF_DOCUMENTS_PER_RECOMMENDATION = 10;
 
-    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByCreationTimestamps = new TreeSet<>(
+    private final @NonNull Set<Document> documentsByCreationTimestamps = new TreeSet<>(
         DocumentComparator.byCreationTimestampDescending
             .thenComparing(DocumentComparator.byIdAscending)
     );
 
-    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByNumberOfBorrowingPatrons = new TreeSet<>(
-        DocumentComparator.byNumberOfBorrowingPatronsDescending
-            .thenComparing(DocumentComparator.byIdAscending)
-    );
-
-    private final @NonNull Set<FragmentaryDocument> fragmentaryDocumentsByRatings = new TreeSet<>(
-        DocumentComparator.byRatingDescending
+    private final @NonNull Set<Document> documentsByAverageRatings = new TreeSet<>(
+        DocumentComparator.byAverageRatingDescending
             .thenComparing(DocumentComparator.byIdAscending)
     );
 
     @Override
-    public @NonNull List<FragmentaryDocument> getLatestDocumentRecommendation() {
-        return getDocumentRecommendation(this.fragmentaryDocumentsByCreationTimestamps);
+    public @NonNull List<Document> getLatestDocumentRecommendation() {
+        return getDocumentRecommendation(this.documentsByCreationTimestamps);
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> getPopularDocumentRecommendation() {
-        return getDocumentRecommendation(this.fragmentaryDocumentsByNumberOfBorrowingPatrons);
+    public @NonNull List<Document> getTopRatedDocumentRecommendation() {
+        return getDocumentRecommendation(this.documentsByAverageRatings);
     }
 
     @Override
-    public @NonNull List<FragmentaryDocument> getTopRatedDocumentRecommendation() {
-        return getDocumentRecommendation(this.fragmentaryDocumentsByRatings);
+    public void synchronizeSavedEntity(@NonNull Document savedDocument) {
+        this.documentsByCreationTimestamps.add(savedDocument);
+        this.documentsByAverageRatings.add(savedDocument);
     }
 
     @Override
-    public void synchronizeRecentlySavedEntities(@NonNull Set<Document> savedEntities) {
-        savedEntities.parallelStream()
-            .map(FragmentaryDocument::of)
-            .forEach(this::synchronizeRecentlySavedEntity);
+    public void synchronizeDeletedEntity(@NonNull Document deletedDocument) {
+        this.documentsByCreationTimestamps.remove(deletedDocument);
+        this.documentsByAverageRatings.remove(deletedDocument);
     }
 
-    @Override
-    public void synchronizeRecentlyDeletedEntities(@NonNull Set<Document> deletedEntities) {
-        deletedEntities.parallelStream()
-            .map(FragmentaryDocument::of)
-            .forEach(this::synchronizeRecentlyDeletedEntity);
-    }
-
-    private static @NonNull List<FragmentaryDocument> getDocumentRecommendation(@NonNull Set<FragmentaryDocument> fragmentaryDocuments) {
-        return fragmentaryDocuments.stream()   // parallelStream() does not guarantee order
-            .limit(DOCUMENT_COUNT_PER_RECOMMENDATION)
+    private static @NonNull List<Document> getDocumentRecommendation(@NonNull Set<Document> documents) {
+        return documents.stream()   // parallelStream() does not guarantee order
+            .limit(NUMBER_OF_DOCUMENTS_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());
-    }
-
-    private void synchronizeRecentlySavedEntity(@NonNull FragmentaryDocument fragmentaryDocument) {
-        this.fragmentaryDocumentsByCreationTimestamps.add(fragmentaryDocument);
-        this.fragmentaryDocumentsByNumberOfBorrowingPatrons.add(fragmentaryDocument);
-        this.fragmentaryDocumentsByRatings.add(fragmentaryDocument);
-    }
-
-    private void synchronizeRecentlyDeletedEntity(@NonNull FragmentaryDocument fragmentaryDocument) {
-        this.fragmentaryDocumentsByCreationTimestamps.remove(fragmentaryDocument);
-        this.fragmentaryDocumentsByNumberOfBorrowingPatrons.remove(fragmentaryDocument);
-        this.fragmentaryDocumentsByRatings.remove(fragmentaryDocument);
     }
 }

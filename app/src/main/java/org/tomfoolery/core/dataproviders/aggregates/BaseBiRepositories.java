@@ -7,14 +7,14 @@ import org.tomfoolery.core.utils.contracts.ddd;
 import java.util.List;
 
 public class BaseBiRepositories<EntityId extends ddd.EntityId> {
-    private final @NonNull List<BaseBiRepository<?, ?, EntityId, ?>> firstBiRepositories;
-    private final @NonNull List<BaseBiRepository<?, ?, ?, EntityId>> secondBiRepositories;
+    private final @NonNull List<? extends BaseBiRepository<?, ?, EntityId, ?>> firstBiRepositories;
+    private final @NonNull List<? extends BaseBiRepository<?, ?, ?, EntityId>> secondBiRepositories;
 
-    public static <EntityId extends ddd.EntityId> @NonNull BaseBiRepositories<EntityId> of(@NonNull List<BaseBiRepository<?, ?, EntityId, ?>> firstBiRepositories, @NonNull List<BaseBiRepository<?, ?, ?, EntityId>> secondBiRepositories) {
+    public static <EntityId extends ddd.EntityId> @NonNull BaseBiRepositories<EntityId> of(@NonNull List<? extends BaseBiRepository<?, ?, EntityId, ?>> firstBiRepositories, @NonNull List<? extends BaseBiRepository<?, ?, ?, EntityId>> secondBiRepositories) {
         return new BaseBiRepositories<>(firstBiRepositories, secondBiRepositories);
     }
 
-    protected BaseBiRepositories(@NonNull List<BaseBiRepository<?, ?, EntityId, ?>> firstBiRepositories, @NonNull List<BaseBiRepository<?, ?, ?, EntityId>> secondBiRepositories) {
+    protected BaseBiRepositories(@NonNull List<? extends BaseBiRepository<?, ?, EntityId, ?>> firstBiRepositories, @NonNull List<? extends BaseBiRepository<?, ?, ?, EntityId>> secondBiRepositories) {
         this.firstBiRepositories = firstBiRepositories;
         this.secondBiRepositories = secondBiRepositories;
     }

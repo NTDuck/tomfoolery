@@ -9,7 +9,7 @@ import org.tomfoolery.core.utils.contracts.ddd;
 import java.time.Instant;
 
 @Value(staticConstructor = "of")
-public final class BorrowingSession implements ddd.BiRelation<BorrowingSession.Id, Document.Id, Patron.Id> {
+public class BorrowingSession implements ddd.BiRelation<BorrowingSession.Id, Document.Id, Patron.Id> {
     @NonNull Id id;
 
     @NonNull Instant borrowedTimestamp;

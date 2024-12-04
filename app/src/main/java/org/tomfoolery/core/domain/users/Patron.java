@@ -7,7 +7,7 @@ import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.users.abc.ModifiableUser;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter @Setter
 public final class Patron extends ModifiableUser {
@@ -22,27 +22,11 @@ public final class Patron extends ModifiableUser {
         this.metadata = metadata;
     }
 
-    @Override
-    public @NonNull Audit getAudit() {
-        return (Audit) super.getAudit();
-    }
-
-    @Getter @Setter
-    public static class Audit extends ModifiableUser.Audit {
-        public static @NonNull Audit of(@NonNull Timestamps timestamps) {
-            return new Audit(timestamps);
-        }
-
-        protected Audit(@NonNull Timestamps timestamps) {
-            super(timestamps);
-        }
-    }
-
     @Data(staticConstructor = "of")
     public static class Metadata {
         private @NonNull Name name;
 
-        private @NonNull Date dateOfBirth;
+        private @NonNull LocalDate dateOfBirth;
         private @NonNull String phoneNumber;
 
         private @NonNull Address address;

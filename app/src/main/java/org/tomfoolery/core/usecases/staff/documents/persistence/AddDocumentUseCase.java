@@ -4,8 +4,10 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.domain.relations.DocumentContent;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Staff;
@@ -18,15 +20,17 @@ import java.util.Set;
 
 public final class AddDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<AddDocumentUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
+    private final @NonNull DocumentContentRepository documentContentRepository;
 
-    public static @NonNull AddDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull AddDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentUseCase(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private AddDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
         
         this.documentRepository = documentRepository;
+        this.documentContentRepository = documentContentRepository;
     }
 
     @Override
@@ -51,6 +55,10 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentCoverImage, documentMetadata, staffId);
 
         this.documentRepository.save(document);
+
+        val rawDocumentContent = request.getDocumentContent();
+        val documentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawDocumentContent);
+        this.documentContentRepository.save(documentContent);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -100,6 +108,7 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         @NonNull String documentISBN;
 
         Document.@NonNull CoverImage documentCoverImage;
+        byte @NonNull [] documentContent;
         Document.@NonNull Metadata documentMetadata;
     }
 
