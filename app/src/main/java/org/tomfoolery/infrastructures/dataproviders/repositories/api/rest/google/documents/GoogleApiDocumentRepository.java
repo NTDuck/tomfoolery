@@ -82,6 +82,8 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
         val publishedYear = Year.parse(rawPublishedYear.split("-")[0]);
         val publisher = volumeInfo.get("publisher").toString();
 
+        // val documentCoverImageUrl = volumeInfo.get("imageLinks", "thumbnail").toString();
+
         val documentId = Document.Id.of(ISBN);
         assert documentId != null;
 

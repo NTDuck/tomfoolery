@@ -59,8 +59,10 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
             ParameterPair.of(URL_PARAMETER_GENRES, String.join(DELIMITER, document.getMetadata().getGenres())),
             ParameterPair.of(URL_PARAMETER_PUBLISHED_YEAR, document.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
             ParameterPair.of(URL_PARAMETER_PUBLISHER, document.getMetadata().getPublisher()),
-            ParameterPair.of(URL_PARAMETER_AVERAGE_RATING, String.valueOf(document.getRating().getAverageRating())),
-            ParameterPair.of(URL_PARAMETER_NUMBER_OF_RATINGS, String.valueOf(document.getRating().getNumberOfRatings()))
+            ParameterPair.of(URL_PARAMETER_AVERAGE_RATING, document.getRating() == null ? "null"
+                : String.valueOf(document.getRating().getAverageRating())),
+            ParameterPair.of(URL_PARAMETER_NUMBER_OF_RATINGS, document.getRating() == null ? "null"
+                : String.valueOf(document.getRating().getNumberOfRatings()))
         );
     }
 

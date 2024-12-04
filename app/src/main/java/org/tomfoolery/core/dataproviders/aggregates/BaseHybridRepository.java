@@ -7,6 +7,7 @@ import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.utils.contracts.ddd;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -33,12 +34,12 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
 
     @Override
     public @Nullable Entity getById(@NonNull EntityId entityId) {
-        val entityFromPersistenceRepositories = apply(this.persistenceRepositories, repository -> repository.getById(entityId));
+        val entityFromPersistenceRepositories = getById(this.persistenceRepositories, entityId);
 
         if (entityFromPersistenceRepositories != null)
             return entityFromPersistenceRepositories;
 
-        val entityFromRetrievalRepositories = apply(this.retrievalRepositories, repository -> repository.getById(entityId));
+        val entityFromRetrievalRepositories = getById(this.retrievalRepositories, entityId);
 
         if (entityFromRetrievalRepositories != null)
             CompletableFuture.runAsync(() -> this.save(entityFromRetrievalRepositories));
@@ -55,30 +56,30 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
 
     @Override
     public boolean contains(@NonNull EntityId entityId) {
-        val containsFromPersistenceRepositories = apply(this.persistenceRepositories, repository -> repository.contains(entityId));
+        val containsFromPersistenceRepositories = contains(this.persistenceRepositories, entityId);
 
-        if (Boolean.TRUE.equals(containsFromPersistenceRepositories))
+        if (containsFromPersistenceRepositories)
             return true;
 
-        val containsFromRetrievalRepositories = apply(this.retrievalRepositories, repository -> repository.contains(entityId));
+        val containsFromRetrievalRepositories = contains(this.retrievalRepositories, entityId);
 
-        if (containsFromRetrievalRepositories == Boolean.TRUE) {
+        if (containsFromRetrievalRepositories) {
             CompletableFuture.runAsync(() -> {
-                val retrievedEntity = apply(this.retrievalRepositories, repository -> repository.getById(entityId));
-                assert retrievedEntity != null;
-                this.save(retrievedEntity);
+                val retrievedEntity = getById(retrievalRepositories, entityId);
+
+                if (retrievedEntity != null)
+                    this.save(retrievedEntity);
             });
-            return true;
         }
 
-        return Boolean.TRUE.equals(containsFromRetrievalRepositories);
+        return containsFromRetrievalRepositories;
     }
 
-    private @Nullable Entity getById(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {
+    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @Nullable Entity getById(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {
         return apply(repositories, repository -> repository.getById(entityId));
     }
 
-    private boolean contains(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @Nullable EntityId entityId) {
+    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> boolean contains(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {
         val contains = apply(repositories, repository -> repository.contains(entityId));
         return contains != null ? contains : false;
     }
@@ -86,6 +87,7 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
     private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> @Nullable T apply(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull Function<BaseRepository<Entity, EntityId>, T> function) {
         return repositories.parallelStream()
             .map(function)
+            .filter(Objects::nonNull)
             .findAny()
             .orElse(null);
     }

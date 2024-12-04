@@ -85,6 +85,9 @@ dependencies {
     // For Figlet fonts
     implementation("com.github.lalyos:jfiglet:0.0.9")
 
+    // SKT T1
+    implementation("com.github.javafaker:javafaker:1.0.2")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 

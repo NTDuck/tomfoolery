@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.time.Year;
 import java.util.List;
 
-@Data(staticConstructor = "of")
+@Data
 @RequiredArgsConstructor(staticName = "of")
 @AllArgsConstructor(staticName = "of")
 public final class Document implements ddd.Entity<Document.Id> {
