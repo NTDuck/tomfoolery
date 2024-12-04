@@ -1,3 +1,5 @@
+import com.adarshr.gradle.testlogger.theme.ThemeType
+
 plugins {
     // Implicitly includes `java` and `distribution` plugins
     // Eases Java compilation, testing, and bundling
@@ -9,8 +11,12 @@ plugins {
     // Supports signing built files and artifacts
     signing
 
-    // Primary GUI
+    // JavaFX plugins and extras
     id("org.openjfx.javafxplugin") version "0.1.0"
+    // id ("org.javamodularity.moduleplugin") version "1.8.12"
+
+    // Test Logger plugin
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 repositories {
@@ -40,11 +46,12 @@ dependencies {
     implementation("com.microsoft:credential-secure-storage:1.0.0")
 
     // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
-    testImplementation("org.slf4j:slf4j-simple:1.7.36")
-    // testImplementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("org.slf4j:slf4j-nop:2.0.9")
 
-    // Uses `QRGen` for simplified QR Code generation
-    implementation("com.github.kenglxn.QRGen:javase:3.0.1")
+    // Uses `Zxing` for QR code generation
+    implementation("com.google.zxing:core:3.5.1")
+    implementation("com.google.zxing:javase:3.5.1")
 
     // Uses Apache's `URIBuilder` for clean and lightweight URI construction
     implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
@@ -55,21 +62,45 @@ dependencies {
 
     // Contains necessary implementation for Trie HashMap
     // required for efficient in-memory autocompletion
-    // implementation("com.github.doried-a-a:java-trie")
+    // implementation("com.github.doried-a-a:java-trie"
+
+    // Uses `OkHttp` as HTTP Client
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    // Uses `Jsoniter` for performant JSON parsing
+    implementation("com.jsoniter:jsoniter:0.9.23")
+
+    //
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+    //
+    implementation("io.ktor:ktor-client-apache5:3.0.1")
+
+    implementation ("org.postgresql:postgresql:42.6.0")
+
+    // For Figlet fonts
+    implementation("com.github.lalyos:jfiglet:0.0.9")
+
+    // SKT T1
+    implementation("com.github.javafaker:javafaker:1.0.2")
 
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
     // Used by `application`
     implementation(libs.guava)
-
-    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
 }
 
 group = "org.tomfoolery"
 version = 1.0
 
-application {}
+application {
+    mainClass = "${project.group}.configurations.placeholder.Placeholder"
+}
 
 java {
     toolchain {
@@ -79,11 +110,33 @@ java {
     // Packaging
     withJavadocJar()
     withSourcesJar()
+
+    modularity.inferModulePath = true
 }
 
 javafx {
-    version = "21"
-    modules("javafx.controls", "javafx.fxml")
+    version = "22"
+    modules("javafx.base", "javafx.graphics", "javafx.controls", "javafx.fxml")
+}
+
+testlogger {
+    theme = ThemeType.MOCHA
+    showExceptions = true
+    showStackTraces = true
+    showFullStackTraces = false
+    showCauses = true
+    slowThreshold = 2000
+    showSummary = true
+    showSimpleNames = false
+    showPassed = true
+    showSkipped = true
+    showFailed = true
+    showOnlySlow = false
+    showStandardStreams = false
+    showPassedStandardStreams = true
+    showSkippedStandardStreams = true
+    showFailedStandardStreams = true
+    logLevel = LogLevel.LIFECYCLE
 }
 
 publishing {
@@ -146,6 +199,12 @@ tasks.compileJava {
     options.isIncremental = true
     options.isFork = true
     options.isFailOnError = false
+
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }
 
 tasks {
@@ -158,11 +217,11 @@ tasks {
 }
 
 tasks.named("run") {
-    dependsOn("runTerminal")
+    dependsOn("runJavaFX")
 }
 
-tasks.register<JavaExec>("runTerminal") {
-    mainClass = "${project.group}.configurations.monolith.terminal.Application"
+tasks.register<JavaExec>("runConsole") {
+    mainClass = "${project.group}.configurations.monolith.console.Application"
     classpath = sourceSets["main"].runtimeClasspath
 
     // Prevents non-blocking `java.util.Scanner`
@@ -173,9 +232,11 @@ tasks.register<JavaExec>("runJavaFX") {
     mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
     classpath = sourceSets["main"].runtimeClasspath
 
-    // Prevents "Error: JavaFX runtime components are missing, and are required to run this application"
+    // Ensure JavaFX runtime components are registered
     jvmArgs = listOf(
-        "--module-path", classpath.asPath,
+        "--module-path", configurations.runtimeClasspath.get().files
+            .filter { it.name.contains("javafx") }
+            .joinToString(File.pathSeparator),
         "--add-modules", javafx.modules.joinToString(",")
     )
 }
@@ -184,11 +245,8 @@ tasks.named<Test>("test") {
     // For unit testing
     useTestNG()
 
-    testLogging {
-        // Enables console output
-        showStandardStreams = true
-    }
-    
+    systemProperties["file.encoding"] = "utf-8"
+
     // Prevents failing tests from failing builds
     ignoreFailures = true
 }

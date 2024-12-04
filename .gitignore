@@ -34,11 +34,15 @@ bin
 .vscode
 .idea
 
+# IDEA rubbish
+*.java~
+
 # Credentials
-src/main/resources/credentials.json
-*.json
+src/main/resources/config.properties
 
 !gradle-wrapper.jar
 
 # KEYSTORE_NAME of KeyStoreAuthenticationTokenRepository
 .tomfoolery.p12
+
+*.db

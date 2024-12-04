@@ -2,12 +2,12 @@ package org.tomfoolery.core.usecases.abc;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.auth.Administrator;
-import org.tomfoolery.core.domain.auth.Patron;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.domain.users.Administrator;
+import org.tomfoolery.core.domain.users.Patron;
+import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
 
 import java.util.Set;
@@ -35,7 +35,7 @@ public abstract class AuthenticatedUserUseCase {
     }
 
     protected void ensureAuthenticationTokenIsValid(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        if (!this.authenticationTokenGenerator.verifyAuthenticationToken(authenticationToken))
+        if (!this.authenticationTokenGenerator.verify(authenticationToken))
             throw new AuthenticationTokenInvalidException();
 
         val allowedUserClasses = this.getAllowedUserClasses();
@@ -43,6 +43,15 @@ public abstract class AuthenticatedUserUseCase {
 
         if (!allowedUserClasses.contains(retrievedUserClass))
             throw new AuthenticationTokenInvalidException();
+    }
+
+    protected BaseUser.@NonNull Id getUserIdFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
+        val userId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(authenticationToken);
+
+        if (userId == null)
+            throw new AuthenticationTokenInvalidException();
+
+        return userId;
     }
 
     public static class AuthenticationTokenNotFoundException extends Exception {}

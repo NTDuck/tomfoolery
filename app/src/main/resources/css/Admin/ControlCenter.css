@@ -1,0 +1,44 @@
+/*
+The color palette:
+Background: #E7ECEF
+Background-selected: #A3CEF1
+Foreground: #D8DEE9
+Accent color: #88C0D0
+Foreground-secondary: #81A1C1
+Error: #BF616A
+Success: #A3BE8C
+Border and separator: #4C566A
+Text: #24283b (Tokyo night background)
+*/
+
+.main {
+    -fx-background-color: #E7ECEF;
+    -fx-spacing: 20;
+}
+
+.optionPanel {
+    -fx-padding: 30 0 0 0;
+    -fx-background-radius: 0 15 15 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 5, 0);
+    -fx-background-color: white;
+    -fx-spacing: 10;
+}
+
+.option {
+    -fx-padding: 10 10 10 10;
+    -fx-background-radius: 15;
+    -fx-text-fill: rgba(36, 40, 59, 0.7);
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 25;
+}
+
+.option:hover {
+    -fx-background-color: #A3CEF1;
+    -fx-cursor: hand;
+}
+
+.tables-display {
+    -fx-spacing: 20;
+    -fx-padding: 10 0 10 0;
+    -fx-background-radius: 15 0 0 15;
+}
