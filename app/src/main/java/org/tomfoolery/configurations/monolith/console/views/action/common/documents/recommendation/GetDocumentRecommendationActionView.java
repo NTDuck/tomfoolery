@@ -6,6 +6,7 @@ import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.utils.helpers.EnumResolver;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 
 public final class GetDocumentRecommendationActionView extends UserActionView {
     private static final @NonNull String RECOMMENDATION_TYPE_PROMPT = String.format("recommendation type (%s)", EnumResolver.getEnumeratedNames(
-            GetDocumentRecommendationController.RecommendationType.class, "%s %d", 0
+        GetDocumentRecommendationController.RecommendationType.class, "%s (%d)", 0
     ).stream().collect(Collectors.joining(", ")));
 
-    private final @NonNull GetDocumentRecommendationController controller;
+    private final @NonNull GetDocumentRecommendationController getDocumentRecommendationController;
 
     public static @NonNull GetDocumentRecommendationActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new GetDocumentRecommendationActionView(ioProvider, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
@@ -29,23 +30,21 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
     private GetDocumentRecommendationActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.controller = GetDocumentRecommendationController.of(documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentRecommendationController = GetDocumentRecommendationController.of(documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
     public void run() {
         try {
             val requestObject = this.collectRequestObject();
-            val viewModel = this.controller.apply(requestObject);
+            val viewModel = this.getDocumentRecommendationController.apply(requestObject);
             this.onSuccess(viewModel);
 
         } catch (RecommendationTypeIndexInvalidException exception) {
-            this.onRecommendationTypeIndexInvalidException();
+            this.onException(exception);
 
-        } catch (GetDocumentRecommendationUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (GetDocumentRecommendationUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
+        } catch (GetDocumentRecommendationUseCase.AuthenticationTokenNotFoundException | GetDocumentRecommendationUseCase.AuthenticationTokenInvalidException exception) {
+            this.onException(exception, GuestSelectionView.class);
         }
     }
 
@@ -71,6 +70,7 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
 
     private void onSuccess(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
         this.nextViewClass = cachedViewClass;
+
         this.displayViewModel(viewModel);
     }
 
@@ -78,18 +78,9 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
         this.ioProvider.writeLine("Showing recommended documents:");
 
         viewModel.getDocumentRecommendation()
-            .forEach(fragmentaryDocument -> {
-                val ISBN = fragmentaryDocument.getISBN();
-                val documentTitle = fragmentaryDocument.getDocumentTitle();
-
-                this.ioProvider.writeLine("- (%s) %s", ISBN, documentTitle);
+            .forEach(document -> {
+                this.ioProvider.writeLine("- [%s] %s", document.getDocumentISBN_10(), document.getDocumentTitle());
             });
-    }
-
-    private void onRecommendationTypeIndexInvalidException() {
-        this.nextViewClass = cachedViewClass;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Recommendation type must be a valid number");
     }
 
     private static class RecommendationTypeIndexInvalidException extends Exception {}

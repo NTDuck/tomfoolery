@@ -5,9 +5,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ReadBorrowedDocumentUseCase;
@@ -17,16 +19,16 @@ import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryF
 import java.io.IOException;
 
 public final class ReadBorrowedDocumentActionView extends UserActionView {
-    private final @NonNull ReadBorrowedDocumentController controller;
+    private final @NonNull ReadBorrowedDocumentController readBorrowedDocumentController;
 
-    public static @NonNull ReadBorrowedDocumentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ReadBorrowedDocumentActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ReadBorrowedDocumentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ReadBorrowedDocumentActionView(ioProvider, documentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ReadBorrowedDocumentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ReadBorrowedDocumentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.controller = ReadBorrowedDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.readBorrowedDocumentController = ReadBorrowedDocumentController.of(documentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -34,22 +36,13 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
         val requestObject = this.collectRequestObject();
 
         try {
-            val viewModel = this.controller.apply(requestObject);
+            val viewModel = this.readBorrowedDocumentController.apply(requestObject);
             this.onSuccess(viewModel);
 
-        } catch (ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (ReadBorrowedDocumentUseCase.PatronNotFoundException exception) {
-            this.onPatronNotFoundException();
-        } catch (ReadBorrowedDocumentUseCase.DocumentNotFoundException exception) {
-            this.onDocumentNotFoundException();
-        } catch (ReadBorrowedDocumentUseCase.DocumentNotBorrowedException exception) {
-            this.onDocumentNotBorrowedException();
-
-        } catch (ReadBorrowedDocumentController.DocumentContentUnavailable | IOException exception) {
-            this.onDocumentContentUnavailable();
+        } catch (ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException | ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException exception) {
+            this.onException(exception, GuestSelectionView.class);
+        } catch (ReadBorrowedDocumentUseCase.DocumentISBNInvalidException | ReadBorrowedDocumentUseCase.DocumentNotFoundException | ReadBorrowedDocumentUseCase.DocumentNotBorrowedException | ReadBorrowedDocumentUseCase.DocumentOverdueException | ReadBorrowedDocumentUseCase.DocumentContentNotFoundException | ReadBorrowedDocumentController.DocumentContentUnavailable | DocumentContentNotOpenableException exception) {
+            this.onException(exception);
         }
     }
 
@@ -59,39 +52,23 @@ public final class ReadBorrowedDocumentActionView extends UserActionView {
         return ReadBorrowedDocumentController.RequestObject.of(ISBN);
     }
 
-    private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws IOException {
+    private void displayViewModel(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws DocumentContentNotOpenableException {
         val documentContentFilePath = viewModel.getDocumentContentFilePath();
-        TemporaryFileProvider.open(documentContentFilePath);
+
+        try {
+            TemporaryFileProvider.open(documentContentFilePath);
+        } catch (IOException exception) {
+            throw new DocumentContentNotOpenableException();
+        }
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "The document should be opened promptly");
     }
 
-    private void onSuccess(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws IOException {
+    private void onSuccess(ReadBorrowedDocumentController.@NonNull ViewModel viewModel) throws DocumentContentNotOpenableException {
         this.nextViewClass = PatronSelectionView.class;
+
         this.displayViewModel(viewModel);
     }
 
-    private void onPatronNotFoundException() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
-    }
-
-    private void onDocumentNotFoundException() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
-    }
-
-    private void onDocumentNotBorrowedException() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Document must be borrowed to be read");
-    }
-
-    private void onDocumentContentUnavailable() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document");
-    }
+    public static class DocumentContentNotOpenableException extends Exception {}
 }

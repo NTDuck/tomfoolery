@@ -5,14 +5,18 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+
+import java.io.IOException;
 
 public final class GetDocumentByIdActionView extends UserActionView {
-    private final @NonNull GetDocumentByIdController controller;
+    private final @NonNull GetDocumentByIdController getDocumentByIdController;
 
     public static @NonNull GetDocumentByIdActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new GetDocumentByIdActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
@@ -21,7 +25,7 @@ public final class GetDocumentByIdActionView extends UserActionView {
     private GetDocumentByIdActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.controller = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentByIdController = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -29,15 +33,13 @@ public final class GetDocumentByIdActionView extends UserActionView {
         val requestObject = this.collectRequestObject();
 
         try {
-            val viewModel = this.controller.apply(requestObject);
+            val viewModel = this.getDocumentByIdController.apply(requestObject);
             this.onSuccess(viewModel);
 
-        } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (GetDocumentByIdUseCase.DocumentNotFoundException exception) {
-            this.onDocumentNotFoundException();
+        } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException | GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
+            this.onException(exception, GuestSelectionView.class);
+        } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException | GetDocumentByIdUseCase.DocumentNotFoundException | DocumentCoverImageNotOpenableException exception) {
+            this.onException(exception);
         }
     }
 
@@ -47,32 +49,43 @@ public final class GetDocumentByIdActionView extends UserActionView {
         return GetDocumentByIdController.RequestObject.of(ISBN);
     }
 
-    private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) {
-        val fragmentaryDocument = viewModel.getFragmentaryDocument();
+    private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageNotOpenableException {
+        val documentCoverImageFilePath = viewModel.getDocumentCoverImageFilePath();
 
-        this.ioProvider.writeLine("Here is your document:");
+        try {
+            TemporaryFileProvider.open(documentCoverImageFilePath);
+        } catch (IOException exception) {
+            throw new DocumentCoverImageNotOpenableException();
+        }
 
-        this.ioProvider.writeLine("ISBN: %s", fragmentaryDocument.getISBN());
-
-        this.ioProvider.writeLine("Title: %s", fragmentaryDocument.getDocumentTitle());
-        this.ioProvider.writeLine("Description: %s", fragmentaryDocument.getDocumentDescription());
-        this.ioProvider.writeLine("Authors: %s", String.join(", ", fragmentaryDocument.getDocumentAuthors()));
-        this.ioProvider.writeLine("Genres: %s", String.join(", ", fragmentaryDocument.getDocumentGenres()));
-
-        this.ioProvider.writeLine("Published year: %d", fragmentaryDocument.getDocumentPublishedYear());
-        this.ioProvider.writeLine("Publisher: %s", fragmentaryDocument.getDocumentPublisher());
-
-        this.ioProvider.writeLine("Rating: %f (%d rated, %d currently borrowing)", fragmentaryDocument.getAverageRating(), fragmentaryDocument.getNumberOfRatings(), fragmentaryDocument.getNumberOfBorrowingPatrons());
+        this.ioProvider.writeLine("""
+            Document Details:
+            - ISBN 10: %s
+            - ISBN 13: %s
+            - Title: %s
+            - Description: %s
+            - Authors: %s
+            - Genres: %s
+            - Published by %s in %d
+            - Rated %f by %d patrons""",
+            viewModel.getDocumentISBN_10(),
+            viewModel.getDocumentISBN_13(),
+            viewModel.getDocumentTitle(),
+            viewModel.getDocumentDescription(),
+            String.join(", ", viewModel.getDocumentAuthors()),
+            String.join(", ", viewModel.getDocumentGenres()),
+            viewModel.getDocumentPublisher(),
+            viewModel.getDocumentPublishedYear(),
+            viewModel.getAverageRating(),
+            viewModel.getNumberOfRatings()
+        );
     }
 
-    private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
+    private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageNotOpenableException {
         this.nextViewClass = cachedViewClass;
+
         this.displayViewModel(viewModel);
     }
 
-    private void onDocumentNotFoundException() {
-        this.nextViewClass = cachedViewClass;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Document not found");
-    }
+    private static class DocumentCoverImageNotOpenableException extends Exception {}
 }

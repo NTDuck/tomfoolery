@@ -16,6 +16,7 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
+import java.time.Instant;
 import java.util.Set;
 
 public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ReadBorrowedDocumentUseCase.Request, ReadBorrowedDocumentUseCase.Response> {
@@ -41,7 +42,7 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
     }
 
     @Override
-    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentNotBorrowedException, DocumentContentNotFoundException {
+    public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentNotBorrowedException, DocumentOverdueException, DocumentContentNotFoundException {
         val patronAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(patronAuthenticationToken);
         val patronId = this.getUserIdFromAuthenticationToken(patronAuthenticationToken);
@@ -51,7 +52,7 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
         this.ensureDocumentExists(documentId);
 
         val borrowingSessionId = BorrowingSession.Id.of(documentId, patronId);
-        this.ensureDocumentIsAlreadyBorrowed(borrowingSessionId);
+        this.ensureDocumentIsNotOverdue(borrowingSessionId);
 
         val documentContentId = DocumentContent.Id.of(documentId);
         val documentContent = this.getDocumentContentById(documentContentId);
@@ -73,9 +74,16 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
             throw new DocumentNotFoundException();
     }
 
-    private void ensureDocumentIsAlreadyBorrowed(BorrowingSession.@NonNull Id borrowingSessionId) throws DocumentNotFoundException {
-        if (!this.borrowingSessionRepository.contains(borrowingSessionId))
-            throw new DocumentNotFoundException();
+    private void ensureDocumentIsNotOverdue(BorrowingSession.@NonNull Id borrowingSessionId) throws DocumentNotBorrowedException, DocumentOverdueException {
+        val borrowingSession = this.borrowingSessionRepository.getById(borrowingSessionId);
+
+        if (borrowingSession == null)
+            throw new DocumentNotBorrowedException();
+
+        val dueTimestamp = borrowingSession.getDueTimestamp();
+
+        if (Instant.now().isAfter(dueTimestamp))
+            throw new DocumentOverdueException();
     }
 
     private @NonNull DocumentContent getDocumentContentById(DocumentContent.@NonNull Id documentContentId) throws DocumentContentNotFoundException {
@@ -100,5 +108,6 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
     public static class DocumentISBNInvalidException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
     public static class DocumentNotBorrowedException extends Exception {}
+    public static class DocumentOverdueException extends Exception {}
     public static class DocumentContentNotFoundException extends Exception {}
 }

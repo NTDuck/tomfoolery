@@ -6,59 +6,46 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
 
 public final class ShowBorrowedDocumentsActionView extends UserActionView {
-    private static final @Unsigned int MAX_PAGE_SIZE = 5;
+    private final @NonNull ShowBorrowedDocumentsController showBorrowedDocumentsController;
 
-    private final @NonNull ShowBorrowedDocumentsController controller;
-
-    public static @NonNull ShowBorrowedDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowBorrowedDocumentsActionView(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowBorrowedDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new ShowBorrowedDocumentsActionView(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ShowBorrowedDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull PatronRepository patronRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowBorrowedDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.controller = ShowBorrowedDocumentsController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
     public void run() {
         try {
             val requestObject = this.collectRequestObject();
-            val viewModel = this.controller.apply(requestObject);
+            val viewModel = this.showBorrowedDocumentsController.apply(requestObject);
             this.onSuccess(viewModel);
 
-        } catch (PageIndexInvalidException exception) {
-            this.onPageIndexInvalidException();
-
-        } catch (ShowBorrowedDocumentsUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (ShowBorrowedDocumentsUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (ShowBorrowedDocumentsUseCase.PatronNotFoundException exception) {
-            this.onPatronNotFoundException();
-        } catch (ShowBorrowedDocumentsUseCase.PaginationInvalidException exception) {
-            this.onPaginationInvalidException();
+        } catch (ShowBorrowedDocumentsUseCase.AuthenticationTokenNotFoundException | ShowBorrowedDocumentsUseCase.AuthenticationTokenInvalidException exception) {
+            this.onException(exception, GuestSelectionView.class);
+        } catch (PageIndexInvalidException | ShowBorrowedDocumentsUseCase.PaginationInvalidException exception) {
+            this.onException(exception);
         }
     }
 
     private ShowBorrowedDocumentsController.@NonNull RequestObject collectRequestObject() throws PageIndexInvalidException {
         val pageIndex = this.collectPageIndex();
 
-        return ShowBorrowedDocumentsController.RequestObject.of(pageIndex, MAX_PAGE_SIZE);
-    }
-
-    private void onSuccess(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {
-        this.nextViewClass = PatronSelectionView.class;
-        this.displayViewModel(viewModel);
+        return ShowBorrowedDocumentsController.RequestObject.of(pageIndex, Message.Page.MAX_PAGE_SIZE);
     }
 
     private @Unsigned int collectPageIndex() throws PageIndexInvalidException {
@@ -73,36 +60,18 @@ public final class ShowBorrowedDocumentsActionView extends UserActionView {
     }
 
     private void displayViewModel(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {
-        val pageIndex = viewModel.getPageIndex();
-        val maxPageIndex = viewModel.getMaxPageIndex();
-
-        this.ioProvider.writeLine("Showing borrowed documents, page %d of %d", pageIndex, maxPageIndex);
+        this.ioProvider.writeLine("Showing borrowed documents, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
         viewModel.getPaginatedBorrowedDocuments()
-            .forEach(fragmentaryDocument -> {
-                val ISBN = fragmentaryDocument.getISBN();
-                val documentTitle = fragmentaryDocument.getDocumentTitle();
-
-                this.ioProvider.writeLine("- (%s) %s", ISBN, documentTitle);
+            .forEach(document -> {
+                this.ioProvider.writeLine("- [%s] %s", document.getDocumentISBN_10(), document.getDocumentTitle());
             });
     }
 
-    private void onPageIndexInvalidException() {
+    private void onSuccess(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {
         this.nextViewClass = PatronSelectionView.class;
 
-        this.ioProvider.writeLine(Message.Format.ERROR, "Page number must be a positive integer");
-    }
-
-    private void onPatronNotFoundException() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
-    }
-
-    private void onPaginationInvalidException() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Found no documents with such page number");
+        this.displayViewModel(viewModel);
     }
 
     private static class PageIndexInvalidException extends Exception {}

@@ -21,7 +21,7 @@ import org.tomfoolery.configurations.monolith.console.views.action.patron.docume
 import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.retrieval.ReadBorrowedDocumentActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.persistence.ReturnDocumentActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.retrieval.ShowBorrowedDocumentsActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.review.persistence.AddDocumentRatingActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.review.persistence.AddDocumentReviewActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.review.persistence.RemoveDocumentRatingActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.AddDocumentActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentContentActionView;
@@ -138,7 +138,7 @@ public class Application implements Runnable, AutoCloseable {
         ReturnDocumentActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
         ShowBorrowedDocumentsActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
 
-        AddDocumentRatingActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
+        AddDocumentReviewActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
         RemoveDocumentRatingActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
 
         // Staff action views
