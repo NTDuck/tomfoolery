@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UserCloudRepository<User extends BaseUser> implements UserRepository<User> {
+public class CloudUserRepository<User extends BaseUser> implements UserRepository<User> {
     private final CloudDatabaseConfig dbConfig;
 
-    public UserCloudRepository(CloudDatabaseConfig dbConfig) {
+    public CloudUserRepository(CloudDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
 

@@ -1,44 +1,65 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.tomfoolery.abc.UnitTest;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.testng.Assert.*;
 
-public class CloudDatabaseConfigTest {
-        private CloudDatabaseConfig cloudDatabaseConfig;
-        @BeforeClass
-        public void setup() throws IOException {
-            Path configFilePath = Path.of("src/main/resources/config.properties");
+public class CloudDatabaseConfigTest extends UnitTest<CloudDatabaseConfig> {
+    private @NonNull CloudDatabaseConfig cloudDatabaseConfig;
 
-            if (!Files.exists(configFilePath)) {
-                throw new IOException("Configuration file not found at " + configFilePath.toAbsolutePath());
-            }
-
-            cloudDatabaseConfig = new CloudDatabaseConfig(configFilePath.toString());
+    @Override
+    protected @NonNull CloudDatabaseConfig instantiate() {
+        try {
+            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
+        } catch (IOException e) {
+            fail("Failed to load database config: " + e.getMessage());
         }
+        return cloudDatabaseConfig;
+    }
 
-        @Test
-        public void testConnection() {
-            try (Connection connection = cloudDatabaseConfig.connect()) {
-                assertNotNull(connection, "Connection should not be null");
-                assertFalse(connection.isClosed(), "Connection should be open");
-                System.out.println("Connection test successful!");
-            } catch (SQLException e) {
-                fail("Connection failed: " + e.getMessage());
-            }
+    @BeforeClass
+    public void setUp() {
+        super.setUp();
+        try {
+            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
+        } catch (IOException e) {
+            fail("Failed to load database config: " + e.getMessage());
         }
+    }
 
-        @AfterClass
-        public void cleanup() {
-
+    @Test
+    public void WhenConnectingToDatabase_ExpectSuccessfulConnection() {
+        try (Connection connection = this.cloudDatabaseConfig.connect()) {
+            assertNotNull(connection, "Connection should not be null");
+            assertTrue(connection.isValid(5), "Connection should be valid");
+        } catch (SQLException e) {
+            fail("Failed to connect to the database: " + e.getMessage());
         }
+    }
+
+    @Test(dependsOnMethods = { "WhenConnectingToDatabase_ExpectSuccessfulConnection" })
+    public void GivenValidConnection_WhenQueryingDatabase_ExpectExpectedResult() {
+        try (Connection connection = this.cloudDatabaseConfig.connect();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT 1")) {
+            assertTrue(resultSet.next(), "ResultSet should have at least one row");
+            assertEquals(resultSet.getInt(1), 1, "Query result should match expected value");
+        } catch (SQLException e) {
+            fail("Failed to execute query: " + e.getMessage());
+        }
+    }
 }
+

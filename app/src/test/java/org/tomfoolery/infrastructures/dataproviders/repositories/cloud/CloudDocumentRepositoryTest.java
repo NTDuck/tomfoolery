@@ -7,8 +7,10 @@ import org.testng.annotations.Test;
 import org.tomfoolery.abc.UnitTest;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.Year;
 import java.util.List;
@@ -16,7 +18,7 @@ import java.util.UUID;
 
 import static org.testng.Assert.*;
 
-public abstract class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepository> {
+public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepository> {
     private static final @NonNull String SAMPLE_ISBN = "1234567890";
     private static final @NonNull String SAMPLE_TITLE = "Sample Book";
     private static final @NonNull String SAMPLE_DESCRIPTION = "A sample description for the book.";
@@ -26,6 +28,19 @@ public abstract class CloudDocumentRepositoryTest extends UnitTest<CloudDocument
     private static final @NonNull String SAMPLE_PUBLISHER = "Sample Publisher";
 
     private @NonNull Document sampleDocument;
+
+    private CloudDatabaseConfig cloudDatabaseConfig;
+
+    @Override
+    protected @NonNull CloudDocumentRepository instantiate() {
+        try {
+            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
+        } catch (IOException e) {
+            fail("Failed to load database config: " + e.getMessage());
+        }
+
+        return new CloudDocumentRepository(cloudDatabaseConfig);
+    }
 
     @BeforeClass
     public void setUp() {
