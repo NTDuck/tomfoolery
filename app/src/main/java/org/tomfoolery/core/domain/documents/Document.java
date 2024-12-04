@@ -2,81 +2,95 @@ package org.tomfoolery.core.domain.documents;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.domain.auth.Patron;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.utils.contracts.ddd.ddd;
-import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
+import org.checkerframework.checker.signedness.qual.Unsigned;
+import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.utils.contracts.ddd;
+import org.tomfoolery.core.utils.helpers.adapters.documents.ISBNAdapter;
+import org.tomfoolery.core.utils.helpers.verifiers.documents.ISBNVerifier;
 
 import java.time.Instant;
 import java.time.Year;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data(staticConstructor = "of")
+@RequiredArgsConstructor(staticName = "of")
+@AllArgsConstructor(staticName = "of")
 public final class Document implements ddd.Entity<Document.Id> {
     private final @NonNull Id id;
+    private final @NonNull Audit audit;
 
-    private @NonNull Content content;
     private @NonNull Metadata metadata;
-    private @NonNull Audit audit;
 
-    public static @NonNull Document of(@NonNull FragmentaryDocument fragmentaryDocument) {
-        return new Document(fragmentaryDocument.getId(), Document.Content.of(new byte[0]), fragmentaryDocument.getMetadata(), fragmentaryDocument.getAudit());
-    }
+    private @Nullable Rating rating;
+    private @Nullable CoverImage coverImage;
 
-    @Value(staticConstructor = "of")
+    @Value(staticConstructor = "ofISBN10")
     public static class Id implements ddd.EntityId {
-        @NonNull String ISBN;
-    }
+        @NonNull String ISBN_10;
 
-    @Data
-    @AllArgsConstructor(staticName = "of")
-    public static class Content implements ddd.ValueObject {
-        private byte @NonNull [] bytes;
-    }
+        public static @Nullable Id of(@NonNull String ISBN) {
+            if (ISBNVerifier.verifyISBN10(ISBN))
+                return Id.ofISBN10(ISBN);
 
-    @Data(staticConstructor = "of")
-    public static class Metadata implements ddd.ValueObject {
-        private @NonNull String title;
-        private @NonNull String description;
-        private @NonNull List<String> authors;
-        private @NonNull List<String> genres;
+            if (ISBNVerifier.verifyISBN13(ISBN))
+                return Id.ofISBN13(ISBN);
 
-        private @NonNull Year publishedYear;
-        private @NonNull String publisher;
+            return null;
+        }
 
-        private @NonNull CoverImage coverImage;
+        public static @Nullable Id ofISBN13(@NonNull String ISBN_13) {
+            val ISBN_10 = ISBNAdapter.toISBN10(ISBN_13);
+            return Id.ofISBN10(ISBN_10);
+        }
 
-        @Value(staticConstructor = "of")
-        public static class CoverImage implements ddd.ValueObject {
-            byte @NonNull [] buffer;
+        public @NonNull String getISBN_13() {
+            return ISBNAdapter.toISBN13(ISBN_10);
         }
     }
 
     @Data(staticConstructor = "of")
-    public static class Audit implements ddd.ValueObject {
+    public static class Audit {
+        private final @NonNull Timestamps timestamps;
+
         private final Staff.@NonNull Id createdByStaffId;
         private Staff.@Nullable Id lastModifiedByStaffId;
 
-        private final @NonNull Set<Patron.Id> borrowingPatronIds = Collections.synchronizedSet(new HashSet<>());
-        private final @NonNull AverageRating rating;
-
-        private final @NonNull Timestamps timestamps;
-
         @Data(staticConstructor = "of")
-        public static class Timestamps implements ddd.ValueObject {
+        public static class Timestamps {
             private final @NonNull Instant created;
             private @Nullable Instant lastModified;
         }
     }
 
     @Value(staticConstructor = "of")
-    public static class QrCode implements ddd.ValueObject {
-        byte @NonNull [] buffer;
+    public static class Metadata {
+        @NonNull String title;
+        @NonNull String description;
+        @NonNull List<String> authors;
+        @NonNull List<String> genres;
+
+        @NonNull Year publishedYear;
+        @NonNull String publisher;
+    }
+
+    @Value(staticConstructor = "of")
+    public static class Rating {
+        @Unsigned double averageRating;
+        @Unsigned int numberOfRatings;
+    }
+
+    @Value(staticConstructor = "of")
+    public static class CoverImage {
+        byte @NonNull [] bytes;
+    }
+
+    @Value(staticConstructor = "of")
+    public static class QrCode {
+        byte @NonNull [] bytes;
     }
 }

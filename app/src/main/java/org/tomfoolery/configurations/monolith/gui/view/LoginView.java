@@ -8,12 +8,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import lombok.val;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInByCredentialsController;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.LogUserInByCredentialsController;
 
 public class LoginView {
     private final @NonNull LogUserInByCredentialsController controller;
@@ -49,8 +49,6 @@ public class LoginView {
     public void initialize() {
         loginButton.setOnAction(this::login);
         registerButton.setOnAction(this::register);
-        usernameTextField.setOnAction(this::login);
-        passwordTextField.setOnAction(this::login);
     }
 
     @FXML
@@ -74,12 +72,12 @@ public class LoginView {
         val userType = viewModel.getUserType();
 
         if (userType.equals(LogUserInByCredentialsController.UserType.ADMINISTRATOR)) {
-            StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
+            StageManager.getInstance().loadAdminView("Dashboard");
         }
         else if (userType.equals(LogUserInByCredentialsController.UserType.STAFF)) {
-            StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DASHBOARD);
+            StageManager.getInstance().loadStaffView("Dashboard");
         }
-        else StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_DASHBOARD);
+        else StageManager.getInstance().loadAdminView("Dashboard");
     }
 
     @FXML

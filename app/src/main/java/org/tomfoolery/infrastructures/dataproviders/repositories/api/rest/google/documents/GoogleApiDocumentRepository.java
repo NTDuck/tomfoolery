@@ -8,36 +8,22 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.domain.auth.Staff;
+import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.core.utils.dataclasses.documents.AverageRating;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
-import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.time.Year;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class GoogleApiDocumentRepository implements DocumentRepository {
+    private static final Staff.@NonNull Id DECOY_STAFF_ID = Staff.Id.of(UUID.fromString("00000000-0000-0000-0000-000000000000"));
     private static final @NonNull String ENDPOINT_URL = "https://www.googleapis.com/books/v1/volumes/";
 
     private final @NonNull HttpClientProvider httpClientProvider;
-
-    @Override
-    @DoNotCall
-    public @NonNull Set<Document> getSavedEntitiesSince(@NonNull Instant fromTimestamp) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    @DoNotCall
-    public @NonNull Set<Document> getDeletedEntitiesSince(@NonNull Instant fromTimestamp) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     @DoNotCall
@@ -55,7 +41,7 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
     public @Nullable Document getById(Document.@NonNull Id entityId) {
         try {
             val httpResponse = this.httpClientProvider.sendSynchronousGET(
-                String.format("%s?q=isbn:%s", ENDPOINT_URL, entityId.getISBN()),
+                String.format("%s?q=isbn:%s", ENDPOINT_URL, entityId.getISBN_10()),
                 HttpClientProvider.Headers.builder().build()
             );
 
@@ -96,18 +82,12 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
         val publishedYear = Year.parse(rawPublishedYear.split("-")[0]);
         val publisher = volumeInfo.get("publisher").toString();
 
-        return Document.of(
-            Document.Id.of(ISBN),
-            Document.Content.of(new byte[0]),
-            Document.Metadata.of(
-                title, description, authors, genres,
-                publishedYear, publisher, Document.Metadata.CoverImage.of(new byte[0])
-            ),
-            Document.Audit.of(
-                Staff.Id.of(UUID.fromString("00000000-0000-0000-0000-000000000000")),
-                AverageRating.of(),
-                Document.Audit.Timestamps.of(Instant.now())
-            )
-        );
+        val documentId = Document.Id.of(ISBN);
+        assert documentId != null;
+
+        val documentMetadata = Document.Metadata.of(title, description, authors, genres, publishedYear, publisher);
+        val documentAudit = Document.Audit.of(Document.Audit.Timestamps.of(Instant.now()), DECOY_STAFF_ID);
+
+        return Document.of(documentId, documentAudit, documentMetadata);
     }
 }

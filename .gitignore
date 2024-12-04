@@ -34,6 +34,9 @@ bin
 .vscode
 .idea
 
+# IDEA rubbish
+*.java~
+
 # Credentials
 src/main/resources/config.properties
 
@@ -43,6 +46,3 @@ src/main/resources/config.properties
 .tomfoolery.p12
 
 *.db
-
-# Terminal temporary cache
-.tmp/

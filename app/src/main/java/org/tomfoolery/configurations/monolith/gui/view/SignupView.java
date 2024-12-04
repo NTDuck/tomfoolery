@@ -11,10 +11,10 @@ import javafx.util.Duration;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.usecases.guest.auth.CreatePatronAccountUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.CreatePatronAccountController;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.usecases.guest.users.persistence.CreatePatronAccountUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.guest.users.persistence.CreatePatronAccountController;
 
 public class SignupView {
     private final @NonNull CreatePatronAccountController controller;
@@ -61,13 +61,6 @@ public class SignupView {
         message.setVisible(false);
         signupButton.setOnAction(this::signup);
         returnButton.setOnAction(this::returnToLogin);
-        firstNameTextField.setOnAction(this::signup);
-        lastNameTextField.setOnAction(this::signup);
-        usernameTextField.setOnAction(this::signup);
-        addressTextField.setOnAction(this::signup);
-        emailTextField.setOnAction(this::signup);
-        passwordTextField.setOnAction(this::signup);
-        retypePasswordTextField.setOnAction(this::signup);
     }
 
     private void signup(ActionEvent event) {
@@ -107,18 +100,21 @@ public class SignupView {
     }
 
     private void onPasswordMismatchException() {
+        System.out.println("Error: Password does not match.");
         message.setText("Password does not match.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);
     }
 
     private void onPatronCredentialsInvalidException() {
+        System.out.println("Error: Provided credentials are invalid.");
         message.setText("Provided credentials are invalid.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);
     }
 
     private void onPatronAlreadyExistsException() {
+        System.out.println("Error: Patron already exists.");
         message.setText("Patron already exists.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);

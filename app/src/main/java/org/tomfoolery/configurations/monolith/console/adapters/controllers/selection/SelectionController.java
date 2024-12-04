@@ -61,7 +61,7 @@ public class SelectionController implements Supplier<SelectionController.ViewMod
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<ViewableSelectionItem> viewableSelectionItems;
+        @NonNull List<ViewableSelectionItem> selectionItems;
     }
 
     public static class SelectionItemNotFoundException extends Exception {}

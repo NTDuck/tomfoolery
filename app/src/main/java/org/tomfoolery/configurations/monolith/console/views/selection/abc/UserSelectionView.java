@@ -3,12 +3,12 @@ package org.tomfoolery.configurations.monolith.console.views.selection.abc;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
-import org.tomfoolery.configurations.monolith.console.views.action.user.auth.LogUserOutActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.GetDocumentByIdActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.ShowDocumentsActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.recommendation.GetDocumentRecommendationActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.references.GetDocumentQrCodeActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.search.SearchDocumentsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.users.authentication.LogUserOutActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.retrieval.GetDocumentByIdActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.retrieval.ShowDocumentsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.recommendation.GetDocumentRecommendationActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.references.GetDocumentQrCodeActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.search.SearchDocumentsActionView;
 
 import java.util.List;
 import java.util.stream.Collectors;

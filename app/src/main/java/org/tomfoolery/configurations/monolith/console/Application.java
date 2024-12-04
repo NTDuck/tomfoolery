@@ -4,35 +4,34 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.console.adapters.presenters.guest.auth.LogUserInPresenter;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.ConsoleIOProvider;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.console.utils.containers.Views;
-import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.CreateStaffAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.DeleteStaffAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.UpdateStaffCredentialsActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.CreatePatronAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInByAuthenticationTokenActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.guest.auth.LogUserInByCredentialsActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.DeletePatronAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.UpdatePatronMetadataActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.auth.UpdatePatronPasswordActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.BorrowDocumentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.ReadBorrowedDocumentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.ReturnDocumentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.ShowBorrowedDocumentsActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.rating.AddDocumentRatingActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.rating.RemoveDocumentRatingActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.AddDocumentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.UpdateDocumentContentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.UpdateDocumentMetadataActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.auth.LogUserOutActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.GetDocumentByIdActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.ShowDocumentsActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.recommendation.GetDocumentRecommendationActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.references.GetDocumentQrCodeActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.user.documents.search.SearchDocumentsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.administrator.users.persistence.CreateStaffAccountActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.administrator.users.persistence.DeleteStaffAccountActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.administrator.users.persistence.UpdateStaffCredentialsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.guest.users.persistence.CreatePatronAccountActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.guest.users.authentication.LogUserInByAuthenticationTokenActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.guest.users.authentication.LogUserInByCredentialsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.users.persistence.DeletePatronAccountActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.users.persistence.UpdatePatronMetadataActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.users.persistence.UpdatePatronPasswordActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.persistence.BorrowDocumentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.retrieval.ReadBorrowedDocumentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.persistence.ReturnDocumentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.retrieval.ShowBorrowedDocumentsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.review.persistence.AddDocumentRatingActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.patron.documents.review.persistence.RemoveDocumentRatingActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.AddDocumentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentContentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentMetadataActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.users.authentication.LogUserOutActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.retrieval.GetDocumentByIdActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.retrieval.ShowDocumentsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.recommendation.GetDocumentRecommendationActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.references.GetDocumentQrCodeActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.search.SearchDocumentsActionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
@@ -41,35 +40,34 @@ import org.tomfoolery.core.dataproviders.generators.documents.recommendation.Doc
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.AdministratorRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
-import org.tomfoolery.core.domain.auth.Administrator;
-import org.tomfoolery.core.domain.auth.Patron;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.domain.auth.abc.BaseUser;
-import org.tomfoolery.core.domain.auth.abc.ModifiableUser;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
+import org.tomfoolery.core.domain.users.Administrator;
+import org.tomfoolery.core.domain.users.Patron;
+import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.core.domain.users.abc.ModifiableUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.auth.LogUserInByAuthenticationTokenController;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.ApacheHttpClientDocumentUrlGenerator;
-import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.auth.security.BCryptPasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
-import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.auth.security.JJWTAuthenticationTokenGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.builtin.BuiltinHttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.auth.security.SecretStoreAuthenticationTokenRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.hybrid.documents.HybridDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryAdministratorRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryPatronRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.auth.InMemoryStaffRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.SecretStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 
 import java.time.Instant;
@@ -182,20 +180,20 @@ public class Application implements Runnable, AutoCloseable {
     private void populateUserRepositories() {
         this.administratorRepository.save(Administrator.of(
             BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+            BaseUser.Credentials.of("admin_123", this.passwordEncoder.encode(SecureString.of("Root_123"))),
             BaseUser.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH))
         ));
 
         this.patronRepository.save(Patron.of(
             BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("patron_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+            BaseUser.Credentials.of("patron_123", this.passwordEncoder.encode(SecureString.of("Root_123"))),
             Patron.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH)),
             Patron.Metadata.of("", "", "")
         ));
 
         this.staffRepository.save(Staff.of(
             BaseUser.Id.of(UUID.randomUUID()),
-            BaseUser.Credentials.of("staff_123", this.passwordEncoder.encodePassword(SecureString.of("Root_123"))),
+            BaseUser.Credentials.of("staff_123", this.passwordEncoder.encode(SecureString.of("Root_123"))),
             Staff.Audit.of(ModifiableUser.Audit.Timestamps.of(Instant.EPOCH), Administrator.Id.of(UUID.randomUUID()))
         ));
     }

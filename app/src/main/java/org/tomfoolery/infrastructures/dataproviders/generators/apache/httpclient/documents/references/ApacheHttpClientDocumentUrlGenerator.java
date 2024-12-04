@@ -8,7 +8,7 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
-import org.tomfoolery.core.domain.documents.FragmentaryDocument;
+import org.tomfoolery.core.domain.documents.Document;
 
 import java.net.URISyntaxException;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +20,7 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
     private static final @NonNull String URL_HOST = "tomfoolery-landing-page.github.io";
     private static final @NonNull String URL_PATH = "tomfoolery-landing-page/";
 
-    private static final @NonNull String URL_PARAMETER_ISBN = "isbn";
+    private static final @NonNull String URL_PARAMETER_ISBN_10 = "isbn_10";
 
     private static final @NonNull String URL_PARAMETER_TITLE = "title";
     private static final @NonNull String URL_PARAMETER_DESCRIPTION = "description";
@@ -30,16 +30,15 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
     private static final @NonNull String URL_PARAMETER_PUBLISHED_YEAR = "year";
     private static final @NonNull String URL_PARAMETER_PUBLISHER = "publisher";
 
-    private static final @NonNull String URL_PARAMETER_NUMBER_OF_BORROWING_PATRONS = "patronCount";
-    private static final @NonNull String URL_PARAMETER_RATING = "rating";
+    private static final @NonNull String URL_PARAMETER_AVERAGE_RATING = "rating";
     private static final @NonNull String URL_PARAMETER_NUMBER_OF_RATINGS = "ratingCount";
 
     private static final @NonNull String DELIMITER = ",";
 
     @Override
     @SneakyThrows(URISyntaxException.class)
-    public @NonNull String generateUrlFromFragmentaryDocument(@NonNull FragmentaryDocument fragmentaryDocument) {
-        val parameterPairs = generateParameterPairsFromFragmentaryDocument(fragmentaryDocument);
+    public @NonNull String generateUrlFromDocument(@NonNull Document document) {
+        val parameterPairs = generateParameterPairsFromFragmentaryDocument(document);
 
         URIBuilder uriBuilder = new URIBuilder()
             .setScheme(URL_SCHEME)
@@ -51,18 +50,17 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
         return uriBuilder.build().toString();
     }
 
-    private static @NonNull List<NameValuePair> generateParameterPairsFromFragmentaryDocument(@NonNull FragmentaryDocument fragmentaryDocument) {
+    private static @NonNull List<NameValuePair> generateParameterPairsFromFragmentaryDocument(@NonNull Document document) {
         return List.of(
-            ParameterPair.of(URL_PARAMETER_ISBN, fragmentaryDocument.getId().getISBN()),
-            ParameterPair.of(URL_PARAMETER_TITLE, fragmentaryDocument.getMetadata().getTitle()),
-            ParameterPair.of(URL_PARAMETER_DESCRIPTION, fragmentaryDocument.getMetadata().getDescription()),
-            ParameterPair.of(URL_PARAMETER_AUTHORS, String.join(DELIMITER, fragmentaryDocument.getMetadata().getAuthors())),
-            ParameterPair.of(URL_PARAMETER_GENRES, String.join(DELIMITER, fragmentaryDocument.getMetadata().getGenres())),
-            ParameterPair.of(URL_PARAMETER_PUBLISHED_YEAR, fragmentaryDocument.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
-            ParameterPair.of(URL_PARAMETER_PUBLISHER, fragmentaryDocument.getMetadata().getPublisher()),
-            ParameterPair.of(URL_PARAMETER_NUMBER_OF_BORROWING_PATRONS, String.valueOf(fragmentaryDocument.getAudit().getBorrowingPatronIds().size())),
-            ParameterPair.of(URL_PARAMETER_RATING, String.valueOf(fragmentaryDocument.getAudit().getRating().getValue())),
-            ParameterPair.of(URL_PARAMETER_NUMBER_OF_RATINGS, String.valueOf(fragmentaryDocument.getAudit().getRating().getNumberOfRatings()))
+            ParameterPair.of(URL_PARAMETER_ISBN_10, document.getId().getISBN_10()),
+            ParameterPair.of(URL_PARAMETER_TITLE, document.getMetadata().getTitle()),
+            ParameterPair.of(URL_PARAMETER_DESCRIPTION, document.getMetadata().getDescription()),
+            ParameterPair.of(URL_PARAMETER_AUTHORS, String.join(DELIMITER, document.getMetadata().getAuthors())),
+            ParameterPair.of(URL_PARAMETER_GENRES, String.join(DELIMITER, document.getMetadata().getGenres())),
+            ParameterPair.of(URL_PARAMETER_PUBLISHED_YEAR, document.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
+            ParameterPair.of(URL_PARAMETER_PUBLISHER, document.getMetadata().getPublisher()),
+            ParameterPair.of(URL_PARAMETER_AVERAGE_RATING, String.valueOf(document.getRating().getAverageRating())),
+            ParameterPair.of(URL_PARAMETER_NUMBER_OF_RATINGS, String.valueOf(document.getRating().getNumberOfRatings()))
         );
     }
 

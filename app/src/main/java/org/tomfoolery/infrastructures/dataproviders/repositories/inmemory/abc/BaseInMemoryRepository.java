@@ -4,15 +4,15 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
-import org.tomfoolery.core.utils.contracts.ddd.ddd;
+import org.tomfoolery.core.utils.contracts.ddd;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class BaseInMemoryRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
-    protected final @NonNull Map<EntityId, Entity> entitiesByIds = new HashMap<>();
+    protected final @NonNull Map<EntityId, Entity> entitiesByIds = new ConcurrentHashMap<>();
 
     @Override
     public void save(@NonNull Entity entity) {
