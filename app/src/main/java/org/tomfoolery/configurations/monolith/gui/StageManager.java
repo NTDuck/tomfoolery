@@ -9,11 +9,11 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.gui.view.admin.AdminView;
-import org.tomfoolery.configurations.monolith.gui.view.LoginView;
-import org.tomfoolery.configurations.monolith.gui.view.SignupView;
-import org.tomfoolery.configurations.monolith.gui.view.patron.PatronView;
-import org.tomfoolery.configurations.monolith.gui.view.staff.StaffView;
+import org.tomfoolery.configurations.monolith.gui.view.admin.layout.AdminView;
+import org.tomfoolery.configurations.monolith.gui.view.user.auth.LoginView;
+import org.tomfoolery.configurations.monolith.gui.view.guest.SignupView;
+import org.tomfoolery.configurations.monolith.gui.view.patron.layout.PatronView;
+import org.tomfoolery.configurations.monolith.gui.view.staff.layout.StaffView;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
@@ -21,7 +21,6 @@ import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSea
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
@@ -55,7 +54,9 @@ import java.util.UUID;
 @Getter
 public class StageManager {
     public static final double LOGIN_MENU_WIDTH = 600;
-    public static final double LOGIN_MENU_HEIGHT = 800;
+    public static final double LOGIN_MENU_HEIGHT = 550;
+    public static final double SIGNUP_MENU_WIDTH = 550;
+    public static final double SIGNUP_MENU_HEIGHT = 550;
     public static final double MAIN_STAGE_WIDTH = 1280;
     public static final double MAIN_STAGE_HEIGHT = 720;
 
@@ -98,13 +99,24 @@ public class StageManager {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
     private final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
-    public void setAuthStageProperties() {
+    public void setLoginStageProperties() {
         primaryStage.setResizable(false);
-
         primaryStage.setMaximized(false);
 
         primaryStage.setWidth(LOGIN_MENU_WIDTH);
         primaryStage.setHeight(LOGIN_MENU_HEIGHT);
+
+        Image icon = new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("/images/logo.png")));
+        primaryStage.getIcons().add(icon);
+    }
+
+    public void setSignupStageProperties() {
+        primaryStage.setResizable(false);
+
+        primaryStage.setMaximized(false);
+
+        primaryStage.setWidth(SIGNUP_MENU_WIDTH);
+        primaryStage.setHeight(SIGNUP_MENU_HEIGHT);
 
         Image icon = new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("/images/logo.png")));
         primaryStage.getIcons().add(icon);
@@ -148,7 +160,7 @@ public class StageManager {
 
             Scene scene = new Scene(root);
 
-            setAuthStageProperties();
+            setLoginStageProperties();
             primaryStage.setTitle("Tomfoolery - Login");
             primaryStage.setScene(scene);
 
@@ -169,7 +181,7 @@ public class StageManager {
 
             Scene scene = new Scene(root);
 
-            setAuthStageProperties();
+            setSignupStageProperties();
             primaryStage.setTitle("Tomfoolery - Sign up");
             primaryStage.setScene(scene);
 

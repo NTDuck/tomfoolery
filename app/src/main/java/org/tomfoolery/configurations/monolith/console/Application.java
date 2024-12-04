@@ -109,12 +109,12 @@ public class Application implements Runnable, AutoCloseable {
         PatronSelectionView.of(ioProvider),
         StaffSelectionView.of(ioProvider),
 
-        // Guest action views
+        // Guest actions views
         CreatePatronAccountActionView.of(ioProvider, patronRepository, passwordEncoder),
         LogUserInByCredentialsActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
         LogUserInByAuthenticationTokenActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
 
-        // Shared user action views
+        // Shared user actions views
         LogUserOutActionView.of(ioProvider, userRepositories, authenticationTokenGenerator, authenticationTokenRepository),
 
         GetDocumentByIdActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
@@ -123,12 +123,12 @@ public class Application implements Runnable, AutoCloseable {
         ShowDocumentsActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
         GetDocumentRecommendationActionView.of(ioProvider, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository),
 
-        // Administrator action views
+        // Administrator actions views
         CreateStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
         DeleteStaffAccountActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository),
         UpdateStaffCredentialsActionView.of(ioProvider, staffRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
 
-        // Patron action views
+        // Patron actions views
         DeletePatronAccountActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
         UpdatePatronMetadataActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
         UpdatePatronPasswordActionView.of(ioProvider, patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder),
@@ -141,7 +141,7 @@ public class Application implements Runnable, AutoCloseable {
         AddDocumentReviewActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
         RemoveDocumentRatingActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
 
-        // Staff action views
+        // Staff actions views
         AddDocumentActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),
         RemoveDocumentRatingActionView.of(ioProvider, documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository),
         UpdateDocumentContentActionView.of(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository),

@@ -2,34 +2,37 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.image.Image?>
 
-<VBox xmlns="http://javafx.com/javafx"
-    xmlns:fx="http://javafx.com/fxml"
-    styleClass="login-menu" stylesheets="/css/LoginMenu.css">
-    <ImageView styleClass="user-icon" fitWidth="90" fitHeight="90">
-        <Image url="/images/user.png" />
-    </ImageView>
-
-    <VBox style="-fx-background-color: transparent" prefHeight="110" prefWidth="480" spacing="10">
-        <Label text="Username" styleClass="textbox-label" />
-        <TextField styleClass="input-field" fx:id="usernameTextField" />
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      styleClass="root" stylesheets="/css/LoginMenu.css"
+      alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="550.0" prefWidth="600.0">
+    <VBox alignment="TOP_CENTER" prefHeight="160.0" prefWidth="600.0"
+          style="-fx-border-color: #e4e5e6; -fx-background-color: #fafbfc; -fx-border-width: 0 0 1 0;">
+        <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" styleClass="icon">
+            <Image url="/images/user.png"/>
+        </ImageView>
+        <Label text="Tomfoolery - Login" styleClass="header"/>
     </VBox>
 
-    <VBox style="-fx-background-color: transparent" prefHeight="145" prefWidth="480" spacing="10">
-        <Label text="Password" styleClass="textbox-label" />
-        <PasswordField styleClass="input-field" fx:id="passwordTextField" />
-        <Label visible="false"
-            style="-fx-label-padding: 0 0 0 10; -fx-text-fill: #BF616A; -fx-font-size: 20;
-        -fx-background-color: transparent; -fx-font-family: 'Segoe UI Variable'"
-            fx:id="errorMessage" />
+    <VBox prefHeight="350.0" prefWidth="600.0">
+        <VBox prefHeight="210.0" prefWidth="600.0" spacing="30.0" styleClass="fields-container">
+            <TextField fx:id="usernameTextField" styleClass="text-field" prefHeight="60.0" prefWidth="520.0" promptText="Username"/>
+            <PasswordField fx:id="passwordTextField" styleClass="text-field" prefHeight="60.0" prefWidth="520.0" promptText="Password"/>
+        </VBox>
+
+        <Label text="message" textFill="RED" fx:id="errorMessage" styleClass="error-message"/>
+
+        <HBox alignment="CENTER" prefHeight="110.0" prefWidth="600.0" spacing="40.0" styleClass="buttons-container">
+            <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" styleClass="signup-button"
+                    fx:id="registerButton" text="Create Account" HBox.hgrow="ALWAYS"/>
+            <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" styleClass="login-button"
+                    fx:id="loginButton" text="Log in" HBox.hgrow="ALWAYS"/>
+        </HBox>
     </VBox>
-
-    <Button text="LOGIN" styleClass="login-button" fx:id="loginButton" />
-
-    <Button text="Sign up?" styleClass="register-button" fx:id="registerButton" />
 </VBox>

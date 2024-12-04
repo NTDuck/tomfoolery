@@ -1,14 +1,54 @@
-.login-menu {
-    -fx-alignment: top-center;
-    -fx-background-color: #3A4151;
-    -fx-pref-width: 600;
-    -fx-pref-height: 800;
-    -fx-padding: 50 60 70 60;
+.root {
+    -fx-background-color: white;
+    -fx-padding: 0 0 20 0;
     -fx-spacing: 40;
 }
 
-.user-icon {
+.icon {
     -fx-background-color: transparent;
+}
+
+.header {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: #2f374f;
+    -fx-font-size: 24;
+}
+
+.fields-container {
+    -fx-padding: 40 40 20 40;
+}
+
+.text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: #e4e5e6;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
+}
+
+.error-message {
+    -fx-font-size: 14;
+    -fx-padding: 0 0 0 50;
+    -fx-font-family: "Segoe UI Variable";
+}
+
+.buttons-container {
+    -fx-padding: 0 40 0 40;
+}
+
+.login-button {
+    -fx-background-color: #e9edf1;
+    -fx-text-fill: #2f374f;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
+}
+
+.signup-button {
+    -fx-background-color: #4c70f0;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
 }
 
 .textbox-label {

@@ -1,82 +1,39 @@
-.signup-menu {
-    -fx-background-color: #2E3440;
-    -fx-padding: 10 40 20 40;
-    -fx-spacing: 10;
+.header-panel {
+    -fx-padding: 10 0 10 40;
+    -fx-background-color: #1546a3;
 }
 
-.name-box {
-    -fx-background-color: transparent;
-    -fx-alignment: top-center;
-    -fx-pref-height: 60;
-    -fx-pref-width: 480;
-    -fx-spacing: 20;
+.text-field-label {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
 }
 
-.short-textbox {
+.text-field {
     -fx-background-color: transparent;
-    -fx-pref-height: 60;
-    -fx-pref-width: 240;
-    -fx-spacing: 5;
+    -fx-border-radius: 8;
+    -fx-border-color: #bcbdbd;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
 }
 
-.wide-textbox {
-    -fx-background-color: transparent;
-    -fx-pref-height: 60;
-    -fx-pref-width: 480;
-    -fx-spacing: 5;
-}
-
-.textbox-label {
-    -fx-label-padding: 0 0 0 10;
-    -fx-text-fill: #D8DEE9;
-    -fx-background-color: transparent;
-    -fx-font-size: 15;
+.register-button {
+    -fx-background-color: #4c70f0;
+    -fx-background-radius: 8;
+    -fx-font-size: 18;
     -fx-font-family: "Segoe UI Variable";
 }
 
-.input-field {
-    -fx-pref-width: 480;
-    -fx-pref-height: 60;
-    -fx-background-radius: 12;
-    -fx-background-color: #d8dee9;
-    -fx-text-fill: black;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 20;
-}
-
-.signup-button {
-    -fx-pref-width: 180;
-    -fx-pref-height: 30;
-    -fx-background-color: #81a1c1;
-    -fx-background-radius: 15;
-    -fx-border-width: 2;
-    -fx-border-color: #d8dee9;
-    -fx-border-radius: 15;
-    -fx-text-fill: #d8dee9;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 30;
-}
-
-.signup-button:hover {
-    -fx-background-color: #5E81AC;
-    -fx-cursor: hand;
-}
-
-.return-button {
-    -fx-pref-height: 30;
-    -fx-background-color: transparent;
-    -fx-text-fill: #d8dee999;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 20;
-}
-
-.return-button:hover {
-    -fx-text-fill: #81a1c1;
+.register-button:hover {
+    -fx-background-color: #5175ef;
     -fx-cursor: hand;
 }
 
 .message {
     -fx-background-color: transparent;
     -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 20;
+    -fx-font-size: 14;
+}
+
+.return-button:hover {
+    -fx-cursor: hand;
 }

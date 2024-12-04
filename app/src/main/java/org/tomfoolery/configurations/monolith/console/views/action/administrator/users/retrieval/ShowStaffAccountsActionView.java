@@ -59,7 +59,7 @@ public final class ShowStaffAccountsActionView extends UserActionView {
     }
 
     private void displayViewModel(ShowStaffAccountsController.@NonNull ViewModel viewModel) {
-        this.ioProvider.writeLine("Displaying staff accounts, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
+        this.ioProvider.writeLine("Displaying staffs accounts, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
         viewModel.getStaff()
             .forEach(staff -> {
