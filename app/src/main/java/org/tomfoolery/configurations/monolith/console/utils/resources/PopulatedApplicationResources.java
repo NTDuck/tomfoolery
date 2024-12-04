@@ -34,7 +34,12 @@ public class PopulatedApplicationResources extends ApplicationResources {
     }
 
     public void populate() {
-        this.populateUserRepositories();
+        @Cleanup val executorService = Executors.newFixedThreadPool(2);
+
+        executorService.submit(this::populateDocumentRepositories);
+        executorService.submit(this::populateUserRepositories);
+
+        executorService.close();
     }
 
     public void populateUserRepositories() {
@@ -65,6 +70,10 @@ public class PopulatedApplicationResources extends ApplicationResources {
         });
 
         executorService.shutdown();
+    }
+
+    public void populateDocumentRepositories() {
+
     }
 
     private @NonNull Administrator createFakeAdministrator(@NonNull String username, @NonNull CharSequence password) {

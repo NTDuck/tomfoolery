@@ -222,6 +222,7 @@ public class ApplicationResources implements AutoCloseable {
     @Override
     public void close() throws Exception {
         for (val field : this.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
             val resource = field.get(this);
 
             if (resource instanceof AutoCloseable autoCloseableResource)

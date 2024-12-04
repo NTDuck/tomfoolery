@@ -4,16 +4,14 @@ import lombok.Cleanup;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 @NoArgsConstructor(staticName = "of")
 public class OkHttpClientProvider implements HttpClientProvider {
@@ -25,14 +23,21 @@ public class OkHttpClientProvider implements HttpClientProvider {
     public @NonNull String sendSynchronousGET(@NotNull String url, @NonNull Headers headers) throws RequestExecutionException, ResponseParsingException {
         val request = constructRequest(url, headers);
         @Cleanup val response = this.executeRequest(request);
-        return parseResponse(response);
+        return parseResponse(response, ResponseBody::string);
+    }
+
+    @Override
+    public byte @NonNull [] sendSynchronousGETForBytes(@NonNull String url, @NonNull Headers headers) throws RequestExecutionException, ResponseParsingException {
+        val request = constructRequest(url, headers);
+        @Cleanup val response = this.executeRequest(request);
+        return parseResponse(response, ResponseBody::bytes);
     }
 
     @Override
     public @NonNull String sendSynchronousPOST(@NonNull String url, @NonNull Headers headers, @NonNull String body) throws RequestExecutionException, ResponseParsingException {
         val request = constructRequest(url, headers, body);
         @Cleanup val response = this.executeRequest(request);
-        return parseResponse(response);
+        return parseResponse(response, ResponseBody::string);
     }
 
     /**
@@ -71,15 +76,15 @@ public class OkHttpClientProvider implements HttpClientProvider {
         }
     }
 
-    private static @NonNull String parseResponse(@NonNull Response response) throws ResponseParsingException {
+    private static <T> @NonNull T parseResponse(@NonNull Response response, @NonNull ThrowableFunction<ResponseBody, T> mapper) throws ResponseParsingException {
         val responseBody = response.body();
 
         if (responseBody == null)
             throw new ResponseParsingException();
 
         try {
-            return responseBody.string();
-        } catch (IOException exception) {
+            return mapper.apply(responseBody);
+        } catch (Exception exception) {
             throw new ResponseParsingException();
         }
     }

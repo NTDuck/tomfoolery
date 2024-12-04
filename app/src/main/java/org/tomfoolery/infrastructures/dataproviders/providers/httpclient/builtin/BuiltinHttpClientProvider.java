@@ -22,28 +22,35 @@ public class BuiltinHttpClientProvider implements HttpClientProvider {
     @Override
     public @NonNull String sendSynchronousGET(@NonNull String url, @NonNull Headers headers) throws Exception {
         val request = constructRequest(url, headers);
-        val response = this.executeSynchronousRequest(request);
+        val response = this.executeSynchronousRequest(request, HttpResponse.BodyHandlers.ofString());
+        return parseResponse(response);
+    }
+
+    @Override
+    public byte @NonNull [] sendSynchronousGETForBytes(@NonNull String url, @NonNull Headers headers) throws Exception {
+        val request = constructRequest(url, headers);
+        val response = this.executeSynchronousRequest(request, HttpResponse.BodyHandlers.ofByteArray());
         return parseResponse(response);
     }
 
     @Override
     public @NonNull String sendSynchronousPOST(@NonNull String url, @NonNull Headers headers, @NonNull String body) throws RequestExecutionException {
         val request = constructRequest(url, headers, body);
-        val response = this.executeSynchronousRequest(request);
+        val response = this.executeSynchronousRequest(request, HttpResponse.BodyHandlers.ofString());
         return parseResponse(response);
     }
 
     @Override
     public @NonNull CompletableFuture<String> sendAsynchronousGET(@NonNull String url, @NonNull Headers headers) {
         val request = constructRequest(url, headers);
-        return this.executeAsynchronousRequest(request)
+        return this.executeAsynchronousRequest(request, HttpResponse.BodyHandlers.ofString())
             .thenApply(BuiltinHttpClientProvider::parseResponse);
     }
 
     @Override
     public @NonNull CompletableFuture<String> sendAsynchronousPOST(@NonNull String url, @NonNull Headers headers, @NonNull String body) {
         val request = constructRequest(url, headers, body);
-        return this.executeAsynchronousRequest(request)
+        return this.executeAsynchronousRequest(request, HttpResponse.BodyHandlers.ofString())
             .thenApply(BuiltinHttpClientProvider::parseResponse);
     }
 
@@ -71,9 +78,9 @@ public class BuiltinHttpClientProvider implements HttpClientProvider {
         return builder.build();
     }
 
-    private @NonNull HttpResponse<String> executeSynchronousRequest(@NonNull HttpRequest request) throws RequestExecutionException {
+    private <T> @NonNull HttpResponse<T> executeSynchronousRequest(@NonNull HttpRequest request, HttpResponse.@NonNull BodyHandler<T> bodyHandler) throws RequestExecutionException {
         try {
-            val response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
+            val response = this.client.send(request, bodyHandler);
 
             if (response.statusCode() != SUCCESS_STATUS_CODE)
                 throw new RequestExecutionException();
@@ -85,11 +92,11 @@ public class BuiltinHttpClientProvider implements HttpClientProvider {
         }
     }
 
-    private @NonNull CompletableFuture<HttpResponse<String>> executeAsynchronousRequest(@NonNull HttpRequest request) {
-        return this.client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    private <T> @NonNull CompletableFuture<HttpResponse<T>> executeAsynchronousRequest(@NonNull HttpRequest request, HttpResponse.@NonNull BodyHandler<T> bodyHandler) {
+        return this.client.sendAsync(request, bodyHandler);
     }
 
-    private static @NonNull String parseResponse(@NonNull HttpResponse<String> response) {
+    private static <T> @NonNull T parseResponse(@NonNull HttpResponse<T> response) {
         return response.body();
     }
 
