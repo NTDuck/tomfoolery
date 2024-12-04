@@ -1,11 +1,9 @@
 .container {
     -fx-background-color: white;
-    -fx-border-width: 2;
-    -fx-border-color: rgb(0, 0, 0, 0.5);
     -fx-background-radius: 15;
     -fx-border-radius: 15;
-    -fx-padding: 40 20 40 20;
-    -fx-spacing: 10;
+    -fx-padding: 0 20 0 20;
+    -fx-spacing: 20;
     -fx-alignment: CENTER;
 }
 
@@ -30,11 +28,11 @@
 .button {
     -fx-pref-height: 45;
     -fx-pref-width: 100;
-    -fx-background-radius: 15;
+    -fx-background-radius: 30;
     -fx-background-color: transparent;
-    -fx-border-width: 2;
+    -fx-border-width: 3;
     -fx-border-color: #a3cef1;
-    -fx-border-radius: 15;
+    -fx-border-radius: 30;
 }
 
 .button:hover {

@@ -2,11 +2,21 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.paint.Color?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       prefHeight="200" prefWidth="350" styleClass="container"
       stylesheets="/css/User/LogOutMenu.css">
+    <effect>
+        <DropShadow height="30.0" radius="14.5" width="30.0">
+            <color>
+                <Color red="0.18039216101169586" green="0.20392157137393951" blue="0.24705882370471954"/>
+            </color>
+        </DropShadow>
+    </effect>
+
     <Label text="Logout Confirmation" styleClass="header"/>
 
     <Label text="Are you sure you want to logout?" styleClass="subheader"/>

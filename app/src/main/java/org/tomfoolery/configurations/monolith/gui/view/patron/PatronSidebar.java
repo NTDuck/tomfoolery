@@ -9,6 +9,9 @@ public class PatronSidebar extends BaseSidebar {
     @FXML
     private Button showBorrowedDocumentsButton;
 
+    @FXML
+    private Button accountCenterButton;
+
     @Override
     public void goToDashboard() {
         StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_DASHBOARD);
@@ -21,5 +24,9 @@ public class PatronSidebar extends BaseSidebar {
 
     public void goToShowBorrowedDocumentsView() {
         StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_SHOW_BORROWED);
+    }
+
+    public void goToAccountCenter() {
+        StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_ACCOUNT_CENTER);
     }
 }

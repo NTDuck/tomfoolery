@@ -21,14 +21,23 @@ public class PatronView extends BaseView {
         sidebarLoader.setController(controller);
         sidebar = sidebarLoader.load();
 
-        FXMLLoader buttonLoader = new FXMLLoader(getClass().getResource("/fxml/Patron/ShowBorrowedDocumentsButton.fxml"));
-        buttonLoader.setController(controller);
-        Button showBorrowedDocuments = buttonLoader.load();
+        FXMLLoader showBorrowedButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Patron/ShowBorrowedDocumentsButton.fxml"));
+        showBorrowedButtonLoader.setController(controller);
+        Button showBorrowedDocuments = showBorrowedButtonLoader.load();
 
         showBorrowedDocuments.setOnAction(event -> controller.goToShowBorrowedDocumentsView());
 
         VBox sidebarTopSection = (VBox) sidebar.getChildren().getFirst();
         sidebarTopSection.getChildren().add(showBorrowedDocuments);
+
+        FXMLLoader accountCenterButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Patron/AccountCenterButton.fxml"));
+        accountCenterButtonLoader.setController(controller);
+        Button accountCenterButton = accountCenterButtonLoader.load();
+
+        accountCenterButton.setOnAction(event -> controller.goToAccountCenter());
+
+        VBox sidebarBottomSection = (VBox) sidebar.getChildren().getLast();
+        sidebarBottomSection.getChildren().addFirst(accountCenterButton);
     }
 
     @Override @SneakyThrows
@@ -42,6 +51,9 @@ public class PatronView extends BaseView {
                 break;
             case PATRON_SHOW_BORROWED:
                 loadShowBorrowedDocuments();
+                break;
+            case PATRON_ACCOUNT_CENTER:
+                loadAccountCenter();
                 break;
         }
     }
@@ -78,5 +90,9 @@ public class PatronView extends BaseView {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/ShowBorrowedDocumentsView.fxml"));
         loader.setController(controller);
         content = loader.load();
+    }
+
+    private void loadAccountCenter() {
+
     }
 }

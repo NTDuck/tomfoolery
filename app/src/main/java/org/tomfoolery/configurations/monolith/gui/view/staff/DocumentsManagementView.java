@@ -12,8 +12,6 @@ import org.tomfoolery.core.dataproviders.generators.auth.security.Authentication
 import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 
-import java.io.IOException;
-
 public class DocumentsManagementView extends ShowDocumentsView{
     @FXML
     private Button addDocumentButton;
@@ -61,6 +59,7 @@ public class DocumentsManagementView extends ShowDocumentsView{
     }
 
     private void openEditDocumentDialog() {
+
     }
 
     @SneakyThrows
@@ -71,7 +70,7 @@ public class DocumentsManagementView extends ShowDocumentsView{
                 StageManager.getInstance().getAuthenticationTokenRepository(),
                 this
         );
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentMenu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentView.fxml"));
         loader.setController(controller);
         VBox v = loader.load();
 
