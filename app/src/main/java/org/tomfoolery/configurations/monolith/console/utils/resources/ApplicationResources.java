@@ -78,7 +78,7 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.sync
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.SecretStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
@@ -149,7 +149,7 @@ public class ApplicationResources implements AutoCloseable {
     protected final @NonNull DocumentUrlGenerator documentUrlGenerator = ApacheHttpClientDocumentUrlGenerator.of();
 
     protected final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = JJWTAuthenticationTokenGenerator.of();
-    protected final @NonNull AuthenticationTokenRepository authenticationTokenRepository = SecretStoreAuthenticationTokenRepository.of();
+    protected final @NonNull AuthenticationTokenRepository authenticationTokenRepository = KeyStoreAuthenticationTokenRepository.of();
 
     protected final @NonNull PasswordEncoder passwordEncoder = BCryptPasswordEncoder.of();
 
