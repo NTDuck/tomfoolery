@@ -8,12 +8,13 @@ import javafx.scene.control.TextField;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.auth.security.PasswordEncoder;
-import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.admin.auth.UpdateStaffCredentialsUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.UpdateStaffCredentialsController;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.administrator.users.persistence.UpdateStaffCredentialsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.persistence.UpdateStaffCredentialsController;
+import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
 public class UpdateStaffAccountView {
     private final @NonNull UpdateStaffCredentialsController controller;
@@ -72,6 +73,8 @@ public class UpdateStaffAccountView {
             errorMessage.setText("Try a safer password");
         } catch (UpdateStaffCredentialsUseCase.StaffNotFoundException e) {
             System.err.println("This never happens btw");
+        } catch (UserIdBiAdapter.UserUuidInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 

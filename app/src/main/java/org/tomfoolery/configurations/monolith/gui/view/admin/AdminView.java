@@ -1,9 +1,7 @@
 package org.tomfoolery.configurations.monolith.gui.view.admin;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -57,7 +55,6 @@ public class AdminView extends BaseView {
 
     private void loadDiscover() throws IOException {
         Discover controller = new Discover(
-                StageManager.getInstance().getDocumentRepository(),
                 StageManager.getInstance().getDocumentSearchGenerator(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()

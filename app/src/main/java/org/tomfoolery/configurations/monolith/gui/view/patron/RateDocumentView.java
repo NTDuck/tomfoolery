@@ -8,14 +8,14 @@ import javafx.scene.image.ImageView;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.patron.documents.rating.AddDocumentRatingUseCase;
-import org.tomfoolery.core.usecases.patron.documents.rating.RemoveDocumentRatingUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.AddDocumentRatingController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.rating.RemoveDocumentRatingController;
+import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
+import org.tomfoolery.core.usecases.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.AddDocumentReviewController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.RemoveDocumentReviewController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,18 +26,18 @@ public class RateDocumentView {
     private final List<ImageView> stars = new ArrayList<>();
 
     private final @NonNull String documentISBN;
-    private final @NonNull AddDocumentRatingController controller;
-    private final @NonNull RemoveDocumentRatingController removeDocumentRatingController;
+    private final @NonNull AddDocumentReviewController controller;
+    private final @NonNull RemoveDocumentReviewController removeDocumentRatingController;
 
     private int currentRating;
 
     public RateDocumentView(@NonNull String isbn,
                             @NonNull DocumentRepository documentRepository,
-                            @NonNull PatronRepository patronRepository,
+                            @NonNull ReviewRepository reviewRepository,
                             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
                             @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.controller = AddDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.removeDocumentRatingController = RemoveDocumentRatingController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = AddDocumentReviewController.of(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.removeDocumentRatingController = RemoveDocumentReviewController.of(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.documentISBN = isbn;
     }
 
@@ -89,16 +89,18 @@ public class RateDocumentView {
             val requestObject = this.collectRequestObject();
             this.controller.accept(requestObject);
             this.closeView();
-        } catch (AddDocumentRatingUseCase.AuthenticationTokenNotFoundException exception) {
+        } catch (AddDocumentReviewUseCase.AuthenticationTokenNotFoundException exception) {
             System.err.println("user doesn't exist?");
-        } catch (AddDocumentRatingUseCase.AuthenticationTokenInvalidException exception) {
+        } catch (AddDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
             System.err.println("user isn't invalid?");
-        } catch (AddDocumentRatingUseCase.PatronNotFoundException |
-                 AddDocumentRatingUseCase.RatingValueInvalidException |
-                 AddDocumentRatingUseCase.DocumentNotFoundException exception) {
-            System.err.println("This cannot happen...");
-        } catch (AddDocumentRatingUseCase.PatronRatingAlreadyExistsException exception) {
-            this.onPatronRatingAlreadyExistsException();
+        } catch (AddDocumentReviewUseCase.ReviewAlreadyExistsException e) {
+            throw new RuntimeException(e);
+        } catch (AddDocumentReviewUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
+        } catch (AddDocumentReviewUseCase.RatingInvalidException e) {
+            throw new RuntimeException(e);
+        } catch (AddDocumentReviewUseCase.DocumentNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -107,9 +109,9 @@ public class RateDocumentView {
         errorMessage.setVisible(true);
     }
 
-    private AddDocumentRatingController.@NonNull RequestObject collectRequestObject() {
+    private AddDocumentReviewController.@NonNull RequestObject collectRequestObject() {
         double rating = this.collectRating();
-        return AddDocumentRatingController.RequestObject.of(documentISBN, rating);
+        return AddDocumentReviewController.RequestObject.of(documentISBN, rating);
     }
 
     private double collectRating() {
@@ -121,20 +123,21 @@ public class RateDocumentView {
     }
 
     private void removeDocumentRating() {
-        val requestObject = RemoveDocumentRatingController.RequestObject.of(documentISBN);
+        val requestObject = RemoveDocumentReviewController.RequestObject.of(documentISBN);
 
         try {
             this.removeDocumentRatingController.accept(requestObject);
             closeView();
-        } catch (RemoveDocumentRatingUseCase.AuthenticationTokenNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.AuthenticationTokenNotFoundException exception) {
             System.err.println("user doesn't exist?");
-        } catch (RemoveDocumentRatingUseCase.AuthenticationTokenInvalidException exception) {
+        } catch (RemoveDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
             System.err.println("user isn't invalid?");
-        } catch (RemoveDocumentRatingUseCase.PatronNotFoundException |
-                 RemoveDocumentRatingUseCase.DocumentNotFoundException exception) {
-        } catch (RemoveDocumentRatingUseCase.PatronRatingNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.DocumentNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.ReviewNotFoundException exception) {
             errorMessage.setText("You haven't rated this document");
             errorMessage.setVisible(true);
+        } catch (RemoveDocumentReviewUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 

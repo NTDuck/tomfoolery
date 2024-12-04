@@ -12,11 +12,13 @@ import javafx.stage.Stage;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.staff.documents.AddDocumentUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.AddDocumentController;
+import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.AddDocumentController;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -68,10 +70,11 @@ public class AddDocumentView {
 
     public AddDocumentView(
             @NonNull DocumentRepository documentRepository,
+            @NonNull DocumentContentRepository documentContentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
             @NonNull DocumentsManagementView parentView) {
-        this.controller = AddDocumentController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.parentView = parentView;
         currentDocumentContentPath = "";
     }
@@ -183,6 +186,10 @@ public class AddDocumentView {
             this.onCoverImageFilePathInvalid();
         } catch (AddDocumentController.DocumentContentFilePathInvalidException e) {
             this.onContentFilePathInvalid();
+        } catch (AddDocumentController.DocumentPublishedYearInvalidException e) {
+            throw new RuntimeException(e);
+        } catch (AddDocumentUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 

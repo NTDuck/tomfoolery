@@ -68,7 +68,6 @@ public class PatronView extends BaseView {
 
     private void loadDiscover() throws IOException {
         Discover controller = new Discover(
-                StageManager.getInstance().getDocumentRepository(),
                 StageManager.getInstance().getDocumentSearchGenerator(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()

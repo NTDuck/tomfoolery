@@ -15,15 +15,13 @@ import javafx.scene.shape.Rectangle;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.patron.PatronDocumentView;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.user.documents.search.abc.SearchDocumentsUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.user.documents.SearchDocumentsController;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
 
 import java.io.File;
 
@@ -31,13 +29,11 @@ public class Discover {
     private final @NonNull SearchDocumentsController controller;
 
     public Discover(
-            @NonNull DocumentRepository documentRepository,
             @NonNull DocumentSearchGenerator documentSearchGenerator,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
 
         this.controller = SearchDocumentsController.of(
-                documentRepository,
                 documentSearchGenerator,
                 authenticationTokenGenerator,
                 authenticationTokenRepository
@@ -57,15 +53,6 @@ public class Discover {
     private CheckBox criteriaAuthorCheckBox;
 
     @FXML
-    private CheckBox patternPrefixCheckBox;
-
-    @FXML
-    private CheckBox patternSuffixCheckBox;
-
-    @FXML
-    private CheckBox patternSubsequenceCheckBox;
-
-    @FXML
     private ScrollPane scrollPane;
 
     @FXML
@@ -82,9 +69,6 @@ public class Discover {
         criteriaTitleCheckBox.setOnAction(event -> checkOnTitleBox());
         criteriaGenreCheckBox.setOnAction(event -> checkOnGenreBox());
         criteriaAuthorCheckBox.setOnAction(event -> checkOnAuthorBox());
-        patternPrefixCheckBox.setOnAction(event -> checkOnPrefixBox());
-        patternSuffixCheckBox.setOnAction(event -> checkOnSuffixBox());
-        patternSubsequenceCheckBox.setOnAction(event -> checkOnSubsequenceBox());
 
         searchBooks();
     }
@@ -104,10 +88,9 @@ public class Discover {
 
     private SearchDocumentsController.@NonNull RequestObject collectRequestObject() {
         val searchCriterion = getChoseCriterion();
-        val searchPattern = getChosePattern();
         String searchText = searchField.getText();
 
-        return SearchDocumentsController.RequestObject.of(searchCriterion, searchPattern, searchText, 1, 1000);
+        return SearchDocumentsController.RequestObject.of(searchCriterion, searchText, 1, 1000);
     }
 
     private SearchDocumentsController.@NonNull SearchCriterion getChoseCriterion() {
@@ -127,32 +110,14 @@ public class Discover {
         return SearchDocumentsController.SearchCriterion.TITLE;
     }
 
-    private SearchDocumentsController.@NonNull SearchPattern getChosePattern() {
-        if (patternPrefixCheckBox.isSelected()) {
-            checkOnPrefixBox();
-            return SearchDocumentsController.SearchPattern.PREFIX;
-        }
-        if (patternSuffixCheckBox.isSelected()) {
-            checkOnSuffixBox();
-            return SearchDocumentsController.SearchPattern.SUFFIX;
-        }
-        if (patternSubsequenceCheckBox.isSelected()) {
-            checkOnSubsequenceBox();
-            return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
-        }
-        checkOnSubsequenceBox();
-        return SearchDocumentsController.SearchPattern.SUBSEQUENCE;
-    }
-
     private void onSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
         booksContainer.getChildren().clear();
-        System.out.println("number of docs: " + viewModel.getPaginatedFragmentaryDocuments().size());
-        viewModel.getPaginatedFragmentaryDocuments().forEach(fragmentaryDocument ->
+        viewModel.getPaginatedDocuments().forEach(document ->
         {
-            String authors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
-            String documentTitle = fragmentaryDocument.getDocumentTitle();
-            String isbn = fragmentaryDocument.getISBN();
-            String coverImagePath = fragmentaryDocument.getDocumentCoverImageFilePath();
+            String authors = String.join(", ", document.getDocumentAuthors());
+            String documentTitle = document.getDocumentTitle();
+            String isbn = document.getDocumentISBN_13();
+            String coverImagePath = document.getDocumentCoverImageFilePath();
             booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, coverImagePath));
         });
     }
@@ -231,23 +196,5 @@ public class Discover {
         criteriaAuthorCheckBox.setSelected(true);
         criteriaTitleCheckBox.setSelected(false);
         criteriaGenreCheckBox.setSelected(false);
-    }
-
-    private void checkOnPrefixBox() {
-        patternPrefixCheckBox.setSelected(true);
-        patternSubsequenceCheckBox.setSelected(false);
-        patternSuffixCheckBox.setSelected(false);
-    }
-
-    private void checkOnSuffixBox() {
-        patternSuffixCheckBox.setSelected(true);
-        patternSubsequenceCheckBox.setSelected(false);
-        patternPrefixCheckBox.setSelected(false);
-    }
-
-    private void checkOnSubsequenceBox() {
-        patternSubsequenceCheckBox.setSelected(true);
-        patternPrefixCheckBox.setSelected(false);
-        patternSuffixCheckBox.setSelected(false);
     }
 }

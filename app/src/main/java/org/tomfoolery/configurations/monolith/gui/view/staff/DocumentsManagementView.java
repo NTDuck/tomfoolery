@@ -8,9 +8,9 @@ import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.ShowDocumentsView;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 
 public class DocumentsManagementView extends ShowDocumentsView{
     @FXML
@@ -46,7 +46,6 @@ public class DocumentsManagementView extends ShowDocumentsView{
         DeleteDocumentPopup deleteDocumentPopupController = new DeleteDocumentPopup(
                 selectedDocumentISBN,
                 StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getPatronRepository(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()
         );
@@ -66,6 +65,7 @@ public class DocumentsManagementView extends ShowDocumentsView{
     private void openAddDocumentMenu() {
         AddDocumentView controller = new AddDocumentView(
                 StageManager.getInstance().getDocumentRepository(),
+                StageManager.getInstance().getDocumentContentRepository(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository(),
                 this

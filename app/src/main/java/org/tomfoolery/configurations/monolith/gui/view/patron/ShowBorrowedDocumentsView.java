@@ -14,18 +14,17 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.patron.documents.ReadBorrowedDocumentUseCase;
-import org.tomfoolery.core.usecases.patron.documents.ReturnDocumentUseCase;
-import org.tomfoolery.core.usecases.patron.documents.ShowBorrowedDocumentsUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReadBorrowedDocumentController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReturnDocumentController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ShowBorrowedDocumentsController;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ReadBorrowedDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ReadBorrowedDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
 
 import java.awt.*;
 import java.io.File;
@@ -119,9 +118,11 @@ public class ShowBorrowedDocumentsView {
         } catch (ReadBorrowedDocumentController.DocumentContentUnavailable exception) {
             this.onDocumentContentUnavailable();
         } catch (ReadBorrowedDocumentUseCase.DocumentNotFoundException |
-                 ReadBorrowedDocumentUseCase.PatronNotFoundException |
                  ReadBorrowedDocumentUseCase.DocumentNotBorrowedException | IOException e) {
-            // These exceptions never happens btw
+            throw new RuntimeException(e);
+        } catch (ReadBorrowedDocumentUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
+        } catch (ReadBorrowedDocumentUseCase.DocumentContentNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -180,10 +181,11 @@ public class ShowBorrowedDocumentsView {
             this.onAuthenticationTokenNotFoundException();
         } catch (ReturnDocumentUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (ReturnDocumentUseCase.PatronNotFoundException |
-                 ReturnDocumentUseCase.DocumentNotBorrowedException |
+        } catch (ReturnDocumentUseCase.DocumentNotBorrowedException |
                  ReturnDocumentUseCase.DocumentNotFoundException exception) {
             System.err.println("How did this happens?");
+        } catch (ReturnDocumentUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -201,8 +203,6 @@ public class ShowBorrowedDocumentsView {
             onAuthenticationTokenNotFoundException();
         } catch (ShowBorrowedDocumentsUseCase.AuthenticationTokenInvalidException exception) {
             onAuthenticationTokenInvalidException();
-        } catch (ShowBorrowedDocumentsUseCase.PatronNotFoundException exception) {
-            System.err.println("you are a patron, you don't exist?");
         } catch (ShowBorrowedDocumentsUseCase.PaginationInvalidException exception) {
         }
     }
@@ -210,9 +210,9 @@ public class ShowBorrowedDocumentsView {
     private void onShowBorrowedDocumentsSuccess(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {
         ObservableList<DocumentViewModel> documents = FXCollections.observableArrayList();
 
-        viewModel.getPaginatedFragmentaryDocuments().forEach(
+        viewModel.getPaginatedBorrowedDocuments().forEach(
         fragmentaryDocument -> {
-            String ISBN = fragmentaryDocument.getISBN();
+            String ISBN = fragmentaryDocument.getDocumentISBN_13();
             String documentTitle = fragmentaryDocument.getDocumentTitle();
             String documentAuthors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
 

@@ -19,13 +19,6 @@
             <CheckBox text="Author" styleClass="side-panel-checkbox" fx:id="criteriaAuthorCheckBox"/>
             <CheckBox text="Genre" styleClass="side-panel-checkbox" fx:id="criteriaGenreCheckBox"/>
         </VBox>
-
-        <VBox styleClass="side-panel-child" VBox.vgrow="ALWAYS">
-            <Label text="Search Pattern" styleClass="side-panel-header"/>
-            <CheckBox text="Prefix" styleClass="side-panel-checkbox" fx:id="patternPrefixCheckBox"/>
-            <CheckBox text="Subsequence" styleClass="side-panel-checkbox" fx:id="patternSubsequenceCheckBox"/>
-            <CheckBox text="Suffix" styleClass="side-panel-checkbox" fx:id="patternSuffixCheckBox"/>
-        </VBox>
     </VBox>
 
     <VBox spacing="20" HBox.hgrow="ALWAYS">

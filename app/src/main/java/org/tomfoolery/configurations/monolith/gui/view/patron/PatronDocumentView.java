@@ -10,16 +10,17 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.patron.documents.BorrowDocumentUseCase;
-import org.tomfoolery.core.usecases.patron.documents.ReturnDocumentUseCase;
-import org.tomfoolery.core.usecases.user.documents.GetDocumentByIdUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.BorrowDocumentController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.ReturnDocumentController;
-import org.tomfoolery.infrastructures.adapters.controllers.user.documents.GetDocumentByIdController;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
+import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.BorrowDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
+
 import java.io.File;
 
 public class PatronDocumentView {
@@ -33,12 +34,12 @@ public class PatronDocumentView {
             @NonNull DocumentRepository documentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
-            @NonNull PatronRepository patronRepository
+            @NonNull BorrowingSessionRepository borrowingSessionRepository
             ) {
         this.documentISBN = documentISBN;
-        this.borrowDocumentController = BorrowDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.borrowDocumentController = BorrowDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.getDocumentByIdController = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.returnDocumentController = ReturnDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.returnDocumentController = ReturnDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @FXML
@@ -109,6 +110,8 @@ public class PatronDocumentView {
             System.err.println("some how the auth token is invalid");
         } catch (GetDocumentByIdUseCase.DocumentNotFoundException e) {
             System.err.println("this can't be...");
+        } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -117,18 +120,16 @@ public class PatronDocumentView {
     }
 
     private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
-        val fragmentaryDocument = viewModel.getFragmentaryDocument();
-
-        ratingLabel.setText(String.format("Rating: %.2f / 5 (%d)", fragmentaryDocument.getAverageRating(), fragmentaryDocument.getNumberOfRatings()));
-        titleLabel.setText("Title: " + fragmentaryDocument.getDocumentTitle());
-        authorsLabel.setText("Authors: " + String.join(", ", fragmentaryDocument.getDocumentAuthors()));
-        genresLabel.setText("Genres: " + String.join(", ", fragmentaryDocument.getDocumentGenres()));
+        ratingLabel.setText(String.format("Rating: %.2f / 5 (%d)", viewModel.getAverageRating(), viewModel.getNumberOfRatings()));
+        titleLabel.setText("Title: " + viewModel.getDocumentTitle());
+        authorsLabel.setText("Authors: " + String.join(", ", viewModel.getDocumentAuthors()));
+        genresLabel.setText("Genres: " + String.join(", ", viewModel.getDocumentGenres()));
         isbnLabel.setText("ISBN: " + this.documentISBN);
-        publisherLabel.setText("Publisher: " + fragmentaryDocument.getDocumentPublisher());
-        yearPublishedLabel.setText("Year Published: " + String.valueOf(fragmentaryDocument.getDocumentPublishedYear()));
-        descriptionArea.setText(fragmentaryDocument.getDocumentDescription());
+        publisherLabel.setText("Publisher: " + viewModel.getDocumentPublisher());
+        yearPublishedLabel.setText("Year Published: " + String.valueOf(viewModel.getDocumentPublishedYear()));
+        descriptionArea.setText(viewModel.getDocumentDescription());
 
-        String coverImagePath = fragmentaryDocument.getDocumentCoverImageFilePath();
+        String coverImagePath = viewModel.getDocumentCoverImageFilePath();
         File coverImageFile = new File(coverImagePath);
         coverImage.setImage(new Image(coverImageFile.toURI().toString()));
         coverImage.setFitHeight(540);
@@ -146,12 +147,14 @@ public class PatronDocumentView {
             System.err.println("how is auth token not found!?");
         } catch (BorrowDocumentUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (BorrowDocumentUseCase.PatronNotFoundException exception) {
-            System.err.println("the patron does not exist");
         } catch (BorrowDocumentUseCase.DocumentNotFoundException exception) {
             System.err.println("document not found");
         } catch (BorrowDocumentUseCase.DocumentAlreadyBorrowedException exception) {
             this.onDocumentAlreadyBorrowedException();
+        } catch (BorrowDocumentUseCase.DocumentBorrowLimitExceeded e) {
+            throw new RuntimeException(e);
+        } catch (BorrowDocumentUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -187,12 +190,12 @@ public class PatronDocumentView {
             System.err.println("how is auth token not found!?");
         } catch (ReturnDocumentUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (ReturnDocumentUseCase.PatronNotFoundException exception) {
-            System.err.println("the patron does not exist");
         } catch (ReturnDocumentUseCase.DocumentNotFoundException exception) {
             System.err.println("document not found");
         } catch (ReturnDocumentUseCase.DocumentNotBorrowedException exception) {
             this.onDocumentNotBorrowedException();
+        } catch (ReturnDocumentUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 

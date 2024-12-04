@@ -5,12 +5,11 @@ import javafx.scene.control.Button;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.PatronRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.staff.documents.RemoveDocumentUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.RemoveDocumentController;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.staff.documents.persistence.RemoveDocumentUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.RemoveDocumentController;
 
 public class DeleteDocumentPopup {
     private final @NonNull RemoveDocumentController controller;
@@ -19,12 +18,11 @@ public class DeleteDocumentPopup {
     public DeleteDocumentPopup(
             @NonNull String documentISBN,
             @NonNull DocumentRepository documentRepository,
-            @NonNull PatronRepository patronRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository
     ) {
         this.documentISBN = documentISBN;
-        this.controller = RemoveDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = RemoveDocumentController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @FXML
@@ -52,6 +50,8 @@ public class DeleteDocumentPopup {
             System.err.println("Your staff token is invalid");
         } catch (RemoveDocumentUseCase.DocumentNotFoundException e) {
             System.err.println("This never happens btw");
+        } catch (RemoveDocumentUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 

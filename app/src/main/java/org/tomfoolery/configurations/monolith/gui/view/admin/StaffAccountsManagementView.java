@@ -14,12 +14,13 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.core.dataproviders.generators.auth.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.auth.StaffRepository;
-import org.tomfoolery.core.dataproviders.repositories.auth.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.auth.Staff;
-import org.tomfoolery.core.usecases.admin.auth.DeleteStaffAccountUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.admin.auth.DeleteStaffAccountController;
+import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.usecases.administrator.users.persistence.DeleteStaffAccountUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.persistence.DeleteStaffAccountController;
+import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -99,12 +100,12 @@ public class StaffAccountsManagementView {
         StaffRepository staffRepository = StageManager.getInstance().getStaffRepository();
         List<Staff> staffsList = staffRepository.show();
         for (Staff staff : staffsList) {
-            String id = staff.getId().getValue().toString();
+            String id = staff.getId().getUuid().toString();
             String username = staff.getCredentials().getUsername();
-            String createdAdminId = staff.getAudit().getCreatedByAdminId().getValue().toString();
+            String createdAdminId = staff.getAudit().getCreatedByAdminId().getUuid().toString();
             String lastModifiedAdminId = "";
             if (staff.getAudit().getLastModifiedByAdminId() != null) {
-                lastModifiedAdminId = staff.getAudit().getLastModifiedByAdminId().getValue().toString();
+                lastModifiedAdminId = staff.getAudit().getLastModifiedByAdminId().getUuid().toString();
             }
             String createdAt = formatter.format(staff.getAudit().getTimestamps().getCreated());
             String lastModifiedAt = "";
@@ -130,6 +131,8 @@ public class StaffAccountsManagementView {
             System.err.println("You are not an admin!");
         } catch (DeleteStaffAccountUseCase.StaffNotFoundException exception) {
             System.err.println("This never happens btw");
+        } catch (UserIdBiAdapter.UserUuidInvalidException e) {
+            throw new RuntimeException(e);
         }
     }
 
