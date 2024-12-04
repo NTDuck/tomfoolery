@@ -4,6 +4,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
+import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.ddd;
 
 import java.util.List;
@@ -54,25 +55,32 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
             .collect(Collectors.toUnmodifiableList());
     }
 
+    /**
+     * Original implementation followed {@link BaseHybridRepository#getById(ddd.EntityId)},
+     * however was refactored after several use cases (e.g. {@link AddDocumentUseCase})
+     * reported undefined behaviour.
+     */
     @Override
     public boolean contains(@NonNull EntityId entityId) {
-        val containsFromPersistenceRepositories = contains(this.persistenceRepositories, entityId);
+        // val containsFromPersistenceRepositories = contains(this.persistenceRepositories, entityId);
+        //
+        // if (containsFromPersistenceRepositories)
+        //     return true;
+        //
+        // val containsFromRetrievalRepositories = contains(this.retrievalRepositories, entityId);
+        //
+        // if (containsFromRetrievalRepositories) {
+        //     CompletableFuture.runAsync(() -> {
+        //         val retrievedEntity = getById(retrievalRepositories, entityId);
+        //
+        //         if (retrievedEntity != null)
+        //             this.save(retrievedEntity);
+        //     });
+        // }
+        //
+        // return containsFromRetrievalRepositories;
 
-        if (containsFromPersistenceRepositories)
-            return true;
-
-        val containsFromRetrievalRepositories = contains(this.retrievalRepositories, entityId);
-
-        if (containsFromRetrievalRepositories) {
-            CompletableFuture.runAsync(() -> {
-                val retrievedEntity = getById(retrievalRepositories, entityId);
-
-                if (retrievedEntity != null)
-                    this.save(retrievedEntity);
-            });
-        }
-
-        return containsFromRetrievalRepositories;
+        return contains(this.persistenceRepositories, entityId);
     }
 
     private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @Nullable Entity getById(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {

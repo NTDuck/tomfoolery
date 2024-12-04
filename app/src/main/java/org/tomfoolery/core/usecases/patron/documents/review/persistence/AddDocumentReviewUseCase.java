@@ -18,8 +18,8 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
 import java.util.Set;
 
 public final class AddDocumentReviewUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<AddDocumentReviewUseCase.Request> {
-    private static final @Unsigned int MIN_RATING = 0;
-    private static final @Unsigned int MAX_RATING = 5;
+    public static final @Unsigned int MIN_RATING = 0;
+    public static final @Unsigned int MAX_RATING = 5;
 
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull ReviewRepository reviewRepository;
