@@ -48,7 +48,7 @@ public final class GetPatronUsernameAndMetadataController implements ThrowableSu
             .build();
     }
 
-    @Value(staticConstructor = "of")
+    @Value
     @Builder(access = AccessLevel.PRIVATE)
     public static class ViewModel {
         @NonNull String patronUsername;

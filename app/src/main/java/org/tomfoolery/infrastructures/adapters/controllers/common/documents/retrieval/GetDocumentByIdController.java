@@ -56,7 +56,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         @NonNull String documentISBN;
     }
 
-    @Value(staticConstructor = "of")
+    @Value
     @Builder(access = AccessLevel.PRIVATE)
     public static class ViewModel {
         @NonNull String documentISBN_10;

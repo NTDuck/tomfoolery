@@ -51,7 +51,7 @@ public final class GetPatronByIdController implements ThrowableFunction<GetPatro
         @NonNull String patronUuid;
     }
 
-    @Value(staticConstructor = "of")
+    @Value
     @Builder(access = AccessLevel.PRIVATE)
     public static class ViewModel {
         @NonNull String patronUuid;

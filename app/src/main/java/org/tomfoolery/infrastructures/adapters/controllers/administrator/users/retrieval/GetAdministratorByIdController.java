@@ -49,7 +49,7 @@ public final class GetAdministratorByIdController implements ThrowableFunction<G
         @NonNull String administratorUuid;
     }
 
-    @Value(staticConstructor = "of")
+    @Value
     @Builder(access = AccessLevel.PRIVATE)
     public static class ViewModel {
         @NonNull String administratorUuid;

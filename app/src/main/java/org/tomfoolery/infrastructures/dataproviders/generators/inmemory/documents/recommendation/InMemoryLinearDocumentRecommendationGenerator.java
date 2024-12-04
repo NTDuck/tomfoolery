@@ -32,7 +32,7 @@ public class InMemoryLinearDocumentRecommendationGenerator extends InMemoryLinea
     }
 
     private @NonNull List<Document> generateDocumentRecommendationByComparator(@NonNull Comparator<Document> comparator) {
-        return super.cachedDocuments.parallelStream()
+        return super.cachedEntities.parallelStream()
             .sorted(comparator)
             .limit(DOCUMENT_COUNT_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());
