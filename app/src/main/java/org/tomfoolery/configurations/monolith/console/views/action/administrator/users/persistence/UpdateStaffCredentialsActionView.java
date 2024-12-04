@@ -44,12 +44,12 @@ public final class UpdateStaffCredentialsActionView extends UserActionView {
     }
 
     private UpdateStaffCredentialsController.@NonNull RequestObject collectRequestObject() {
-        val staffId = this.ioProvider.readLine(Message.Format.PROMPT, "staff ID");
+        val uuid = this.ioProvider.readLine(Message.Format.PROMPT, "staff UUID");
 
         val username = this.ioProvider.readLine(Message.Format.PROMPT, "username");
         val password = this.ioProvider.readPassword(Message.Format.PROMPT, "password");
 
-        return UpdateStaffCredentialsController.RequestObject.of(staffId, username, password);
+        return UpdateStaffCredentialsController.RequestObject.of(uuid, username, password);
     }
 
     private void onSuccess() {
