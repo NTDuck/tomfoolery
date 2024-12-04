@@ -37,67 +37,77 @@
     -fx-padding: 0 40 0 40;
 }
 
-.login-button {
+.signup-button {
     -fx-background-color: #e9edf1;
     -fx-text-fill: #2f374f;
     -fx-font-family: "Segoe UI Variable";
     -fx-font-size: 20;
 }
 
-.signup-button {
+.signup-button:hover {
+    -fx-background-color: #cacfd3;
+    -fx-cursor: hand;
+}
+
+.login-button {
     -fx-background-color: #4c70f0;
     -fx-text-fill: white;
     -fx-font-family: "Segoe UI Variable";
     -fx-font-size: 20;
 }
 
-.textbox-label {
-    -fx-label-padding: 0 0 0 10;
-    -fx-text-fill: #D8DEE9;
-    -fx-background-color: transparent;
-    -fx-font-size: 24;
-    -fx-font-family: "Segoe UI Variable";
-}
-
-.input-field {
-    -fx-pref-width: 480;
-    -fx-pref-height: 90;
-    -fx-background-radius: 20;
-    -fx-background-color: #d8dee9;
-    -fx-text-fill: #2E343F;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 22;
-}
-
-.login-button {
-    -fx-pref-width: 230;
-    -fx-pref-height: 80;
-    -fx-background-color: #81a1c1;
-    -fx-background-radius: 15;
-    -fx-border-width: 2;
-    -fx-border-color: #d8dee9;
-    -fx-border-radius: 15;
-    -fx-text-fill: #d8dee9;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 30;
-}
-
 .login-button:hover {
-    -fx-background-color: #5E81AC;
+    -fx-background-color: #5576ec;
     -fx-cursor: hand;
 }
 
-.register-button {
-    -fx-alignment: center;
-    -fx-pref-width: 200;
-    -fx-pref-height: 30;
-    -fx-background-color: transparent;
-    -fx-text-fill: #d8dee9;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 24;
-}
+/*.textbox-label {*/
+/*    -fx-label-padding: 0 0 0 10;*/
+/*    -fx-text-fill: #D8DEE9;*/
+/*    -fx-background-color: transparent;*/
+/*    -fx-font-size: 24;*/
+/*    -fx-font-family: "Segoe UI Variable";*/
+/*}*/
 
-.register-button:hover {
-    -fx-text-fill: #81a1c1;
-    -fx-cursor: hand;
-}
+/*.input-field {*/
+/*    -fx-pref-width: 480;*/
+/*    -fx-pref-height: 90;*/
+/*    -fx-background-radius: 20;*/
+/*    -fx-background-color: #d8dee9;*/
+/*    -fx-text-fill: #2E343F;*/
+/*    -fx-font-family: "Segoe UI Variable";*/
+/*    -fx-font-size: 22;*/
+/*}*/
+
+/*.login-button {*/
+/*    -fx-pref-width: 230;*/
+/*    -fx-pref-height: 80;*/
+/*    -fx-background-color: #81a1c1;*/
+/*    -fx-background-radius: 15;*/
+/*    -fx-border-width: 2;*/
+/*    -fx-border-color: #d8dee9;*/
+/*    -fx-border-radius: 15;*/
+/*    -fx-text-fill: #d8dee9;*/
+/*    -fx-font-family: "Segoe UI Variable";*/
+/*    -fx-font-size: 30;*/
+/*}*/
+
+/*.login-button:hover {*/
+/*    -fx-background-color: #5E81AC;*/
+/*    -fx-cursor: hand;*/
+/*}*/
+
+/*.register-button {*/
+/*    -fx-alignment: center;*/
+/*    -fx-pref-width: 200;*/
+/*    -fx-pref-height: 30;*/
+/*    -fx-background-color: transparent;*/
+/*    -fx-text-fill: #d8dee9;*/
+/*    -fx-font-family: "Segoe UI Variable";*/
+/*    -fx-font-size: 24;*/
+/*}*/
+
+/*.register-button:hover {*/
+/*    -fx-text-fill: #81a1c1;*/
+/*    -fx-cursor: hand;*/
+/*}*/

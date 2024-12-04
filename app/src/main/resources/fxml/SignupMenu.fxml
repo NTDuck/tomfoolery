@@ -8,11 +8,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <?import javafx.scene.control.PasswordField?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="600.0" prefWidth="900.0">
+      prefHeight="600.0" prefWidth="900.0" stylesheets="/css/SignupMenu.css">
     <VBox prefHeight="100.0" prefWidth="900.0" spacing="5.0" styleClass="header-panel">
         <Label text="Create a Tomfoolery account" textFill="WHITE" >
             <font>
@@ -112,6 +111,7 @@
         <Label text="message" styleClass="message" fx:id="message"/>
 
         <Button mnemonicParsing="false" prefHeight="0.0" prefWidth="100.0" styleClass="register-button"
+                fx:id="signupButton"
                 style="-fx-background-color: #4c70f0; -fx-background-radius: 8;"
                 text="Register">
             <font>

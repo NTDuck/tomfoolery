@@ -11,11 +11,15 @@ import javafx.scene.control.TextField;
 import javafx.util.Duration;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.utils.BirthdayValidator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.usecases.guest.users.persistence.CreatePatronAccountUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.users.persistence.CreatePatronAccountController;
+
+import java.util.Arrays;
 
 public class SignupView {
     private final @NonNull CreatePatronAccountController controller;
@@ -85,42 +89,42 @@ public class SignupView {
             PauseTransition pause = new PauseTransition(Duration.seconds(2));
             pause.setOnFinished(returnToLogin());
             pause.play();
-        } catch (CreatePatronAccountUseCase.PatronCredentialsInvalidException exception) {
+        } catch(CreatePatronAccountUseCase.PatronCredentialsInvalidException exception) {
             this.onPatronCredentialsInvalidException();
-        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException exception) {
-            this.onPatronAlreadyExistsException();
+        } catch (BirthdayValidator.BirthdayInvalidException exception) {
+            this.onBirthdayInvalidException();
+        } catch (BirthdayValidator.DayOfBirthInvalidException exception) {
+            this.onDayOfBirthInvalidException();
+        } catch (BirthdayValidator.MonthOfBirthInvalidException exception) {
+            this.onMonthOfBirthInvalidException();
+        } catch (BirthdayValidator.YearOfBirthInvalidException exception) {
+            this.onYearOfBirthInvalidException();
         } catch (PasswordMismatchException exception) {
             this.onPasswordMismatchException();
+        } catch (CreatePatronAccountUseCase.PatronAlreadyExistsException exception) {
+            this.onPatronAlreadyExistsException();
         }
     }
 
-    private CreatePatronAccountController.@NonNull RequestObject getRequestObject() throws PasswordMismatchException {
-        String retypePassword = retypePasswordField.getText();
-
+    private CreatePatronAccountController.@NonNull RequestObject getRequestObject() throws BirthdayValidator.MonthOfBirthInvalidException, BirthdayValidator.YearOfBirthInvalidException, BirthdayValidator.DayOfBirthInvalidException, BirthdayValidator.BirthdayInvalidException {
         String username = usernameTextField.getText();
-        String password = passwordField.getText();
+        char[] password = this.getPassword();
         String firstName = firstNameTextField.getText();
         String lastName = lastNameTextField.getText();
 
-        String birthday = birthdayTextField.getText();
-        String[] birthdayComponents = birthday.split("/");
-        int monthOfBirth = Integer.parseInt(birthdayComponents[0]);
-        int dayOfBirth = Integer.parseInt(birthdayComponents[1]);
-        int yearOfBirth = Integer.parseInt(birthdayComponents[2]);
+        String[] birthday = this.getBirthday();
+        int dayOfBirth = getDayOfBirth(birthday);
+        int monthOfBirth = getMonthOfBirth(birthday);
+        int yearOfBirth = getYearOfBirth(birthday);
 
         String phoneNumber = phoneNumberTextField.getText();
         String city = cityTextField.getText();
         String country = countryTextField.getText();
         String email = emailTextField.getText();
 
-        char[] passwordCharArray = password.toCharArray();
-
-        if (!password.equals(retypePassword))
-            throw new PasswordMismatchException();
-
         return CreatePatronAccountController.RequestObject.of(
                 username,
-                passwordCharArray,
+                password,
                 firstName,
                 lastName,
                 dayOfBirth,
@@ -133,31 +137,87 @@ public class SignupView {
         );
     }
 
+    private char @NonNull [] getPassword() throws PasswordMismatchException {
+        val password = this.passwordField.getText().toCharArray();
+        val repeatPassword = this.retypePasswordField.getText().toCharArray();
+
+        if (!Arrays.equals(password, repeatPassword))
+            throw new PasswordMismatchException();
+
+        return password;
+    }
+
+    private @NonNull String[] getBirthday() throws BirthdayValidator.BirthdayInvalidException, BirthdayValidator.DayOfBirthInvalidException, BirthdayValidator.MonthOfBirthInvalidException, BirthdayValidator.YearOfBirthInvalidException {
+        String birthday = this.birthdayTextField.getText();
+
+        BirthdayValidator.validateBirthday(birthday);
+
+        String[] birthdaySeperated = birthday.split("/");
+        if (birthdaySeperated.length > 3) {
+            throw new BirthdayValidator.BirthdayInvalidException();
+        }
+
+        return birthdaySeperated;
+    }
+
+    private @Unsigned int getDayOfBirth(String[] birthday) {
+        return Integer.parseInt(birthday[1]);
+    }
+
+    private @Unsigned int getMonthOfBirth(String[] birthday) {
+        return Integer.parseInt(birthday[0]);
+    }
+
+    private @Unsigned int getYearOfBirth(String[] birthday) {
+        return Integer.parseInt(birthday[2]);
+    }
+
+    private void onPatronCredentialsInvalidException() {
+        message.setText("Username or password is not safe enough.");
+        message.setStyle("-fx-text-fill: #f7768e");
+        message.setVisible(true);
+    }
+
     private void onPasswordMismatchException() {
-        System.out.println("Error: Password does not match.");
         message.setText("Password does not match.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);
     }
 
-    private void onPatronCredentialsInvalidException() {
-        System.out.println("Error: Provided credentials are invalid.");
-        message.setText("Provided credentials are invalid.");
+    private void onBirthdayInvalidException() {
+        message.setText("Provided birthday is invalid.");
+        message.setStyle("-fx-text-fill: #f7768e");
+        message.setVisible(true);
+    }
+
+    private void onDayOfBirthInvalidException() {
+        message.setText("Day of birth is invalid.");
+        message.setStyle("-fx-text-fill: #f7768e");
+        message.setVisible(true);
+    }
+
+    private void onMonthOfBirthInvalidException() {
+        message.setText("Month of birth is invalid.");
+        message.setStyle("-fx-text-fill: #f7768e");
+        message.setVisible(true);
+    }
+
+    private void onYearOfBirthInvalidException() {
+        message.setText("Year of birth is invalid.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);
     }
 
     private void onPatronAlreadyExistsException() {
-        System.out.println("Error: Patron already exists.");
         message.setText("Patron already exists.");
         message.setStyle("-fx-text-fill: #f7768e");
         message.setVisible(true);
     }
 
-    private static class PasswordMismatchException extends Exception {}
-
     private EventHandler<ActionEvent> returnToLogin() {
         StageManager.getInstance().openLoginMenu();
         return null;
     }
+
+    private static class PasswordMismatchException extends RuntimeException {}
 }

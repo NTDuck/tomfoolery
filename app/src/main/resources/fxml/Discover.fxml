@@ -14,7 +14,7 @@
       styleClass="main" stylesheets="/css/User/Discover.css">
     <VBox minWidth="300" styleClass="side-panel">
         <VBox styleClass="side-panel-child" VBox.vgrow="ALWAYS">
-            <Label text="Search Criteria" styleClass="side-panel-header"/>
+            <Label text="Search by:" styleClass="side-panel-header"/>
             <CheckBox text="Title" styleClass="side-panel-checkbox" fx:id="criteriaTitleCheckBox"/>
             <CheckBox text="Author" styleClass="side-panel-checkbox" fx:id="criteriaAuthorCheckBox"/>
             <CheckBox text="Genre" styleClass="side-panel-checkbox" fx:id="criteriaGenreCheckBox"/>

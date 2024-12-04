@@ -107,6 +107,9 @@ public class AddDocumentView {
         if (path.startsWith("file:")) {
             path = path.substring(5);
         }
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
         return path;
     }
 

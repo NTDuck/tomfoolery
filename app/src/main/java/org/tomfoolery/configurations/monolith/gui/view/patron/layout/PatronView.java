@@ -82,7 +82,8 @@ public class PatronView extends BaseView {
     private void loadShowBorrowedDocuments() throws IOException {
         ShowBorrowedDocumentsView controller = new ShowBorrowedDocumentsView(
                 StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getPatronRepository(),
+                StageManager.getInstance().getDocumentContentRepository(),
+                StageManager.getInstance().getBorrowingSessionRepository(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()
         );

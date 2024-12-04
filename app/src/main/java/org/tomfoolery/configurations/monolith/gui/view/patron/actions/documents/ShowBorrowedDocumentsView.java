@@ -17,8 +17,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
+import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.domain.relations.DocumentContent;
 import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
@@ -41,13 +44,14 @@ public class ShowBorrowedDocumentsView {
     private final @NonNull ReturnDocumentController returnDocumentController;
 
     public ShowBorrowedDocumentsView(@NonNull DocumentRepository documentRepository,
-                                     @NonNull PatronRepository patronRepository,
+                                     @NonNull DocumentContentRepository contentRepository,
+                                     @NonNull BorrowingSessionRepository borrowingSessionRepository,
                                      @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
                                      @NonNull AuthenticationTokenRepository authenticationTokenRepository
     ) {
-        this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.readBorrowedDocumentController = ReadBorrowedDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.returnDocumentController = ReturnDocumentController.of(documentRepository, patronRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.readBorrowedDocumentController = ReadBorrowedDocumentController.of(documentRepository, contentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.returnDocumentController = ReturnDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @FXML
@@ -124,6 +128,8 @@ public class ShowBorrowedDocumentsView {
             throw new RuntimeException(e);
         } catch (ReadBorrowedDocumentUseCase.DocumentContentNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (ReadBorrowedDocumentUseCase.DocumentOverdueException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -160,7 +166,7 @@ public class ShowBorrowedDocumentsView {
         RateDocumentView rateDocumentView = new RateDocumentView(
                 isbn,
                 StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getPatronRepository(),
+                StageManager.getInstance().getReviewRepository(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()
         );

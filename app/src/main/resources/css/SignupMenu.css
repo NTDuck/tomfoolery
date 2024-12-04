@@ -19,6 +19,7 @@
 .register-button {
     -fx-background-color: #4c70f0;
     -fx-background-radius: 8;
+    -fx-text-fill: white;
     -fx-font-size: 18;
     -fx-font-family: "Segoe UI Variable";
 }
