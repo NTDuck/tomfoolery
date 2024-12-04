@@ -6,7 +6,7 @@ import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
 
 public abstract class BaseActionView extends BaseView {
-    protected static @Nullable Class<? extends BaseView> cachedViewClass;
+    protected static @Nullable Class<? extends BaseView> cachedViewClass;   // Only null during the first iteration
 
     protected BaseActionView(@NonNull IOProvider ioProvider) {
         super(ioProvider);
@@ -15,5 +15,15 @@ public abstract class BaseActionView extends BaseView {
     @Override
     public final @Nullable Class<? extends BaseView> getNextViewClass() {
         return (cachedViewClass = super.getNextViewClass());
+    }
+
+    protected void onException(@NonNull String message, @NonNull String... hints) {
+        assert cachedViewClass != null;
+        super.onException(message, cachedViewClass, hints);
+    }
+
+    protected void onException(@NonNull Exception exception, @NonNull String... hints) {
+        assert cachedViewClass != null;
+        super.onException(exception, cachedViewClass, hints);
     }
 }

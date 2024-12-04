@@ -61,7 +61,7 @@ public abstract class BaseSelectionView extends BaseView {
     }
 
     private void displayViewModel(SelectionController.@NonNull ViewModel viewModel) {
-        viewModel.getViewableSelectionItems()
+        viewModel.getSelectionItems()
             .forEach(this::displayViewableSelectionItem);
     }
 

@@ -3,14 +3,14 @@ package org.tomfoolery.configurations.monolith.console.views.selection;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
-import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.CreateStaffAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.DeleteStaffAccountActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.admin.auth.UpdateStaffCredentialsActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.administrator.users.persistence.CreateStaffAccountActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.administrator.users.persistence.DeleteStaffAccountActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.administrator.users.persistence.UpdateStaffCredentialsActionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.abc.UserSelectionView;
 
 import java.util.List;
 
-public class AdministratorSelectionView extends UserSelectionView {
+public final class AdministratorSelectionView extends UserSelectionView {
     public static @NonNull AdministratorSelectionView of(@NonNull IOProvider ioProvider) {
         return new AdministratorSelectionView(ioProvider);
     }

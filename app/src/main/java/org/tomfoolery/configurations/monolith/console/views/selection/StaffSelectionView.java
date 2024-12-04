@@ -3,15 +3,15 @@ package org.tomfoolery.configurations.monolith.console.views.selection;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.utils.dataclasses.SelectionItem;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.AddDocumentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.RemoveDocumentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.UpdateDocumentContentActionView;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.UpdateDocumentMetadataActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.AddDocumentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.RemoveDocumentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentContentActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentMetadataActionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.abc.UserSelectionView;
 
 import java.util.List;
 
-public class StaffSelectionView extends UserSelectionView {
+public final class StaffSelectionView extends UserSelectionView {
     public static @NonNull StaffSelectionView of(@NonNull IOProvider ioProvider) {
         return new StaffSelectionView(ioProvider);
     }
