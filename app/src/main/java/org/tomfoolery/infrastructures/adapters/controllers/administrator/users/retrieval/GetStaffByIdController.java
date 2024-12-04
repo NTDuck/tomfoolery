@@ -50,7 +50,7 @@ public final class GetStaffByIdController implements ThrowableFunction<GetStaffB
         @NonNull String staffUuid;
     }
 
-    @Value(staticConstructor = "of")
+    @Value
     @Builder(access = AccessLevel.PRIVATE)
     public static class ViewModel {
         @NonNull String staffUuid;

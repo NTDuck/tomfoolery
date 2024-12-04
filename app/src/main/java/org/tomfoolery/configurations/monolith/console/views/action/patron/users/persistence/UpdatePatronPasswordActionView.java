@@ -6,11 +6,11 @@ import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
-import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.patron.users.persistence.UpdatePatronPasswordUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.UpdatePatronPasswordController;
 
@@ -35,16 +35,10 @@ public final class UpdatePatronPasswordActionView extends UserActionView {
             this.controller.accept(requestObject);
             this.onSuccess();
 
-        } catch (UpdatePatronPasswordUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (UpdatePatronPasswordUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (UpdatePatronPasswordUseCase.PatronNotFoundException exception) {
-            this.onPatronNotFoundException();
-        } catch (UpdatePatronPasswordUseCase.PasswordInvalidException exception) {
-            this.onPasswordInvalidException();
-        } catch (UpdatePatronPasswordUseCase.PasswordMismatchException exception) {
-            this.onPasswordMismatchException();
+        } catch (UpdatePatronPasswordUseCase.AuthenticationTokenNotFoundException | AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
+            this.onException(exception, GuestSelectionView.class);
+        } catch (UpdatePatronPasswordUseCase.PatronNotFoundException | UpdatePatronPasswordUseCase.PasswordInvalidException | UpdatePatronPasswordUseCase.PasswordMismatchException exception) {
+            this.onException(exception);
         }
     }
 
@@ -59,24 +53,5 @@ public final class UpdatePatronPasswordActionView extends UserActionView {
         this.nextViewClass = GuestSelectionView.class;
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "Patron password updated, please log in again");
-    }
-
-    private void onPatronNotFoundException() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Patron not found");
-    }
-
-    private void onPasswordInvalidException() {
-        this.nextViewClass = PatronSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Invalid password");
-        this.ioProvider.writeLine("(%s)", Message.PASSWORD_CONSTRAINT);
-    }
-
-    private void onPasswordMismatchException() {
-        this.nextViewClass = GuestSelectionView.class;
-
-        this.ioProvider.writeLine(Message.Format.ERROR, "Wrong password, so now you are a Guest");
     }
 }
