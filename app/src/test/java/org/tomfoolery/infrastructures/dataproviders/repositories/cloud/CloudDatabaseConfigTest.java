@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import static org.testng.Assert.*;
 
@@ -22,10 +23,12 @@ public class CloudDatabaseConfigTest extends UnitTest<CloudDatabaseConfig> {
 
     @Override
     protected @NonNull CloudDatabaseConfig instantiate() {
+        Path configFilePath = Path.of("src/main/resources/config.properties");
+
         try {
-            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
+            cloudDatabaseConfig = new CloudDatabaseConfig(configFilePath.toString());
         } catch (IOException e) {
-            fail("Failed to load database config: " + e.getMessage());
+            throw new RuntimeException(e);
         }
         return cloudDatabaseConfig;
     }
@@ -34,7 +37,7 @@ public class CloudDatabaseConfigTest extends UnitTest<CloudDatabaseConfig> {
     public void setUp() {
         super.setUp();
         try {
-            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
+            this.cloudDatabaseConfig = new CloudDatabaseConfig("src/main/resources/config.properties");
         } catch (IOException e) {
             fail("Failed to load database config: " + e.getMessage());
         }

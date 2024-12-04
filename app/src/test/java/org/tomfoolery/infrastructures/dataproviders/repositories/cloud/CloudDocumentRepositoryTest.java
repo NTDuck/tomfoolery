@@ -19,7 +19,7 @@ import java.util.UUID;
 import static org.testng.Assert.*;
 
 public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepository> {
-    private static final @NonNull String SAMPLE_ISBN = "1234567890";
+    private static final @NonNull String SAMPLE_ISBN = "123456789X";
     private static final @NonNull String SAMPLE_TITLE = "Sample Book";
     private static final @NonNull String SAMPLE_DESCRIPTION = "A sample description for the book.";
     private static final @NonNull List<String> SAMPLE_AUTHORS = List.of("Author1", "Author2");
@@ -34,7 +34,7 @@ public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepositor
     @Override
     protected @NonNull CloudDocumentRepository instantiate() {
         try {
-            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
+            this.cloudDatabaseConfig = new CloudDatabaseConfig("src/main/resources/config.properties");
         } catch (IOException e) {
             fail("Failed to load database config: " + e.getMessage());
         }
