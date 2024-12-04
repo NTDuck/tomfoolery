@@ -18,7 +18,7 @@ public abstract class UserSelectionView extends BaseSelectionView {
     private static final List<SelectionItem> defaultSelectionItems = List.of(
         SelectionItem.of("Exit", null),
         SelectionItem.of("Log out", LogUserOutActionView.class),
-        SelectionItem.of("Get Document info", GetDocumentByIdActionView.class),
+        SelectionItem.of("Get Document details", GetDocumentByIdActionView.class),
         SelectionItem.of("Get Document QR code", GetDocumentQrCodeActionView.class),
         SelectionItem.of("Get Document recommendation", GetDocumentRecommendationActionView.class),
         SelectionItem.of("Search Documents", SearchDocumentsActionView.class),

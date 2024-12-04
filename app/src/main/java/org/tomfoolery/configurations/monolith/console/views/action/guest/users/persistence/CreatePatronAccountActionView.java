@@ -6,6 +6,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.BaseActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.usecases.guest.users.persistence.CreatePatronAccountUseCase;
@@ -98,6 +99,8 @@ public final class CreatePatronAccountActionView extends BaseActionView {
     }
 
     private void onSuccess() {
+        this.nextViewClass = GuestSelectionView.class;
+
         this.ioProvider.writeLine(Message.Format.SUCCESS, "Patron account created");
     }
 
