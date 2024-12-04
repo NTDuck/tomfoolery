@@ -37,17 +37,25 @@ public final class ISBNVerifier {
     /**
      * @see <a href="https://en.wikipedia.org/wiki/ISBN#ISBN-10_check_digit_calculation">ISBN-10 Specification</a>
      */
+//    public static @Unsigned char calculateISBN10CheckDigit(@NonNull String ISBN10WithoutCheckDigit) {
+//        if (ISBN10WithoutCheckDigit.length() != 10)
+//            throw new IllegalArgumentException(String.format("Invalid length of ISBN-10 (without check digit) '%s': %d", ISBN10WithoutCheckDigit, ISBN10WithoutCheckDigit.length()));
+//
+//        var weightedSum = calculateISBN10WeightedSum(ISBN10WithoutCheckDigit);
+//        val checkDigit = 11 - weightedSum % 11;
+//
+//        return checkDigit == 10 ? 'X' : Character.forDigit(checkDigit, 10);
+//
+//    }
     public static @Unsigned char calculateISBN10CheckDigit(@NonNull String ISBN10WithoutCheckDigit) {
-        if (ISBN10WithoutCheckDigit.length() != 10)
+        if (ISBN10WithoutCheckDigit.length() != 9)
             throw new IllegalArgumentException(String.format("Invalid length of ISBN-10 (without check digit) '%s': %d", ISBN10WithoutCheckDigit, ISBN10WithoutCheckDigit.length()));
 
         var weightedSum = calculateISBN10WeightedSum(ISBN10WithoutCheckDigit);
         val checkDigit = 11 - weightedSum % 11;
 
         return checkDigit == 10 ? 'X' : Character.forDigit(checkDigit, 10);
-
     }
-
     /**
      * @see <a href="https://en.wikipedia.org/wiki/ISBN#ISBN-13_check_digit_calculation">ISBN-13 Specification</a>
      */
