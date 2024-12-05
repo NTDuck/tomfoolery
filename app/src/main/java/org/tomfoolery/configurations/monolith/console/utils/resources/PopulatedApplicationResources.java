@@ -53,7 +53,7 @@ public class PopulatedApplicationResources extends ApplicationResources {
     public void populate() {
         @Cleanup val executorService = Executors.newFixedThreadPool(2);
 
-        executorService.submit(this::populateDocumentRepositories);
+        // executorService.submit(this::populateDocumentRepositories);
         executorService.submit(this::populateUserRepositories);
 
         executorService.close();
