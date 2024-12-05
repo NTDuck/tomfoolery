@@ -1,9 +1,12 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users;
 
+
+import lombok.NoArgsConstructor;
 import org.tomfoolery.core.dataproviders.repositories.users.abc.UserRepository;
-import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.core.domain.users.Administrator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
 
@@ -12,22 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CloudUserRepository<User extends BaseUser> implements UserRepository<User> {
-    private final CloudDatabaseConfig dbConfig;
-
-    public CloudUserRepository(CloudDatabaseConfig dbConfig) {
-        this.dbConfig = dbConfig;
-    }
+@NoArgsConstructor(staticName = "of")
+public class CloudAdministratorRepository implements UserRepository<Administrator> {
+    private final CloudDatabaseConfig dbConfig = CloudDatabaseConfig.of();
 
     @Override
-    public @Nullable User getByUsername(@NonNull String username) {
-        String query = "SELECT * FROM Users WHERE username = ?";
+    public @Nullable Administrator getByUsername(@NonNull String username) {
+        String query = "SELECT * FROM Administrators WHERE username = ?";
         try (Connection connection = dbConfig.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapResultSetToUser(rs);
+                return mapResultSetToAdministrator(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,9 +36,9 @@ public class CloudUserRepository<User extends BaseUser> implements UserRepositor
     }
 
     @Override
-    public void save(@NonNull User entity) {
+    public void save(@NonNull Administrator entity) {
         String query = """
-            INSERT INTO Users (id, username, password, created, lastLogin, lastLogout)
+            INSERT INTO Administrators (id, username, password, created, lastLogin, lastLogout)
             VALUES (?, ?, ?, ?, ?, ?)
             ON CONFLICT (id) DO UPDATE SET
                 username = EXCLUDED.username,
@@ -67,7 +67,7 @@ public class CloudUserRepository<User extends BaseUser> implements UserRepositor
 
     @Override
     public void delete(BaseUser.@NonNull Id entityId) {
-        String query = "DELETE FROM Users WHERE id = ?";
+        String query = "DELETE FROM Administrators WHERE id = ?";
         try (Connection connection = dbConfig.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, entityId.getUuid().toString());
@@ -78,14 +78,14 @@ public class CloudUserRepository<User extends BaseUser> implements UserRepositor
     }
 
     @Override
-    public @Nullable User getById(BaseUser.@NonNull Id entityId) {
-        String query = "SELECT * FROM Users WHERE id = ?";
+    public @Nullable Administrator getById(BaseUser.@NonNull Id entityId) {
+        String query = "SELECT * FROM Administrators WHERE id = ?";
         try (Connection connection = dbConfig.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, entityId.getUuid().toString());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapResultSetToUser(rs);
+                return mapResultSetToAdministrator(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,29 +94,29 @@ public class CloudUserRepository<User extends BaseUser> implements UserRepositor
     }
 
     @Override
-    public @NonNull List<User> show() {
-        List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM Users";
+    public @NonNull List<Administrator> show() {
+        List<Administrator> administrators = new ArrayList<>();
+        String query = "SELECT * FROM Administrators";
         try (Connection connection = dbConfig.connect();
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                users.add(mapResultSetToUser(rs));
+                administrators.add(mapResultSetToAdministrator(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return users;
+        return administrators;
     }
 
     @SuppressWarnings("unchecked")
-    private User mapResultSetToUser(ResultSet rs) throws SQLException {
-        BaseUser.Id id = BaseUser.Id.of(UUID.fromString(rs.getString("id")));
-        BaseUser.Credentials credentials = BaseUser.Credentials.of(
+    private Administrator mapResultSetToAdministrator(ResultSet rs) throws SQLException {
+        Administrator.Id id = Administrator.Id.of(UUID.fromString(rs.getString("id")));
+        Administrator.Credentials credentials = Administrator.Credentials.of(
                 rs.getString("username"),
                 SecureString.of(rs.getString("password").toCharArray())
         );
-        BaseUser.Audit.Timestamps timestamps = BaseUser.Audit.Timestamps.of(
+        Administrator.Audit.Timestamps timestamps = Administrator.Audit.Timestamps.of(
                 rs.getTimestamp("created").toInstant()
         );
         timestamps.setLastLogin(rs.getTimestamp("lastLogin") != null
@@ -125,8 +125,7 @@ public class CloudUserRepository<User extends BaseUser> implements UserRepositor
         timestamps.setLastLogout(rs.getTimestamp("lastLogout") != null
                 ? rs.getTimestamp("lastLogout").toInstant()
                 : null);
-        BaseUser.Audit audit = BaseUser.Audit.of(timestamps);
-        return (User) new BaseUser(id, audit, credentials);
+        Administrator.Audit audit = Administrator.Audit.of(timestamps);
+        return Administrator.of(id, audit, credentials);
     }
 }
-

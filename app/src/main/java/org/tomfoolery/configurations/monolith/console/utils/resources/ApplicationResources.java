@@ -1,6 +1,7 @@
 package org.tomfoolery.configurations.monolith.console.utils.resources;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.ConsoleIOProvider;
@@ -78,6 +79,7 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.sync
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
@@ -109,7 +111,8 @@ public class ApplicationResources implements AutoCloseable {
     protected final @NonNull DocumentRepository documentRepository = HybridDocumentRepository.of(
         List.of(
             SynchronizedDocumentRepository.of(
-                InMemoryDocumentRepository.of(),
+//                InMemoryDocumentRepository.of(),
+                CloudDocumentRepository.of(),
                 List.of(documentSearchGenerator, documentRecommendationGenerator),
                 documentContentRepository,
                 borrowingSessionRepository,
