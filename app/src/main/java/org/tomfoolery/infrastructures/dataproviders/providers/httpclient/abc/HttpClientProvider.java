@@ -11,6 +11,7 @@ import java.util.function.BiConsumer;
 
 public interface HttpClientProvider extends BaseProvider {
     @NonNull String sendSynchronousGET(@NonNull String url, @NonNull Headers headers) throws Exception;
+    byte @NonNull [] sendSynchronousGETForBytes(@NonNull String url, @NonNull Headers headers) throws Exception;
 
     @NonNull String sendSynchronousPOST(@NonNull String url, @NonNull Headers headers, @NonNull String body) throws Exception;
 

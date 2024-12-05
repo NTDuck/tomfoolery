@@ -43,7 +43,7 @@ public final class DeleteStaffAccountActionView extends UserActionView {
     }
 
     private DeleteStaffAccountController.@NonNull RequestObject collectRequestObject() {
-        val uuid = this.ioProvider.readLine(Message.Format.PROMPT, "staffs UUID");
+        val uuid = this.ioProvider.readLine(Message.Format.PROMPT, "staff UUID");
 
         return DeleteStaffAccountController.RequestObject.of(uuid);
     }

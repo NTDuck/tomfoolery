@@ -55,7 +55,7 @@ public final class GetDocumentByIdActionView extends UserActionView {
         try {
             TemporaryFileProvider.open(documentCoverImageFilePath);
         } catch (IOException exception) {
-            throw new DocumentCoverImageNotOpenableException();
+            this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document cover image");
         }
 
         this.ioProvider.writeLine("""

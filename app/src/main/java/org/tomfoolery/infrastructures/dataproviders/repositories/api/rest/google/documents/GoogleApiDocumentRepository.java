@@ -45,7 +45,7 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
                 HttpClientProvider.Headers.builder().build()
             );
 
-            return constructDocumentFromHttpResponse(httpResponse);
+            return this.constructDocumentFromHttpResponse(httpResponse);
 
         } catch (Exception exception) {
             return null;
@@ -58,7 +58,7 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
         throw new UnsupportedOperationException();
     }
 
-    private static @Nullable Document constructDocumentFromHttpResponse(@NonNull String httpResponse) {
+    private @Nullable Document constructDocumentFromHttpResponse(@NonNull String httpResponse) {
         val jsonResponse = JsonIterator.deserialize(httpResponse);
 
         val totalItems = jsonResponse.get("totalItems").toInt();
@@ -82,7 +82,8 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
         val publishedYear = Year.parse(rawPublishedYear.split("-")[0]);
         val publisher = volumeInfo.get("publisher").toString();
 
-        // val documentCoverImageUrl = volumeInfo.get("imageLinks", "thumbnail").toString();
+        val documentCoverImageUrl = volumeInfo.get("imageLinks", "thumbnail").toString();
+        val documentCoverImage = this.getDocumentCoverImageFromUrl(documentCoverImageUrl);
 
         val documentId = Document.Id.of(ISBN);
         assert documentId != null;
@@ -90,6 +91,16 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
         val documentMetadata = Document.Metadata.of(title, description, authors, genres, publishedYear, publisher);
         val documentAudit = Document.Audit.of(Document.Audit.Timestamps.of(Instant.now()), DECOY_STAFF_ID);
 
-        return Document.of(documentId, documentAudit, documentMetadata);
+        return Document.of(documentId, documentAudit, documentMetadata, null, documentCoverImage);
+    }
+
+    private Document.@Nullable CoverImage getDocumentCoverImageFromUrl(@NonNull String url) {
+        try {
+            val rawDocumentCoverImage = this.httpClientProvider.sendSynchronousGETForBytes(url, HttpClientProvider.Headers.builder().build());
+            return Document.CoverImage.of(rawDocumentCoverImage);
+
+        } catch (Exception exception) {
+            return null;
+        }
     }
 }
