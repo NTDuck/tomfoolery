@@ -120,7 +120,7 @@ public class PopulatedApplicationResources extends ApplicationResources {
                 faker.book().publisher()
             ),
             Document.Rating.of(
-                faker.number().numberBetween(AddDocumentReviewUseCase.MIN_RATING, AddDocumentReviewUseCase.MAX_RATING),
+                faker.number().randomDouble(4, AddDocumentReviewUseCase.MIN_RATING, AddDocumentReviewUseCase.MAX_RATING),
                 faker.number().numberBetween(MIN_NUMBER_OF_RATINGS, MAX_NUMBER_OF_RATINGS)
             ),
             null
