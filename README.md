@@ -11,8 +11,11 @@ The project was completed as the **OOP (*2425II_INT2204_18*)** final-term assign
 
 Team members:
 - [23021502] [Nguyễn Anh Duy](https://github.com/adnope)
+  - Manages presentation with JavaFX
 - [23021534] [Nguyễn Tư Đức](https://github.com/NTDuck)
+  - Everything else
 - [23021554] [Phạm Trung Hiếu](https://github.com/FearOfTheSea)
+  - Manages cloud database & unit testing
 
 
 ## Prerequisites
