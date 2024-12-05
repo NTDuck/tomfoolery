@@ -1,64 +1,39 @@
-.main {
-    -fx-background-color: #E4E8F0;
-    -fx-spacing: 20;
+.root {
+    -fx-background-color: white;
 }
 
-.side-panel {
-    -fx-background-radius: 0 15 15 0;
-    -fx-effect: dropshadow(gaussian, rgba(46, 52, 63, 0.3), 15, 0, 5, 0);
-    -fx-background-color: #E4E8F0;
-}
-
-.side-panel-child {
-    -fx-pref-height: 360;
-    -fx-background-color: transparent;
-}
-
-.side-panel-header {
-    -fx-label-padding: 0 0 0 10;
-    -fx-pref-width: 300;
-    -fx-text-alignment: center;
-    -fx-text-fill: #EBEEF4;
-    -fx-background-color: #80A0C0;
-    -fx-background-radius: 0 15 0 0;
-    -fx-font-size: 30;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-font-weight: bold;
-}
-
-.side-panel-checkbox {
-    -fx-padding: 0 0 0 20;
-    -fx-background-color: transparent;
-    -fx-pref-width: 300;
-    -fx-pref-height: 40;
-    -fx-font-family: "Segoe UI Variable";
-    -fx-text-fill: #3A4151;
-    -fx-font-size: 25;
+.top-panel {
+    -fx-padding: 20 0 0 40;
 }
 
 .search-field-container {
-    -fx-background-color: transparent;
-    -fx-alignment: center;
-    -fx-padding: 20 10 10 10;
+    -fx-border-color: gray;
+    -fx-border-radius: 8;
+
 }
 
 .search-field {
-    -fx-effect: dropshadow(gaussian, #2E343F4D, 15, 0, 5, 5);
-    -fx-background-radius: 15;
-    -fx-background-color: #E4E8F0;
-    -fx-prompt-text-fill: rgba(46, 52, 63, 0.5);
-    -fx-font-size: 30;
+    -fx-background-color: transparent;
+    -fx-font-size: 25;
     -fx-font-family: "Segoe UI Variable";
 }
 
-.books-scroll-pane {
-    -fx-background-color: #E4E8F0;
+.criteria-chooser {
+    -fx-border-color: gray;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, #2E343F4D, 15, 0, -5, -5);
+    -fx-background-color: white;
+    -fx-border-radius: 8;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 25;
+}
+
+.books-scroll-pane {
+    -fx-background-color: white;
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: gray;
 }
 
 .books-container {
-    -fx-padding: 10 10 10 10;
-    -fx-background-color: #E4E8F0;
-    -fx-background-radius: 8;
+    -fx-padding: 20 40 20 40;
+    -fx-background-color: white;
 }

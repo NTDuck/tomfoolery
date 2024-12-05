@@ -56,6 +56,7 @@ public class StaffView extends BaseView {
 
     private void loadDiscover() throws IOException {
         DiscoverView controller = new DiscoverView(
+                StageManager.getInstance().getDocumentRepository(),
                 StageManager.getInstance().getDocumentSearchGenerator(),
                 StageManager.getInstance().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getAuthenticationTokenRepository()

@@ -11,7 +11,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,22 +18,46 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents.SingleDocumentView;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
-
 import java.io.File;
 
 public class DiscoverView {
-    private final @NonNull SearchDocumentsController controller;
+    private final @NonNull SearchDocumentsController searchController;
+    private final @NonNull GetDocumentByIdController getByIdController;
+
+    private @NonNull ImageView getCoverImageFromPath(String path) {
+        File imgFile = new File(path);
+        Image image = new Image(imgFile.toURI().toString());
+
+        ImageView defaultCoverImage = new ImageView(image);
+        defaultCoverImage.setFitHeight(240);
+        defaultCoverImage.setFitWidth(160);
+        defaultCoverImage.setPreserveRatio(true);
+        defaultCoverImage.setSmooth(true);
+        defaultCoverImage.setCache(true);
+
+        return defaultCoverImage;
+    }
 
     public DiscoverView(
+            @NonNull DocumentRepository documentRepository,
             @NonNull DocumentSearchGenerator documentSearchGenerator,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
 
-        this.controller = SearchDocumentsController.of(
+        this.searchController = SearchDocumentsController.of(
                 documentSearchGenerator,
+                authenticationTokenGenerator,
+                authenticationTokenRepository
+        );
+
+        this.getByIdController = GetDocumentByIdController.of(
+                documentRepository,
                 authenticationTokenGenerator,
                 authenticationTokenRepository
         );
@@ -44,13 +67,7 @@ public class DiscoverView {
     private TextField searchField;
 
     @FXML
-    private CheckBox criteriaTitleCheckBox;
-
-    @FXML
-    private CheckBox criteriaGenreCheckBox;
-
-    @FXML
-    private CheckBox criteriaAuthorCheckBox;
+    private ComboBox<String> criterionChooserBox;
 
     @FXML
     private ScrollPane scrollPane;
@@ -60,33 +77,59 @@ public class DiscoverView {
 
     @FXML
     public void initialize() {
-        booksContainer.prefWidthProperty().bind(scrollPane.widthProperty().subtract(20));
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setFitToWidth(true);
+//        booksContainer.prefWidthProperty().bind(scrollPane.widthProperty().subtract(20));
         searchField.setOnAction(event -> searchBooks());
-        criteriaTitleCheckBox.setOnAction(event -> checkOnTitleBox());
-        criteriaGenreCheckBox.setOnAction(event -> checkOnGenreBox());
-        criteriaAuthorCheckBox.setOnAction(event -> checkOnAuthorBox());
+        criterionChooserBox.setValue("Title");
 
         searchBooks();
     }
 
     private void searchBooks() {
-        try {
-            val requestObject = this.collectRequestObject();
-            val viewModel = this.controller.apply(requestObject);
-            this.onSuccess(viewModel);
-        } catch (SearchDocumentsUseCase.AuthenticationTokenNotFoundException |
-                 SearchDocumentsUseCase.AuthenticationTokenInvalidException e) {
-            System.err.println("Authentication invalid or not found");
-        } catch (SearchDocumentsUseCase.PaginationInvalidException e) {
-            booksContainer.getChildren().clear();
+        if (criterionChooserBox.getValue().equals("ISBN")) {
+            val requestObject = this.collectGetByIdRequestObject();
+
+            try {
+                val viewModel = this.getByIdController.apply(requestObject);
+                this.onGetByIdSuccess(viewModel);
+
+            } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException | GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
+
+            } catch (GetDocumentByIdUseCase.DocumentNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                val requestObject = this.collectSearchRequestObject();
+                val viewModel = this.searchController.apply(requestObject);
+                this.onSearchSuccess(viewModel);
+            } catch (SearchDocumentsUseCase.AuthenticationTokenNotFoundException |
+                     SearchDocumentsUseCase.AuthenticationTokenInvalidException e) {
+                System.err.println("Authentication invalid or not found");
+            } catch (SearchDocumentsUseCase.PaginationInvalidException e) {
+                booksContainer.getChildren().clear();
+            }
         }
     }
 
-    private SearchDocumentsController.@NonNull RequestObject collectRequestObject() {
+    private void onGetByIdSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
+        val documentCoverImageFilePath = viewModel.getDocumentCoverImageFilePath();
+
+        booksContainer.getChildren().clear();
+
+        String authors = String.join(", ", viewModel.getDocumentAuthors());
+        String documentTitle = viewModel.getDocumentTitle();
+        String isbn = viewModel.getDocumentISBN_13();
+        booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, documentCoverImageFilePath));
+    }
+
+    private GetDocumentByIdController.@NonNull RequestObject collectGetByIdRequestObject() {
+        return GetDocumentByIdController.RequestObject.of(searchField.getText());
+    }
+
+    private SearchDocumentsController.@NonNull RequestObject collectSearchRequestObject() {
         val searchCriterion = getChoseCriterion();
         String searchText = searchField.getText();
 
@@ -94,23 +137,18 @@ public class DiscoverView {
     }
 
     private SearchDocumentsController.@NonNull SearchCriterion getChoseCriterion() {
-        if (criteriaTitleCheckBox.isSelected()) {
-            checkOnTitleBox();
+        String criterion = criterionChooserBox.getValue();
+        if (criterion.equals("Title")) {
             return SearchDocumentsController.SearchCriterion.TITLE;
-        }
-        if (criteriaGenreCheckBox.isSelected()) {
-            checkOnGenreBox();
+        } else if (criterion.equals("Author")) {
+            return SearchDocumentsController.SearchCriterion.AUTHOR;
+        } else if (criterion.equals("Genre")) {
             return SearchDocumentsController.SearchCriterion.GENRE;
         }
-        if (criteriaAuthorCheckBox.isSelected()) {
-            checkOnAuthorBox();
-            return SearchDocumentsController.SearchCriterion.AUTHOR;
-        }
-        checkOnTitleBox();
-        return SearchDocumentsController.SearchCriterion.TITLE;
+        else return SearchDocumentsController.SearchCriterion.TITLE;
     }
 
-    private void onSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
+    private void onSearchSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
         booksContainer.getChildren().clear();
         viewModel.getPaginatedDocuments().forEach(document ->
         {
@@ -129,24 +167,13 @@ public class DiscoverView {
         documentTile.setAlignment(Pos.TOP_CENTER);
 
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18;");
+        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
 
         Label authorLabel = new Label(authors);
-        authorLabel.setStyle("-fx-font-size: 14;");
-
-        Label isbnLabel = new Label(isbn);
-        isbnLabel.setStyle("-fx-font-size: 1;");
-        isbnLabel.setVisible(false);
+        authorLabel.setStyle("-fx-font-size: 12;");
 
         try {
-            File imgFile = new File(coverImagePath);
-            Image image = new Image(imgFile.toURI().toString(), 160, 240, true, true, true);
-            ImageView coverImage = new ImageView(image);
-            coverImage.setFitWidth(160);
-            coverImage.setFitHeight(240);
-            coverImage.setPreserveRatio(true);
-            coverImage.setSmooth(true);
-            coverImage.setCache(true);
+            ImageView coverImage = getCoverImageFromPath(coverImagePath);
 
             coverImage.setOnMouseEntered(event -> documentTile.setCursor(Cursor.HAND));
             coverImage.setOnMouseExited(event -> documentTile.setCursor(Cursor.DEFAULT));
@@ -154,7 +181,18 @@ public class DiscoverView {
 
             documentTile.getChildren().add(coverImage);
         } catch (Exception e) {
-            Rectangle placeholder = new Rectangle(160, 240);
+            Image img = new Image("/images/book-cover.jpg");
+            ImageView placeholder = new ImageView(img);
+            placeholder.setFitWidth(160);
+            placeholder.setFitHeight(240);
+            placeholder.setPreserveRatio(true);
+            placeholder.setCache(true);
+            placeholder.setSmooth(true);
+
+            placeholder.setOnMouseEntered(event -> documentTile.setCursor(Cursor.HAND));
+            placeholder.setOnMouseExited(event -> documentTile.setCursor(Cursor.DEFAULT));
+            placeholder.setOnMouseClicked(event -> openDocumentViewOnClick(isbn));
+
             documentTile.getChildren().add(placeholder);
         }
 
@@ -180,21 +218,6 @@ public class DiscoverView {
         rootStackPane.getChildren().add(hbox);
     }
 
-    private void checkOnTitleBox() {
-        criteriaTitleCheckBox.setSelected(true);
-        criteriaGenreCheckBox.setSelected(false);
-        criteriaAuthorCheckBox.setSelected(false);
-    }
-
-    private void checkOnGenreBox() {
-        criteriaGenreCheckBox.setSelected(true);
-        criteriaAuthorCheckBox.setSelected(false);
-        criteriaTitleCheckBox.setSelected(false);
-    }
-
-    private void checkOnAuthorBox() {
-        criteriaAuthorCheckBox.setSelected(true);
-        criteriaTitleCheckBox.setSelected(false);
-        criteriaGenreCheckBox.setSelected(false);
+    private class DocumentCoverImageNotOpenableException extends Throwable {
     }
 }

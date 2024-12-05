@@ -56,12 +56,7 @@ public class LoginView {
 
     @FXML
     private void login(ActionEvent event) {
-        String username = usernameTextField.getText();
-        String password = passwordTextField.getText();
-        char[] passwordCharArray = password.toCharArray();
-
-        val requestObject = LogUserInByCredentialsController.RequestObject.of(username, passwordCharArray);
-
+        val requestObject = this.collectRequestObject();
         try {
             val viewModel = this.controller.apply(requestObject);
             onSuccess(viewModel);
@@ -69,6 +64,13 @@ public class LoginView {
             errorMessage.setText("Invalid username or password");
             errorMessage.setVisible(true);
         }
+    }
+
+    private LogUserInByCredentialsController.@NonNull RequestObject collectRequestObject() {
+        val username = usernameTextField.getText();
+        val password = passwordTextField.getText();
+
+        return LogUserInByCredentialsController.RequestObject.of(username, password.toCharArray());
     }
 
     private void onSuccess(LogUserInByCredentialsController.ViewModel viewModel) {
@@ -80,7 +82,7 @@ public class LoginView {
         else if (userType.equals(LogUserInByCredentialsController.UserType.STAFF)) {
             StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DASHBOARD);
         }
-        else StageManager.getInstance().loadAdminView(StageManager.ContentType.PATRON_DASHBOARD);
+        else StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_DASHBOARD);
     }
 
     @FXML

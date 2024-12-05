@@ -278,6 +278,7 @@ public class StageManager {
     }
 
     public void populateUserRepositories() {
+
         this.administratorRepository.save(Administrator.of(
                 BaseUser.Id.of(UUID.randomUUID()),
                 BaseUser.Audit.of(BaseUser.Audit.Timestamps.of(Instant.EPOCH)),

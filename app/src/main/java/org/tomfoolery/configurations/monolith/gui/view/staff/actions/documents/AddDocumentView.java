@@ -11,11 +11,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
+import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.AddDocumentActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.AddDocumentController;
 
@@ -26,8 +31,7 @@ import java.util.List;
 public class AddDocumentView {
     private @NonNull String currentDocumentContentPath;
 
-    private final @NonNull AddDocumentController controller;
-    private final @NonNull DocumentsManagementView parentView;
+    private final @NonNull AddDocumentController addDocumentController;
 
     @FXML
     private TextField title;
@@ -74,8 +78,7 @@ public class AddDocumentView {
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
             @NonNull DocumentsManagementView parentView) {
-        this.controller = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.parentView = parentView;
+        this.addDocumentController = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
         currentDocumentContentPath = "";
     }
 
@@ -175,43 +178,52 @@ public class AddDocumentView {
     public void addDocument() {
         try {
             val requestObject = this.collectRequestObject();
-            this.controller.accept(requestObject);
+            this.addDocumentController.accept(requestObject);
             this.onSuccess();
-        } catch (DocumentPublishedYearInvalidException exception) {
+
+        } catch (DocumentPublishedYearInvalidException |
+                 AddDocumentController.DocumentPublishedYearInvalidException e) {
             this.onDocumentPublishedYearInvalidException();
-        } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (AddDocumentUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (AddDocumentUseCase.DocumentAlreadyExistsException exception) {
-            this.onDocumentAlreadyExistsException();
         } catch (AddDocumentController.DocumentCoverImageFilePathInvalidException e) {
             this.onCoverImageFilePathInvalid();
         } catch (AddDocumentController.DocumentContentFilePathInvalidException e) {
             this.onContentFilePathInvalid();
-        } catch (AddDocumentController.DocumentPublishedYearInvalidException e) {
-            throw new RuntimeException(e);
         } catch (AddDocumentUseCase.DocumentISBNInvalidException e) {
-            throw new RuntimeException(e);
+            this.onDocumentISBNInvalid();
+        } catch (AddDocumentUseCase.AuthenticationTokenInvalidException e) {
+            this.onAuthenticationTokenInvalidException();
+        } catch (AddDocumentUseCase.DocumentAlreadyExistsException e) {
+            this.onDocumentAlreadyExistsException();
+        } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException e) {
+            this.onAuthenticationTokenNotFoundException();
         }
     }
 
     private AddDocumentController.@NonNull RequestObject collectRequestObject() throws DocumentPublishedYearInvalidException {
-        String documentISBN = this.ISBN.getText();
-        String documentTitle = this.title.getText();
-        List<String> documentAuthors = Arrays.asList(authors.getText().split(","));
-        List<String> documentGenres = Arrays.asList(genres.getText().split(","));
-        String documentPublisher = this.publisher.getText();
-        String rawDocumentPublishedYear = this.publishedYear.getText();
-        String documentDescription = this.description.getText();
-        String documentCoverImagePath = getCurrentCoverImagePath();
-        System.out.println("added document's cover image path: " + documentCoverImagePath);
+        String ISBN = this.ISBN.getText();
+
+        String documentTitle = title.getText();
+        String documentDescription = description.getText();
+        String rawDocumentAuthors = authors.getText();
+        String rawDocumentGenres = genres.getText();
+
+        short documentPublishedYear = this.collectDocumentPublishedYear();
+        String documentPublisher = publisher.getText();
+
+        val documentAuthors = Arrays.asList(Arrays.stream(rawDocumentAuthors.split(",")).parallel().map(String::trim).toArray(String[]::new));
+        val documentGenres = Arrays.asList(Arrays.stream(rawDocumentGenres.split(",")).parallel().map(String::trim).toArray(String[]::new));
+
+        val documentContentFilePath = this.currentDocumentContentPath;
+        val documentCoverImageFilePath = this.getCurrentCoverImagePath();
+
+        return AddDocumentController.RequestObject.of(ISBN, documentTitle, documentDescription, documentAuthors, documentGenres, documentPublishedYear, documentPublisher, documentContentFilePath, documentCoverImageFilePath);
+    }
+
+    private @Unsigned short collectDocumentPublishedYear() throws DocumentPublishedYearInvalidException {
+        val rawDocumentPublishedYear = publishedYear.getText();
 
         try {
-            val documentPublishedYear = Short.parseShort(rawDocumentPublishedYear);
-            return AddDocumentController.RequestObject.of(documentISBN, documentTitle, documentDescription, documentAuthors,
-                    documentGenres, documentPublishedYear, documentPublisher, currentDocumentContentPath, documentCoverImagePath);
-
+            return Short.parseShort(rawDocumentPublishedYear);
         } catch (NumberFormatException exception) {
             throw new DocumentPublishedYearInvalidException();
         }
@@ -219,8 +231,8 @@ public class AddDocumentView {
 
     private void onSuccess() {
         errorMessage.setVisible(false);
-        parentView.showDocuments();
         closeView();
+        StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_DOCUMENTS_MANAGEMENT);
     }
 
     private void showErrorMessage(String message) {
@@ -230,6 +242,10 @@ public class AddDocumentView {
 
     private void onDocumentAlreadyExistsException() {
         showErrorMessage("Document already exists");
+    }
+
+    private void onDocumentISBNInvalid() {
+        showErrorMessage("ISBN is invalid");
     }
 
     private void onAuthenticationTokenInvalidException() {
