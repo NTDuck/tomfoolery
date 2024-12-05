@@ -1,14 +1,11 @@
 package org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
@@ -18,15 +15,19 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.BorrowDocumentUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
+
 import java.io.File;
 
 public class PatronSingleDocumentView {
     private final @NonNull GetDocumentByIdController getDocumentByIdController;
     private final @NonNull BorrowDocumentController borrowDocumentController;
     private final @NonNull ReturnDocumentController returnDocumentController;
+    private final @NonNull GetDocumentBorrowStatusController getDocumentBorrowStatusController;
     private final @NonNull String documentISBN;
 
     public PatronSingleDocumentView(
@@ -37,6 +38,7 @@ public class PatronSingleDocumentView {
             @NonNull BorrowingSessionRepository borrowingSessionRepository
             ) {
         this.documentISBN = documentISBN;
+        this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.borrowDocumentController = BorrowDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.getDocumentByIdController = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.returnDocumentController = ReturnDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
@@ -64,37 +66,53 @@ public class PatronSingleDocumentView {
     private Label message;
 
     @FXML
-    private Label titleLabel;
+    private TextField titleLabel;
 
     @FXML
-    private Label authorsLabel;
+    private TextField authorsLabel;
 
     @FXML
-    private Label genresLabel;
+    private TextField genresLabel;
 
     @FXML
-    private Label isbnLabel;
+    private TextField isbnLabel;
 
     @FXML
-    private Label publisherLabel;
+    private TextField publisherLabel;
 
     @FXML
-    private Label yearPublishedLabel;
+    private TextField yearPublishedLabel;
 
     @FXML
     private ScrollPane descriptionScrollPane;
 
     @FXML
-    private Label descriptionArea;
+    private TextArea descriptionArea;
 
     @FXML
     public void initialize() {
         descriptionScrollPane.setFitToWidth(true);
-        loadInfo();
         borrowButton.setOnAction(event -> borrowDocument());
         returnButton.setOnAction(event -> returnDocument());
         closeButton.setOnAction(event -> closeView());
         message.setVisible(false);
+        this.loadInfo();
+        this.setStatusLabel();
+    }
+
+    private void setStatusLabel() {
+        val requestObject = GetDocumentBorrowStatusController.RequestObject.of(documentISBN);
+        try {
+            val viewModel = this.getDocumentBorrowStatusController.apply(requestObject);
+            statusLabel.setText("Borrowed");
+        } catch (GetDocumentBorrowStatusUseCase.AuthenticationTokenNotFoundException |
+                 GetDocumentBorrowStatusUseCase.AuthenticationTokenInvalidException |
+                 GetDocumentBorrowStatusUseCase.DocumentNotBorrowedException e) {
+            statusLabel.setText("Not borrowed");
+        } catch (GetDocumentBorrowStatusUseCase.DocumentISBNInvalidException |
+                 GetDocumentBorrowStatusUseCase.DocumentNotFoundException e) {
+            System.err.println("Document ISBN invalid or document not found.");
+        }
     }
 
     public void loadInfo() {
@@ -132,8 +150,8 @@ public class PatronSingleDocumentView {
         String coverImagePath = viewModel.getDocumentCoverImageFilePath();
         File coverImageFile = new File(coverImagePath);
         coverImage.setImage(new Image(coverImageFile.toURI().toString()));
-        coverImage.setFitHeight(540);
-        coverImage.setFitWidth(310);
+        coverImage.setFitHeight(400);
+        coverImage.setFitWidth(260);
     }
 
     private void borrowDocument() {
@@ -164,6 +182,7 @@ public class PatronSingleDocumentView {
 
     private void onBorrowingSuccess() {
         MessageLabelFactory.createSuccessLabel("Document borrowed successfully", 16, message);
+        setStatusLabel();
     }
 
     private void onDocumentAlreadyBorrowedException() {
@@ -198,6 +217,7 @@ public class PatronSingleDocumentView {
 
     private void onReturningSuccess() {
         MessageLabelFactory.createSuccessLabel("Document returned successfully", 16, message);
+        setStatusLabel();
     }
 
     private void onDocumentNotBorrowedException() {

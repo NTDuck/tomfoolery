@@ -8,6 +8,7 @@
 
 .left-side {
     -fx-background-color: #4893DB;
+    -fx-padding: 20;
 }
 
 .right-side {
@@ -51,6 +52,7 @@
 }
 
 .document-info-label {
+    -fx-background-color: transparent;
     -fx-pref-height: 50;
     -fx-pref-width: 800;
     -fx-font-family: "Segoe UI Variable";

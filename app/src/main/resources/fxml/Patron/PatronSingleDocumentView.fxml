@@ -10,25 +10,26 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
       stylesheets="/css/Patron/PatronSingleDocumentView.css" prefHeight="720" prefWidth="1280"
       style="-fx-padding: 80 200 80 200; -fx-alignment: center; -fx-background-color: transparent">
    <HBox prefHeight="560.0" prefWidth="880.0" spacing="20.0" styleClass="root-container" HBox.hgrow="ALWAYS">
-      <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="600.0" spacing="20.0"
+      <VBox alignment="CENTER" prefWidth="600.0" spacing="20.0"
             HBox.hgrow="ALWAYS" styleClass="left-side">
          <Label prefHeight="50.0" prefWidth="230.0" text="Not borrowed" styleClass="status-label" fx:id="statusLabel"
-            VBox.vgrow="ALWAYS"/>
+            VBox.vgrow="ALWAYS" alignment="CENTER"/>
 
-         <ImageView fitHeight="540" fitWidth="310" preserveRatio="true" fx:id="coverImage"
-            VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+         <ImageView fitHeight="400" fitWidth="260" preserveRatio="true" fx:id="coverImage">
             <Image url="/images/default/placeholder-book-cover.png"/>
          </ImageView>
 
          <Label prefHeight="45.0" prefWidth="250.0" text="Rating: 4.67 / 5" styleClass="rating-label" fx:id="ratingLabel"
-            VBox.vgrow="ALWAYS"/>
+            VBox.vgrow="ALWAYS" alignment="CENTER"/>
       </VBox>
 
-      <VBox prefHeight="400.0" prefWidth="800.0" HBox.hgrow="ALWAYS" styleClass="right-side">
+      <VBox prefWidth="800.0" HBox.hgrow="ALWAYS" styleClass="right-side">
          <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0" spacing="10.0">
             <Button mnemonicParsing="false" text="Borrow"
                     styleClass="action-button" fx:id="borrowButton" HBox.hgrow="ALWAYS">
@@ -45,17 +46,17 @@
 
          <VBox prefWidth="600.0" VBox.vgrow="ALWAYS" styleClass="document-info">
             <Label fx:id="message" prefHeight="20" VBox.vgrow="ALWAYS"/>
-            <Label text="Title: thrill of the hunt" styleClass="document-info-label" fx:id="titleLabel" VBox.vgrow="ALWAYS"/>
+            <TextField text="Title: thrill of the hunt" styleClass="document-info-label" fx:id="titleLabel" VBox.vgrow="ALWAYS" editable="false"/>
 
-            <Label text="Authors: Duy, Hieu" styleClass="document-info-label" fx:id="authorsLabel" VBox.vgrow="ALWAYS"/>
+            <TextField text="Authors: Duy, Hieu" styleClass="document-info-label" fx:id="authorsLabel" VBox.vgrow="ALWAYS" editable="false"/>
 
-            <Label text="Genres: LoL, Science" styleClass="document-info-label" fx:id="genresLabel" VBox.vgrow="ALWAYS"/>
+            <TextField text="Genres: LoL, Science" styleClass="document-info-label" fx:id="genresLabel" VBox.vgrow="ALWAYS" editable="false"/>
 
-            <Label text="ISBN: 12378312" styleClass="document-info-label" fx:id="isbnLabel" VBox.vgrow="ALWAYS"/>
+            <TextField text="ISBN: 12378312" styleClass="document-info-label" fx:id="isbnLabel" VBox.vgrow="ALWAYS" editable="false"/>
 
-            <Label text="Publisher: Duck" styleClass="document-info-label" fx:id="publisherLabel" VBox.vgrow="ALWAYS"/>
+            <TextField text="Publisher: Duck" styleClass="document-info-label" fx:id="publisherLabel" VBox.vgrow="ALWAYS" editable="false"/>
 
-            <Label text="Year Published: 2023" styleClass="document-info-label" fx:id="yearPublishedLabel" VBox.vgrow="ALWAYS"/>
+            <TextField text="Year Published: 2023" styleClass="document-info-label" fx:id="yearPublishedLabel" VBox.vgrow="ALWAYS" editable="false"/>
 
             <VBox VBox.vgrow="ALWAYS">
                <Label prefHeight="17.0" prefWidth="670.0" text="Description:" VBox.vgrow="ALWAYS">
@@ -64,9 +65,9 @@
                   </font>
                </Label>
 
-               <ScrollPane hbarPolicy="NEVER" prefHeight="230" styleClass="description-scroll-pane"
+               <ScrollPane hbarPolicy="NEVER" prefHeight="200" styleClass="description-scroll-pane"
                            fx:id="descriptionScrollPane" VBox.vgrow="ALWAYS">
-                  <Label styleClass="description" fx:id="descriptionArea"/>
+                  <TextArea styleClass="description" fx:id="descriptionArea" editable="false"/>
                </ScrollPane>
             </VBox>
 
