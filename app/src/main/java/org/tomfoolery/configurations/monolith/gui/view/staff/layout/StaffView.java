@@ -17,7 +17,7 @@ public class StaffView extends BaseView {
     public void loadSidebar() {
         StaffSidebar controller = new StaffSidebar();
 
-        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/BaseSidebar.fxml"));
+        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/User/BaseSidebar.fxml"));
         sidebarLoader.setController(controller);
         sidebar = sidebarLoader.load();
 
@@ -47,31 +47,37 @@ public class StaffView extends BaseView {
     }
 
     private void loadDashboard() throws IOException {
-        DashboardView controller = new DashboardView();
+        DashboardView controller = new DashboardView(
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getBorrowingSessionRepository(),
+                StageManager.getInstance().getResources().getDocumentRecommendationGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+        );
 
-        FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/fxml/Dashboard.fxml"));
+        FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/fxml/User/Dashboard.fxml"));
         dashboardLoader.setController(controller);
         content = dashboardLoader.load();
     }
 
     private void loadDiscover() throws IOException {
         DiscoverView controller = new DiscoverView(
-                StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getDocumentSearchGenerator(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getDocumentSearchGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
 
-        FXMLLoader discoverLoader = new FXMLLoader(getClass().getResource("/fxml/Discover.fxml"));
+        FXMLLoader discoverLoader = new FXMLLoader(getClass().getResource("/fxml/User/Discover.fxml"));
         discoverLoader.setController(controller);
         content = discoverLoader.load();
     }
 
     private void loadDocumentsManagement() throws IOException {
         DocumentsManagementView controller = new DocumentsManagementView(
-                StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
 
         FXMLLoader documentsManagementLoader = new FXMLLoader(getClass().getResource("/fxml/Staff/DocumentsManagement.fxml"));

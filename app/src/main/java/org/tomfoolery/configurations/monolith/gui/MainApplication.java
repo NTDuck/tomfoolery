@@ -11,7 +11,6 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         StageManager.getInstance().setPrimaryStage(primaryStage);
-        StageManager.getInstance().populateUserRepositories();
         StageManager.getInstance().openLoginMenu();
     }
 }

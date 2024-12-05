@@ -22,10 +22,13 @@ import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentR
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.relations.DocumentContent;
+import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
+import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ReadBorrowedDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
 
@@ -42,6 +45,7 @@ public class ShowBorrowedDocumentsView {
     private final @NonNull ShowBorrowedDocumentsController showBorrowedDocumentsController;
     private final @NonNull ReadBorrowedDocumentController readBorrowedDocumentController;
     private final @NonNull ReturnDocumentController returnDocumentController;
+    private final @NonNull GetDocumentBorrowStatusController getDocumentBorrowStatusController;
 
     public ShowBorrowedDocumentsView(@NonNull DocumentRepository documentRepository,
                                      @NonNull DocumentContentRepository contentRepository,
@@ -52,6 +56,7 @@ public class ShowBorrowedDocumentsView {
         this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.readBorrowedDocumentController = ReadBorrowedDocumentController.of(documentRepository, contentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.returnDocumentController = ReturnDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @FXML
@@ -127,7 +132,7 @@ public class ShowBorrowedDocumentsView {
         } catch (ReadBorrowedDocumentUseCase.DocumentISBNInvalidException e) {
             throw new RuntimeException(e);
         } catch (ReadBorrowedDocumentUseCase.DocumentContentNotFoundException e) {
-            throw new RuntimeException(e);
+            System.err.println("This document's content is not found.");
         } catch (ReadBorrowedDocumentUseCase.DocumentOverdueException e) {
             throw new RuntimeException(e);
         }
@@ -165,10 +170,10 @@ public class ShowBorrowedDocumentsView {
     private void openRatingView(String isbn) {
         RateDocumentView rateDocumentView = new RateDocumentView(
                 isbn,
-                StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getReviewRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getReviewRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/RateDocumentView.fxml"));
@@ -182,7 +187,7 @@ public class ShowBorrowedDocumentsView {
 
         try {
             this.returnDocumentController.accept(requestObject);
-            StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_SHOW_BORROWED); // refresh the view
+            StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_SHOW_BORROWED);
         } catch (ReturnDocumentUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
         } catch (ReturnDocumentUseCase.AuthenticationTokenInvalidException exception) {
@@ -217,12 +222,26 @@ public class ShowBorrowedDocumentsView {
         ObservableList<DocumentViewModel> documents = FXCollections.observableArrayList();
 
         viewModel.getPaginatedBorrowedDocuments().forEach(
-        fragmentaryDocument -> {
-            String ISBN = fragmentaryDocument.getDocumentISBN_13();
-            String documentTitle = fragmentaryDocument.getDocumentTitle();
-            String documentAuthors = String.join(", ", fragmentaryDocument.getDocumentAuthors());
+        document -> {
+            String ISBN = document.getDocumentISBN_13();
+            String documentTitle = document.getDocumentTitle();
+            String documentAuthors = String.join(", ", document.getDocumentAuthors());
+            String borrowDate = "";
+            String dueDate = "";
+            try {
+                val borrowStatusViewModel = getDocumentBorrowStatusController.apply(GetDocumentBorrowStatusController.RequestObject.of(ISBN));
+                borrowDate = borrowStatusViewModel.getBorrowedTimestamp();
+                dueDate = borrowStatusViewModel.getDueTimestamp();
+            } catch (GetDocumentBorrowStatusUseCase.AuthenticationTokenNotFoundException |
+                     GetDocumentBorrowStatusUseCase.AuthenticationTokenInvalidException e) {
+                StageManager.getInstance().openLoginMenu();
+            } catch (GetDocumentBorrowStatusUseCase.DocumentISBNInvalidException |
+                     GetDocumentBorrowStatusUseCase.DocumentNotBorrowedException |
+                     GetDocumentBorrowStatusUseCase.DocumentNotFoundException e) {
+                throw new RuntimeException(e);
+            }
 
-            DocumentViewModel documentViewModel = DocumentViewModel.of(ISBN, documentTitle, documentAuthors);
+            DocumentViewModel documentViewModel = DocumentViewModel.of(ISBN, documentTitle, documentAuthors, borrowDate, dueDate);
             documents.add(documentViewModel);
         });
 
@@ -251,5 +270,7 @@ public class ShowBorrowedDocumentsView {
         String ISBN;
         String title;
         String authors;
+        String borrowDate;
+        String dueDate;
     }
 }

@@ -35,9 +35,9 @@ public abstract class BaseSidebar {
     @SneakyThrows
     public void openLogOutView() {
         LogOutView controller = new LogOutView (
-                StageManager.getInstance().getUserRepositories(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getUserRepositories(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogOutView.fxml"));

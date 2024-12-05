@@ -44,47 +44,47 @@
                styleClass="documents-table"
                VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn text="ISBN">
+            <TableColumn text="ISBN" prefWidth="40">
                 <cellValueFactory>
                     <PropertyValueFactory property="ISBN"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Title">
+            <TableColumn text="Title" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="title"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Authors">
+            <TableColumn text="Authors" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="authors"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Genres">
+            <TableColumn text="Genres" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="genres"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Description">
+            <TableColumn text="Description" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="description"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Published Year">
+            <TableColumn text="Year" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="publishedYear"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Publisher">
+            <TableColumn text="Publisher" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="publisher"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Created">
+            <TableColumn text="Created" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="created"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Last Modified">
+            <TableColumn text="Last Modified" prefWidth="50">
                 <cellValueFactory>
                     <PropertyValueFactory property="lastModified"/>
                 </cellValueFactory>

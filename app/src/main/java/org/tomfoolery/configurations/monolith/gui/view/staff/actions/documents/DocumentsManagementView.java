@@ -45,9 +45,9 @@ public class DocumentsManagementView extends ShowDocumentsView{
 
         DeleteDocumentPopup deleteDocumentPopupController = new DeleteDocumentPopup(
                 selectedDocumentISBN,
-                StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/DeleteDocumentPopup.fxml"));
@@ -64,11 +64,10 @@ public class DocumentsManagementView extends ShowDocumentsView{
     @SneakyThrows
     private void openAddDocumentMenu() {
         AddDocumentView controller = new AddDocumentView(
-                StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getDocumentContentRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository(),
-                this
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getDocumentContentRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentView.fxml"));
         loader.setController(controller);

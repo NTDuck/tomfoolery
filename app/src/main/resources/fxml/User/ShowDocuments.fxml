@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="content-container" stylesheets="/css/Admin/DocumentTable.css"
+      VBox.vgrow="ALWAYS"
+      HBox.hgrow="ALWAYS">
+
+    <TableView fx:id="documentsTable"
+               styleClass="documents-table"
+               VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ISBN" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="ISBN"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Title" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="title"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Authors" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="authors"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Genres" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="genres"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Description" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="description"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Year" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="publishedYear"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Publisher" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="publisher"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Created" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="created"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Last Modified" prefWidth="50">
+                <cellValueFactory>
+                    <PropertyValueFactory property="lastModified"/>
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+</VBox>

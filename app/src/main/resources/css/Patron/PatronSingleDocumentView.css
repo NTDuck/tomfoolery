@@ -17,13 +17,13 @@
 .status-label {
     -fx-text-fill: #EBEEF4;
     -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 30;
+    -fx-font-size: 26;
 }
 
 .rating-label {
     -fx-text-fill: #EBEEF4;
     -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 28;
+    -fx-font-size: 24;
 }
 
 .action-button {

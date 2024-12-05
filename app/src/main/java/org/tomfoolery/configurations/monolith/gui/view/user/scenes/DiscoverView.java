@@ -15,7 +15,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents.SingleDocumentView;
+import org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents.PatronSingleDocumentView;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
@@ -77,7 +77,6 @@ public class DiscoverView {
 
     @FXML
     public void initialize() {
-//        booksContainer.prefWidthProperty().bind(scrollPane.widthProperty().subtract(20));
         searchField.setOnAction(event -> searchBooks());
         criterionChooserBox.setValue("Title");
 
@@ -93,7 +92,7 @@ public class DiscoverView {
                 this.onGetByIdSuccess(viewModel);
 
             } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException | GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
-
+                StageManager.getInstance().openLoginMenu();
             } catch (GetDocumentByIdUseCase.DocumentNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException e) {
@@ -126,6 +125,7 @@ public class DiscoverView {
     }
 
     private GetDocumentByIdController.@NonNull RequestObject collectGetByIdRequestObject() {
+        System.out.print(searchField.getText());
         return GetDocumentByIdController.RequestObject.of(searchField.getText());
     }
 
@@ -155,7 +155,8 @@ public class DiscoverView {
             String authors = String.join(", ", document.getDocumentAuthors());
             String documentTitle = document.getDocumentTitle();
             String isbn = document.getDocumentISBN_13();
-            String coverImagePath = document.getDocumentCoverImageFilePath();
+//            String coverImagePath = document.getDocumentCoverImageFilePath();
+            String coverImagePath = "/images/default/placeholder-book-cover.png";
             booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, coverImagePath));
         });
     }
@@ -173,7 +174,8 @@ public class DiscoverView {
         authorLabel.setStyle("-fx-font-size: 12;");
 
         try {
-            ImageView coverImage = getCoverImageFromPath(coverImagePath);
+//            ImageView coverImage = getCoverImageFromPath(coverImagePath);
+            ImageView coverImage = new ImageView(new Image(coverImagePath));
 
             coverImage.setOnMouseEntered(event -> documentTile.setCursor(Cursor.HAND));
             coverImage.setOnMouseExited(event -> documentTile.setCursor(Cursor.DEFAULT));
@@ -181,7 +183,7 @@ public class DiscoverView {
 
             documentTile.getChildren().add(coverImage);
         } catch (Exception e) {
-            Image img = new Image("/images/book-cover.jpg");
+            Image img = new Image("/images/default/placeholder-book-cover.jpg");
             ImageView placeholder = new ImageView(img);
             placeholder.setFitWidth(160);
             placeholder.setFitHeight(240);
@@ -202,15 +204,15 @@ public class DiscoverView {
 
     @SneakyThrows
     private void openDocumentViewOnClick(String isbn) {
-        SingleDocumentView documentView = new SingleDocumentView(
+        PatronSingleDocumentView documentView = new PatronSingleDocumentView(
                 isbn,
-                StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository(),
-                StageManager.getInstance().getBorrowingSessionRepository()
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getBorrowingSessionRepository()
         );
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronDocumentView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronSingleDocumentView.fxml"));
         loader.setController(documentView);
         HBox hbox = loader.load();
 

@@ -28,14 +28,28 @@
                   <PropertyValueFactory property="ISBN"/>
               </cellValueFactory>
           </TableColumn>
+
           <TableColumn prefWidth="400" text="Title">
               <cellValueFactory>
                   <PropertyValueFactory property="title"/>
               </cellValueFactory>
           </TableColumn>
+
           <TableColumn prefWidth="210.0" text="Authors">
               <cellValueFactory>
                   <PropertyValueFactory property="authors"/>
+              </cellValueFactory>
+          </TableColumn>
+
+          <TableColumn prefWidth="100.0" text="Borrowed at">
+              <cellValueFactory>
+                  <PropertyValueFactory property="borrowDate"/>
+              </cellValueFactory>
+          </TableColumn>
+
+          <TableColumn prefWidth="100.0" text="Due at">
+              <cellValueFactory>
+                  <PropertyValueFactory property="dueDate"/>
               </cellValueFactory>
           </TableColumn>
 

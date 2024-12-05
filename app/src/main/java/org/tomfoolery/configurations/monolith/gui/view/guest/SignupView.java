@@ -147,17 +147,22 @@ public class SignupView {
         return password;
     }
 
-    private @NonNull String[] getBirthday() throws BirthdayValidator.BirthdayInvalidException, BirthdayValidator.DayOfBirthInvalidException, BirthdayValidator.MonthOfBirthInvalidException, BirthdayValidator.YearOfBirthInvalidException {
+    private @NonNull String[] getBirthday() {
         String birthday = this.birthdayTextField.getText();
 
-        BirthdayValidator.validateBirthday(birthday);
-
-        String[] birthdaySeperated = birthday.split("/");
-        if (birthdaySeperated.length > 3) {
-            throw new BirthdayValidator.BirthdayInvalidException();
+        try {
+            BirthdayValidator.validateBirthday(birthday);
+        } catch (BirthdayValidator.BirthdayInvalidException e) {
+            this.onBirthdayInvalidException();
+        } catch (BirthdayValidator.MonthOfBirthInvalidException e) {
+            this.onMonthOfBirthInvalidException();
+        } catch (BirthdayValidator.DayOfBirthInvalidException e) {
+            this.onDayOfBirthInvalidException();
+        } catch (BirthdayValidator.YearOfBirthInvalidException e) {
+            this.onYearOfBirthInvalidException();
         }
 
-        return birthdaySeperated;
+        return birthday.split("/");
     }
 
     private @Unsigned int getDayOfBirth(String[] birthday) {

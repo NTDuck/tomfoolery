@@ -94,12 +94,10 @@ public class RateDocumentView {
         } catch (AddDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
             System.err.println("user isn't invalid?");
         } catch (AddDocumentReviewUseCase.ReviewAlreadyExistsException e) {
-            throw new RuntimeException(e);
-        } catch (AddDocumentReviewUseCase.DocumentISBNInvalidException e) {
-            throw new RuntimeException(e);
-        } catch (AddDocumentReviewUseCase.RatingInvalidException e) {
-            throw new RuntimeException(e);
-        } catch (AddDocumentReviewUseCase.DocumentNotFoundException e) {
+            this.onPatronRatingAlreadyExistsException();
+        } catch (AddDocumentReviewUseCase.DocumentISBNInvalidException |
+                 AddDocumentReviewUseCase.DocumentNotFoundException |
+                 AddDocumentReviewUseCase.RatingInvalidException e) {
             throw new RuntimeException(e);
         }
     }
@@ -132,12 +130,12 @@ public class RateDocumentView {
             System.err.println("user doesn't exist?");
         } catch (RemoveDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
             System.err.println("user isn't invalid?");
-        } catch (RemoveDocumentReviewUseCase.DocumentNotFoundException exception) {
+        } catch (RemoveDocumentReviewUseCase.DocumentNotFoundException |
+                 RemoveDocumentReviewUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
         } catch (RemoveDocumentReviewUseCase.ReviewNotFoundException exception) {
             errorMessage.setText("You haven't rated this document");
             errorMessage.setVisible(true);
-        } catch (RemoveDocumentReviewUseCase.DocumentISBNInvalidException e) {
-            throw new RuntimeException(e);
         }
     }
 

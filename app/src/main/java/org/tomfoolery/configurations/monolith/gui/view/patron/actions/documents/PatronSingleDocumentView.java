@@ -20,16 +20,15 @@ import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDo
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
-
 import java.io.File;
 
-public class SingleDocumentView {
+public class PatronSingleDocumentView {
     private final @NonNull GetDocumentByIdController getDocumentByIdController;
     private final @NonNull BorrowDocumentController borrowDocumentController;
     private final @NonNull ReturnDocumentController returnDocumentController;
     private final @NonNull String documentISBN;
 
-    public SingleDocumentView(
+    public PatronSingleDocumentView(
             @NonNull String documentISBN,
             @NonNull DocumentRepository documentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
@@ -152,7 +151,9 @@ public class SingleDocumentView {
         } catch (BorrowDocumentUseCase.DocumentAlreadyBorrowedException exception) {
             this.onDocumentAlreadyBorrowedException();
         } catch (BorrowDocumentUseCase.DocumentBorrowLimitExceeded e) {
-            throw new RuntimeException(e);
+            message.setVisible(true);
+            setErrorStyleForMessage(message);
+            message.setText("You have borrowed this document too much!");
         } catch (BorrowDocumentUseCase.DocumentISBNInvalidException e) {
             throw new RuntimeException(e);
         }
@@ -186,15 +187,15 @@ public class SingleDocumentView {
         try {
             this.returnDocumentController.accept(requestObject);
             this.onReturningSuccess();
-        } catch (ReturnDocumentUseCase.AuthenticationTokenNotFoundException exception) {
-            System.err.println("how is auth token not found!?");
-        } catch (ReturnDocumentUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (ReturnDocumentUseCase.DocumentNotFoundException exception) {
-            System.err.println("document not found");
+        } catch (ReturnDocumentUseCase.AuthenticationTokenNotFoundException |
+                 ReturnDocumentUseCase.AuthenticationTokenInvalidException exception) {
+            message.setVisible(true);
+            setErrorStyleForMessage(message);
+            message.setText("You have to be a patron to borrow and return documents");
         } catch (ReturnDocumentUseCase.DocumentNotBorrowedException exception) {
             this.onDocumentNotBorrowedException();
-        } catch (ReturnDocumentUseCase.DocumentISBNInvalidException e) {
+        } catch (ReturnDocumentUseCase.DocumentNotFoundException |
+                 ReturnDocumentUseCase.DocumentISBNInvalidException e) {
             throw new RuntimeException(e);
         }
     }

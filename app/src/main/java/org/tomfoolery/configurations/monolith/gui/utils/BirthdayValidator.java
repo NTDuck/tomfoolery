@@ -5,14 +5,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class BirthdayValidator {
-    public static void validateBirthday(String birthday) throws MonthOfBirthInvalidException, DayOfBirthInvalidException, YearOfBirthInvalidException {
+    public static void validateBirthday(String birthday) throws MonthOfBirthInvalidException, DayOfBirthInvalidException, YearOfBirthInvalidException, BirthdayInvalidException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
         LocalDate date;
         try {
             date = LocalDate.parse(birthday, formatter);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid date format. Expected MM/dd/yyyy.");
+            throw new BirthdayInvalidException();
         }
 
         int month = date.getMonthValue();

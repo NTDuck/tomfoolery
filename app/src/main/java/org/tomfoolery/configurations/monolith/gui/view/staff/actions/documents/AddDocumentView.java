@@ -12,24 +12,19 @@ import javafx.stage.Stage;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.AddDocumentActionView;
-import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.AddDocumentController;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 public class AddDocumentView {
-    private @NonNull String currentDocumentContentPath;
+    private @NonNull String currentDocumentContentPath = "";
 
     private final @NonNull AddDocumentController addDocumentController;
 
@@ -76,10 +71,8 @@ public class AddDocumentView {
             @NonNull DocumentRepository documentRepository,
             @NonNull DocumentContentRepository documentContentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-            @NonNull AuthenticationTokenRepository authenticationTokenRepository,
-            @NonNull DocumentsManagementView parentView) {
+            @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         this.addDocumentController = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        currentDocumentContentPath = "";
     }
 
     @FXML
@@ -95,7 +88,7 @@ public class AddDocumentView {
     }
 
     private ImageView getDefaultCoverImage() {
-        ImageView coverImageView = new ImageView(new Image("/images/dayxi.png"));
+        ImageView coverImageView = new ImageView(new Image("/images/default/placeholder-book-cover.png"));
         coverImageView.setFitHeight(160);
         coverImageView.setFitWidth(160);
 

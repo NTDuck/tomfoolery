@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<VBox prefHeight="720.0" prefWidth="1200.0" HBox.hgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
+      stylesheets="/css/User/Discover.css" styleClass="root" spacing="20">
+    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="30.0" styleClass="top-panel">
+        <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="900.0" styleClass="search-field-container">
+            <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true"
+                       preserveRatio="true">
+                <Image url="/images/search.png"/>
+            </ImageView>
+
+            <TextField prefHeight="60.0" prefWidth="1000.0" promptText="Search a book..." fx:id="searchField" styleClass="search-field"/>
+        </HBox>
+
+        <ComboBox prefHeight="50.0" prefWidth="190.0" styleClass="criteria-chooser" fx:id="criterionChooserBox">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Title" />
+                    <String fx:value="Author" />
+                    <String fx:value="Genre" />
+                    <String fx:value="ISBN" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </HBox>
+
+    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" styleClass="books-scroll-pane" fx:id="scrollPane">
+        <FlowPane hgap="20.0" prefHeight="611.0" prefWidth="1200.0" vgap="20.0" styleClass="books-container" fx:id="booksContainer">
+        </FlowPane>
+    </ScrollPane>
+</VBox>

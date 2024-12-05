@@ -4,14 +4,13 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.console.utils.resources.ApplicationResources;
 import org.tomfoolery.configurations.monolith.console.utils.resources.PopulatedApplicationResources;
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
 import org.tomfoolery.configurations.monolith.console.views.action.guest.users.authentication.LogUserInByAuthenticationTokenActionView;
 
 @NoArgsConstructor(staticName = "of")
 public class Application implements Runnable, AutoCloseable {
-    private final @NonNull ApplicationResources resources = PopulatedApplicationResources.of();
+    private final @NonNull PopulatedApplicationResources resources = PopulatedApplicationResources.of();
 
     @Override
     public void run() {

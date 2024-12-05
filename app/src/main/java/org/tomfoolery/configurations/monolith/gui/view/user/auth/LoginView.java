@@ -11,6 +11,8 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.guest.users.authentication.LogUserInByCredentialsUseCase;
+import org.tomfoolery.core.usecases.guest.users.authentication.abc.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.LogUserInByCredentialsController;
@@ -60,7 +62,9 @@ public class LoginView {
         try {
             val viewModel = this.controller.apply(requestObject);
             onSuccess(viewModel);
-        } catch (Exception exception) {
+        } catch (LogUserInByCredentialsUseCase.UserNotFoundException |
+                 LogUserInByCredentialsUseCase.PasswordMismatchException |
+                 LogUserInByCredentialsUseCase.CredentialsInvalidException e) {
             errorMessage.setText("Invalid username or password");
             errorMessage.setVisible(true);
         }

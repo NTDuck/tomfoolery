@@ -15,14 +15,14 @@ public class ControlCenter {
 
     public ControlCenter() {
         documentsDisplayView = new DocumentsDisplayView(
-                StageManager.getInstance().getDocumentRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
         accountsDisplayView = new StaffAccountsManagementView(
-                StageManager.getInstance().getStaffRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getStaffRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
         );
     }
 

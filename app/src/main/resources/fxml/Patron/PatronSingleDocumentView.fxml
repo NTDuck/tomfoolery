@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
-      stylesheets="/css/Patron/DocumentView.css" prefHeight="720" prefWidth="1280"
+      stylesheets="/css/Patron/PatronSingleDocumentView.css" prefHeight="720" prefWidth="1280"
       style="-fx-padding: 80 200 80 200; -fx-alignment: center; -fx-background-color: transparent">
    <HBox prefHeight="560.0" prefWidth="880.0" spacing="20.0" styleClass="root-container" HBox.hgrow="ALWAYS">
       <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="600.0" spacing="20.0"
@@ -21,7 +21,7 @@
 
          <ImageView fitHeight="540" fitWidth="310" preserveRatio="true" fx:id="coverImage"
             VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
-            <Image url="/images/jayce97.png"/>
+            <Image url="/images/default/placeholder-book-cover.png"/>
          </ImageView>
 
          <Label prefHeight="45.0" prefWidth="250.0" text="Rating: 4.67 / 5" styleClass="rating-label" fx:id="ratingLabel"

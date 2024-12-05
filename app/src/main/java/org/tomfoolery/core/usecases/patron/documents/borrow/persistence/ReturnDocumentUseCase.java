@@ -66,9 +66,9 @@ public final class ReturnDocumentUseCase extends AuthenticatedUserUseCase implem
             throw new DocumentNotFoundException();
     }
 
-    private void ensureDocumentIsAlreadyBorrowed(BorrowingSession.@NonNull Id borrowingSessionId) throws DocumentNotFoundException {
+    private void ensureDocumentIsAlreadyBorrowed(BorrowingSession.@NonNull Id borrowingSessionId) throws DocumentNotBorrowedException {
         if (!this.borrowingSessionRepository.contains(borrowingSessionId))
-            throw new DocumentNotFoundException();
+            throw new DocumentNotBorrowedException();
     }
 
     @Value(staticConstructor = "of")

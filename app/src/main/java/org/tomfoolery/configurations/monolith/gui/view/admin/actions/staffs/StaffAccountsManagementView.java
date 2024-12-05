@@ -97,7 +97,7 @@ public class StaffAccountsManagementView {
 
         ObservableList<StaffAccountViewModel> result = FXCollections.observableArrayList();
 
-        StaffRepository staffRepository = StageManager.getInstance().getStaffRepository();
+        StaffRepository staffRepository = StageManager.getInstance().getResources().getStaffRepository();
         List<Staff> staffsList = staffRepository.show();
         for (Staff staff : staffsList) {
             String id = staff.getId().getUuid().toString();
@@ -141,10 +141,10 @@ public class StaffAccountsManagementView {
         UpdateStaffAccountView controller = new UpdateStaffAccountView(
                 this,
                 staffId,
-                StageManager.getInstance().getStaffRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository(),
-                StageManager.getInstance().getPasswordEncoder()
+                StageManager.getInstance().getResources().getStaffRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getPasswordEncoder()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/UpdateStaffAccountView.fxml"));
@@ -158,10 +158,10 @@ public class StaffAccountsManagementView {
     private void openCreateStaffAccountView() {
         CreateStaffAccountView controller = new CreateStaffAccountView(
                 this,
-                StageManager.getInstance().getStaffRepository(),
-                StageManager.getInstance().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getAuthenticationTokenRepository(),
-                StageManager.getInstance().getPasswordEncoder()
+                StageManager.getInstance().getResources().getStaffRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getPasswordEncoder()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Admin/CreateStaffAccountView.fxml"));
