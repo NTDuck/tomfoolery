@@ -71,7 +71,7 @@ import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.In
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
-import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.builtin.BuiltinHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.documents.SynchronizedDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedAdministratorRepository;
@@ -90,7 +90,7 @@ import java.util.Set;
 public class ApplicationResources implements AutoCloseable {
     // Providers
     protected final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
-    protected final @NonNull HttpClientProvider httpClientProvider = BuiltinHttpClientProvider.of();
+    protected final @NonNull HttpClientProvider httpClientProvider = OkHttpClientProvider.of();
 
     // Synchronized Generators
     protected final @NonNull DocumentSearchGenerator documentSearchGenerator = InMemoryIndexedDocumentSearchGenerator.of();
