@@ -1,11 +1,15 @@
-/* Root container styling */
 .content-container {
     -fx-padding: 20;
     -fx-spacing: 20;
     -fx-background-color: transparent;
 }
 
-/* Table styling */
+.counter {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 24;
+    -fx-text-fill: #424C5E;
+}
+
 .documents-table {
     -fx-background-color: white;
     -fx-background-radius: 15;
@@ -18,9 +22,8 @@
     -fx-border-width: 0;
 }
 
-/* Header styling */
 .documents-table .column-header-background {
-    -fx-background-color: #6096ba;
+    -fx-background-color: #80A0C0;
     -fx-background-radius: 15 15 0 0;
     -fx-background-insets: 0;
 }

@@ -4,10 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -17,24 +14,27 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.administrator.users.persistence.DeleteStaffAccountUseCase;
+import org.tomfoolery.core.usecases.administrator.users.retrieval.ShowStaffAccountsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.persistence.DeleteStaffAccountController;
+import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.ShowStaffAccountsController;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class StaffAccountsManagementView {
     private final @NonNull DeleteStaffAccountController deleteController;
+    private final @NonNull ShowStaffAccountsController showController;
 
     public StaffAccountsManagementView(@NonNull StaffRepository staffRepository,
                                        @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
                                        @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         this.deleteController = DeleteStaffAccountController.of(staffRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.showController = ShowStaffAccountsController.of(staffRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
+
+    @FXML
+    private Label counterLabel;
 
     @FXML
     private Button createStaffAccountButton;
@@ -89,34 +89,37 @@ public class StaffAccountsManagementView {
     }
 
     public void loadAccounts() {
-        staffAccountsTable.setItems(getStaffAccounts());
+        val requestObject = ShowStaffAccountsController.RequestObject.of(1, Integer.MAX_VALUE);
+        try {
+            val viewModel = this.showController.apply(requestObject);
+            this.onShowSuccess(viewModel);
+        } catch (ShowStaffAccountsUseCase.AuthenticationTokenNotFoundException |
+                 ShowStaffAccountsUseCase.AuthenticationTokenInvalidException e) {
+            StageManager.getInstance().openLoginMenu();
+        } catch (ShowStaffAccountsUseCase.PaginationInvalidException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public ObservableList<StaffAccountViewModel> getStaffAccounts() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
+    private void onShowSuccess(ShowStaffAccountsController.@NonNull ViewModel viewModel) {
+        val accounts = viewModel.getStaff();
 
-        ObservableList<StaffAccountViewModel> result = FXCollections.observableArrayList();
+        ObservableList<StaffAccountViewModel> accountList = FXCollections.observableArrayList();
 
-        StaffRepository staffRepository = StageManager.getInstance().getResources().getStaffRepository();
-        List<Staff> staffsList = staffRepository.show();
-        for (Staff staff : staffsList) {
-            String id = staff.getId().getUuid().toString();
-            String username = staff.getCredentials().getUsername();
-            String createdAdminId = staff.getAudit().getCreatedByAdminId().getUuid().toString();
-            String lastModifiedAdminId = "";
-            if (staff.getAudit().getLastModifiedByAdminId() != null) {
-                lastModifiedAdminId = staff.getAudit().getLastModifiedByAdminId().getUuid().toString();
-            }
-            String createdAt = formatter.format(staff.getAudit().getTimestamps().getCreated());
-            String lastModifiedAt = "";
-            if (staff.getAudit().getTimestamps().getLastModified() != null) {
-                lastModifiedAt = formatter.format(staff.getAudit().getTimestamps().getLastModified());
-            }
+        accounts.forEach(account -> {
+            String uuid = account.getStaffUuid();
+            String username = account.getStaffUsername();
+            String created = account.getCreationTimestamp();
+            String lastLogin = account.getLastLoginTimestamp();
+            String lastLogout = account.getLastLogoutTimestamp();
 
-            result.add(StaffAccountViewModel.of(id, username, createdAdminId, lastModifiedAdminId, createdAt, lastModifiedAt));
-        }
+            StaffAccountViewModel accountViewModel = StaffAccountViewModel.of(uuid, username, created, lastLogin, lastLogout);
+            accountList.add(accountViewModel);
+        });
 
-        return result;
+        counterLabel.setText(accountList.size() + " staffs");
+        staffAccountsTable.getItems().clear();
+        staffAccountsTable.setItems(accountList);
     }
 
     private void deleteStaffAccount(String staffId) {
@@ -175,9 +178,8 @@ public class StaffAccountsManagementView {
     public static class StaffAccountViewModel {
         String id;
         String username;
-        String createdAdminID;
-        String lastModifiedAdminID;
-        String createdAt;
-        String lastModifiedAt;
+        String created;
+        String lastLogin;
+        String lastLogout;
     }
 }

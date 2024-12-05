@@ -1,9 +1,8 @@
 .main {
-    -fx-background-color: #D8DEE8;
+    -fx-background-color: white;
 }
 
 .welcome-text {
-    -fx-background-color: #D8DEE8;
     -fx-pref-width: infinity;
     -fx-pref-height: 40;
     -fx-padding: 20 0 20 20;
@@ -20,6 +19,7 @@
 }
 
 .dashboard-tile {
+    -fx-background-color: #71a898;
     -fx-pref-width: 160;
     -fx-pref-height: 160;
     -fx-background-radius: 15;

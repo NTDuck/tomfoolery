@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.gui.view.user.auth;
+package org.tomfoolery.configurations.monolith.gui.view.guest;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,11 +8,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import lombok.val;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.guest.users.authentication.LogUserInByCredentialsUseCase;
-import org.tomfoolery.core.usecases.guest.users.authentication.abc.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.LogUserInByCredentialsController;
@@ -65,8 +65,7 @@ public class LoginView {
         } catch (LogUserInByCredentialsUseCase.UserNotFoundException |
                  LogUserInByCredentialsUseCase.PasswordMismatchException |
                  LogUserInByCredentialsUseCase.CredentialsInvalidException e) {
-            errorMessage.setText("Invalid username or password");
-            errorMessage.setVisible(true);
+            MessageLabelFactory.createErrorLabel("Invalid username or password.", 14, errorMessage);
         }
     }
 

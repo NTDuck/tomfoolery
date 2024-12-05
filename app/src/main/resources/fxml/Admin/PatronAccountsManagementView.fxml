@@ -6,15 +6,13 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      styleClass="content-container" stylesheets="/css/Admin/StaffAccountsManagementView.css"
+      styleClass="content-container" stylesheets="/css/Admin/PatronAccountsManagementView.css"
       VBox.vgrow="ALWAYS"
       HBox.hgrow="ALWAYS">
 
     <Label fx:id="counterLabel" styleClass="counter"/>
 
-    <Button fx:id="createStaffAccountButton" text="Add a staff" styleClass="create-button"/>
-
-    <TableView fx:id="staffAccountsTable"
+    <TableView fx:id="patronAccountsTable"
                styleClass="accounts-table"
                VBox.vgrow="ALWAYS">
         <columns>
@@ -42,14 +40,13 @@
                 </cellValueFactory>
             </TableColumn>
 
-            <TableColumn text="Last logout" prefWidth="180">
+            <TableColumn text="Last logout" prefWidth="150">
                 <cellValueFactory>
                     <PropertyValueFactory property="lastLogout"/>
                 </cellValueFactory>
             </TableColumn>
 
-            <TableColumn fx:id="updateColumn" prefWidth="100"/>
-            <TableColumn fx:id="deleteColumn" prefWidth="100"/>
+            <TableColumn fx:id="viewDetailsColumn" prefWidth="130"/>
         </columns>
 
         <columnResizePolicy>

@@ -41,6 +41,9 @@ public class DashboardView {
     }
 
     @FXML
+    private Label welcomeLabel;
+
+    @FXML
     private Label numberOfBorrowedDocuments;
 
     @FXML
@@ -57,6 +60,7 @@ public class DashboardView {
 
     @FXML
     public void initialize() {
+
         numberOfBorrowedDocuments.setText(String.valueOf(getNumberOfBorrowedDocuments()));
         numberOfPatrons.setText(String.valueOf(StageManager.getInstance().getResources().getPatronRepository().show().size()));
         this.loadRecommendation();

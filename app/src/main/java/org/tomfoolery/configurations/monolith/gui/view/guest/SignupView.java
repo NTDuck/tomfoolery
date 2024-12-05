@@ -12,8 +12,10 @@ import javafx.util.Duration;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
+import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.utils.BirthdayValidator;
+import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.usecases.guest.users.persistence.CreatePatronAccountUseCase;
@@ -178,45 +180,32 @@ public class SignupView {
     }
 
     private void onPatronCredentialsInvalidException() {
-        message.setText("Username or password is not safe enough.");
-        message.setStyle("-fx-text-fill: #f7768e");
-        message.setVisible(true);
+        MessageLabelFactory.createErrorLabel("Username or password is not safe enough.", 14, message);
     }
 
     private void onPasswordMismatchException() {
-        message.setText("Password does not match.");
-        message.setStyle("-fx-text-fill: #f7768e");
-        message.setVisible(true);
+        MessageLabelFactory.createErrorLabel("Password does not match.", 14, message);
     }
 
     private void onBirthdayInvalidException() {
-        message.setText("Provided birthday is invalid.");
-        message.setStyle("-fx-text-fill: #f7768e");
-        message.setVisible(true);
+        MessageLabelFactory.createErrorLabel("Provided birthday is invalid.", 14, message);
     }
 
     private void onDayOfBirthInvalidException() {
-        message.setText("Day of birth is invalid.");
-        message.setStyle("-fx-text-fill: #f7768e");
-        message.setVisible(true);
+        MessageLabelFactory.createErrorLabel("Day of birth is invalid.", 14, message);
+
     }
 
     private void onMonthOfBirthInvalidException() {
-        message.setText("Month of birth is invalid.");
-        message.setStyle("-fx-text-fill: #f7768e");
-        message.setVisible(true);
+        MessageLabelFactory.createErrorLabel("Month of birth is invalid.", 14, message);
     }
 
     private void onYearOfBirthInvalidException() {
-        message.setText("Year of birth is invalid.");
-        message.setStyle("-fx-text-fill: #f7768e");
-        message.setVisible(true);
+        MessageLabelFactory.createErrorLabel("Year of birth is invalid.", 14, message);
     }
 
     private void onPatronAlreadyExistsException() {
-        message.setText("Patron already exists.");
-        message.setStyle("-fx-text-fill: #f7768e");
-        message.setVisible(true);
+        MessageLabelFactory.createErrorLabel("Patron already exists.", 14, message);
     }
 
     private EventHandler<ActionEvent> returnToLogin() {

@@ -10,6 +10,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
@@ -151,9 +152,7 @@ public class PatronSingleDocumentView {
         } catch (BorrowDocumentUseCase.DocumentAlreadyBorrowedException exception) {
             this.onDocumentAlreadyBorrowedException();
         } catch (BorrowDocumentUseCase.DocumentBorrowLimitExceeded e) {
-            message.setVisible(true);
-            setErrorStyleForMessage(message);
-            message.setText("You have borrowed this document too much!");
+            this.onDocumentBorrowLimitExceeded();
         } catch (BorrowDocumentUseCase.DocumentISBNInvalidException e) {
             throw new RuntimeException(e);
         }
@@ -164,21 +163,20 @@ public class PatronSingleDocumentView {
     }
 
     private void onBorrowingSuccess() {
-        message.setVisible(true);
-        setSuccessStyleForMessage(message);
-        message.setText("Document borrowed!");
+        MessageLabelFactory.createSuccessLabel("Document borrowed successfully", 16, message);
     }
 
     private void onDocumentAlreadyBorrowedException() {
-        message.setVisible(true);
-        setErrorStyleForMessage(message);
-        message.setText("Document already borrowed!");
+        MessageLabelFactory.createErrorLabel("Document already borrowed", 16, message);
     }
 
     private void onAuthenticationTokenInvalidException() {
-        message.setVisible(true);
-        setErrorStyleForMessage(message);
-        message.setText("You have to be a patron to borrow and return documents");
+        MessageLabelFactory.createErrorLabel("You have to be a patron to borrow and return documents", 16, message);
+    }
+
+    private void onDocumentBorrowLimitExceeded() {
+        MessageLabelFactory.createErrorLabel("You have borrowed this document too much!", 16, message);
+
     }
 
     private void returnDocument() {
@@ -189,9 +187,7 @@ public class PatronSingleDocumentView {
             this.onReturningSuccess();
         } catch (ReturnDocumentUseCase.AuthenticationTokenNotFoundException |
                  ReturnDocumentUseCase.AuthenticationTokenInvalidException exception) {
-            message.setVisible(true);
-            setErrorStyleForMessage(message);
-            message.setText("You have to be a patron to borrow and return documents");
+            this.onAuthenticationTokenInvalidException();
         } catch (ReturnDocumentUseCase.DocumentNotBorrowedException exception) {
             this.onDocumentNotBorrowedException();
         } catch (ReturnDocumentUseCase.DocumentNotFoundException |
@@ -201,15 +197,11 @@ public class PatronSingleDocumentView {
     }
 
     private void onReturningSuccess() {
-        message.setVisible(true);
-        setSuccessStyleForMessage(message);
-        message.setText("Document returned!");
+        MessageLabelFactory.createSuccessLabel("Document returned successfully", 16, message);
     }
 
     private void onDocumentNotBorrowedException() {
-        message.setVisible(true);
-        setErrorStyleForMessage(message);
-        message.setText("You haven't borrowed this document.");
+        MessageLabelFactory.createErrorLabel("You haven't borrowed this document!", 16, message);
     }
 
     private ReturnDocumentController.@NonNull RequestObject collectReturnDocumentRequestObject() {
@@ -218,13 +210,5 @@ public class PatronSingleDocumentView {
 
     private void closeView() {
         StageManager.getInstance().getRootStackPane().getChildren().removeLast();
-    }
-
-    private void setSuccessStyleForMessage(@NotNull Label label) {
-        label.setStyle("-fx-text-fill: green; -fx-font-family: \"Segoe UI Variable\"; -fx-font-size: 16; -fx-background-color: transparent;");
-    }
-
-    private void setErrorStyleForMessage(@NotNull Label label) {
-        label.setStyle("-fx-text-fill: red; -fx-font-family: \"Segoe UI Variable\"; -fx-font-size: 16; -fx-background-color: transparent;");
     }
 }

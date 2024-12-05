@@ -11,7 +11,7 @@ import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.utils.PopulatedAppResources;
 import org.tomfoolery.configurations.monolith.gui.view.admin.layout.AdminView;
-import org.tomfoolery.configurations.monolith.gui.view.user.auth.LoginView;
+import org.tomfoolery.configurations.monolith.gui.view.guest.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.SignupView;
 import org.tomfoolery.configurations.monolith.gui.view.patron.layout.PatronView;
 import org.tomfoolery.configurations.monolith.gui.view.staff.layout.StaffView;

@@ -1,0 +1,35 @@
+.root {
+    -fx-background-color: transparent;
+}
+
+.container {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+}
+
+.header {
+    -fx-padding: 0 0 0 30;
+    -fx-font-size: 30;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-background-color: #889fe3;
+}
+
+.label {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 30;
+    -fx-font-size: 24;
+    -fx-font-family: "Segoe UI Variable";
+}
+
+.close-button {
+    -fx-background-color: #78a4d5;
+    -fx-background-radius: 10;
+    -fx-font-size: 30;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: white;
+}
+
+.close-button:hover {
+    -fx-background-color: #5476a1;
+    -fx-cursor: hand    ;
+}

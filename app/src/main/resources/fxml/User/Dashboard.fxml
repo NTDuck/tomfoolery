@@ -9,19 +9,20 @@
 <!-- DASHBOARD -->
 <VBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" stylesheets="/css/User/Dashboard.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml" styleClass="main">
-    <Label text="Welcome to Tomfoolery, Duy" styleClass="welcome-text" VBox.vgrow="ALWAYS" prefWidth="Infinity"/>
+    <Label text="Welcome to Tomfoolery, Duy" styleClass="welcome-text" VBox.vgrow="ALWAYS" prefWidth="Infinity"
+           fx:id="welcomeLabel"/>
     <HBox styleClass="content" prefWidth="Infinity" prefHeight="400">
-        <VBox style="-fx-background-color: #007bff;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+        <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
             <Label text="13" styleClass="dashboard-tile-number" fx:id="numberOfPatrons"/>
             <Label text="patrons" styleClass="dashboard-tile-text"/>
         </VBox>
-        <VBox style="-fx-background-color: #28a745;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+        <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
             <Label text="444" styleClass="dashboard-tile-number"/>
             <Label text="books available" styleClass="dashboard-tile-text"/>
         </VBox>
-        <VBox style="-fx-background-color: #63a696;" styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+        <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
             <Label text="0" styleClass="dashboard-tile-number" fx:id="numberOfBorrowedDocuments"/>
-            <Label text="books borrowed" styleClass="dashboard-tile-text"/>
+            <Label text="books borrowing" styleClass="dashboard-tile-text"/>
         </VBox>
     </HBox>
 
