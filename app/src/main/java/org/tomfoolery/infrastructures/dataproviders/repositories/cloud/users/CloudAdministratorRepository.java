@@ -7,7 +7,7 @@ import org.tomfoolery.core.domain.users.Administrator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
 
 import java.sql.*;

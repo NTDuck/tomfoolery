@@ -8,8 +8,8 @@ import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.UserAndRepository;
 
 import java.time.Instant;
 

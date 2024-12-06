@@ -10,7 +10,7 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.guest.users.persistence.CreatePatronAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
 import java.time.LocalDate;
 

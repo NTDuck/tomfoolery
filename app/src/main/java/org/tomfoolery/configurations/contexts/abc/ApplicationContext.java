@@ -1,8 +1,6 @@
-package org.tomfoolery.infrastructures.contexts.abc;
+package org.tomfoolery.configurations.contexts.abc;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
@@ -39,8 +37,6 @@ import java.util.Set;
 public abstract class ApplicationContext implements Closeable {
     private final @NonNull HttpClientProvider httpClientProvider = this.createHttpClientProvider();
 
-    private final @NonNull DocumentRepository documentRepository = this.createDocumentRepository();
-
     private final @NonNull DocumentContentRepository documentContentRepository = this.createDocumentContentRepository();
     private final @NonNull BorrowingSessionRepository borrowingSessionRepository = this.createBorrowingSessionRepository();
     private final @NonNull ReviewRepository reviewRepository = this.createReviewRepository();
@@ -59,12 +55,14 @@ public abstract class ApplicationContext implements Closeable {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = this.createAuthenticationTokenRepository();
     private final @NonNull PasswordEncoder passwordEncoder = this.createPasswordEncoder();
 
-    private final @NonNull DocumentRepository hybridDocumentRepository = HybridDocumentRepository.of(
-        List.of(SynchronizedDocumentRepository.of(
-            this.documentRepository,
-            List.of(this.documentSearchGenerator, this.documentRecommendationGenerator),
-            this.documentContentRepository, this.borrowingSessionRepository, this.reviewRepository
-        )), this.createRetrievalDocumentRepositories()
+    private final @NonNull DocumentRepository documentRepository = SynchronizedDocumentRepository.of(
+        this.createDocumentRepository(),
+        List.of(this.documentSearchGenerator, this.documentRecommendationGenerator),
+        this.documentContentRepository, this.borrowingSessionRepository, this.reviewRepository
+    );
+
+    private final @NonNull HybridDocumentRepository hybridDocumentRepository = HybridDocumentRepository.of(
+        List.of(this.documentRepository), this.createRetrievalDocumentRepositories()
     );
 
     private final @NonNull AdministratorRepository administratorRepository = SynchronizedAdministratorRepository.of(

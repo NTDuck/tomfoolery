@@ -14,6 +14,10 @@ import java.net.URISyntaxException;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class FontFormatter {
+    public static @NonNull String format(@NonNull String content) throws IOException {
+        return FigletFont.convertOneLine(content);
+    }
+
     public static @NonNull String format(@NonNull String content, @NonNull Font font) throws IOException, URISyntaxException {
         val fontAbsolutePath = ResourceProvider.getResourceAbsolutePath(font.getPath());
         return FigletFont.convertOneLine(fontAbsolutePath, content);
@@ -22,7 +26,8 @@ public final class FontFormatter {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter(value = AccessLevel.PRIVATE)
     public enum Font {
-        ANSI_SHADOW("console/fonts/ANSI-Shadow.flf");
+        ANSI_SHADOW("console/fonts/ANSI-Shadow.flf"),
+        BLOODY("console/fonts/Bloody.flf");
 
         private final @NonNull String path;
     }

@@ -6,28 +6,28 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.relations.Review;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.util.Set;
 
 public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<RemoveDocumentReviewUseCase.Request> {
-    private final @NonNull DocumentRepository documentRepository;
+    private final @NonNull HybridDocumentRepository hybridDocumentRepository;
     private final @NonNull ReviewRepository reviewRepository;
 
-    public static @NonNull RemoveDocumentReviewUseCase of(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new RemoveDocumentReviewUseCase(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull RemoveDocumentReviewUseCase of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new RemoveDocumentReviewUseCase(hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private RemoveDocumentReviewUseCase(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private RemoveDocumentReviewUseCase(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
-        this.documentRepository = documentRepository;
+        this.hybridDocumentRepository = hybridDocumentRepository;
         this.reviewRepository = reviewRepository;
     }
 
@@ -53,7 +53,7 @@ public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase 
 
         val documentRating = this.calculateDocumentRating(documentId);
         document.setRating(documentRating);
-        this.documentRepository.save(document);
+        this.hybridDocumentRepository.save(document);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
@@ -66,7 +66,7 @@ public final class RemoveDocumentReviewUseCase extends AuthenticatedUserUseCase 
     }
 
     private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        val document = this.documentRepository.getById(documentId);
+        val document = this.hybridDocumentRepository.getById(documentId);
 
         if (document == null)
             throw new DocumentNotFoundException();

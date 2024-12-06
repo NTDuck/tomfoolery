@@ -46,14 +46,10 @@ public abstract class BaseSelectionView extends BaseView {
 
     @SneakyThrows
     private void displayTitle() {
-        // this.ioProvider.writeLine("");
+        this.ioProvider.writeLine("");
+        val formattedTitle = FontFormatter.format(TITLE);
         // val formattedTitle = FontFormatter.format(TITLE, FontFormatter.Font.ANSI_SHADOW);
-        // this.ioProvider.writeLine(formattedTitle);
-        this.ioProvider.writeLine("""
-            ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌─┐┬  ┌─┐┬─┐┬ ┬
-             │ │ ││││├┤ │ ││ ││  ├┤ ├┬┘└┬┘
-             ┴ └─┘┴ ┴└  └─┘└─┘┴─┘└─┘┴└─ ┴\s
-            """);
+        this.ioProvider.writeLine(formattedTitle);
     }
 
     private void displayPrompt() {

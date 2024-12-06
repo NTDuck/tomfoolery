@@ -10,11 +10,11 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.usecases.guest.users.authentication.abc.LogUserInUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.core.utils.dataclasses.auth.UserAndRepository;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.UserAndRepository;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.authentication.security.CredentialsVerifier;
 
 import java.time.Duration;
 import java.time.Instant;

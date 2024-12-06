@@ -14,6 +14,7 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -26,11 +27,11 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     private static final @Unsigned int MAX_BORROWED_DOCUMENTS_PER_PATRON = 10;
     private static final @NonNull Duration BORROWING_PERIOD = Duration.ofDays(30);
 
-    public static @NonNull BorrowDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    public static @NonNull BorrowDocumentUseCase of(@NonNull HybridDocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new BorrowDocumentUseCase(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private BorrowDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private BorrowDocumentUseCase(@NonNull HybridDocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;

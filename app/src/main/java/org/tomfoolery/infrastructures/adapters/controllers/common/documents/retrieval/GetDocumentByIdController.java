@@ -9,12 +9,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.resources.ResourceProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.TimestampBiAdapter;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
@@ -23,15 +23,16 @@ import java.util.List;
 
 public final class GetDocumentByIdController implements ThrowableFunction<GetDocumentByIdController.RequestObject, GetDocumentByIdController.ViewModel> {
     private static final @NonNull String DEFAULT_COVER_IMAGE_RESOURCE_PATH = "images/default/document-cover-image.png";
+    private static final @NonNull String COVER_IMAGE_FILE_EXTENSION = ".png";
 
     private final @NonNull GetDocumentByIdUseCase getDocumentByIdUseCase;
 
-    public static @NonNull GetDocumentByIdController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentByIdController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentByIdController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentByIdController(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentByIdController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.getDocumentByIdUseCase = GetDocumentByIdUseCase.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private GetDocumentByIdController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.getDocumentByIdUseCase = GetDocumentByIdUseCase.of(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -79,6 +80,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
 
         @NonNull String documentCoverImageFilePath;
 
+        @SneakyThrows
         public static @NonNull ViewModel of(@NonNull Document document) {
             val documentId = document.getId();
             val documentAudit = document.getAudit();
@@ -108,9 +110,10 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
                 .averageRating(documentRating == null ? 0 : documentRating.getAverageRating())
                 .numberOfRatings(documentRating == null ? 0 : documentRating.getNumberOfRatings())
 
-                .documentCoverImageFilePath(saveDocumentCoverImageAndGetPath(
-                    documentCoverImage == null ? new byte[0] : documentCoverImage.getBytes()
-                ))
+                .documentCoverImageFilePath(documentCoverImage != null
+                    ? saveDocumentCoverImageAndGetPath(documentCoverImage.getBytes())
+                    : ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH)
+                )
 
                 .build();
         }
@@ -118,7 +121,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         @SneakyThrows
         private static @NonNull String saveDocumentCoverImageAndGetPath(byte @NonNull [] rawDocumentCoverImage) {
             try {
-                return TemporaryFileProvider.save(".png", rawDocumentCoverImage);
+                return TemporaryFileProvider.save(COVER_IMAGE_FILE_EXTENSION, rawDocumentCoverImage);
 
             } catch (IOException exception) {
                 return ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH);

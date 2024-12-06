@@ -7,7 +7,6 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.relations.BorrowingSession;
 import org.tomfoolery.core.domain.relations.DocumentContent;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
@@ -15,23 +14,24 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.time.Instant;
 import java.util.Set;
 
 public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ReadBorrowedDocumentUseCase.Request, ReadBorrowedDocumentUseCase.Response> {
-    private final @NonNull DocumentRepository documentRepository;
+    private final @NonNull HybridDocumentRepository hybridDocumentRepository;
     private final @NonNull DocumentContentRepository documentContentRepository;
     private final @NonNull BorrowingSessionRepository borrowingSessionRepository;
 
-    public static @NonNull ReadBorrowedDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    public static @NonNull ReadBorrowedDocumentUseCase of(@NonNull HybridDocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new ReadBorrowedDocumentUseCase(documentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private ReadBorrowedDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ReadBorrowedDocumentUseCase(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
-        this.documentRepository = documentRepository;
+        this.hybridDocumentRepository = hybridDocumentRepository;
         this.documentContentRepository = documentContentRepository;
         this.borrowingSessionRepository = borrowingSessionRepository;
     }
@@ -70,7 +70,7 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
     }
 
     private void ensureDocumentExists(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-        if (!this.documentRepository.contains(documentId))
+        if (!this.hybridDocumentRepository.contains(documentId))
             throw new DocumentNotFoundException();
     }
 

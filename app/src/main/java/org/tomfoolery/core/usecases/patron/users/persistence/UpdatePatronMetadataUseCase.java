@@ -10,11 +10,11 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.AddressVerifier;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.DateOfBirthVerifier;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.EmailVerifier;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.PhoneNumberVerifier;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.AddressVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.DateOfBirthVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.EmailVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.PhoneNumberVerifier;
 
 import java.time.Instant;
 import java.util.Set;

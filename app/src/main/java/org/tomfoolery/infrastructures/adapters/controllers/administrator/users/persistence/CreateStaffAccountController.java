@@ -10,7 +10,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.administrator.users.persistence.CreateStaffAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
 public final class CreateStaffAccountController implements ThrowableConsumer<CreateStaffAccountController.RequestObject> {
     private final @NonNull CreateStaffAccountUseCase createStaffAccountUseCase;

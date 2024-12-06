@@ -10,16 +10,17 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 public final class AddDocumentReviewController implements ThrowableConsumer<AddDocumentReviewController.RequestObject> {
     private final @NonNull AddDocumentReviewUseCase addDocumentReviewUseCase;
 
-    public static @NonNull AddDocumentReviewController of(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentReviewController(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull AddDocumentReviewController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentReviewController(hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentReviewController(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.addDocumentReviewUseCase = AddDocumentReviewUseCase.of(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private AddDocumentReviewController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.addDocumentReviewUseCase = AddDocumentReviewUseCase.of(hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

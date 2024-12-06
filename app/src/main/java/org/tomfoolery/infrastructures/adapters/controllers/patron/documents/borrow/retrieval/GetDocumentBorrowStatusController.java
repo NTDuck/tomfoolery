@@ -4,22 +4,22 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.TimestampBiAdapter;
 
 public final class GetDocumentBorrowStatusController implements ThrowableFunction<GetDocumentBorrowStatusController.RequestObject, GetDocumentBorrowStatusController.ViewModel> {
     private final @NonNull GetDocumentBorrowStatusUseCase getDocumentBorrowStatusUseCase;
 
-    public static @NonNull GetDocumentBorrowStatusController of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentBorrowStatusController(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentBorrowStatusController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentBorrowStatusController(hybridDocumentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentBorrowStatusController(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.getDocumentBorrowStatusUseCase = GetDocumentBorrowStatusUseCase.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private GetDocumentBorrowStatusController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.getDocumentBorrowStatusUseCase = GetDocumentBorrowStatusUseCase.of(hybridDocumentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

@@ -1,9 +1,8 @@
-package org.tomfoolery.infrastructures.contexts.dev;
+package org.tomfoolery.configurations.contexts.dev;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.infrastructures.contexts.abc.ApplicationContext;
+import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
@@ -41,12 +40,8 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.
 
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class InMemoryApplicationContext extends ApplicationContext {
-    private static @NonNull InMemoryApplicationContext of() {
-        return new InMemoryApplicationContext();
-    }
-
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
         return InMemoryDocumentRepository.of();

@@ -8,23 +8,23 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActio
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 public final class GetDocumentBorrowStatusActionView extends UserActionView {
     private final @NonNull GetDocumentBorrowStatusController getDocumentBorrowStatusController;
 
-    public static @NonNull GetDocumentBorrowStatusActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentBorrowStatusActionView(ioProvider, documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentBorrowStatusActionView of(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentBorrowStatusActionView(ioProvider, hybridDocumentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentBorrowStatusActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private GetDocumentBorrowStatusActionView(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(hybridDocumentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

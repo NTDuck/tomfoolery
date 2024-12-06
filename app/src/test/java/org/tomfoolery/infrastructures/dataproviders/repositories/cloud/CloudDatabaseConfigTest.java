@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import static org.testng.Assert.*;
 
+@Test(groups = "cloud")
 public class CloudDatabaseConfigTest extends UnitTest<CloudDatabaseConfig> {
     private final @NonNull CloudDatabaseConfig cloudDatabaseConfig = CloudDatabaseConfig.of();
 

@@ -10,7 +10,7 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableSupplier;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 
 import java.util.Set;
 

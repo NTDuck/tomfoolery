@@ -7,8 +7,7 @@ import org.testng.annotations.Test;
 import org.tomfoolery.abc.UnitTest;
 import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudAdministratorRepository;
 
 import java.time.Instant;
@@ -16,6 +15,7 @@ import java.util.UUID;
 
 import static org.testng.Assert.*;
 
+@Test(groups = "cloud")
 public class CloudAdministratorRepositoryTest extends UnitTest<CloudAdministratorRepository> {
 
     private static final @NonNull String SAMPLE_USERNAME = "sampleUser";

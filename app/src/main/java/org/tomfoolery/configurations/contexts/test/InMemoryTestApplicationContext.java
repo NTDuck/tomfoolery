@@ -1,7 +1,7 @@
-package org.tomfoolery.infrastructures.contexts.test;
+package org.tomfoolery.configurations.contexts.test;
 
 import com.github.javafaker.Faker;
-import lombok.Cleanup;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -13,21 +13,22 @@ import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
 import org.tomfoolery.core.utils.contracts.ddd;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.infrastructures.contexts.dev.InMemoryApplicationContext;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
+import org.tomfoolery.configurations.contexts.dev.InMemoryApplicationContext;
 
 import java.time.Year;
 import java.time.ZoneId;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@NoArgsConstructor
 public class InMemoryTestApplicationContext extends InMemoryApplicationContext {
-    private final @Unsigned int NUMBER_OF_DOCUMENTS = 444;
+    private final @Unsigned int NUMBER_OF_DOCUMENTS = 4444;
     private final @Unsigned int NUMBER_OF_ADMINISTRATORS = 4;
     private final @Unsigned int NUMBER_OF_PATRONS = 44;
     private final @Unsigned int NUMBER_OF_STAFF = 4;
@@ -49,27 +50,24 @@ public class InMemoryTestApplicationContext extends InMemoryApplicationContext {
 
     private final @NonNull Faker faker = Faker.instance();
 
-    public static @NonNull InMemoryTestApplicationContext of() {
-        return new InMemoryTestApplicationContext();
-    }
-
-    private InMemoryTestApplicationContext() {
-        super();
-
+    {
         this.populate();
     }
 
     private void populate() {
-        @Cleanup val executorService = Executors.newCachedThreadPool();
+        val executorService = Executors.newFixedThreadPool(2);
 
         executorService.submit(this::populateUserRepositoriesWithDeterministicUsers);
         executorService.submit(this::seedRepositories);
 
         executorService.shutdown();
+
+        // CompletableFuture.runAsync(this::populateUserRepositoriesWithDeterministicUsers);
+        // CompletableFuture.runAsync(this::seedRepositories);
     }
 
     private void seedRepositories() {
-        @Cleanup val executorService = Executors.newCachedThreadPool();
+        val executorService = Executors.newFixedThreadPool(4);
 
         executorService.submit(this::seedDocumentRepository);
         executorService.submit(this::seedAdministratorRepository);
@@ -77,22 +75,27 @@ public class InMemoryTestApplicationContext extends InMemoryApplicationContext {
         executorService.submit(this::seedStaffRepository);
 
         executorService.shutdown();
+
+        // CompletableFuture.runAsync(this::seedDocumentRepository);
+        // CompletableFuture.runAsync(this::seedAdministratorRepository);
+        // CompletableFuture.runAsync(this::seedPatronRepository);
+        // CompletableFuture.runAsync(this::seedStaffRepository);
     }
 
     private void seedDocumentRepository() {
-        seedRepositoryWithMockedEntity(this.getDocumentRepository(), this::createMockedDocument, NUMBER_OF_DOCUMENTS);
+        seedRepositoryWithMockedEntity(this::getDocumentRepository, this::createMockedDocument, NUMBER_OF_DOCUMENTS);
     }
 
     private void seedAdministratorRepository() {
-        seedRepositoryWithMockedEntity(this.getAdministratorRepository(), this::createMockedAdministrator, NUMBER_OF_ADMINISTRATORS);
+        seedRepositoryWithMockedEntity(this::getAdministratorRepository, this::createMockedAdministrator, NUMBER_OF_ADMINISTRATORS);
     }
 
     private void seedPatronRepository() {
-        seedRepositoryWithMockedEntity(this.getPatronRepository(), this::createMockedPatron, NUMBER_OF_PATRONS);
+        seedRepositoryWithMockedEntity(this::getPatronRepository, this::createMockedPatron, NUMBER_OF_PATRONS);
     }
 
     private void seedStaffRepository() {
-        seedRepositoryWithMockedEntity(this.getStaffRepository(), this::createMockedStaff, NUMBER_OF_STAFF);
+        seedRepositoryWithMockedEntity(this::getStaffRepository, this::createMockedStaff, NUMBER_OF_STAFF);
     }
 
     private void populateUserRepositoriesWithDeterministicUsers() {
@@ -109,9 +112,22 @@ public class InMemoryTestApplicationContext extends InMemoryApplicationContext {
         staffRepository.save(deterministicStaff);
     }
 
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> void seedRepositoryWithMockedEntity(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull Supplier<Entity> mockedEntitySupplier, @Unsigned int numberOfEntities) {
-        IntStream.range(0, numberOfEntities).parallel()
-            .forEach(_ -> repository.save(mockedEntitySupplier.get()));
+    /**
+     * Prone to race conditions.
+     */
+    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> void seedRepositoryWithMockedEntity(@NonNull Supplier<BaseRepository<Entity, EntityId>> repositorySupplier, @NonNull Supplier<Entity> mockedEntitySupplier, @Unsigned int numberOfEntities) {
+        val repository = repositorySupplier.get();
+
+        for (var i = 0; i < numberOfEntities; i++)
+            CompletableFuture.runAsync(() -> {
+                Entity mockedEntity;
+
+                do {
+                    mockedEntity = mockedEntitySupplier.get();
+                } while (repository.contains(mockedEntity.getId()));
+
+                repository.save(mockedEntity);
+            });
     }
 
     private @NonNull Document createMockedDocument() {
