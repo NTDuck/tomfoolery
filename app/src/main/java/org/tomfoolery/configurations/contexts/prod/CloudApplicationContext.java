@@ -1,9 +1,7 @@
-package org.tomfoolery.infrastructures.contexts.prod;
+package org.tomfoolery.configurations.contexts.prod;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.infrastructures.contexts.abc.ApplicationContext;
+import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
@@ -22,7 +20,6 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
-@NoArgsConstructor(access = AccessLevel.NONE)
 public class CloudApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {

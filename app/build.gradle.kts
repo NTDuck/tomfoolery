@@ -131,7 +131,7 @@ testlogger {
     showPassed = true
     showSkipped = true
     showFailed = true
-    showOnlySlow = false
+    showOnlySlow = true
     showStandardStreams = false
     showPassedStandardStreams = true
     showSkippedStandardStreams = true
@@ -219,6 +219,9 @@ tasks.named("run") {
 tasks.register<JavaExec>("runConsole") {
     mainClass = "${project.group}.configurations.monolith.console.Application"
     classpath = sourceSets["main"].runtimeClasspath
+
+    // Specify application context
+    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.InMemoryTestApplicationContext"
 
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`

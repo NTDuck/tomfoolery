@@ -1,7 +1,8 @@
-package org.tomfoolery.infrastructures.contexts.test;
+package org.tomfoolery.configurations.contexts.test;
 
 import com.github.javafaker.Faker;
 import lombok.Cleanup;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -14,7 +15,7 @@ import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
 import org.tomfoolery.core.utils.contracts.ddd;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
-import org.tomfoolery.infrastructures.contexts.dev.InMemoryApplicationContext;
+import org.tomfoolery.configurations.contexts.dev.InMemoryApplicationContext;
 
 import java.time.Year;
 import java.time.ZoneId;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@NoArgsConstructor
 public class InMemoryTestApplicationContext extends InMemoryApplicationContext {
     private final @Unsigned int NUMBER_OF_DOCUMENTS = 444;
     private final @Unsigned int NUMBER_OF_ADMINISTRATORS = 4;
@@ -49,13 +51,7 @@ public class InMemoryTestApplicationContext extends InMemoryApplicationContext {
 
     private final @NonNull Faker faker = Faker.instance();
 
-    public static @NonNull InMemoryTestApplicationContext of() {
-        return new InMemoryTestApplicationContext();
-    }
-
-    private InMemoryTestApplicationContext() {
-        super();
-
+    {
         this.populate();
     }
 

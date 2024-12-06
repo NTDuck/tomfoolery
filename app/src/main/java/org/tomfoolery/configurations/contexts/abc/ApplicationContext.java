@@ -1,8 +1,6 @@
-package org.tomfoolery.infrastructures.contexts.abc;
+package org.tomfoolery.configurations.contexts.abc;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
