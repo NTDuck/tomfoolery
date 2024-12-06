@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import static org.testng.Assert.*;
 
+@Test(groups = "cloud")
 public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepository> {
     private static final @NonNull String SAMPLE_ISBN = "123456789X";
     private static final @NonNull String SAMPLE_TITLE = "Sample Book";

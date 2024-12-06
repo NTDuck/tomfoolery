@@ -3,6 +3,7 @@ package org.tomfoolery.configurations.monolith.console;
 import lombok.Cleanup;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.BuiltinIOProvider;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.ConsoleIOProvider;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.containers.Views;
@@ -52,7 +53,7 @@ public final class Application implements Runnable, Closeable {
     private static final @NonNull String APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME = "tomfoolery.context";
 
     private final @NonNull ApplicationContext context;
-    private final @NonNull IOProvider ioProvider = ConsoleIOProvider.of();
+    private final @NonNull IOProvider ioProvider = BuiltinIOProvider.of();
     private final @NonNull Views views;
 
     public static @NonNull Application of(@NonNull ApplicationContext context) {
@@ -61,6 +62,7 @@ public final class Application implements Runnable, Closeable {
 
     private Application(@NonNull ApplicationContext context) {
         this.context = context;
+
         this.views = Views.of(
             // Selection views
             GuestSelectionView.of(this.ioProvider),
@@ -130,8 +132,6 @@ public final class Application implements Runnable, Closeable {
         do {
             view = this.views.getViewByClass(viewClass);
             assert view != null;   // Expected
-
-            System.out.println(this.context.getDocumentRepository().show().size() + " documents");
 
             view.run();
             viewClass = view.getNextViewClass();

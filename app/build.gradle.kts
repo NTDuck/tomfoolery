@@ -125,13 +125,13 @@ testlogger {
     showStackTraces = true
     showFullStackTraces = false
     showCauses = true
-    slowThreshold = 2000
+    slowThreshold = 0
     showSummary = true
     showSimpleNames = false
     showPassed = true
     showSkipped = true
     showFailed = true
-    showOnlySlow = true
+    showOnlySlow = false
     showStandardStreams = false
     showPassedStandardStreams = true
     showSkippedStandardStreams = true
@@ -199,8 +199,6 @@ tasks.compileJava {
     options.isIncremental = true
     options.isFork = true
     options.isFailOnError = false
-
-    options.encoding = "UTF-8"
 }
 
 tasks {
@@ -242,9 +240,11 @@ tasks.register<JavaExec>("runJavaFX") {
 
 tasks.named<Test>("test") {
     // For unit testing
-    useTestNG()
+    useTestNG() {
+        excludeGroups("cloud")
+    }
 
-    systemProperties["file.encoding"] = "utf-8"
+//    systemProperties["file.encoding"] = "utf-8"
 
     // Prevents failing tests from failing builds
     ignoreFailures = true

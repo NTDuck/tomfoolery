@@ -23,6 +23,7 @@ import java.util.List;
 
 public final class GetDocumentByIdController implements ThrowableFunction<GetDocumentByIdController.RequestObject, GetDocumentByIdController.ViewModel> {
     private static final @NonNull String DEFAULT_COVER_IMAGE_RESOURCE_PATH = "images/default/document-cover-image.png";
+    private static final @NonNull String COVER_IMAGE_FILE_EXTENSION = ".png";
 
     private final @NonNull GetDocumentByIdUseCase getDocumentByIdUseCase;
 
@@ -79,6 +80,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
 
         @NonNull String documentCoverImageFilePath;
 
+        @SneakyThrows
         public static @NonNull ViewModel of(@NonNull Document document) {
             val documentId = document.getId();
             val documentAudit = document.getAudit();
@@ -108,9 +110,10 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
                 .averageRating(documentRating == null ? 0 : documentRating.getAverageRating())
                 .numberOfRatings(documentRating == null ? 0 : documentRating.getNumberOfRatings())
 
-                .documentCoverImageFilePath(saveDocumentCoverImageAndGetPath(
-                    documentCoverImage == null ? new byte[0] : documentCoverImage.getBytes()
-                ))
+                .documentCoverImageFilePath(documentCoverImage != null
+                    ? saveDocumentCoverImageAndGetPath(documentCoverImage.getBytes())
+                    : ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH)
+                )
 
                 .build();
         }
@@ -118,7 +121,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         @SneakyThrows
         private static @NonNull String saveDocumentCoverImageAndGetPath(byte @NonNull [] rawDocumentCoverImage) {
             try {
-                return TemporaryFileProvider.save(".png", rawDocumentCoverImage);
+                return TemporaryFileProvider.save(COVER_IMAGE_FILE_EXTENSION, rawDocumentCoverImage);
 
             } catch (IOException exception) {
                 return ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH);

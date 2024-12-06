@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.testng.Assert.*;
 
+@Test(groups = "cloud")
 public class CloudAdministratorRepositoryTest extends UnitTest<CloudAdministratorRepository> {
 
     private static final @NonNull String SAMPLE_USERNAME = "sampleUser";
