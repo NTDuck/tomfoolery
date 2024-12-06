@@ -21,6 +21,9 @@ import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCa
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.AddDocumentController;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class AddDocumentView {
@@ -96,20 +99,26 @@ public class AddDocumentView {
     }
 
     private String getCurrentCoverImagePath() {
-        ImageView imageView = (ImageView) coverImageChooserButton.getGraphic();
+        Image buttonImage = ((ImageView) coverImageChooserButton.getGraphic()).getImage();
+        String imageURL = buttonImage.getUrl();
 
-        Image img = imageView.getImage();
-        String path = img.getUrl();
-        if (path.startsWith("file:")) {
-            path = path.substring(5);
+        String absolutePath = null;
+
+        if (imageURL != null) {
+            try {
+                absolutePath = Paths.get(new URI(imageURL)).toString();
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("Absolute Path: " + absolutePath);
+        } else {
+            System.out.println("No image URL found");
         }
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        return path;
+
+        return absolutePath;
     }
 
-    public File getCoverImageFile() {
+    public void openCoverImageFileChooser() {
         FileChooser fileChooser = new FileChooser();
 
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -122,11 +131,7 @@ public class AddDocumentView {
 
         Stage stage = StageManager.getInstance().getPrimaryStage();
 
-        return fileChooser.showOpenDialog(stage);
-    }
-
-    public void openCoverImageFileChooser() {
-        File selectedFile = getCoverImageFile();
+        File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
             ImageView coverImage = new ImageView(new Image(selectedFile.toURI().toString()));

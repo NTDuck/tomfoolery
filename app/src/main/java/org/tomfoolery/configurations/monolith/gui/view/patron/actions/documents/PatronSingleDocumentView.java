@@ -92,6 +92,7 @@ public class PatronSingleDocumentView {
     @FXML
     public void initialize() {
         descriptionScrollPane.setFitToWidth(true);
+        descriptionScrollPane.setFitToHeight(true);
         borrowButton.setOnAction(event -> borrowDocument());
         returnButton.setOnAction(event -> returnDocument());
         closeButton.setOnAction(event -> closeView());

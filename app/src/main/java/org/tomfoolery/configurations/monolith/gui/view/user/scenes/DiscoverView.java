@@ -24,24 +24,22 @@ import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUs
 import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
-import java.io.File;
 
 public class DiscoverView {
     private final @NonNull SearchDocumentsController searchController;
     private final @NonNull GetDocumentByIdController getByIdController;
 
-    private @NonNull ImageView getCoverImageFromPath(String path) {
-        File imgFile = new File(path);
-        Image image = new Image(imgFile.toURI().toString());
+    private @NonNull ImageView getCoverImageFromPath(@NonNull String path) {
+//        Image image = new Image("file:" + path);
+        Image image = new Image("/images/default/placeholder-book-cover.png");
+        ImageView coverImage = new ImageView(image);
+        coverImage.setFitHeight(240);
+        coverImage.setFitWidth(160);
+        coverImage.setPreserveRatio(true);
+        coverImage.setSmooth(true);
+        coverImage.setCache(true);
 
-        ImageView defaultCoverImage = new ImageView(image);
-        defaultCoverImage.setFitHeight(240);
-        defaultCoverImage.setFitWidth(160);
-        defaultCoverImage.setPreserveRatio(true);
-        defaultCoverImage.setSmooth(true);
-        defaultCoverImage.setCache(true);
-
-        return defaultCoverImage;
+        return coverImage;
     }
 
     public DiscoverView(
@@ -93,10 +91,9 @@ public class DiscoverView {
 
             } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException | GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
                 StageManager.getInstance().openLoginMenu();
-            } catch (GetDocumentByIdUseCase.DocumentNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException e) {
-                throw new RuntimeException(e);
+            } catch (GetDocumentByIdUseCase.DocumentNotFoundException |
+                     GetDocumentByIdUseCase.DocumentISBNInvalidException e) {
+                booksContainer.getChildren().clear();
             }
         }
         else {
@@ -106,7 +103,7 @@ public class DiscoverView {
                 this.onSearchSuccess(viewModel);
             } catch (SearchDocumentsUseCase.AuthenticationTokenNotFoundException |
                      SearchDocumentsUseCase.AuthenticationTokenInvalidException e) {
-                System.err.println("Authentication invalid or not found");
+                StageManager.getInstance().openLoginMenu();
             } catch (SearchDocumentsUseCase.PaginationInvalidException e) {
                 booksContainer.getChildren().clear();
             }
@@ -121,7 +118,7 @@ public class DiscoverView {
         String authors = String.join(", ", viewModel.getDocumentAuthors());
         String documentTitle = viewModel.getDocumentTitle();
         String isbn = viewModel.getDocumentISBN_13();
-        booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, documentCoverImageFilePath));
+        booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, getCoverImageFromPath(documentCoverImageFilePath)));
     }
 
     private GetDocumentByIdController.@NonNull RequestObject collectGetByIdRequestObject() {
@@ -155,16 +152,19 @@ public class DiscoverView {
             String authors = String.join(", ", document.getDocumentAuthors());
             String documentTitle = document.getDocumentTitle();
             String isbn = document.getDocumentISBN_13();
-//            String coverImagePath = document.getDocumentCoverImageFilePath();
-            String coverImagePath = "/images/default/placeholder-book-cover.png";
-            booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, coverImagePath));
+            String coverImagePath = document.getDocumentCoverImageFilePath();
+
+            ImageView coverImage = getCoverImageFromPath(coverImagePath);
+            booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, coverImage));
         });
     }
 
-    private @NonNull VBox createDocumentTileWithImage(String authors, String title, String isbn, String coverImagePath) {
+    private @NonNull VBox createDocumentTileWithImage(String authors, String title, String isbn, ImageView coverImage) {
         VBox documentTile = new VBox();
         documentTile.setMaxHeight(300);
         documentTile.setMaxWidth(210);
+        documentTile.setMinHeight(300);
+        documentTile.setMinWidth(210);
         documentTile.setAlignment(Pos.TOP_CENTER);
 
         Label titleLabel = new Label(title);
@@ -173,30 +173,11 @@ public class DiscoverView {
         Label authorLabel = new Label(authors);
         authorLabel.setStyle("-fx-font-size: 12;");
 
-        try {
-//            ImageView coverImage = getCoverImageFromPath(coverImagePath);
-            ImageView coverImage = new ImageView(new Image(coverImagePath));
+        coverImage.setOnMouseEntered(event -> documentTile.setCursor(Cursor.HAND));
+        coverImage.setOnMouseExited(event -> documentTile.setCursor(Cursor.DEFAULT));
+        coverImage.setOnMouseClicked(event -> openDocumentViewOnClick(isbn));
 
-            coverImage.setOnMouseEntered(event -> documentTile.setCursor(Cursor.HAND));
-            coverImage.setOnMouseExited(event -> documentTile.setCursor(Cursor.DEFAULT));
-            coverImage.setOnMouseClicked(event -> openDocumentViewOnClick(isbn));
-
-            documentTile.getChildren().add(coverImage);
-        } catch (Exception e) {
-            Image img = new Image("/images/default/placeholder-book-cover.jpg");
-            ImageView placeholder = new ImageView(img);
-            placeholder.setFitWidth(160);
-            placeholder.setFitHeight(240);
-            placeholder.setPreserveRatio(true);
-            placeholder.setCache(true);
-            placeholder.setSmooth(true);
-
-            placeholder.setOnMouseEntered(event -> documentTile.setCursor(Cursor.HAND));
-            placeholder.setOnMouseExited(event -> documentTile.setCursor(Cursor.DEFAULT));
-            placeholder.setOnMouseClicked(event -> openDocumentViewOnClick(isbn));
-
-            documentTile.getChildren().add(placeholder);
-        }
+        documentTile.getChildren().add(coverImage);
 
         documentTile.getChildren().addAll(titleLabel, authorLabel);
         return documentTile;
@@ -220,6 +201,6 @@ public class DiscoverView {
         rootStackPane.getChildren().add(hbox);
     }
 
-    private class DocumentCoverImageNotOpenableException extends Throwable {
+    private static class DocumentCoverImageNotOpenableException extends Throwable {
     }
 }

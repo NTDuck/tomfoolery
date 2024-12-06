@@ -13,15 +13,15 @@
            fx:id="welcomeLabel"/>
     <HBox styleClass="content" prefWidth="Infinity" prefHeight="400">
         <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
-            <Label text="13" styleClass="dashboard-tile-number" fx:id="numberOfPatrons"/>
+            <Label styleClass="dashboard-tile-number" fx:id="numberOfPatrons"/>
             <Label text="patrons" styleClass="dashboard-tile-text"/>
         </VBox>
         <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
-            <Label text="444" styleClass="dashboard-tile-number"/>
+            <Label styleClass="dashboard-tile-number" fx:id="numberOfAvailableDocuments"/>
             <Label text="books available" styleClass="dashboard-tile-text"/>
         </VBox>
         <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
-            <Label text="0" styleClass="dashboard-tile-number" fx:id="numberOfBorrowedDocuments"/>
+            <Label styleClass="dashboard-tile-number" fx:id="numberOfBorrowedDocuments"/>
             <Label text="books borrowing" styleClass="dashboard-tile-text"/>
         </VBox>
     </HBox>

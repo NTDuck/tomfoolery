@@ -50,6 +50,9 @@ public class DashboardView {
     private Label numberOfPatrons;
 
     @FXML
+    private Label numberOfAvailableDocuments;
+
+    @FXML
     private ImageView recommendedDocumentCoverImage;
 
     @FXML
@@ -60,9 +63,9 @@ public class DashboardView {
 
     @FXML
     public void initialize() {
-
         numberOfBorrowedDocuments.setText(String.valueOf(getNumberOfBorrowedDocuments()));
         numberOfPatrons.setText(String.valueOf(StageManager.getInstance().getResources().getPatronRepository().show().size()));
+        numberOfAvailableDocuments.setText(String.valueOf(StageManager.getInstance().getResources().getDocumentRepository().show().size()));
         this.loadRecommendation();
     }
 
