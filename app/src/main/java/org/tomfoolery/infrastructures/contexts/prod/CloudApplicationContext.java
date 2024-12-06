@@ -1,9 +1,9 @@
-package org.tomfoolery.configurations.monolith.console.dataproviders.contexts;
+package org.tomfoolery.infrastructures.contexts.prod;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.console.dataproviders.contexts.abc.ApplicationContext;
+import org.tomfoolery.infrastructures.contexts.abc.ApplicationContext;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
@@ -20,81 +20,87 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public class CloudApplicationContext extends ApplicationContext {
     @Override
-    protected @NonNull DocumentRepository getDocumentRepository() {
+    protected @NonNull DocumentRepository createDocumentRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull AdministratorRepository getAdministratorRepository() {
+    protected @NonNull AdministratorRepository createAdministratorRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull PatronRepository getPatronRepository() {
+    protected @NonNull PatronRepository createPatronRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull StaffRepository getStaffRepository() {
+    protected @NonNull StaffRepository createStaffRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull DocumentContentRepository getDocumentContentRepository() {
+    protected @NonNull DocumentContentRepository createDocumentContentRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull BorrowingSessionRepository getBorrowingSessionRepository() {
+    protected @NonNull BorrowingSessionRepository createBorrowingSessionRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull ReviewRepository getReviewRepository() {
+    protected @NonNull ReviewRepository createReviewRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull DocumentSearchGenerator getDocumentSearchGenerator() {
+    protected @NonNull DocumentSearchGenerator createDocumentSearchGenerator() {
         return null;
     }
 
     @Override
-    protected @NonNull DocumentRecommendationGenerator getDocumentRecommendationGenerator() {
+    protected @NonNull DocumentRecommendationGenerator createDocumentRecommendationGenerator() {
         return null;
     }
 
     @Override
-    protected @NonNull <User extends BaseUser> UserSearchGenerator<User> getUserSearchGenerator() {
+    protected @NonNull <User extends BaseUser> UserSearchGenerator<User> createUserSearchGenerator() {
         return null;
     }
 
     @Override
-    protected @NonNull DocumentQrCodeGenerator getDocumentQrCodeGenerator() {
+    protected @NonNull DocumentQrCodeGenerator createDocumentQrCodeGenerator() {
         return null;
     }
 
     @Override
-    protected @NonNull DocumentUrlGenerator getDocumentUrlGenerator() {
+    protected @NonNull DocumentUrlGenerator createDocumentUrlGenerator() {
         return null;
     }
 
     @Override
-    protected @NonNull AuthenticationTokenGenerator getAuthenticationTokenGenerator() {
+    protected @NonNull AuthenticationTokenGenerator createAuthenticationTokenGenerator() {
         return null;
     }
 
     @Override
-    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenRepository() {
+    protected @NonNull AuthenticationTokenRepository createAuthenticationTokenRepository() {
         return null;
     }
 
     @Override
-    protected @NonNull PasswordEncoder getPasswordEncoder() {
+    protected @NonNull PasswordEncoder createPasswordEncoder() {
+        return null;
+    }
+
+    @Override
+    protected @NonNull HttpClientProvider createHttpClientProvider() {
         return null;
     }
 }

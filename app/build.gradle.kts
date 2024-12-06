@@ -120,7 +120,7 @@ javafx {
 }
 
 testlogger {
-    theme = ThemeType.MOCHA
+    theme = ThemeType.MOCHA_PARALLEL
     showExceptions = true
     showStackTraces = true
     showFullStackTraces = false

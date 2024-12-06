@@ -1,8 +1,9 @@
-package org.tomfoolery.configurations.monolith.console.dataproviders.contexts;
+package org.tomfoolery.infrastructures.contexts.dev;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.console.dataproviders.contexts.abc.ApplicationContext;
+import org.tomfoolery.infrastructures.contexts.abc.ApplicationContext;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
@@ -31,88 +32,105 @@ import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authen
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
-import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.authentication.security.InMemoryAuthenticationTokenRepository;
 
-@NoArgsConstructor(staticName = "of")
-public final class InMemoryApplicationContext extends ApplicationContext {
-    private final @NonNull HttpClientProvider httpClientProvider = OkHttpClientProvider.of();
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class InMemoryApplicationContext extends ApplicationContext {
+    private static @NonNull InMemoryApplicationContext of() {
+        return new InMemoryApplicationContext();
+    }
 
     @Override
-    protected @NonNull DocumentRepository getDocumentRepository() {
+    protected @NonNull DocumentRepository createDocumentRepository() {
         return InMemoryDocumentRepository.of();
     }
 
     @Override
-    protected @NonNull AdministratorRepository getAdministratorRepository() {
+    protected @NonNull List<DocumentRepository> createRetrievalDocumentRepositories() {
+        return List.of(
+            GoogleApiDocumentRepository.of(this.getHttpClientProvider())
+        );
+    }
+
+    @Override
+    protected @NonNull AdministratorRepository createAdministratorRepository() {
         return InMemoryAdministratorRepository.of();
     }
 
     @Override
-    protected @NonNull PatronRepository getPatronRepository() {
+    protected @NonNull PatronRepository createPatronRepository() {
         return InMemoryPatronRepository.of();
     }
 
     @Override
-    protected @NonNull StaffRepository getStaffRepository() {
+    protected @NonNull StaffRepository createStaffRepository() {
         return InMemoryStaffRepository.of();
     }
 
     @Override
-    protected @NonNull DocumentContentRepository getDocumentContentRepository() {
+    protected @NonNull DocumentContentRepository createDocumentContentRepository() {
         return InMemoryDocumentContentRepository.of();
     }
 
     @Override
-    protected @NonNull BorrowingSessionRepository getBorrowingSessionRepository() {
+    protected @NonNull BorrowingSessionRepository createBorrowingSessionRepository() {
         return InMemoryBorrowingSessionRepository.of();
     }
 
     @Override
-    protected @NonNull ReviewRepository getReviewRepository() {
+    protected @NonNull ReviewRepository createReviewRepository() {
         return InMemoryReviewRepository.of();
     }
 
     @Override
-    protected @NonNull DocumentSearchGenerator getDocumentSearchGenerator() {
+    protected @NonNull DocumentSearchGenerator createDocumentSearchGenerator() {
         return InMemoryIndexedDocumentSearchGenerator.of();
     }
 
     @Override
-    protected @NonNull DocumentRecommendationGenerator getDocumentRecommendationGenerator() {
+    protected @NonNull DocumentRecommendationGenerator createDocumentRecommendationGenerator() {
         return InMemoryIndexedDocumentRecommendationGenerator.of();
     }
 
     @Override
-    protected @NonNull <User extends BaseUser> UserSearchGenerator<User> getUserSearchGenerator() {
+    protected @NonNull <User extends BaseUser> UserSearchGenerator<User> createUserSearchGenerator() {
         return InMemoryUserSearchGenerator.of();
     }
 
     @Override
-    protected @NonNull DocumentQrCodeGenerator getDocumentQrCodeGenerator() {
+    protected @NonNull DocumentQrCodeGenerator createDocumentQrCodeGenerator() {
         return ZxingDocumentQrCodeGenerator.of();
     }
 
     @Override
-    protected @NonNull DocumentUrlGenerator getDocumentUrlGenerator() {
+    protected @NonNull DocumentUrlGenerator createDocumentUrlGenerator() {
         return ApacheHttpClientDocumentUrlGenerator.of();
     }
 
     @Override
-    protected @NonNull AuthenticationTokenGenerator getAuthenticationTokenGenerator() {
+    protected @NonNull AuthenticationTokenGenerator createAuthenticationTokenGenerator() {
         return JJWTAuthenticationTokenGenerator.of();
     }
 
     @Override
-    protected @NonNull AuthenticationTokenRepository getAuthenticationTokenRepository() {
-        return KeyStoreAuthenticationTokenRepository.of();
+    protected @NonNull AuthenticationTokenRepository createAuthenticationTokenRepository() {
+        return InMemoryAuthenticationTokenRepository.of();
     }
 
     @Override
-    protected @NonNull PasswordEncoder getPasswordEncoder() {
+    protected @NonNull PasswordEncoder createPasswordEncoder() {
         return BCryptPasswordEncoder.of();
+    }
+
+    @Override
+    protected @NonNull HttpClientProvider createHttpClientProvider() {
+        return OkHttpClientProvider.of();
     }
 }

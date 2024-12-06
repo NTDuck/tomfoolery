@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.monolith.console.dataproviders.contexts.abc;
+package org.tomfoolery.infrastructures.contexts.abc;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,42 +24,61 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.documents.SynchronizedDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedStaffRepository;
+import org.tomfoolery.infrastructures.utils.helpers.reflection.Closeable;
 
 import java.util.List;
 import java.util.Set;
 
 @Getter
-public abstract class ApplicationContext {
-    private final @NonNull DocumentRepository documentRepository = this.getDocumentRepository();
+public abstract class ApplicationContext implements Closeable {
+    private final @NonNull HttpClientProvider httpClientProvider = this.createHttpClientProvider();
+
+    private final @NonNull DocumentRepository documentRepository = this.createDocumentRepository();
+
+    private final @NonNull DocumentContentRepository documentContentRepository = this.createDocumentContentRepository();
+    private final @NonNull BorrowingSessionRepository borrowingSessionRepository = this.createBorrowingSessionRepository();
+    private final @NonNull ReviewRepository reviewRepository = this.createReviewRepository();
+
+    private final @NonNull DocumentSearchGenerator documentSearchGenerator = this.createDocumentSearchGenerator();
+    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = this.createDocumentRecommendationGenerator();
+
+    private final @NonNull UserSearchGenerator<Administrator> administratorSearchGenerator = this.createUserSearchGenerator();
+    private final @NonNull UserSearchGenerator<Patron> patronSearchGenerator = this.createUserSearchGenerator();
+    private final @NonNull UserSearchGenerator<Staff> staffSearchGenerator = this.createUserSearchGenerator();
+
+    private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = this.createDocumentQrCodeGenerator();
+    private final @NonNull DocumentUrlGenerator documentUrlGenerator = this.createDocumentUrlGenerator();
+
+    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = this.createAuthenticationTokenGenerator();
+    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = this.createAuthenticationTokenRepository();
+    private final @NonNull PasswordEncoder passwordEncoder = this.createPasswordEncoder();
 
     private final @NonNull DocumentRepository hybridDocumentRepository = HybridDocumentRepository.of(
         List.of(SynchronizedDocumentRepository.of(
             this.documentRepository,
             List.of(this.documentSearchGenerator, this.documentRecommendationGenerator),
             this.documentContentRepository, this.borrowingSessionRepository, this.reviewRepository
-        )), this.getRetrievalDocumentRepositories()
+        )), this.createRetrievalDocumentRepositories()
     );
 
-    @Setter(AccessLevel.NONE)
     private final @NonNull AdministratorRepository administratorRepository = SynchronizedAdministratorRepository.of(
-        this.getAdministratorRepository(),
+        this.createAdministratorRepository(),
         List.of(this.administratorSearchGenerator), this.borrowingSessionRepository, this.reviewRepository
     );
 
-    @Setter(AccessLevel.NONE)
     private final @NonNull PatronRepository patronRepository = SynchronizedPatronRepository.of(
-        this.getPatronRepository(),
+        this.createPatronRepository(),
         List.of(this.patronSearchGenerator), this.borrowingSessionRepository, this.reviewRepository
     );
 
-    @Setter(AccessLevel.NONE)
     private final @NonNull StaffRepository staffRepository = SynchronizedStaffRepository.of(
-        this.getStaffRepository(),
+        this.createStaffRepository(),
         List.of(this.staffSearchGenerator), this.borrowingSessionRepository, this.reviewRepository
     );
 
@@ -67,45 +86,29 @@ public abstract class ApplicationContext {
         this.administratorRepository, this.staffRepository, this.patronRepository
     ));
 
-    private final @NonNull DocumentContentRepository documentContentRepository = this.getDocumentContentRepository();
-    private final @NonNull BorrowingSessionRepository borrowingSessionRepository = this.getBorrowingSessionRepository();
-    private final @NonNull ReviewRepository reviewRepository = this.getReviewRepository();
+    protected abstract @NonNull DocumentRepository createDocumentRepository();
 
-    private final @NonNull DocumentSearchGenerator documentSearchGenerator = this.getDocumentSearchGenerator();
-    private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = this.getDocumentRecommendationGenerator();
-
-    private final @NonNull UserSearchGenerator<Administrator> administratorSearchGenerator = this.getUserSearchGenerator();
-    private final @NonNull UserSearchGenerator<Patron> patronSearchGenerator = this.getUserSearchGenerator();
-    private final @NonNull UserSearchGenerator<Staff> staffSearchGenerator = this.getUserSearchGenerator();
-
-    private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = this.getDocumentQrCodeGenerator();
-    private final @NonNull DocumentUrlGenerator documentUrlGenerator = this.getDocumentUrlGenerator();
-
-    private final @NonNull AuthenticationTokenGenerator authenticationTokenGenerator = this.getAuthenticationTokenGenerator();
-    private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = this.getAuthenticationTokenRepository();
-    private final @NonNull PasswordEncoder passwordEncoder = this.getPasswordEncoder();
-
-    protected abstract @NonNull DocumentRepository getDocumentRepository();
-
-    protected @NonNull List<DocumentRepository> getRetrievalDocumentRepositories() {
+    protected @NonNull List<DocumentRepository> createRetrievalDocumentRepositories() {
         return List.of();
     }
 
-    protected abstract @NonNull AdministratorRepository getAdministratorRepository();
-    protected abstract @NonNull PatronRepository getPatronRepository();
-    protected abstract @NonNull StaffRepository getStaffRepository();
+    protected abstract @NonNull AdministratorRepository createAdministratorRepository();
+    protected abstract @NonNull PatronRepository createPatronRepository();
+    protected abstract @NonNull StaffRepository createStaffRepository();
 
-    protected abstract @NonNull DocumentContentRepository getDocumentContentRepository();
-    protected abstract @NonNull BorrowingSessionRepository getBorrowingSessionRepository();
-    protected abstract @NonNull ReviewRepository getReviewRepository();
+    protected abstract @NonNull DocumentContentRepository createDocumentContentRepository();
+    protected abstract @NonNull BorrowingSessionRepository createBorrowingSessionRepository();
+    protected abstract @NonNull ReviewRepository createReviewRepository();
 
-    protected abstract @NonNull DocumentSearchGenerator getDocumentSearchGenerator();
-    protected abstract @NonNull DocumentRecommendationGenerator getDocumentRecommendationGenerator();
-    protected abstract <User extends BaseUser> @NonNull UserSearchGenerator<User> getUserSearchGenerator();
+    protected abstract @NonNull DocumentSearchGenerator createDocumentSearchGenerator();
+    protected abstract @NonNull DocumentRecommendationGenerator createDocumentRecommendationGenerator();
+    protected abstract <User extends BaseUser> @NonNull UserSearchGenerator<User> createUserSearchGenerator();
 
-    protected abstract @NonNull DocumentQrCodeGenerator getDocumentQrCodeGenerator();
-    protected abstract @NonNull DocumentUrlGenerator getDocumentUrlGenerator();
-    protected abstract @NonNull AuthenticationTokenGenerator getAuthenticationTokenGenerator();
-    protected abstract @NonNull AuthenticationTokenRepository getAuthenticationTokenRepository();
-    protected abstract @NonNull PasswordEncoder getPasswordEncoder();
+    protected abstract @NonNull DocumentQrCodeGenerator createDocumentQrCodeGenerator();
+    protected abstract @NonNull DocumentUrlGenerator createDocumentUrlGenerator();
+    protected abstract @NonNull AuthenticationTokenGenerator createAuthenticationTokenGenerator();
+    protected abstract @NonNull AuthenticationTokenRepository createAuthenticationTokenRepository();
+    protected abstract @NonNull PasswordEncoder createPasswordEncoder();
+
+    protected abstract @NonNull HttpClientProvider createHttpClientProvider();
 }
