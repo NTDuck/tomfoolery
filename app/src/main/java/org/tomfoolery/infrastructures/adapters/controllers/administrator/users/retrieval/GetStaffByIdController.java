@@ -56,17 +56,29 @@ public final class GetStaffByIdController implements ThrowableFunction<GetStaffB
         @NonNull String staffUuid;
         @NonNull String staffUsername;
 
+        @NonNull String createdByAdministratorId;
+        @NonNull String lastModifiedByAdministratorId;
+
         @NonNull String creationTimestamp;
+        @NonNull String lastModifiedTimestamp;
         @NonNull String lastLoginTimestamp;
         @NonNull String lastLogoutTimestamp;
 
         public static @NonNull ViewModel of(@NonNull Staff staff) {
-            val staffAuditTimestamps = staff.getAudit().getTimestamps();
+            val staffAudit = staff.getAudit();
+            val staffAuditTimestamps = staffAudit.getTimestamps();
 
             return ViewModel.builder()
                 .staffUuid(UserIdBiAdapter.serialize(staff.getId()))
                 .staffUsername(staff.getCredentials().getUsername())
+
+                .createdByAdministratorId(UserIdBiAdapter.serialize(staffAudit.getCreatedByAdministratorId()))
+                .lastModifiedByAdministratorId(staffAudit.getLastModifiedByAdministratorId() == null ? "null"
+                    : UserIdBiAdapter.serialize(staffAudit.getLastModifiedByAdministratorId()))
+
                 .creationTimestamp(TimestampBiAdapter.serialize(staffAuditTimestamps.getCreated()))
+                .lastModifiedTimestamp(staffAuditTimestamps.getLastModified() == null ? "null"
+                    : TimestampBiAdapter.serialize(staffAuditTimestamps.getLastModified()))
                 .lastLoginTimestamp(staffAuditTimestamps.getLastLogin() == null ? "null"
                     : TimestampBiAdapter.serialize(staffAuditTimestamps.getLastLogin()))
                 .lastLogoutTimestamp(staffAuditTimestamps.getLastLogout() == null ? "null"

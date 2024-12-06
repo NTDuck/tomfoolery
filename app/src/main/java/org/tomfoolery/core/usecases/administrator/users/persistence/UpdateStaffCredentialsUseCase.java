@@ -82,7 +82,7 @@ public final class UpdateStaffCredentialsUseCase extends AuthenticatedUserUseCas
         val staffAudit = staff.getAudit();
         val staffAuditTimestamps = staffAudit.getTimestamps();
 
-        staffAudit.setLastModifiedByAdminId(administratorId);
+        staffAudit.setLastModifiedByAdministratorId(administratorId);
         staffAuditTimestamps.setLastModified(Instant.now());
     }
 
