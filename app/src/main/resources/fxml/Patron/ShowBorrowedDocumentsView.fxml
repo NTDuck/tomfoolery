@@ -20,16 +20,13 @@
     </Label>
     <TableView prefHeight="600.0" prefWidth="1160.0" styleClass="documents-table" fx:id="documentsTable">
       <columns>
-          <TableColumn prefWidth="100" text="Number" fx:id="numberColumn">
-          </TableColumn>
-
-          <TableColumn prefWidth="150" text="ISBN">
+          <TableColumn prefWidth="120" text="ISBN">
               <cellValueFactory>
                   <PropertyValueFactory property="ISBN"/>
               </cellValueFactory>
           </TableColumn>
 
-          <TableColumn prefWidth="400" text="Title">
+          <TableColumn prefWidth="250" text="Title">
               <cellValueFactory>
                   <PropertyValueFactory property="title"/>
               </cellValueFactory>
@@ -41,13 +38,13 @@
               </cellValueFactory>
           </TableColumn>
 
-          <TableColumn prefWidth="100.0" text="Borrowed at">
+          <TableColumn prefWidth="150.0" text="Borrowed at">
               <cellValueFactory>
                   <PropertyValueFactory property="borrowDate"/>
               </cellValueFactory>
           </TableColumn>
 
-          <TableColumn prefWidth="100.0" text="Due at">
+          <TableColumn prefWidth="150.0" text="Due at">
               <cellValueFactory>
                   <PropertyValueFactory property="dueDate"/>
               </cellValueFactory>
@@ -55,7 +52,7 @@
 
           <TableColumn prefWidth="100.0" fx:id="readColumn"/>
           <TableColumn prefWidth="100.0" fx:id="rateColumn"/>
-          <TableColumn prefWidth="100.0" fx:id="returnColumn"/>
+          <TableColumn prefWidth="120.0" fx:id="returnColumn"/>
       </columns>
         <columnResizePolicy>
           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
