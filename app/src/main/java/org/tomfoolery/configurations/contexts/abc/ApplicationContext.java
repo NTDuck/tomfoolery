@@ -57,7 +57,7 @@ public abstract class ApplicationContext implements Closeable {
     private final @NonNull AuthenticationTokenRepository authenticationTokenRepository = this.createAuthenticationTokenRepository();
     private final @NonNull PasswordEncoder passwordEncoder = this.createPasswordEncoder();
 
-    private final @NonNull DocumentRepository hybridDocumentRepository = HybridDocumentRepository.of(
+    private final @NonNull HybridDocumentRepository hybridDocumentRepository = HybridDocumentRepository.of(
         List.of(SynchronizedDocumentRepository.of(
             this.documentRepository,
             List.of(this.documentSearchGenerator, this.documentRecommendationGenerator),

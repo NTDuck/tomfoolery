@@ -14,7 +14,7 @@ import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
 import org.tomfoolery.core.utils.contracts.ddd;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.configurations.contexts.dev.InMemoryApplicationContext;
 
 import java.time.Year;

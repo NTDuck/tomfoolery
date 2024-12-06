@@ -1,4 +1,4 @@
-package org.tomfoolery.core.utils.helpers.verifiers.auth.patron;
+package org.tomfoolery.core.utils.helpers.verifiers.users.patron;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -12,7 +12,7 @@ import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.authentication.security.CredentialsVerifier;
 
 import java.time.Instant;
 import java.util.Set;

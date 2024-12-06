@@ -8,7 +8,7 @@ import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 
 import java.util.Set;
 

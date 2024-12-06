@@ -9,12 +9,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.resources.ResourceProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.TimestampBiAdapter;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
@@ -26,12 +26,12 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
 
     private final @NonNull GetDocumentByIdUseCase getDocumentByIdUseCase;
 
-    public static @NonNull GetDocumentByIdController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentByIdController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentByIdController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new GetDocumentByIdController(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private GetDocumentByIdController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.getDocumentByIdUseCase = GetDocumentByIdUseCase.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private GetDocumentByIdController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.getDocumentByIdUseCase = GetDocumentByIdUseCase.of(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

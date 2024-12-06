@@ -10,7 +10,7 @@ import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.guest.users.authentication.LogUserInByCredentialsUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.abc.LogUserInController;
 
 public final class LogUserInByCredentialsController extends LogUserInController implements ThrowableFunction<LogUserInByCredentialsController.RequestObject, LogUserInByCredentialsController.ViewModel> {

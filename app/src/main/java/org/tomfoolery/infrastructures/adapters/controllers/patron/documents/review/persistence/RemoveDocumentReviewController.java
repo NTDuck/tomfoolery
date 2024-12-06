@@ -9,16 +9,17 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 public final class RemoveDocumentReviewController implements ThrowableConsumer<RemoveDocumentReviewController.RequestObject> {
     private final @NonNull RemoveDocumentReviewUseCase removeDocumentReviewUseCase;
 
-    public static @NonNull RemoveDocumentReviewController of(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new RemoveDocumentReviewController(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull RemoveDocumentReviewController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new RemoveDocumentReviewController(hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private RemoveDocumentReviewController(@NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.removeDocumentReviewUseCase = RemoveDocumentReviewUseCase.of(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private RemoveDocumentReviewController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.removeDocumentReviewUseCase = RemoveDocumentReviewUseCase.of(hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

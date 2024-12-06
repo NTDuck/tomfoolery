@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.patron.users.persistence.DeletePatronAccountUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
 public final class DeletePatronAccountController implements ThrowableConsumer<DeletePatronAccountController.RequestObject> {
     private final @NonNull DeletePatronAccountUseCase deletePatronAccountUseCase;

@@ -9,11 +9,11 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.AddressVerifier;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.DateOfBirthVerifier;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.EmailVerifier;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.patron.PhoneNumberVerifier;
-import org.tomfoolery.core.utils.helpers.verifiers.auth.security.CredentialsVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.AddressVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.DateOfBirthVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.EmailVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.patron.PhoneNumberVerifier;
+import org.tomfoolery.core.utils.helpers.verifiers.users.authentication.security.CredentialsVerifier;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -5,8 +5,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.tomfoolery.abc.UnitTest;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
 import static org.testng.Assert.*;
 
