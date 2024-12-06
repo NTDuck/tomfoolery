@@ -48,9 +48,9 @@
       </HBox>
 
       <HBox alignment="CENTER" prefHeight="85.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
-         <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="Unrate" styleClass="button" fx:id="removeRatingButton"/>
-         <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="Cancel" styleClass="button" fx:id="cancelButton"/>
-         <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="Confirm" styleClass="button" fx:id="confirmButton"/>
+         <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Unrate" styleClass="button" fx:id="removeRatingButton"/>
+         <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Cancel" styleClass="button" fx:id="cancelButton"/>
+         <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Confirm" styleClass="button" fx:id="confirmButton"/>
       </HBox>
    </VBox>
 </AnchorPane>

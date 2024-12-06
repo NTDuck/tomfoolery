@@ -28,6 +28,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borr
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ReadBorrowedDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.awt.*;
 import java.io.File;
@@ -44,7 +45,7 @@ public class ShowBorrowedDocumentsView {
     private final @NonNull ReturnDocumentController returnDocumentController;
     private final @NonNull GetDocumentBorrowStatusController getDocumentBorrowStatusController;
 
-    public ShowBorrowedDocumentsView(@NonNull DocumentRepository documentRepository,
+    public ShowBorrowedDocumentsView(@NonNull HybridDocumentRepository documentRepository,
                                      @NonNull DocumentContentRepository contentRepository,
                                      @NonNull BorrowingSessionRepository borrowingSessionRepository,
                                      @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
@@ -164,7 +165,7 @@ public class ShowBorrowedDocumentsView {
     private void openRatingView(String isbn) {
         RateDocumentView rateDocumentView = new RateDocumentView(
                 isbn,
-                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getReviewRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository()

@@ -7,9 +7,10 @@
 }
 
 .search-field-container {
+    -fx-padding: 0 0 0 10;
     -fx-border-color: gray;
     -fx-border-radius: 8;
-
+    -fx-border-width: 2;
 }
 
 .search-field {
@@ -21,19 +22,63 @@
 .criteria-chooser {
     -fx-border-color: gray;
     -fx-background-radius: 8;
+    -fx-border-width: 2;
     -fx-background-color: white;
     -fx-border-radius: 8;
     -fx-font-family: "Segoe UI Variable";
-    -fx-font-size: 25;
+    -fx-font-size: 24;
+}
+
+.page-chooser-box {
+    -fx-border-color: gray;
+    -fx-border-width: 2;
+    -fx-background-radius: 8;
+    -fx-background-color: white;
+    -fx-border-radius: 8;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
 }
 
 .books-scroll-pane {
     -fx-background-color: white;
-    -fx-border-width: 1 0 0 0;
+    -fx-border-width: 2 0 0 0;
     -fx-border-color: gray;
+    -fx-padding: 0 10 0 0;
+}
+
+.books-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 16;
+}
+
+.books-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #6096ba4D;
+    -fx-background-radius: 5;
+}
+
+.books-scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #6096ba;
+    -fx-background-radius: 5;
+}
+
+.books-scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.books-scroll-pane .scroll-bar .increment-button,
+.books-scroll-pane .scroll-bar .decrement-button {
+    -fx-padding: 0;
+    -fx-shape: null;
+    -fx-background-color: transparent;
 }
 
 .books-container {
-    -fx-padding: 20 10 20 40;
+    -fx-padding: 20 10 20 20;
     -fx-background-color: white;
+}
+
+.select-page-label {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
 }

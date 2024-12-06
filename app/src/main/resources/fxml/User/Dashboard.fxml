@@ -31,8 +31,9 @@
         <HBox styleClass="book-display-box" prefWidth="800" prefHeight="250" alignment="CENTER" VBox.vgrow="ALWAYS">
             <VBox spacing="20" alignment="CENTER">
                 <Label text="Book of the day" style="-fx-font-size: 40; -fx-font-family: 'Segoe UI Variable'"/>
-                <Label text="Name: The silence of the lamb" style="-fx-font-size: 25; -fx-font-family: 'Segoe UI Variable'" fx:id="recommendedDocumentTitle"/>
-                <Label text="Author: Thomas Harris" style="-fx-font-size: 25; -fx-font-family: 'Segoe UI Variable'" fx:id="recommendedDocumentAuthor"/>
+                <Label text="Name: The silence of the lamb" style="-fx-font-size: 35; -fx-font-family: 'Segoe UI Variable'" fx:id="recommendedDocumentTitle"/>
+                <Label text="Author: Thomas Harris" style="-fx-font-size: 25; -fx-font-family: 'Segoe UI Variable'" fx:id="recommendedDocumentAuthor"
+                        wrapText="true"/>
             </VBox>
 
             <ImageView fitWidth="240" fitHeight="240" styleClass="book-image-view" fx:id="recommendedDocumentCoverImage">

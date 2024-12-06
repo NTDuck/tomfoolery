@@ -229,6 +229,8 @@ tasks.register<JavaExec>("runJavaFX") {
     mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
     classpath = sourceSets["main"].runtimeClasspath
 
+    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.InMemoryTestApplicationContext"
+
     // Ensure JavaFX runtime components are registered
     jvmArgs = listOf(
         "--module-path", configurations.runtimeClasspath.get().files

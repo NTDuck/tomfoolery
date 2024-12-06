@@ -16,6 +16,7 @@ import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocum
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.AddDocumentReviewController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.RemoveDocumentReviewController;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class RateDocumentView {
     private int currentRating;
 
     public RateDocumentView(@NonNull String isbn,
-                            @NonNull DocumentRepository documentRepository,
+                            @NonNull HybridDocumentRepository documentRepository,
                             @NonNull ReviewRepository reviewRepository,
                             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
                             @NonNull AuthenticationTokenRepository authenticationTokenRepository) {

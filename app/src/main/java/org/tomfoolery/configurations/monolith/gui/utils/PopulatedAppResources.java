@@ -11,7 +11,7 @@ import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
 import java.time.Year;
 import java.time.ZoneId;

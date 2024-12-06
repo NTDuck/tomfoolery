@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui.view.user.scenes;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -24,26 +25,15 @@ import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUs
 import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 public class DiscoverView {
+    private final int NUMBER_OF_TOTAL_DOCUMENTS = StageManager.getInstance().getResources().getHybridDocumentRepository().show().size();
     private final @NonNull SearchDocumentsController searchController;
     private final @NonNull GetDocumentByIdController getByIdController;
 
-    private @NonNull ImageView getCoverImageFromPath(@NonNull String path) {
-//        Image image = new Image("file:" + path);
-        Image image = new Image("/images/default/placeholder-book-cover.png");
-        ImageView coverImage = new ImageView(image);
-        coverImage.setFitHeight(240);
-        coverImage.setFitWidth(160);
-        coverImage.setPreserveRatio(true);
-        coverImage.setSmooth(true);
-        coverImage.setCache(true);
-
-        return coverImage;
-    }
-
     public DiscoverView(
-            @NonNull DocumentRepository documentRepository,
+            @NonNull HybridDocumentRepository documentRepository,
             @NonNull DocumentSearchGenerator documentSearchGenerator,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
@@ -74,14 +64,24 @@ public class DiscoverView {
     private FlowPane booksContainer;
 
     @FXML
-    public void initialize() {
-        searchField.setOnAction(event -> searchBooks());
-        criterionChooserBox.setValue("Title");
+    private ComboBox<Integer> pageIndexChooserBox;
 
-        searchBooks();
+    @FXML
+    public void initialize() {
+        criterionChooserBox.setValue("Title");
+        pageIndexChooserBox.setValue(1);
+
+        searchField.setOnAction(event -> searchBooks(1));
+        pageIndexChooserBox.setOnAction(event -> {
+            Integer selectedPage = pageIndexChooserBox.getValue();
+            searchBooks(selectedPage);
+            pageIndexChooserBox.setValue(selectedPage);
+        });
+
+        searchBooks(1);
     }
 
-    private void searchBooks() {
+    private void searchBooks(int pageIndex) {
         if (criterionChooserBox.getValue().equals("ISBN")) {
             val requestObject = this.collectGetByIdRequestObject();
 
@@ -98,7 +98,7 @@ public class DiscoverView {
         }
         else {
             try {
-                val requestObject = this.collectSearchRequestObject();
+                val requestObject = this.collectSearchRequestObject(pageIndex);
                 val viewModel = this.searchController.apply(requestObject);
                 this.onSearchSuccess(viewModel);
             } catch (SearchDocumentsUseCase.AuthenticationTokenNotFoundException |
@@ -126,11 +126,11 @@ public class DiscoverView {
         return GetDocumentByIdController.RequestObject.of(searchField.getText());
     }
 
-    private SearchDocumentsController.@NonNull RequestObject collectSearchRequestObject() {
+    private SearchDocumentsController.@NonNull RequestObject collectSearchRequestObject(int pageIndex) {
         val searchCriterion = getChoseCriterion();
         String searchText = searchField.getText();
 
-        return SearchDocumentsController.RequestObject.of(searchCriterion, searchText, 1, 1000);
+        return SearchDocumentsController.RequestObject.of(searchCriterion, searchText, pageIndex, 30);
     }
 
     private SearchDocumentsController.@NonNull SearchCriterion getChoseCriterion() {
@@ -146,6 +146,13 @@ public class DiscoverView {
     }
 
     private void onSearchSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
+        int numberOfPages = viewModel.getMaxPageIndex();
+        if (pageIndexChooserBox.getItems().size() < numberOfPages) {
+            for (int i = 1; i <= numberOfPages; i++) {
+                pageIndexChooserBox.getItems().add(i);
+            }
+        }
+
         booksContainer.getChildren().clear();
         viewModel.getPaginatedDocuments().forEach(document ->
         {
@@ -159,7 +166,16 @@ public class DiscoverView {
         });
     }
 
-    private @NonNull VBox createDocumentTileWithImage(String authors, String title, String isbn, ImageView coverImage) {
+    private @NonNull ImageView getCoverImageFromPath(@NonNull String path) {
+        ImageView imageView = new ImageView(new Image("/images/default/placeholder-book-cover.png", 160, 240, true, true));
+        new Thread(() -> {
+            Image image = new Image("file:" + path, 160, 240, true, true);
+            Platform.runLater(() -> imageView.setImage(image));
+        }).start();
+        return imageView;
+    }
+
+    private @NonNull VBox createDocumentTileWithImage(String authors, String title, String isbn, @NonNull ImageView coverImage) {
         VBox documentTile = new VBox();
         documentTile.setMaxHeight(300);
         documentTile.setMaxWidth(210);
@@ -187,7 +203,7 @@ public class DiscoverView {
     private void openDocumentViewOnClick(String isbn) {
         PatronSingleDocumentView documentView = new PatronSingleDocumentView(
                 isbn,
-                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
                 StageManager.getInstance().getResources().getBorrowingSessionRepository()

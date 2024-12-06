@@ -20,6 +20,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retr
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
+import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.io.File;
 
@@ -32,7 +33,7 @@ public class PatronSingleDocumentView {
 
     public PatronSingleDocumentView(
             @NonNull String documentISBN,
-            @NonNull DocumentRepository documentRepository,
+            @NonNull HybridDocumentRepository documentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
             @NonNull BorrowingSessionRepository borrowingSessionRepository
@@ -149,8 +150,7 @@ public class PatronSingleDocumentView {
         descriptionArea.setText(viewModel.getDocumentDescription());
 
         String coverImagePath = viewModel.getDocumentCoverImageFilePath();
-        File coverImageFile = new File(coverImagePath);
-        coverImage.setImage(new Image(coverImageFile.toURI().toString()));
+        coverImage.setImage(new Image("file:" + coverImagePath));
         coverImage.setFitHeight(400);
         coverImage.setFitWidth(260);
     }

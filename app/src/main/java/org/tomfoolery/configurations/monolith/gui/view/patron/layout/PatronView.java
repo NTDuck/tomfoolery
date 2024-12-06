@@ -75,7 +75,7 @@ public class PatronView extends BaseView {
 
     private void loadDiscover() throws IOException {
         DiscoverView controller = new DiscoverView(
-                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getDocumentSearchGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository()
@@ -88,7 +88,7 @@ public class PatronView extends BaseView {
 
     private void loadShowBorrowedDocuments() throws IOException {
         ShowBorrowedDocumentsView controller = new ShowBorrowedDocumentsView(
-                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getDocumentContentRepository(),
                 StageManager.getInstance().getResources().getBorrowingSessionRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),

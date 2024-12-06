@@ -8,18 +8,26 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.gui.utils.PopulatedAppResources;
+import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
+import org.tomfoolery.configurations.contexts.dev.InMemoryApplicationContext;
+import org.tomfoolery.configurations.contexts.test.InMemoryTestApplicationContext;
 import org.tomfoolery.configurations.monolith.gui.view.admin.layout.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.SignupView;
 import org.tomfoolery.configurations.monolith.gui.view.patron.layout.PatronView;
 import org.tomfoolery.configurations.monolith.gui.view.staff.layout.StaffView;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.MissingResourceException;
 import java.util.Objects;
 
 @Getter
 public class StageManager {
+    private static final @NonNull String APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME = "tomfoolery.context";
+    private final @NonNull ApplicationContext resources = getApplicationContextFromEnvironment();
+
     private static StageManager instance;
 
     @Setter
@@ -38,8 +46,6 @@ public class StageManager {
     public StackPane getRootStackPane() {
         return (StackPane) this.getPrimaryStage().getScene().getRoot();
     }
-
-    private final @NonNull PopulatedAppResources resources = PopulatedAppResources.of();
 
     public void setLoginStageProperties() {
         primaryStage.setMinHeight(0);
@@ -149,6 +155,55 @@ public class StageManager {
     public void loadPatronView(StageManager.ContentType contentType) {
         PatronView patronView = new PatronView();
         patronView.loadView(contentType);
+    }
+
+    private @NonNull ApplicationContext getApplicationContextFromEnvironment() {
+        val contextClassName = System.getenv(APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
+
+        if (contextClassName == null || contextClassName.isBlank()) {
+            throw new MissingResourceException(String.format("""
+            Required resource is missing: `ApplicationContext`.
+            Specify in `build.gradle.kts` as follows:
+
+            ```
+            tasks.register<JavaExec>("runXXX") {
+                environment[%s] = "<path.to.ApplicationContextYYY>"
+            }
+            ```""", APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME
+            ), contextClassName, APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
+        }
+
+        try {
+            val contextClass = Class.forName(contextClassName);
+            val contextConstructor = contextClass.getDeclaredConstructor();
+
+            return (ApplicationContext) contextConstructor.newInstance();
+
+        } catch (ClassNotFoundException exception) {
+            throw new MissingResourceException(String.format("""
+                Required resource is invalid: `ApplicationContext`.
+                Specify in `build.gradle.kts` as follows:
+                
+                ```
+                tasks.register<JavaExec>("runXXX") {
+                    environment[%s] = "<path.to.ApplicationContextYYY>"
+                }
+                ```""", APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME
+            ), contextClassName, APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
+
+        } catch (NoSuchMethodException | IllegalAccessException exception) {
+            throw new RuntimeException(String.format("""
+                Class `%s` must provide a public default constructor.
+                """, contextClassName));
+
+        } catch (InvocationTargetException exception) {
+            throw new RuntimeException(exception.getCause());
+
+        } catch (InstantiationException e) {
+            throw new RuntimeException(String.format("""
+                Class `%s` must not be abstract.
+                """, contextClassName));
+        }
     }
 
     public enum ContentType {
