@@ -5,34 +5,27 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.tomfoolery.abc.UnitTest;
+import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudUserRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudAdministratorRepository;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import static org.testng.Assert.*;
 
-public class CloudUserRepositoryTest extends UnitTest<CloudUserRepository<BaseUser>> {
+public class CloudAdministratorRepositoryTest extends UnitTest<CloudAdministratorRepository> {
 
     private static final @NonNull String SAMPLE_USERNAME = "sampleUser";
     private static final @NonNull char[] SAMPLE_PASSWORD = "securePass".toCharArray();
 
-    private @NonNull BaseUser sampleUser;
-    private CloudDatabaseConfig cloudDatabaseConfig;
+    private @NonNull Administrator sampleUser;
 
     @Override
-    protected @NonNull CloudUserRepository<BaseUser> instantiate() {
-        try {
-            this.cloudDatabaseConfig = new CloudDatabaseConfig("app/src/main/resources/config.properties");
-        } catch (IOException e) {
-            fail("Failed to load database config: " + e.getMessage());
-        }
-        return new CloudUserRepository<>(cloudDatabaseConfig);
+    protected @NonNull CloudAdministratorRepository instantiate() {
+        return CloudAdministratorRepository.of();
     }
 
     @BeforeMethod
@@ -44,7 +37,7 @@ public class CloudUserRepositoryTest extends UnitTest<CloudUserRepository<BaseUs
         val timestamps = BaseUser.Audit.Timestamps.of(Instant.now());
         val audit = BaseUser.Audit.of(timestamps);
 
-        this.sampleUser = new BaseUser(id, audit, credentials);
+        this.sampleUser = Administrator.of(id, audit, credentials);
 
         this.unit.delete(sampleUser.getId());
     }

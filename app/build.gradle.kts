@@ -120,7 +120,7 @@ javafx {
 }
 
 testlogger {
-    theme = ThemeType.MOCHA
+    theme = ThemeType.MOCHA_PARALLEL
     showExceptions = true
     showStackTraces = true
     showFullStackTraces = false
@@ -200,10 +200,6 @@ tasks.compileJava {
     options.isFork = true
     options.isFailOnError = false
 
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
