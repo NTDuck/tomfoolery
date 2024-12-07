@@ -1,28 +1,27 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users;
 
-
-import lombok.NoArgsConstructor;
-import org.tomfoolery.core.dataproviders.repositories.users.abc.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
 import org.tomfoolery.core.domain.users.Administrator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@NoArgsConstructor(staticName = "of")
-public class CloudAdministratorRepository implements UserRepository<Administrator> {
-    private final CloudDatabaseConfig dbConfig = CloudDatabaseConfig.of();
+@RequiredArgsConstructor(staticName = "of")
+public class CloudAdministratorRepository implements AdministratorRepository {
+    private final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider;
 
     @Override
     public @Nullable Administrator getByUsername(@NonNull String username) {
         String query = "SELECT * FROM Administrators WHERE username = ?";
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -47,7 +46,7 @@ public class CloudAdministratorRepository implements UserRepository<Administrato
                 lastLogout = EXCLUDED.lastLogout;
         """;
 
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, entity.getId().getUuid().toString());
             stmt.setString(2, entity.getCredentials().getUsername());
@@ -68,7 +67,7 @@ public class CloudAdministratorRepository implements UserRepository<Administrato
     @Override
     public void delete(BaseUser.@NonNull Id entityId) {
         String query = "DELETE FROM Administrators WHERE id = ?";
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, entityId.getUuid().toString());
             stmt.executeUpdate();
@@ -80,7 +79,7 @@ public class CloudAdministratorRepository implements UserRepository<Administrato
     @Override
     public @Nullable Administrator getById(BaseUser.@NonNull Id entityId) {
         String query = "SELECT * FROM Administrators WHERE id = ?";
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, entityId.getUuid().toString());
             ResultSet rs = stmt.executeQuery();
@@ -97,7 +96,7 @@ public class CloudAdministratorRepository implements UserRepository<Administrato
     public @NonNull List<Administrator> show() {
         List<Administrator> administrators = new ArrayList<>();
         String query = "SELECT * FROM Administrators";
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {

@@ -46,3 +46,6 @@ src/main/resources/config.properties
 .tomfoolery.p12
 
 *.db
+
+# Environment variables
+*.env

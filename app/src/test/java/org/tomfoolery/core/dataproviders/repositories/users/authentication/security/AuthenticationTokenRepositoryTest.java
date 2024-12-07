@@ -9,7 +9,7 @@ import org.tomfoolery.core.utils.dataclasses.users.authentication.security.Secur
 
 import static org.testng.Assert.*;
 
-@Test(groups = { "unit", "repository", "authentication" }, singleThreaded = true)
+@Test(groups = { "unit", "repository", "authentication" })
 public abstract class AuthenticationTokenRepositoryTest extends BaseUnitTest<AuthenticationTokenRepository> {
     private static final @NonNull SecureString PSEUDO_SERIALIZED_PAYLOAD = SecureString.of("eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.");
 
@@ -22,7 +22,7 @@ public abstract class AuthenticationTokenRepositoryTest extends BaseUnitTest<Aut
         assertTrue(this.testSubject.contains());
     }
 
-    @Test
+    @Test(dependsOnMethods = { "WhenSavingToken_ExpectPresentToken" })
     public void GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken() {
         val retrievedAuthenticationToken = this.testSubject.get();
 
@@ -30,7 +30,7 @@ public abstract class AuthenticationTokenRepositoryTest extends BaseUnitTest<Aut
         assertEquals(retrievedAuthenticationToken, this.authenticationToken);
     }
 
-    @Test
+    @Test(dependsOnMethods = { "GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken" })
     public void WhenRemovingToken_ExpectAbsentToken() {
         this.testSubject.remove();
 
