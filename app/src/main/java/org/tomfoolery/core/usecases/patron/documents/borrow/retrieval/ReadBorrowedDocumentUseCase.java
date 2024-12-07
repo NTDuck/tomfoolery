@@ -80,10 +80,13 @@ public final class ReadBorrowedDocumentUseCase extends AuthenticatedUserUseCase 
         if (borrowingSession == null)
             throw new DocumentNotBorrowedException();
 
+        val currentTimestamp = Instant.now();
         val dueTimestamp = borrowingSession.getDueTimestamp();
 
-        if (Instant.now().isAfter(dueTimestamp))
+        if (currentTimestamp.isAfter(dueTimestamp)) {
+            this.borrowingSessionRepository.delete(borrowingSessionId);
             throw new DocumentOverdueException();
+        }
     }
 
     private @NonNull DocumentContent getDocumentContentById(DocumentContent.@NonNull Id documentContentId) throws DocumentContentNotFoundException {

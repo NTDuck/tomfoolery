@@ -46,7 +46,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public void save(@NonNull AuthenticationToken authenticationToken) {
         val secretKeyEntry = getSecretKeyEntryFromToken(authenticationToken);
         val protectionParameter = this.getProtectionParameter();
 
@@ -57,7 +57,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public void removeAuthenticationToken() {
+    public void remove() {
         this.keyStore.deleteEntry(KEYSTORE_ENTRY_ALIAS);
 
         this.saveToFile();
@@ -65,7 +65,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public @Nullable AuthenticationToken getAuthenticationToken() {
+    public @Nullable AuthenticationToken get() {
         val protectionParameter = this.getProtectionParameter();
         val entry = (KeyStore.SecretKeyEntry) this.keyStore.getEntry(KEYSTORE_ENTRY_ALIAS, protectionParameter);
 
@@ -77,7 +77,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public boolean containsAuthenticationToken() {
+    public boolean contains() {
         return this.keyStore.containsAlias(KEYSTORE_ENTRY_ALIAS);
     }
 

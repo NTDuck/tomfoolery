@@ -4,13 +4,11 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.tomfoolery.abc.UnitTest;
+import org.tomfoolery.abc.BaseUnitTest;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Staff;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.Year;
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.UUID;
 import static org.testng.Assert.*;
 
 @Test(groups = "cloud")
-public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepository> {
+public class CloudDocumentRepositoryTest extends BaseUnitTest<CloudDocumentRepository> {
     private static final @NonNull String SAMPLE_ISBN = "123456789X";
     private static final @NonNull String SAMPLE_TITLE = "Sample Book";
     private static final @NonNull String SAMPLE_DESCRIPTION = "A sample description for the book.";
@@ -36,7 +34,7 @@ public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepositor
     private @NonNull Document sampleDocument;
 
     @Override
-    protected @NonNull CloudDocumentRepository instantiate() {
+    protected @NonNull CloudDocumentRepository createTestSubject() {
         return CloudDocumentRepository.of();
     }
 
@@ -74,16 +72,16 @@ public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepositor
 
     @Test
     public void WhenSavingDocument_ExpectDocumentToExist() {
-        this.unit.save(sampleDocument);
+        this.testSubject.save(sampleDocument);
 
-        val retrievedDocument = this.unit.getById(sampleDocument.getId());
+        val retrievedDocument = this.testSubject.getById(sampleDocument.getId());
         assertNotNull(retrievedDocument, "Document should exist after saving.");
         assertEquals(sampleDocument.getId(), retrievedDocument.getId(), "Saved document ID should match.");
     }
 
     @Test(dependsOnMethods = { "WhenSavingDocument_ExpectDocumentToExist" })
     public void WhenRetrievingDocument_ExpectMatchingData() {
-        val retrievedDocument = this.unit.getById(sampleDocument.getId());
+        val retrievedDocument = this.testSubject.getById(sampleDocument.getId());
         assertNotNull(retrievedDocument, "Retrieved document should not be null.");
 
         // Verify all document properties
@@ -109,9 +107,9 @@ public class CloudDocumentRepositoryTest extends UnitTest<CloudDocumentRepositor
 
     @Test
     public void WhenListingDocuments_ExpectNonEmptyList() {
-        this.unit.save(sampleDocument);
+        this.testSubject.save(sampleDocument);
 
-        val documents = this.unit.show();
+        val documents = this.testSubject.show();
         assertTrue(documents.size() > 0, "Document list should not be empty.");
         assertTrue(documents.stream().anyMatch(doc -> doc.getId().equals(sampleDocument.getId())),
                 "Saved document should be in the list.");

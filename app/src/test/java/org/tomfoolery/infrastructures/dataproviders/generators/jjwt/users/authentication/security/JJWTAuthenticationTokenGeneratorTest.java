@@ -5,10 +5,10 @@ import org.testng.annotations.Test;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGeneratorTest;
 
-@Test
+@Test(groups = { "unit", "generator", "authentication" }, singleThreaded = true)
 public class JJWTAuthenticationTokenGeneratorTest extends AuthenticationTokenGeneratorTest {
     @Override
-    protected @NonNull AuthenticationTokenGenerator instantiate() {
+    protected @NonNull AuthenticationTokenGenerator createTestSubject() {
         return JJWTAuthenticationTokenGenerator.of();
     }
 }

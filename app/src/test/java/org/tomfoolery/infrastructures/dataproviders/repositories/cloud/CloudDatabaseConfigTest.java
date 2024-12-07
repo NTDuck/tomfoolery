@@ -1,29 +1,24 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.tomfoolery.abc.UnitTest;
+import org.tomfoolery.abc.BaseUnitTest;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import static org.testng.Assert.*;
 
 @Test(groups = "cloud")
-public class CloudDatabaseConfigTest extends UnitTest<CloudDatabaseConfig> {
+public class CloudDatabaseConfigTest extends BaseUnitTest<CloudDatabaseConfig> {
     private final @NonNull CloudDatabaseConfig cloudDatabaseConfig = CloudDatabaseConfig.of();
 
     @Override
-    protected @NonNull CloudDatabaseConfig instantiate() {
+    protected @NonNull CloudDatabaseConfig createTestSubject() {
         return CloudDatabaseConfig.of();
     }
 

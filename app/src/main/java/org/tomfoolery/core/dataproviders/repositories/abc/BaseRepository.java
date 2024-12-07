@@ -20,6 +20,10 @@ public interface BaseRepository<Entity extends ddd.Entity<EntityId>, EntityId ex
         return this.getById(entityId) != null;
     }
 
+    default @Unsigned int size() {
+        return (int) this.show().parallelStream().count();
+    }
+
     default @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val unpaginatedEntities = this.show();
         return Page.fromUnpaginated(unpaginatedEntities, pageIndex, maxPageSize);
