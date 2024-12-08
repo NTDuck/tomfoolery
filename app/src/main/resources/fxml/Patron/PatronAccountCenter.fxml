@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"
+            styleClass="root-scrollpane" fx:id="scrollPane"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            stylesheets="/css/Patron/PatronAccountCenter.css"
+            prefWidth="1200" prefHeight="720">
+    <VBox prefHeight="1080.0" prefWidth="1200.0" spacing="10.0" styleClass="root-vbox">
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        </padding>
+        <Label text="Account Center - Duy Nguyen" VBox.vgrow="ALWAYS">
+            <font>
+                <Font name="Segoe UI Bold" size="30.0"/>
+            </font>
+        </Label>
+        <HBox prefHeight="425.0" prefWidth="1160.0" styleClass="main-hbox" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets right="20.0"/>
+            </padding>
+            <VBox prefHeight="300.0" prefWidth="750.0" HBox.hgrow="ALWAYS" styleClass="left-side">
+                <padding>
+                    <Insets top="10.0"/>
+                </padding>
+                <VBox prefHeight="576.0" prefWidth="743.0" spacing="10.0" VBox.vgrow="ALWAYS" styleClass="profile-vbox">
+                    <padding>
+                        <Insets left="20.0"/>
+                    </padding>
+                    <Label text="Profile information" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                        <font>
+                            <Font name="Segoe UI Variable Bold" size="28.0"/>
+                        </font>
+                    </Label>
+                    <HBox VBox.vgrow="ALWAYS">
+                        <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets right="20.0"/>
+                            </padding>
+                            <Label text="First Name" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                                <font>
+                                    <Font name="Segoe UI Variable Bold" size="18.0"/>
+                                </font>
+                            </Label>
+                            <TextField prefHeight="40.0" prefWidth="755.0"
+                                       style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                       text="Duy" VBox.vgrow="ALWAYS" fx:id="firstNameTextField">
+                                <font>
+                                    <Font size="16.0"/>
+                                </font>
+                            </TextField>
+                        </VBox>
+                        <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets right="20.0"/>
+                            </padding>
+                            <Label text="Last Name" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                                <font>
+                                    <Font name="Segoe UI Variable Bold" size="18.0"/>
+                                </font>
+                            </Label>
+                            <TextField prefHeight="40.0" prefWidth="755.0"
+                                       style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                       text="Nguyen" VBox.vgrow="ALWAYS" fx:id="lastNameTextField">
+                                <font>
+                                    <Font size="16.0"/>
+                                </font>
+                            </TextField>
+                        </VBox>
+                    </HBox>
+                    <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0" VBox.vgrow="ALWAYS">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <Label text="Birthday" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                            <font>
+                                <Font name="Segoe UI Variable Bold" size="18.0"/>
+                            </font>
+                        </Label>
+                        <TextField prefHeight="40.0" prefWidth="755.0" promptText="Eg: 01/28/2002"
+                                   style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                   text="14/12/2005" VBox.vgrow="ALWAYS" fx:id="birthdayTextField">
+                            <font>
+                                <Font size="16.0"/>
+                            </font>
+                        </TextField>
+                    </VBox>
+                    <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0" VBox.vgrow="ALWAYS">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <Label text="Email" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                            <font>
+                                <Font name="Segoe UI Variable Bold" size="18.0"/>
+                            </font>
+                        </Label>
+                        <TextField prefHeight="40.0" prefWidth="755.0"
+                                   style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                   text="anhduyxh7@gmail.com" VBox.vgrow="ALWAYS" fx:id="emailTextField">
+                            <font>
+                                <Font size="16.0"/>
+                            </font>
+                        </TextField>
+                    </VBox>
+                    <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0" VBox.vgrow="ALWAYS">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <Label text="Phone number" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                            <font>
+                                <Font name="Segoe UI Variable Bold" size="18.0"/>
+                            </font>
+                        </Label>
+                        <TextField prefHeight="40.0" prefWidth="755.0"
+                                   style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                   text="0847466685" VBox.vgrow="ALWAYS" fx:id="phoneNumberTextField">
+                            <font>
+                                <Font size="16.0"/>
+                            </font>
+                        </TextField>
+                    </VBox>
+                    <VBox prefHeight="70.0" prefWidth="758.0" spacing="5.0" VBox.vgrow="ALWAYS">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <HBox>
+                            <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                <padding>
+                                    <Insets right="20.0"/>
+                                </padding>
+                                <Label text="Country" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                                    <font>
+                                        <Font name="Segoe UI Variable Bold" size="18.0"/>
+                                    </font>
+                                </Label>
+                                <TextField prefHeight="40.0" prefWidth="755.0"
+                                           style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                           text="Viet Nam" VBox.vgrow="ALWAYS" fx:id="countryTextField">
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                </TextField>
+                            </VBox>
+                            <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                <Label text="City" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                                    <font>
+                                        <Font name="Segoe UI Variable Bold" size="18.0"/>
+                                    </font>
+                                </Label>
+                                <TextField prefHeight="40.0" prefWidth="755.0"
+                                           style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                           text="New York" VBox.vgrow="ALWAYS" fx:id="cityTextField">
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                </TextField>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                    <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="723.0" spacing="20.0"
+                          VBox.vgrow="ALWAYS">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <Label fx:id="saveMetadataMessage" visible="false"/>
+                        <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="83.0" text="Save"
+                                textFill="WHITE" fx:id="saveProfileButton" styleClass="save-button">
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                        </Button>
+                    </HBox>
+                </VBox>
+                <VBox prefHeight="298.0" prefWidth="743.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets left="20.0" top="10.0"/>
+                    </padding>
+                    <Label text="Security" textFill="#2f374f">
+                        <font>
+                            <Font name="Segoe UI Variable Bold" size="28.0"/>
+                        </font>
+                    </Label>
+                    <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <Label text="Username" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                            <font>
+                                <Font name="Segoe UI Variable Bold" size="18.0"/>
+                            </font>
+                        </Label>
+                        <TextField prefHeight="40.0" prefWidth="755.0"
+                                   style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"
+                                   VBox.vgrow="ALWAYS" fx:id="usernameTextField" editable="false">
+                            <font>
+                                <Font size="16.0"/>
+                            </font>
+                        </TextField>
+                    </VBox>
+                    <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <Label text="Old password" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                            <font>
+                                <Font name="Segoe UI Variable Bold" size="18.0"/>
+                            </font>
+                        </Label>
+                        <PasswordField prefHeight="40.0" prefWidth="755.0" fx:id="oldPasswordTextField"
+                                       style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"/>
+                    </VBox>
+                    <VBox prefHeight="80.0" prefWidth="755.0" spacing="5.0">
+                        <padding>
+                            <Insets right="20.0"/>
+                        </padding>
+                        <Label text="New password" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                            <font>
+                                <Font name="Segoe UI Variable Bold" size="18.0"/>
+                            </font>
+                        </Label>
+                        <PasswordField prefHeight="40.0" prefWidth="755.0" fx:id="newPasswordTextField"
+                                       style="-fx-background-color: transparent; -fx-border-color: dededf; -fx-border-width: 1; -fx-border-radius: 5;"/>
+                    </VBox>
+                    <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="723.0" spacing="5.0">
+                        <padding>
+                            <Insets right="20.0" bottom="20"/>
+                        </padding>
+                        <Label fx:id="saveCredentialsMessage" visible="false"/>
+                        <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="83.0" text="Save"
+                                textFill="WHITE" fx:id="saveSecurityButton" styleClass="save-button">
+                            <font>
+                                <Font size="20.0"/>
+                            </font>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+            <VBox prefHeight="1110.0" prefWidth="400.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="10.0"/>
+                </padding>
+                <Label text="Documents" textFill="#2f374f" VBox.vgrow="ALWAYS">
+                    <font>
+                        <Font name="Segoe UI Variable Bold" size="28.0"/>
+                    </font>
+                    <padding>
+                        <Insets left="20.0"/>
+                    </padding>
+                </Label>
+                <VBox spacing="60.0">
+                    <padding>
+                        <Insets left="20.0"/>
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" prefHeight="150.0" prefWidth="374.0" spacing="20.0"
+                          VBox.vgrow="ALWAYS">
+                        <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <Label text="Upcoming due:" textFill="#2f374f" wrapText="true">
+                                <font>
+                                    <Font name="Segoe UI Variable Bold" size="20.0"/>
+                                </font>
+                            </Label>
+                            <Label text="January 3rd" textFill="#2f374f" fx:id="dueDateLabel">
+                                <font>
+                                    <Font size="18.0"/>
+                                </font>
+                            </Label>
+                            <Label text="- Thrill of the hunt" textFill="#2f374f" wrapText="true" fx:id="dueTitleLabel">
+                                <font>
+                                    <Font size="18.0"/>
+                                </font>
+                            </Label>
+                            <Label text="- By: Duy, Hieu" textFill="#2f374f" wrapText="true" fx:id="dueAuthorLabel">
+                                <font>
+                                    <Font size="18.0"/>
+                                </font>
+                            </Label>
+                        </VBox>
+                        <ImageView fitHeight="150.0" fitWidth="100.0" pickOnBounds="true" fx:id="dueImage"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" prefHeight="180.0" prefWidth="374.0" spacing="20.0"
+                          VBox.vgrow="ALWAYS">
+                        <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <Label text="Latest borrowed:" textFill="#2f374f" wrapText="true">
+                                <font>
+                                    <Font name="Segoe UI Variable Bold" size="20.0"/>
+                                </font>
+                            </Label>
+                            <Label text="Sartuday 19" textFill="#2f374f" fx:id="borrowDateLabel">
+                                <font>
+                                    <Font size="18.0"/>
+                                </font>
+                            </Label>
+                            <Label text="- Thrill of the hunt" textFill="#2f374f" wrapText="true"
+                                   fx:id="borrowTitleLabel">
+                                <font>
+                                    <Font size="18.0"/>
+                                </font>
+                            </Label>
+                            <Label text="- By: Duy, Hieu" textFill="#2f374f" wrapText="true" fx:id="borrowAuthorLabel">
+                                <font>
+                                    <Font size="18.0"/>
+                                </font>
+                            </Label>
+                        </VBox>
+                        <ImageView fitHeight="150.0" fitWidth="100.0" pickOnBounds="true" fx:id="borrowImage"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>
