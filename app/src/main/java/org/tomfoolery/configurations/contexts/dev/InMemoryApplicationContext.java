@@ -29,14 +29,16 @@ import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.document
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.InMemoryUserSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.authentication.security.InMemoryAuthenticationTokenRepository;
 
 import java.util.List;
 
@@ -116,12 +118,17 @@ public class InMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull AuthenticationTokenRepository createAuthenticationTokenRepository() {
-        return InMemoryAuthenticationTokenRepository.of();
+        return KeyStoreAuthenticationTokenRepository.of(this.getDotenvProvider());
     }
 
     @Override
     protected @NonNull PasswordEncoder createPasswordEncoder() {
         return BCryptPasswordEncoder.of();
+    }
+
+    @Override
+    protected @NonNull DotenvProvider createDotenvProvider() {
+        return CdimascioDotenvProvider.of();
     }
 
     @Override

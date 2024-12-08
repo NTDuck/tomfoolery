@@ -18,6 +18,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
 public class CloudApplicationContext extends ApplicationContext {
@@ -93,6 +94,11 @@ public class CloudApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull PasswordEncoder createPasswordEncoder() {
+        return null;
+    }
+
+    @Override
+    protected @NonNull DotenvProvider createDotenvProvider() {
         return null;
     }
 
