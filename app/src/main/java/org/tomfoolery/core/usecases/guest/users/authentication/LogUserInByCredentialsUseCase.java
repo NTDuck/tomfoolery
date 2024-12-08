@@ -84,7 +84,7 @@ public final class LogUserInByCredentialsUseCase extends LogUserInUseCase implem
     }
 
     private void saveAuthenticationTokenToRepository(@NonNull AuthenticationToken authenticationToken) {
-        this.authenticationTokenRepository.saveAuthenticationToken(authenticationToken);
+        this.authenticationTokenRepository.save(authenticationToken);
     }
 
     @Value(staticConstructor = "of")

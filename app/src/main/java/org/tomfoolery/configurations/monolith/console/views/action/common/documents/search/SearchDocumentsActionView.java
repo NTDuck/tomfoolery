@@ -17,7 +17,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.common.documents.sear
 import java.util.stream.Collectors;
 
 public final class SearchDocumentsActionView extends UserActionView {
-    private static final @NonNull String SEARCH_CRITERION_PROMPT = String.format("search criterion (%s)", EnumResolver.getEnumeratedNames(
+    private static final @NonNull String SEARCH_CRITERION_PROMPT = String.format("search criterion (%s)", EnumResolver.getCapitalizedEnumeratedNames(
         SearchDocumentsController.SearchCriterion.class, "%s (%d)", 0
     ).stream().collect(Collectors.joining(", ")));
 

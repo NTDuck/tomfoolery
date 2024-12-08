@@ -43,7 +43,7 @@ public final class GetStaffByIdActionView extends UserActionView {
     }
 
     private GetStaffByIdController.@NonNull RequestObject collectRequestObject() {
-        val uuid = this.ioProvider.readLine(Message.Format.PROMPT, "administrator UUID");
+        val uuid = this.ioProvider.readLine(Message.Format.PROMPT, "staff UUID");
 
         return GetStaffByIdController.RequestObject.of(uuid);
     }
@@ -53,12 +53,18 @@ public final class GetStaffByIdActionView extends UserActionView {
             Staff Details:
             - UUID: %s
             - Username: %s
-            - Created At: %s
-            - Last Login: %s
-            - Last Logout: %s""",
+            - Created by Administrator: %s
+            - Last modified by Administrator: %s
+            - Created at: %s
+            - Last modified: %s
+            - Last login: %s
+            - Last logout: %s""",
             viewModel.getStaffUuid(),
             viewModel.getStaffUsername(),
+            viewModel.getCreatedByAdministratorId(),
+            viewModel.getLastModifiedByAdministratorId(),
             viewModel.getCreationTimestamp(),
+            viewModel.getLastModifiedTimestamp(),
             viewModel.getLastLoginTimestamp(),
             viewModel.getLastLogoutTimestamp()
         );

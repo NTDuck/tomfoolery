@@ -13,19 +13,19 @@ public class InMemoryAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @Locked.Write
-    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public void save(@NonNull AuthenticationToken authenticationToken) {
         this.authenticationToken = authenticationToken;
     }
 
     @Override
     @Locked.Write
-    public void removeAuthenticationToken() {
+    public void remove() {
         this.authenticationToken = null;
     }
 
     @Override
     @Locked.Read
-    public @Nullable AuthenticationToken getAuthenticationToken() {
+    public @Nullable AuthenticationToken get() {
         return this.authenticationToken;
     }
 }

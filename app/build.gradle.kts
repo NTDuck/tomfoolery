@@ -88,6 +88,9 @@ dependencies {
     // SKT T1
     implementation("com.github.javafaker:javafaker:1.0.2")
 
+    // Secrets management
+    implementation("io.github.cdimascio:dotenv-java:3.0.0")
+
     // Uses `TestNG` framework, also requires calling test.useTestNG() below
     testImplementation(libs.testng)
 
@@ -121,21 +124,21 @@ javafx {
 
 testlogger {
     theme = ThemeType.MOCHA_PARALLEL
-    showExceptions = true
-    showStackTraces = true
+    showExceptions = false
+    showStackTraces = false
     showFullStackTraces = false
     showCauses = true
     slowThreshold = 0
     showSummary = true
     showSimpleNames = false
-    showPassed = true
+    showPassed = false
     showSkipped = true
     showFailed = true
     showOnlySlow = false
     showStandardStreams = false
-    showPassedStandardStreams = true
-    showSkippedStandardStreams = true
-    showFailedStandardStreams = true
+    showPassedStandardStreams = false
+    showSkippedStandardStreams = false
+    showFailedStandardStreams = false
     logLevel = LogLevel.LIFECYCLE
 }
 
@@ -242,11 +245,11 @@ tasks.register<JavaExec>("runJavaFX") {
 
 tasks.named<Test>("test") {
     // For unit testing
-    useTestNG() {
+    useTestNG {
         excludeGroups("cloud")
     }
 
-//    systemProperties["file.encoding"] = "utf-8"
+    // systemProperties["file.encoding"] = "ISO-8859-1"
 
     // Prevents failing tests from failing builds
     ignoreFailures = true

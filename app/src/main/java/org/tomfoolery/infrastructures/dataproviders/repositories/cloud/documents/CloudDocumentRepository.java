@@ -1,22 +1,19 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.documents.Document;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.config.CloudDatabaseConfig;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 import java.sql.*;
-import java.time.Instant;
 import java.time.Year;
 import java.util.*;
 
-@NoArgsConstructor(staticName = "of")
+@RequiredArgsConstructor(staticName = "of")
 public class CloudDocumentRepository implements DocumentRepository {
-    private final CloudDatabaseConfig dbConfig = CloudDatabaseConfig.of();
+    private final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider;
 
     @Override
     public void save(@NotNull Document document) {
@@ -39,7 +36,7 @@ public class CloudDocumentRepository implements DocumentRepository {
             lastModified = EXCLUDED.lastModified;
     """;
 
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
             stmt.setString(1, document.getId().getISBN_10());
@@ -70,7 +67,7 @@ public class CloudDocumentRepository implements DocumentRepository {
     public void delete(Document.@NonNull Id id) {
         String query = "DELETE FROM Document WHERE id = ?";
 
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
             stmt.setString(1, id.getISBN_10());
@@ -83,7 +80,7 @@ public class CloudDocumentRepository implements DocumentRepository {
     @Override
     public Document getById(Document.@NotNull Id id) {
         String query = "SELECT * FROM Document WHERE id = ?";
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
             stmt.setString(1, id.getISBN_10());
@@ -104,7 +101,7 @@ public class CloudDocumentRepository implements DocumentRepository {
         List<Document> documents = new ArrayList<>();
         String query = "SELECT * FROM Document";
 
-        try (Connection connection = dbConfig.connect();
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 

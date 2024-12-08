@@ -23,19 +23,19 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
     private final @NonNull SecretStore<StoredToken> secretStore = StorageProvider.getTokenStorage(PERSIST, SECURE_OPTION);
 
     @Override
-    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public void save(@NonNull AuthenticationToken authenticationToken) {
         val storedToken = getStoredTokenFromAuthenticationToken(authenticationToken);
         this.secretStore.add(ENTRY_ALIAS, storedToken);
         storedToken.clear();
     }
 
     @Override
-    public void removeAuthenticationToken() {
+    public void remove() {
         this.secretStore.delete(ENTRY_ALIAS);
     }
 
     @Override
-    public @Nullable AuthenticationToken getAuthenticationToken() {
+    public @Nullable AuthenticationToken get() {
         val storedToken = this.secretStore.get(ENTRY_ALIAS);
 
         if (storedToken == null)

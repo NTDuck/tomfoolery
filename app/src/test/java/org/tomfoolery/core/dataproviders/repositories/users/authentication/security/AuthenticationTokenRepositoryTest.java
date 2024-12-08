@@ -2,35 +2,29 @@ package org.tomfoolery.core.dataproviders.repositories.users.authentication.secu
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.tomfoolery.abc.UnitTest;
+import org.tomfoolery.abc.BaseUnitTest;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
 import static org.testng.Assert.*;
 
-public abstract class AuthenticationTokenRepositoryTest extends UnitTest<AuthenticationTokenRepository> {
+@Test(groups = { "unit", "repository", "authentication" })
+public abstract class AuthenticationTokenRepositoryTest extends BaseUnitTest<AuthenticationTokenRepository> {
     private static final @NonNull SecureString PSEUDO_SERIALIZED_PAYLOAD = SecureString.of("eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.");
 
     private final @NonNull AuthenticationToken authenticationToken = AuthenticationToken.of(PSEUDO_SERIALIZED_PAYLOAD);
 
-    @BeforeClass
-    public void setUp() {
-        super.setUp();
-    }
-
     @Test
     public void WhenSavingToken_ExpectPresentToken() {
-        this.unit.saveAuthenticationToken(authenticationToken);
+        this.testSubject.save(authenticationToken);
 
-        assertTrue(this.unit.containsAuthenticationToken());
+        assertTrue(this.testSubject.contains());
     }
 
     @Test(dependsOnMethods = { "WhenSavingToken_ExpectPresentToken" })
     public void GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken() {
-        val retrievedAuthenticationToken = this.unit.getAuthenticationToken();
+        val retrievedAuthenticationToken = this.testSubject.get();
 
         assertNotNull(retrievedAuthenticationToken);
         assertEquals(retrievedAuthenticationToken, this.authenticationToken);
@@ -38,9 +32,9 @@ public abstract class AuthenticationTokenRepositoryTest extends UnitTest<Authent
 
     @Test(dependsOnMethods = { "GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken" })
     public void WhenRemovingToken_ExpectAbsentToken() {
-        this.unit.removeAuthenticationToken();
+        this.testSubject.remove();
 
-        assertFalse(this.unit.containsAuthenticationToken());
-        assertNull(this.unit.getAuthenticationToken());
+        assertFalse(this.testSubject.contains());
+        assertNull(this.testSubject.get());
     }
 }

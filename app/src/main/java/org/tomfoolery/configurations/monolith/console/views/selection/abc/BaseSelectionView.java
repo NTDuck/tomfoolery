@@ -112,7 +112,7 @@ public abstract class BaseSelectionView extends BaseView {
     }
 
     protected @NonNull String getMessageOnSuccess() {
-        return String.format(Message.Format.SUCCESS, "Redirecting (●'◡'●)");
+        return String.format(Message.Format.SUCCESS, "Redirecting ...");
     }
 
     protected @NonNull String getMessageOnInputMismatchException() {

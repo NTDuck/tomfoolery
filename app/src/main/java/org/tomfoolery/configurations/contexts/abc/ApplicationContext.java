@@ -22,6 +22,7 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.documents.SynchronizedDocumentRepository;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 @Getter
 public abstract class ApplicationContext implements Closeable {
+    private final @NonNull DotenvProvider dotenvProvider = this.createDotenvProvider();
     private final @NonNull HttpClientProvider httpClientProvider = this.createHttpClientProvider();
 
     private final @NonNull DocumentContentRepository documentContentRepository = this.createDocumentContentRepository();
@@ -108,5 +110,6 @@ public abstract class ApplicationContext implements Closeable {
     protected abstract @NonNull AuthenticationTokenRepository createAuthenticationTokenRepository();
     protected abstract @NonNull PasswordEncoder createPasswordEncoder();
 
+    protected abstract @NonNull DotenvProvider createDotenvProvider();
     protected abstract @NonNull HttpClientProvider createHttpClientProvider();
 }

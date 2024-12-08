@@ -8,36 +8,35 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.core.utils.helpers.adapters.Codec;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
-import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class KeyStoreAuthenticationTokenRepository implements AuthenticationTokenRepository {
     private static final @NonNull String KEYSTORE_TYPE = "pkcs12";
-    private static final @NonNull String KEYSTORE_EXTENSION = ".p12";
+    private static final @NonNull String KEYSTORE_NAME = "tomfoolery.p12";
+    private static final @NonNull String KEYSTORE_PASSWORD_DOTENV_KEY = "KEYSTORE_PASSWORD";
     private static final @NonNull String KEYSTORE_ENTRY_ALIAS = "auth-token";
     private static final @NonNull String SECRET_KEY_ALGORITHM = "AES";
 
-    private final @NonNull String keyStoreName;
-    private final @NonNull String keyStorePassword = UUID.randomUUID().toString();   // KeyStore terminated when application ends
-
+    private final @NonNull DotenvProvider dotenvProvider;
     private final @NonNull KeyStore keyStore;
 
-    public static @NonNull KeyStoreAuthenticationTokenRepository of() {
-        return new KeyStoreAuthenticationTokenRepository();
+    public static @NonNull KeyStoreAuthenticationTokenRepository of(@NonNull DotenvProvider dotenvProvider) {
+        return new KeyStoreAuthenticationTokenRepository(dotenvProvider);
     }
 
     @SneakyThrows
-    private KeyStoreAuthenticationTokenRepository() {
+    private KeyStoreAuthenticationTokenRepository(@NonNull DotenvProvider dotenvProvider) {
+        this.dotenvProvider = dotenvProvider;
         this.keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
-        this.keyStoreName = TemporaryFileProvider.save(KEYSTORE_EXTENSION, new byte[0]);
 
-        try (val fileInputStream = new FileInputStream(this.keyStoreName)) {
+        try (val fileInputStream = new FileInputStream(KEYSTORE_NAME)) {
             this.loadKeystoreFromInputStream(fileInputStream);
         } catch (Exception exception) {
             this.createEmptyKeystore();
@@ -46,26 +45,26 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    public void save(@NonNull AuthenticationToken authenticationToken) {
         val secretKeyEntry = getSecretKeyEntryFromToken(authenticationToken);
         val protectionParameter = this.getProtectionParameter();
 
         this.keyStore.setEntry(KEYSTORE_ENTRY_ALIAS, secretKeyEntry, protectionParameter);
 
-        this.saveToFile();
+        CompletableFuture.runAsync(this::saveToFile);
     }
 
     @Override
     @SneakyThrows
-    public void removeAuthenticationToken() {
+    public void remove() {
         this.keyStore.deleteEntry(KEYSTORE_ENTRY_ALIAS);
 
-        this.saveToFile();
+        CompletableFuture.runAsync(this::saveToFile);
     }
 
     @Override
     @SneakyThrows
-    public @Nullable AuthenticationToken getAuthenticationToken() {
+    public @Nullable AuthenticationToken get() {
         val protectionParameter = this.getProtectionParameter();
         val entry = (KeyStore.SecretKeyEntry) this.keyStore.getEntry(KEYSTORE_ENTRY_ALIAS, protectionParameter);
 
@@ -77,24 +76,27 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
-    public boolean containsAuthenticationToken() {
+    public boolean contains() {
         return this.keyStore.containsAlias(KEYSTORE_ENTRY_ALIAS);
     }
 
     @SneakyThrows
     private void loadKeystoreFromInputStream(@NonNull InputStream inputStream) {
-        val passwordCharArray = getPasswordCharArray();
+        val passwordCharArray = this.getPasswordCharArray();
         this.keyStore.load(inputStream, passwordCharArray);
     }
 
     @SneakyThrows
     private void createEmptyKeystore() {
-        val passwordCharArray = getPasswordCharArray();
+        val passwordCharArray = this.getPasswordCharArray();
         this.keyStore.load(null, passwordCharArray);
     }
 
     private char @NonNull [] getPasswordCharArray() {
-        return this.keyStorePassword.toCharArray();
+        val passwordCharSequence = this.dotenvProvider.get(KEYSTORE_PASSWORD_DOTENV_KEY);
+        assert passwordCharSequence != null;
+
+        return Codec.charsFromCharSequence(passwordCharSequence);
     }
 
     private KeyStore.@NonNull ProtectionParameter getProtectionParameter() {
@@ -126,7 +128,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
     private void saveToFile() {
         val passwordCharArray = this.getPasswordCharArray();
 
-        try (val fileOutputStream = new FileOutputStream(this.keyStoreName)) {
+        try (val fileOutputStream = new FileOutputStream(KEYSTORE_NAME)) {
             this.keyStore.store(fileOutputStream, passwordCharArray);
         }
     }

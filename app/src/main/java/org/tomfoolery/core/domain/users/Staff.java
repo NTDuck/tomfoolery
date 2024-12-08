@@ -22,17 +22,17 @@ public final class Staff extends ModifiableUser {
 
     @Getter @Setter
     public static class Audit extends ModifiableUser.Audit {
-        private final Administrator.@NonNull Id createdByAdminId;
-        private Administrator.@Nullable Id lastModifiedByAdminId;
+        private final Administrator.@NonNull Id createdByAdministratorId;
+        private Administrator.@Nullable Id lastModifiedByAdministratorId;
 
         public static @NonNull Audit of(@NonNull Timestamps timestamps, Administrator.@NonNull Id createdByAdminId) {
             return new Audit(timestamps, createdByAdminId);
         }
 
-        protected Audit(@NonNull Timestamps timestamps, Administrator.@NonNull Id createdByAdminId) {
+        protected Audit(@NonNull Timestamps timestamps, Administrator.@NonNull Id createdByAdministratorId) {
             super(timestamps);
 
-            this.createdByAdminId = createdByAdminId;
+            this.createdByAdministratorId = createdByAdministratorId;
         }
     }
 }

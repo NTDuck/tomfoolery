@@ -68,6 +68,7 @@ public final class GetPatronByIdController implements ThrowableFunction<GetPatro
         @NonNull String patronEmail;
 
         @NonNull String creationTimestamp;
+        @NonNull String lastModifiedTimestamp;
         @NonNull String lastLoginTimestamp;
         @NonNull String lastLogoutTimestamp;
 
@@ -90,6 +91,8 @@ public final class GetPatronByIdController implements ThrowableFunction<GetPatro
                 .patronEmail(patronMetadata.getEmail())
 
                 .creationTimestamp(TimestampBiAdapter.serialize(patronAuditTimestamps.getCreated()))
+                .lastModifiedTimestamp(patronAuditTimestamps.getLastModified() == null ? "null"
+                    : TimestampBiAdapter.serialize(patronAuditTimestamps.getLastModified()))
                 .lastLoginTimestamp(patronAuditTimestamps.getLastLogin() == null ? "null"
                     : TimestampBiAdapter.serialize(patronAuditTimestamps.getLastLogin()))
                 .lastLogoutTimestamp(patronAuditTimestamps.getLastLogout() == null ? "null"

@@ -58,9 +58,10 @@ public final class GetPatronByIdActionView extends UserActionView {
             - Phone number: %s
             - Address: %s, %s
             - Email: %s
-            - Created At: %s
-            - Last Login: %s
-            - Last Logout: %s""",
+            - Created at: %s
+            - Last modified: %s
+            - Last login: %s
+            - Last logout: %s""",
             viewModel.getPatronUuid(),
             viewModel.getPatronUsername(),
             viewModel.getPatronFirstName(), viewModel.getPatronLastName(),
@@ -69,6 +70,7 @@ public final class GetPatronByIdActionView extends UserActionView {
             viewModel.getPatronCity(), viewModel.getPatronCountry(),
             viewModel.getPatronEmail(),
             viewModel.getCreationTimestamp(),
+            viewModel.getLastModifiedTimestamp(),
             viewModel.getLastLoginTimestamp(),
             viewModel.getLastLogoutTimestamp()
         );

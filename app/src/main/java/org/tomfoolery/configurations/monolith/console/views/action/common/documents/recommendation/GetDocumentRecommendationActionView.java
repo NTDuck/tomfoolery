@@ -17,7 +17,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.common.documents.reco
 import java.util.stream.Collectors;
 
 public final class GetDocumentRecommendationActionView extends UserActionView {
-    private static final @NonNull String RECOMMENDATION_TYPE_PROMPT = String.format("recommendation type (%s)", EnumResolver.getEnumeratedNames(
+    private static final @NonNull String RECOMMENDATION_TYPE_PROMPT = String.format("recommendation type (%s)", EnumResolver.getCapitalizedEnumeratedNames(
         GetDocumentRecommendationController.RecommendationType.class, "%s (%d)", 0
     ).stream().collect(Collectors.joining(", ")));
 
