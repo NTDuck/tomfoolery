@@ -167,9 +167,9 @@ public class DiscoverView {
     }
 
     private @NonNull ImageView getCoverImageFromPath(@NonNull String path) {
-        ImageView imageView = new ImageView(new Image("/images/default/placeholder-book-cover.png", 160, 240, true, true));
+        ImageView imageView = new ImageView(new Image("/images/default/placeholder-book-cover.png", 160, 240, false, true));
         new Thread(() -> {
-            Image image = new Image("file:" + path, 160, 240, true, true);
+            Image image = new Image("file:" + path, 160, 240, false, true);
             Platform.runLater(() -> imageView.setImage(image));
         }).start();
         return imageView;

@@ -150,7 +150,8 @@ public class PatronSingleDocumentView {
         descriptionArea.setText(viewModel.getDocumentDescription());
 
         String coverImagePath = viewModel.getDocumentCoverImageFilePath();
-        coverImage.setImage(new Image("file:" + coverImagePath));
+        Image image = new Image("file:" + coverImagePath, 260, 400, false, true);
+        coverImage.setImage(image);
         coverImage.setFitHeight(400);
         coverImage.setFitWidth(260);
     }
