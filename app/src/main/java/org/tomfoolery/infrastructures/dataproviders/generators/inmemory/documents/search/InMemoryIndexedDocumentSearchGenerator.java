@@ -18,57 +18,57 @@ import java.util.stream.StreamSupport;
 
 @NoArgsConstructor(staticName = "of")
 public class InMemoryIndexedDocumentSearchGenerator implements DocumentSearchGenerator {
-    private final @NonNull DAWGSet documentTitles = new ModifiableDAWGSet();
-    private final @NonNull DAWGSet documentAuthors = new ModifiableDAWGSet();
-    private final @NonNull DAWGSet documentGenres = new ModifiableDAWGSet();
+    private final @NonNull DAWGSet normalizedTitles = new ModifiableDAWGSet();
+    private final @NonNull DAWGSet normalizedAuthors = new ModifiableDAWGSet();
+    private final @NonNull DAWGSet normalizedGenres = new ModifiableDAWGSet();
 
-    private final @NonNull Multimap<String, Document> documentsByTitles = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
-    private final @NonNull Multimap<String, Document> documentsByAuthors = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
-    private final @NonNull Multimap<String, Document> documentsByGenres = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
+    private final @NonNull Multimap<String, Document> documentsByNormalizedTitles = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
+    private final @NonNull Multimap<String, Document> documentsByNormalizedAuthors = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
+    private final @NonNull Multimap<String, Document> documentsByNormalizedGenres = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
 
     @Override
-    public @NonNull List<Document> searchByTitle(@NonNull String title) {
-        return searchDocuments(title, this.documentTitles::getStringsWithSubstring, this.documentsByTitles);
+    public @NonNull List<Document> searchByNormalizedTitle(@NonNull String title) {
+        return searchDocuments(title, this.normalizedTitles::getStringsWithSubstring, this.documentsByNormalizedTitles);
     }
 
     @Override
-    public @NonNull List<Document> searchByAuthor(@NonNull String author) {
-        return searchDocuments(author, this.documentAuthors::getStringsWithSubstring, this.documentsByAuthors);
+    public @NonNull List<Document> searchByNormalizedAuthor(@NonNull String author) {
+        return searchDocuments(author, this.normalizedAuthors::getStringsWithSubstring, this.documentsByNormalizedAuthors);
     }
 
     @Override
-    public @NonNull List<Document> searchByGenre(@NonNull String genre) {
-        return searchDocuments(genre, this.documentGenres::getStringsWithSubstring, this.documentsByGenres);
+    public @NonNull List<Document> searchByNormalizedGenre(@NonNull String genre) {
+        return searchDocuments(genre, this.normalizedGenres::getStringsWithSubstring, this.documentsByNormalizedGenres);
     }
 
     @Override
     public void synchronizeSavedEntity(@NonNull Document savedDocument) {
         val documentMetadata = savedDocument.getMetadata();
 
-        val documentTitle = documentMetadata.getTitle();
-        val documentAuthors = documentMetadata.getAuthors();
-        val documentGenres = documentMetadata.getGenres();
+        val normalizedTitle = this.normalize(documentMetadata.getTitle());
+        val normalizedAuthors = this.normalize(documentMetadata.getAuthors());
+        val normalizedGenres = this.normalize(documentMetadata.getGenres());
 
-        this.documentTitles.add(documentTitle);
-        this.documentAuthors.addAll(documentAuthors);
-        this.documentGenres.addAll(documentGenres);
+        this.normalizedTitles.add(normalizedTitle);
+        this.normalizedAuthors.addAll(normalizedAuthors);
+        this.normalizedGenres.addAll(normalizedGenres);
 
-        this.documentsByTitles.put(documentTitle, savedDocument);
-        documentAuthors.forEach(documentAuthor -> this.documentsByAuthors.put(documentAuthor, savedDocument));
-        documentGenres.forEach(documentGenre -> this.documentsByGenres.put(documentGenre, savedDocument));
+        this.documentsByNormalizedTitles.put(normalizedTitle, savedDocument);
+        normalizedAuthors.forEach(normalizedAuthor -> this.documentsByNormalizedAuthors.put(normalizedAuthor, savedDocument));
+        normalizedGenres.forEach(normalizedGenre -> this.documentsByNormalizedGenres.put(normalizedGenre, savedDocument));
     }
 
     @Override
     public void synchronizeDeletedEntity(@NonNull Document deletedDocument) {
         val documentMetadata = deletedDocument.getMetadata();
 
-        val documentTitle = documentMetadata.getTitle();
-        val documentAuthors = documentMetadata.getAuthors();
-        val documentGenres = documentMetadata.getGenres();
+        val normalizedTitle = this.normalize(documentMetadata.getTitle());
+        val normalizedAuthors = this.normalize(documentMetadata.getAuthors());
+        val normalizedGenres = this.normalize(documentMetadata.getGenres());
 
-        this.documentsByTitles.remove(documentTitle, deletedDocument);
-        documentAuthors.forEach(documentAuthor -> this.documentsByAuthors.remove(documentAuthor, deletedDocument));
-        documentGenres.forEach(documentGenre -> this.documentsByGenres.remove(documentGenre, deletedDocument));
+        this.documentsByNormalizedTitles.remove(normalizedTitle, deletedDocument);
+        normalizedAuthors.forEach(normalizedAuthor -> this.documentsByNormalizedAuthors.remove(normalizedAuthor, deletedDocument));
+        normalizedGenres.forEach(normalizedGenre -> this.documentsByNormalizedGenres.remove(normalizedGenre, deletedDocument));
     }
 
     private static @NonNull List<Document> searchDocuments(@NonNull String searchTerm, @NonNull Function<String, Iterable<String>> searchFunction, @NonNull Multimap<String, Document> multimap) {

@@ -9,19 +9,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class InMemoryUserSearchGenerator<User extends BaseUser> extends InMemoryLinearGenerator<User, BaseUser.Id> implements UserSearchGenerator<User> {
-    public static <User extends BaseUser> @NonNull InMemoryUserSearchGenerator<User> of() {
-        return new InMemoryUserSearchGenerator<>();
+public class InMemoryLinearUserSearchGenerator<User extends BaseUser> extends InMemoryLinearGenerator<User, BaseUser.Id> implements UserSearchGenerator<User> {
+    public static <User extends BaseUser> @NonNull InMemoryLinearUserSearchGenerator<User> of() {
+        return new InMemoryLinearUserSearchGenerator<>();
     }
 
-    protected InMemoryUserSearchGenerator() {
+    protected InMemoryLinearUserSearchGenerator() {
         super(Comparator.comparing(user -> user.getId().getUuid()));
     }
 
     @Override
-    public @NonNull List<User> searchByUsername(@NonNull String username) {
-        return super.cachedEntities.parallelStream()
-            .filter(user -> isSubsequence(username, user.getCredentials().getUsername()))
+    public @NonNull List<User> searchByNormalizedUsername(@NonNull String normalizedUsername) {
+        return super.cachedEntities.stream()
+            .filter(user -> isSubsequence(normalizedUsername, this.normalize(user.getCredentials().getUsername())))
             .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -8,17 +8,17 @@ import java.util.List;
 
 public class InMemoryApacheLuceneDocumentSearchGenerator implements DocumentSearchGenerator {
     @Override
-    public @NonNull List<Document> searchByTitle(@NonNull String title) {
+    public @NonNull List<Document> searchByNormalizedTitle(@NonNull String title) {
         return List.of();
     }
 
     @Override
-    public @NonNull List<Document> searchByAuthor(@NonNull String author) {
+    public @NonNull List<Document> searchByNormalizedAuthor(@NonNull String author) {
         return List.of();
     }
 
     @Override
-    public @NonNull List<Document> searchByGenre(@NonNull String genre) {
+    public @NonNull List<Document> searchByNormalizedGenre(@NonNull String genre) {
         return List.of();
     }
 

@@ -27,17 +27,11 @@ public class SearchUsersByUsernameUseCase<User extends BaseUser> extends Authent
         this.ensureAuthenticationTokenIsValid(administratorAuthenticationToken);
 
         val searchTerm = request.getSearchTerm();
-        val normalizedSearchTerm = this.normalizeSearchTerm(searchTerm);
-
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedUsers = this.getPaginatedUsers(normalizedSearchTerm, pageIndex, maxPageSize);
+        val paginatedUsers = this.getPaginatedUsers(searchTerm, pageIndex, maxPageSize);
         return Response.of(paginatedUsers);
-    }
-
-    private @NonNull String normalizeSearchTerm(@NonNull String searchTerm) {
-        return searchTerm.toLowerCase().trim();
     }
 
     private @NonNull Page<User> getPaginatedUsers(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {

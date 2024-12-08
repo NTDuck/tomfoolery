@@ -37,6 +37,9 @@ public final class EnumResolver {
     }
 
     private static @NonNull String capitalize(@NonNull String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
+        if (s.isEmpty())
+            return s;
+
+        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
 }

@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.aggregates;
+package org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations;
 
 import lombok.NoArgsConstructor;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
