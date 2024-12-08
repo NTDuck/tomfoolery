@@ -1,6 +1,5 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.abc;
 
-import lombok.Locked;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;

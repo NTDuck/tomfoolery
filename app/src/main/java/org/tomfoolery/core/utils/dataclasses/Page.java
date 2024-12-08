@@ -12,6 +12,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Value
@@ -59,7 +60,7 @@ public class Page<T> implements Iterable<T> {
         val paginatedItems = unpaginatedItems.parallelStream()
             .skip(pageOffset)
             .limit(maxPageSize)
-            .toList();
+            .collect(Collectors.toUnmodifiableList());
 
         return Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
     }

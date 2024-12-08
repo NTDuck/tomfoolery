@@ -25,7 +25,7 @@ public final class BorrowDocumentUseCase extends AuthenticatedUserUseCase implem
     private final @NonNull BorrowingSessionRepository borrowingSessionRepository;
 
     private static final @Unsigned int MAX_BORROWED_DOCUMENTS_PER_PATRON = 10;
-    private static final @NonNull Duration BORROWING_PERIOD = Duration.ofDays(30);
+    public static final @NonNull Duration BORROWING_PERIOD = Duration.ofDays(30);
 
     public static @NonNull BorrowDocumentUseCase of(@NonNull HybridDocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         return new BorrowDocumentUseCase(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);

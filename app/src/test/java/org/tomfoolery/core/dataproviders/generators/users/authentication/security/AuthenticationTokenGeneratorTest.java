@@ -26,7 +26,15 @@ public abstract class AuthenticationTokenGeneratorTest extends BaseUnitTest<Auth
     public void WhenGeneratingToken_ExpectValidToken() {
         this.cachedAuthenticationToken = this.testSubject.generate(this.userId, this.userClass, this.expiryTimestamp);
 
+        assertNotNull(this.cachedAuthenticationToken);
         assertTrue(this.testSubject.verify(this.cachedAuthenticationToken));
+    }
+
+    @Test
+    public void GivenExpiredToken_WhenVerifyingToken_ExpectInvalidToken() {
+        val expiredAuthenticationToken = this.testSubject.generate(this.userId, this.userClass, Instant.now().minusNanos(1));
+
+        assertFalse(this.testSubject.verify(expiredAuthenticationToken));
     }
 
     @Test(dependsOnMethods = { "WhenGeneratingToken_ExpectValidToken" })

@@ -47,7 +47,8 @@ public class DocumentMocker implements EntityMocker<Document, Document.Id> {
 
     @Override
     public @NonNull Document createMockEntityWithId(Document.@NonNull Id documentId) {
-        val title = this.faker.book().title();
+        val title = String.format("%s %s-%s",
+            this.faker.book().title(), this.faker.lorem().word(), this.faker.lorem().word());
         val description = this.faker.leagueOfLegends().quote();
         val authors = createMockCollection(() -> this.faker.book().author(),
             this.faker.number().numberBetween(MIN_NUMBER_OF_AUTHORS, MAX_NUMBER_OF_AUTHORS));
