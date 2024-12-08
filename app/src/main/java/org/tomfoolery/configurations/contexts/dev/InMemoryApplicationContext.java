@@ -19,7 +19,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.ApacheHttpClientDocumentUrlGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.aggregates.InMemoryBorrowingSessionRepository;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.aggregates.InMemoryDocumentContentRepository;
@@ -108,7 +108,7 @@ public class InMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentUrlGenerator createDocumentUrlGenerator() {
-        return ApacheHttpClientDocumentUrlGenerator.of();
+        return CustomLandingPageDocumentUrlGenerator.of();
     }
 
     @Override

@@ -1,25 +1,17 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references;
 
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.Value;
-import lombok.val;
 import org.apache.hc.core5.http.NameValuePair;
-import org.apache.hc.core5.net.URIBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.abc.ApacheHttpClientDocumentUrlGenerator;
 
-import java.net.URISyntaxException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @NoArgsConstructor(staticName = "of")
-public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerator {
-    private static final @NonNull String URL_SCHEME = "https";
-    private static final @NonNull String URL_HOST = "tomfoolery-landing-page.github.io";
-    private static final @NonNull String URL_PATH = "tomfoolery-landing-page/";
-
+public class CustomLandingPageDocumentUrlGenerator extends ApacheHttpClientDocumentUrlGenerator {
     private static final @NonNull String URL_PARAMETER_ISBN_10 = "isbn_10";
 
     private static final @NonNull String URL_PARAMETER_TITLE = "title";
@@ -36,21 +28,22 @@ public class ApacheHttpClientDocumentUrlGenerator implements DocumentUrlGenerato
     private static final @NonNull String DELIMITER = ",";
 
     @Override
-    @SneakyThrows(URISyntaxException.class)
-    public @NonNull String generateUrlFromDocument(@NonNull Document document) {
-        val parameterPairs = generateParameterPairsFromFragmentaryDocument(document);
-
-        URIBuilder uriBuilder = new URIBuilder()
-            .setScheme(URL_SCHEME)
-            .setHost(URL_HOST)
-            .setPath(URL_PATH)
-
-            .addParameters(parameterPairs);
-
-        return uriBuilder.build().toString();
+    protected @NonNull String getUrlScheme() {
+        return "https";
     }
 
-    private static @NonNull List<NameValuePair> generateParameterPairsFromFragmentaryDocument(@NonNull Document document) {
+    @Override
+    protected @NonNull String getUrlHost() {
+        return "tomfoolery-landing-page.github.io";
+    }
+
+    @Override
+    protected @NonNull String getUrlPath(@NonNull Document document) {
+        return "tomfoolery-landing-page";
+    }
+
+    @Override
+    protected @NonNull List<NameValuePair> getUrlParameterPairs(@NonNull Document document) {
         return List.of(
             ParameterPair.of(URL_PARAMETER_ISBN_10, document.getId().getISBN_10()),
             ParameterPair.of(URL_PARAMETER_TITLE, document.getMetadata().getTitle()),
