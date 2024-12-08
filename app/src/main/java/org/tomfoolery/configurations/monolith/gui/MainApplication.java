@@ -9,7 +9,7 @@ public class MainApplication extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         StageManager.getInstance().setPrimaryStage(primaryStage);
         StageManager.getInstance().openLoginMenu();
     }

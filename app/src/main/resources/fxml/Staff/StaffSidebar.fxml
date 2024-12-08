@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" stylesheets="/css/User/Sidebar.css">
+    <!-- Top section -->
+    <VBox alignment="TOP_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar"
+          HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+        <Button styleClass="sidebar-button" fx:id="dashboardButton">
+            <graphic>
+                <ImageView fitHeight="32" fitWidth="32">
+                    <Image url="/images/home.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+
+        <Button styleClass="sidebar-button" fx:id="discoverButton">
+            <graphic>
+                <ImageView fitHeight="40" fitWidth="40">
+                    <Image url="/images/search.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+
+        <Button styleClass="sidebar-button" fx:id="documentsManagementButton">
+            <graphic>
+                <ImageView fitHeight="32" fitWidth="32">
+                    <Image url="/images/book.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </VBox>
+
+    <!-- Bottom section -->
+    <VBox alignment="BOTTOM_CENTER" prefHeight="340" prefWidth="80" styleClass="sidebar"
+          HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+        <Button styleClass="sidebar-button" fx:id="logoutButton">
+            <graphic>
+                <ImageView fitHeight="32" fitWidth="32">
+                    <Image url="/images/logout.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </VBox>
+</VBox>

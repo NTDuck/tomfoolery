@@ -18,27 +18,9 @@ public class PatronView extends BaseView {
     public void loadSidebar() {
         PatronSidebar controller = new PatronSidebar();
 
-        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/User/BaseSidebar.fxml"));
+        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronSidebar.fxml"));
         sidebarLoader.setController(controller);
         sidebar = sidebarLoader.load();
-
-        FXMLLoader showBorrowedButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Patron/ShowBorrowedDocumentsButton.fxml"));
-        showBorrowedButtonLoader.setController(controller);
-        Button showBorrowedDocuments = showBorrowedButtonLoader.load();
-
-        showBorrowedDocuments.setOnAction(event -> controller.goToShowBorrowedDocumentsView());
-
-        VBox sidebarTopSection = (VBox) sidebar.getChildren().getFirst();
-        sidebarTopSection.getChildren().add(showBorrowedDocuments);
-
-        FXMLLoader accountCenterButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Patron/AccountCenterButton.fxml"));
-        accountCenterButtonLoader.setController(controller);
-        Button accountCenterButton = accountCenterButtonLoader.load();
-
-        accountCenterButton.setOnAction(event -> controller.goToAccountCenter());
-
-        VBox sidebarBottomSection = (VBox) sidebar.getChildren().getLast();
-        sidebarBottomSection.getChildren().addFirst(accountCenterButton);
     }
 
     @Override @SneakyThrows

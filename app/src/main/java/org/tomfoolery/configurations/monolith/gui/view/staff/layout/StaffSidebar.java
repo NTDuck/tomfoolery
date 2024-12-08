@@ -7,7 +7,13 @@ import org.tomfoolery.configurations.monolith.gui.view.abc.BaseSidebar;
 
 public class StaffSidebar extends BaseSidebar {
     @FXML
-    private Button documentsManagement;
+    private Button documentsManagementButton;
+
+    @Override @FXML
+    public void initialize() {
+        super.initialize();
+        documentsManagementButton.setOnAction(event -> goToDocumentsManagement());
+    }
 
     @Override
     public void goToDashboard() {

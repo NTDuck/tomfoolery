@@ -8,17 +8,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
-import org.tomfoolery.configurations.contexts.dev.InMemoryApplicationContext;
-import org.tomfoolery.configurations.contexts.test.InMemoryTestApplicationContext;
 import org.tomfoolery.configurations.monolith.gui.view.admin.layout.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.SignupView;
 import org.tomfoolery.configurations.monolith.gui.view.patron.layout.PatronView;
 import org.tomfoolery.configurations.monolith.gui.view.staff.layout.StaffView;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.MissingResourceException;
 import java.util.Objects;
@@ -95,51 +93,45 @@ public class StageManager {
         primaryStage.setTitle("Tomfoolery - Library Management Application");
     }
 
+    @SneakyThrows
     public void openLoginMenu() {
-        try {
-            LoginView controller = new LoginView(
-                    resources.getUserRepositories(),
-                    resources.getAuthenticationTokenGenerator(),
-                    resources.getAuthenticationTokenRepository(),
-                    resources.getPasswordEncoder()
-            );
+        LoginView controller = new LoginView(
+                resources.getUserRepositories(),
+                resources.getAuthenticationTokenGenerator(),
+                resources.getAuthenticationTokenRepository(),
+                resources.getPasswordEncoder()
+        );
 
-            FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/LoginMenu.fxml"));
-            loader.setController(controller);
+        FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/LoginMenu.fxml"));
+        loader.setController(controller);
 
-            VBox root = loader.load();
+        VBox root = loader.load();
 
-            Scene scene = new Scene(root);
+        Scene scene = new Scene(root);
 
-            setLoginStageProperties();
-            primaryStage.setTitle("Tomfoolery - Login");
-            primaryStage.setScene(scene);
+        setLoginStageProperties();
+        primaryStage.setTitle("Tomfoolery - Login");
+        primaryStage.setScene(scene);
 
-            primaryStage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        primaryStage.show();
     }
 
+    @SneakyThrows
     public void openSignupMenu() {
-        try {
-            SignupView signUpController = new SignupView(resources.getPatronRepository(), resources.getPasswordEncoder());
+        SignupView signUpController = new SignupView(resources.getPatronRepository(), resources.getPasswordEncoder());
 
-            FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/SignupMenu.fxml"));
-            loader.setController(signUpController);
+        FXMLLoader loader = new FXMLLoader(StageManager.class.getResource("/fxml/SignupMenu.fxml"));
+        loader.setController(signUpController);
 
-            VBox root = loader.load();
+        VBox root = loader.load();
 
-            Scene scene = new Scene(root);
+        Scene scene = new Scene(root);
 
-            setSignupStageProperties();
-            primaryStage.setTitle("Tomfoolery - Sign up");
-            primaryStage.setScene(scene);
+        setSignupStageProperties();
+        primaryStage.setTitle("Tomfoolery - Sign up");
+        primaryStage.setScene(scene);
 
-            primaryStage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        primaryStage.show();
     }
 
     public void loadAdminView(StageManager.ContentType contentType) {

@@ -1,8 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui.view.admin.layout;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
@@ -16,18 +14,9 @@ public class AdminView extends BaseView {
     public void loadSidebar() {
         AdminSidebar controller = new AdminSidebar();
 
-        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/User/BaseSidebar.fxml"));
+        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/Admin/AdminSidebar.fxml"));
         sidebarLoader.setController(controller);
         sidebar = sidebarLoader.load();
-
-        FXMLLoader controlCenterButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Admin/SidebarControlCenterButton.fxml"));
-        controlCenterButtonLoader.setController(controller);
-        Button controlCenterButton = controlCenterButtonLoader.load();
-
-        controlCenterButton.setOnAction(event -> controller.goToControlCenter());
-
-        VBox sidebarTopSection = (VBox) sidebar.getChildren().getFirst();
-        sidebarTopSection.getChildren().add(controlCenterButton);
     }
 
     @SneakyThrows @Override

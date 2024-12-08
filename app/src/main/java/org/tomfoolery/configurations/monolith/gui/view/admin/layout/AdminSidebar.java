@@ -16,6 +16,7 @@ public class AdminSidebar extends BaseSidebar {
     @Override
     public void initialize() {
         super.initialize();
+        controlCenterButton.setOnAction(event -> goToControlCenter());
     }
 
     @Override

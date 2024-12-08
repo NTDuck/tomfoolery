@@ -1,8 +1,6 @@
 package org.tomfoolery.configurations.monolith.gui.view.staff.layout;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
@@ -17,18 +15,9 @@ public class StaffView extends BaseView {
     public void loadSidebar() {
         StaffSidebar controller = new StaffSidebar();
 
-        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/User/BaseSidebar.fxml"));
+        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/fxml/Staff/StaffSidebar.fxml"));
         sidebarLoader.setController(controller);
         sidebar = sidebarLoader.load();
-
-        FXMLLoader documentsManagementButtonLoader = new FXMLLoader(getClass().getResource("/fxml/Staff/SidebarDocumentsManagementButton.fxml"));
-        documentsManagementButtonLoader.setController(controller);
-        Button documentsManagementButton = documentsManagementButtonLoader.load();
-
-        documentsManagementButton.setOnAction(event -> controller.goToDocumentsManagement());
-
-        VBox sidebarTopSection = (VBox) sidebar.getChildren().getFirst();
-        sidebarTopSection.getChildren().add(documentsManagementButton);
     }
 
     @Override @SneakyThrows

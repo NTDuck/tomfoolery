@@ -12,6 +12,13 @@ public class PatronSidebar extends BaseSidebar {
     @FXML
     private Button accountCenterButton;
 
+    @Override @FXML
+    public void initialize() {
+        super.initialize();
+        showBorrowedDocumentsButton.setOnAction(event -> goToShowBorrowedDocumentsView());
+        accountCenterButton.setOnAction(event -> goToAccountCenter());
+    }
+
     @Override
     public void goToDashboard() {
         StageManager.getInstance().loadPatronView(StageManager.ContentType.PATRON_DASHBOARD);
