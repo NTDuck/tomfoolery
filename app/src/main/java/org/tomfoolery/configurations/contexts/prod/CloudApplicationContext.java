@@ -30,6 +30,8 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dot
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudBorrowingSessionRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudDocumentContentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudReviewRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudAdministratorRepository;
@@ -69,7 +71,7 @@ public class CloudApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull BorrowingSessionRepository createBorrowingSessionRepository() {
-        return null;
+        return CloudBorrowingSessionRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class CloudApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentSearchGenerator createDocumentSearchGenerator() {
-        return null;
+        return CloudIndexedDocumentSearchGenerator.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
