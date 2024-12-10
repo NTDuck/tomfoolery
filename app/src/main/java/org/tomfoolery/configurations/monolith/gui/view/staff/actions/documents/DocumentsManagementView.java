@@ -33,7 +33,7 @@ public class DocumentsManagementView extends ShowDocumentsView{
     @FXML @Override
     public void initialize() {
         addDocumentButton.setOnAction(event -> openAddDocumentMenu());
-        editDocumentButton.setOnAction(event -> openEditDocumentDialog());
+        editDocumentButton.setOnAction(event -> openUpdateDocumentMenu());
         deleteDocumentButton.setOnAction(event -> openDeleteDocumentDialog());
 
         showDocuments();
@@ -57,8 +57,36 @@ public class DocumentsManagementView extends ShowDocumentsView{
         StageManager.getInstance().getRootStackPane().getChildren().add(v);
     }
 
-    private void openEditDocumentDialog() {
+    @SneakyThrows
+    private void openUpdateDocumentMenu() {
+        String ISBN = documentsTable.getSelectionModel().getSelectedItem().getISBN();
+        String title = documentsTable.getSelectionModel().getSelectedItem().getTitle();
+        String authors = documentsTable.getSelectionModel().getSelectedItem().getAuthors();
+        String genres = documentsTable.getSelectionModel().getSelectedItem().getGenres();
+        String description = documentsTable.getSelectionModel().getSelectedItem().getDescription();
+        String publishedYear = documentsTable.getSelectionModel().getSelectedItem().getPublishedYear();
+        String publisher = documentsTable.getSelectionModel().getSelectedItem().getPublisher();
+        String created = documentsTable.getSelectionModel().getSelectedItem().getCreated();
+        String lastModified = documentsTable.getSelectionModel().getSelectedItem().getLastModified();
 
+        ShowDocumentsView.DocumentViewModel documentViewModel = DocumentViewModel.of(
+                ISBN, title, authors, genres, description, publishedYear, publisher, created, lastModified
+        );
+
+        UpdateDocumentView controller = new UpdateDocumentView(
+                documentViewModel,
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getDocumentContentRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileVerifier()
+        );
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/UpdateDocumentView.fxml"));
+        loader.setController(controller);
+        VBox v = loader.load();
+
+        StageManager.getInstance().getRootStackPane().getChildren().add(v);
     }
 
     @SneakyThrows
@@ -67,7 +95,8 @@ public class DocumentsManagementView extends ShowDocumentsView{
                 StageManager.getInstance().getResources().getDocumentRepository(),
                 StageManager.getInstance().getResources().getDocumentContentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileVerifier()
         );
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentView.fxml"));
         loader.setController(controller);
@@ -75,6 +104,4 @@ public class DocumentsManagementView extends ShowDocumentsView{
 
         StageManager.getInstance().getRootStackPane().getChildren().add(v);
     }
-
-    private void updateDocument(ShowDocumentsView.DocumentViewModel documentViewModel) {}
 }

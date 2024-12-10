@@ -18,6 +18,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.AddDocumentController;
 
 import java.io.File;
@@ -74,8 +75,10 @@ public class AddDocumentView {
             @NonNull DocumentRepository documentRepository,
             @NonNull DocumentContentRepository documentContentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-            @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.addDocumentController = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+            @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+            @NonNull FileVerifier fileVerifier
+    ) {
+        this.addDocumentController = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
     @FXML
@@ -110,7 +113,6 @@ public class AddDocumentView {
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("Absolute Path: " + absolutePath);
         } else {
             System.out.println("No image URL found");
         }
@@ -194,6 +196,10 @@ public class AddDocumentView {
             this.onDocumentAlreadyExistsException();
         } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException e) {
             this.onAuthenticationTokenNotFoundException();
+        } catch (AddDocumentUseCase.DocumentCoverImageInvalidException e) {
+            this.onDocumentCoverImageInvalidException();
+        } catch (AddDocumentUseCase.DocumentContentInvalidException e) {
+            this.onDocumentContentInvalidException();
         }
     }
 
@@ -264,6 +270,14 @@ public class AddDocumentView {
 
     private void onCoverImageFilePathInvalid() {
         showErrorMessage("Path to document's cover image is invalid");
+    }
+
+    private void onDocumentContentInvalidException() {
+        showErrorMessage("Invalid pdf file");
+    }
+
+    private void onDocumentCoverImageInvalidException() {
+        showErrorMessage("Invalid cover image!");
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}

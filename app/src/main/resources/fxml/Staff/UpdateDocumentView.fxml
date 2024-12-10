@@ -7,7 +7,7 @@
       prefWidth="1280" prefHeight="720" stylesheets="/css/Staff/AddDocumentView.css"
       xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <VBox prefHeight="800.0" prefWidth="600.0" styleClass="container" VBox.vgrow="ALWAYS">
-        <Label text="Add a document" styleClass="header" prefWidth="Infinity" VBox.vgrow="ALWAYS"/>
+        <Label text="Update this document" styleClass="header" prefWidth="Infinity" VBox.vgrow="ALWAYS"/>
 
         <HBox styleClass="document-info" prefWidth="Infinity" VBox.vgrow="ALWAYS">
             <VBox spacing="10" styleClass="text-field-container" HBox.hgrow="ALWAYS">
@@ -50,9 +50,9 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="addDocumentButton">
+            <Button fx:id="updateDocumentButton">
                 <graphic>
-                    <Label text="Add" styleClass="button-label"/>
+                    <Label text="Save" styleClass="button-label"/>
                 </graphic>
             </Button>
         </HBox>

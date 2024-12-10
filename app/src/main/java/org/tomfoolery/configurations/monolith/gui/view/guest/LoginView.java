@@ -76,8 +76,8 @@ public class LoginView {
         return LogUserInByCredentialsController.RequestObject.of(username, password.toCharArray());
     }
 
-    private void onSuccess(LogUserInByCredentialsController.ViewModel viewModel) {
-        val userType = viewModel.getUserType();
+    private void onSuccess(LogUserInByCredentialsController.@NonNull ViewModel viewModel) {
+        val userType = viewModel.getLoggedInUserType();
 
         if (userType.equals(LogUserInByCredentialsController.UserType.ADMINISTRATOR)) {
             StageManager.getInstance().loadAdminView(StageManager.ContentType.ADMIN_DASHBOARD);
