@@ -50,7 +50,7 @@ public final class LogUserInByCredentialsUseCase extends LogUserInUseCase implem
         this.saveAuthenticationTokenToRepository(authenticationToken);
 
         val userClass = user.getClass();
-        return Response.of(userClass);
+        return Response.of(username, userClass);
     }
 
     private <User extends BaseUser> void ensureUserCredentialsAreValid(User.@NonNull Credentials rawUserCredentials) throws CredentialsInvalidException {

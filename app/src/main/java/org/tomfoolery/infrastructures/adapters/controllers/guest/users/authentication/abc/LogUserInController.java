@@ -24,14 +24,16 @@ public abstract class LogUserInController {
     }
 
     protected static @NonNull ViewModel mapResponseModelToViewModel(LogUserInUseCase.@NonNull Response responseModel) {
+        val username = responseModel.getLoggedInUsername();
         val userClass = responseModel.getLoggedInUserClass();
         val userType = userTypesByUserClasses.get(userClass);
 
-        return ViewModel.of(userType);
+        return ViewModel.of(username, userType);
     }
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull UserType userType;
+        @NonNull String loggedInUsername;
+        @NonNull UserType loggedInUserType;
     }
 }

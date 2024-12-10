@@ -23,14 +23,16 @@ public final class LogUserInPresenter implements Function<LogUserInController.Vi
 
     @Override
     public @NonNull ViewModel apply(LogUserInController.ViewModel viewModel) {
-        val userType = viewModel.getUserType();
+        val username = viewModel.getLoggedInUsername();
+        val userType = viewModel.getLoggedInUserType();
         val viewClass = viewClassesByUserTypes.get(userType);
 
-        return ViewModel.of(viewClass);
+        return ViewModel.of(username, viewClass);
     }
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
+        @NonNull String loggedInUsername;
         @NonNull Class<? extends UserSelectionView> nextViewClass;
     }
 }

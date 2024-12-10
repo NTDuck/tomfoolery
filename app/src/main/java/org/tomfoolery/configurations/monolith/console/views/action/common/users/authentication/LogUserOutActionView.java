@@ -36,6 +36,8 @@ public final class LogUserOutActionView extends BaseActionView {
     }
 
     private void onSuccess() {
+        loggedInUsername = null;
+
         this.ioProvider.writeLine(Message.Format.SUCCESS, "User logged out");
     }
 

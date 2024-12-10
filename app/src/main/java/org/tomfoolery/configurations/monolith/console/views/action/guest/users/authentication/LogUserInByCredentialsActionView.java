@@ -52,6 +52,7 @@ public final class LogUserInByCredentialsActionView extends BaseActionView {
     }
 
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
+        loggedInUsername = viewModel.getLoggedInUsername();
         this.nextViewClass = viewModel.getNextViewClass();
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "User logged in");

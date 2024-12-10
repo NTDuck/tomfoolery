@@ -32,8 +32,9 @@ public final class LogUserInByAuthenticationTokenUseCase extends LogUserInUseCas
         this.markUserAsLoggedIn(user);
         userRepository.save(user);
 
+        val username = user.getCredentials().getUsername();
         val userClass = user.getClass();
-        return Response.of(userClass);
+        return Response.of(username, userClass);
     }
 
     private @NonNull AuthenticationToken getAuthenticationTokenFromRepository() throws AuthenticationTokenNotFoundException {
