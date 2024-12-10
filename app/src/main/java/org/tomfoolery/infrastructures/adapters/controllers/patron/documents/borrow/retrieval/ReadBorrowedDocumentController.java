@@ -9,27 +9,29 @@ import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentR
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ReadBorrowedDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.io.IOException;
 
 public final class ReadBorrowedDocumentController implements ThrowableFunction<ReadBorrowedDocumentController.RequestObject, ReadBorrowedDocumentController.ViewModel> {
     private final @NonNull ReadBorrowedDocumentUseCase readBorrowedDocumentUseCase;
+    private final @NonNull FileStorageProvider fileStorageProvider;
 
-    public static @NonNull ReadBorrowedDocumentController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ReadBorrowedDocumentController(hybridDocumentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ReadBorrowedDocumentController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new ReadBorrowedDocumentController(hybridDocumentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private ReadBorrowedDocumentController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ReadBorrowedDocumentController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         this.readBorrowedDocumentUseCase = ReadBorrowedDocumentUseCase.of(hybridDocumentRepository, documentContentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+         this.fileStorageProvider = fileStorageProvider;
     }
 
     @Override
-    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException, ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException, ReadBorrowedDocumentUseCase.DocumentISBNInvalidException, ReadBorrowedDocumentUseCase.DocumentNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotBorrowedException, ReadBorrowedDocumentUseCase.DocumentOverdueException, ReadBorrowedDocumentUseCase.DocumentContentNotFoundException, DocumentContentUnavailable {
+    public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ReadBorrowedDocumentUseCase.AuthenticationTokenNotFoundException, ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException, ReadBorrowedDocumentUseCase.DocumentISBNInvalidException, ReadBorrowedDocumentUseCase.DocumentNotFoundException, ReadBorrowedDocumentUseCase.DocumentNotBorrowedException, ReadBorrowedDocumentUseCase.DocumentOverdueException, ReadBorrowedDocumentUseCase.DocumentContentNotFoundException, DocumentContentFileWriteException {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.readBorrowedDocumentUseCase.apply(requestModel);
-        val viewModel = mapResponseModelToViewModel(responseModel);
+        val viewModel = this.mapResponseModelToViewModel(responseModel);
 
         return viewModel;
     }
@@ -38,18 +40,18 @@ public final class ReadBorrowedDocumentController implements ThrowableFunction<R
         return ReadBorrowedDocumentUseCase.Request.of(requestObject.getDocumentISBN());
     }
 
-    private static @NonNull ViewModel mapResponseModelToViewModel(ReadBorrowedDocumentUseCase.@NonNull Response responseModel) throws DocumentContentUnavailable {
+    private @NonNull ViewModel mapResponseModelToViewModel(ReadBorrowedDocumentUseCase.@NonNull Response responseModel) throws DocumentContentFileWriteException {
         val rawDocumentContent = responseModel.getDocumentContent().getBytes();
-        val documentContentFilePath = saveDocumentContentAndGetPath(rawDocumentContent);
+        val documentContentFilePath = this.saveDocumentContentAndGetPath(rawDocumentContent);
 
         return ViewModel.of(documentContentFilePath);
     }
 
-    private static @NonNull String saveDocumentContentAndGetPath(byte @NonNull [] rawDocumentContent) throws DocumentContentUnavailable {
+    private @NonNull String saveDocumentContentAndGetPath(byte @NonNull [] rawDocumentContent) throws DocumentContentFileWriteException {
         try {
-            return TemporaryFileProvider.save(".pdf", rawDocumentContent);
+            return this.fileStorageProvider.save(rawDocumentContent);
         } catch (IOException exception) {
-            throw new DocumentContentUnavailable();
+            throw new DocumentContentFileWriteException();
         }
     }
 
@@ -63,5 +65,5 @@ public final class ReadBorrowedDocumentController implements ThrowableFunction<R
         @NonNull String documentContentFilePath;
     }
 
-    public static class DocumentContentUnavailable extends Exception {}
+    public static class DocumentContentFileWriteException extends Exception {}
 }

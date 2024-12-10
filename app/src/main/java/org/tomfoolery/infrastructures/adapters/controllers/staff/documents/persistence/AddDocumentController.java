@@ -11,8 +11,8 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -21,27 +21,29 @@ import java.util.List;
 
 public final class AddDocumentController implements ThrowableConsumer<AddDocumentController.RequestObject> {
     private final @NonNull AddDocumentUseCase addDocumentUseCase;
+    private final @NonNull FileStorageProvider fileStorageProvider;
 
-    public static @NonNull AddDocumentController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
-        return new AddDocumentController(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
+    public static @NonNull AddDocumentController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier, @NonNull FileStorageProvider fileStorageProvider) {
+        return new AddDocumentController(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier, fileStorageProvider);
     }
 
-    private AddDocumentController(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+    private AddDocumentController(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier, @NonNull FileStorageProvider fileStorageProvider) {
         this.addDocumentUseCase = AddDocumentUseCase.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
+        this.fileStorageProvider = fileStorageProvider;
     }
 
     @Override
     public void accept(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException, AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentISBNInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException, AddDocumentUseCase.DocumentCoverImageInvalidException, AddDocumentUseCase.DocumentContentInvalidException {
-        val requestModel = mapRequestObjectToRequestModel(requestObject);
+        val requestModel = this.mapRequestObjectToRequestModel(requestObject);
         this.addDocumentUseCase.accept(requestModel);
     }
 
-    private static AddDocumentUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException {
+    private AddDocumentUseCase.@NonNull Request mapRequestObjectToRequestModel(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException {
         val documentPublishedYear = parseDocumentPublishedYear(requestObject.getDocumentPublishedYear());
         val documentMetadata = Document.Metadata.of(requestObject.getDocumentTitle(), requestObject.getDocumentDescription(), requestObject.getDocumentAuthors(), requestObject.getDocumentGenres(), documentPublishedYear, requestObject.getDocumentPublisher());
 
-        val documentContent = readDocumentContentFromFilePath(requestObject.getDocumentContentFilePath());
-        val documentCoverImage = readDocumentCoverImageFromFilePath(requestObject.getDocumentCoverImageFilePath());
+        val documentContent = this.readDocumentContentFromFilePath(requestObject.getDocumentContentFilePath());
+        val documentCoverImage = this.readDocumentCoverImageFromFilePath(requestObject.getDocumentCoverImageFilePath());
 
         return AddDocumentUseCase.Request.of(requestObject.getDocumentISBN(), Document.CoverImage.of(documentCoverImage), documentContent, documentMetadata);
     }
@@ -54,17 +56,17 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
         }
     }
 
-    private static byte @NonNull [] readDocumentContentFromFilePath(@NonNull String documentContentFilePath) throws DocumentContentFilePathInvalidException {
+    private byte @NonNull [] readDocumentContentFromFilePath(@NonNull String documentContentFilePath) throws DocumentContentFilePathInvalidException {
         try {
-            return TemporaryFileProvider.read(documentContentFilePath);
+            return this.fileStorageProvider.read(documentContentFilePath);
         } catch (IOException exception) {
             throw new DocumentContentFilePathInvalidException();
         }
     }
 
-    private static byte @NonNull [] readDocumentCoverImageFromFilePath(@NonNull String documentCoverImageFilePath) throws DocumentCoverImageFilePathInvalidException {
+    private byte @NonNull [] readDocumentCoverImageFromFilePath(@NonNull String documentCoverImageFilePath) throws DocumentCoverImageFilePathInvalidException {
         try {
-            return TemporaryFileProvider.read(documentCoverImageFilePath);
+            return this.fileStorageProvider.read(documentCoverImageFilePath);
         } catch (IOException exception) {
             throw new DocumentCoverImageFilePathInvalidException();
         }

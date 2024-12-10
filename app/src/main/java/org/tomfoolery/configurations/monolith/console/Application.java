@@ -78,9 +78,9 @@ public final class Application implements Runnable, Closeable {
             // Shared user action views
             LogUserOutActionView.of(this.ioProvider, this.context.getUserRepositories(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
 
-            GetDocumentByIdActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            GetDocumentByIdActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
             SearchDocumentsActionView.of(this.ioProvider, this.context.getDocumentSearchGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
-            GetDocumentQrCodeActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getDocumentQrCodeGenerator(), this.context.getDocumentUrlGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            GetDocumentQrCodeActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getDocumentQrCodeGenerator(), this.context.getDocumentUrlGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
             ShowDocumentsActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
             GetDocumentRecommendationActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentRecommendationGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
 
@@ -106,7 +106,7 @@ public final class Application implements Runnable, Closeable {
             UpdatePatronPasswordActionView.of(this.ioProvider, this.context.getPatronRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getPasswordEncoder()),
 
             BorrowDocumentActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
-            ReadBorrowedDocumentActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            ReadBorrowedDocumentActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
             ReturnDocumentActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
             ShowBorrowedDocumentsActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
             GetDocumentBorrowStatusActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),

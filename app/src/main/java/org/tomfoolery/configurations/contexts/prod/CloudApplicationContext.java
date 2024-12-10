@@ -19,7 +19,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
@@ -29,6 +29,8 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dot
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudBorrowingSessionRepository;
@@ -38,7 +40,7 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.Clo
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
-import org.tomfoolery.infrastructures.utils.helpers.verifiers.apache.tika.ApacheTikaFileVerifier;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 
 public class CloudApplicationContext extends ApplicationContext {
     DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
@@ -133,5 +135,10 @@ public class CloudApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull FileVerifier createFileVerifier() {
         return ApacheTikaFileVerifier.of();
+    }
+
+    @Override
+    protected @NonNull FileStorageProvider createFileStorageProvider() {
+        return ApacheTikaTemporaryFileStorageProvider.of();
     }
 }

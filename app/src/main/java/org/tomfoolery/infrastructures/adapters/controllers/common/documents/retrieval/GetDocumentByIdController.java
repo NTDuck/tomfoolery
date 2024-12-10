@@ -12,7 +12,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.resources.ResourceProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.TimestampBiAdapter;
@@ -23,23 +23,24 @@ import java.util.List;
 
 public final class GetDocumentByIdController implements ThrowableFunction<GetDocumentByIdController.RequestObject, GetDocumentByIdController.ViewModel> {
     private static final @NonNull String DEFAULT_COVER_IMAGE_RESOURCE_PATH = "images/default/document-cover-image.png";
-    private static final @NonNull String COVER_IMAGE_FILE_EXTENSION = ".png";
 
     private final @NonNull GetDocumentByIdUseCase getDocumentByIdUseCase;
+    private final @NonNull FileStorageProvider fileStorageProvider;
 
-    public static @NonNull GetDocumentByIdController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentByIdController(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentByIdController of(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new GetDocumentByIdController(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private GetDocumentByIdController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private GetDocumentByIdController(@NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         this.getDocumentByIdUseCase = GetDocumentByIdUseCase.of(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.fileStorageProvider = fileStorageProvider;
     }
 
     @Override
     public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws GetDocumentByIdUseCase.AuthenticationTokenNotFoundException, GetDocumentByIdUseCase.AuthenticationTokenInvalidException, GetDocumentByIdUseCase.DocumentISBNInvalidException, GetDocumentByIdUseCase.DocumentNotFoundException {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.getDocumentByIdUseCase.apply(requestModel);
-        val viewModel = mapResponseModelToViewModel(responseModel);
+        val viewModel = this.mapResponseModelToViewModel(responseModel);
 
         return viewModel;
     }
@@ -48,8 +49,8 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         return GetDocumentByIdUseCase.Request.of(requestObject.getDocumentISBN());
     }
 
-    private static @NonNull ViewModel mapResponseModelToViewModel(GetDocumentByIdUseCase.@NonNull Response responseModel) {
-        return ViewModel.of(responseModel.getDocument());
+    private @NonNull ViewModel mapResponseModelToViewModel(GetDocumentByIdUseCase.@NonNull Response responseModel) {
+        return ViewModel.of(responseModel.getDocument(), this.fileStorageProvider);
     }
 
     @Value(staticConstructor = "of")
@@ -81,7 +82,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         @NonNull String documentCoverImageFilePath;
 
         @SneakyThrows
-        public static @NonNull ViewModel of(@NonNull Document document) {
+        private static @NonNull ViewModel of(@NonNull Document document, @NonNull FileStorageProvider fileStorageProvider) {
             val documentId = document.getId();
             val documentAudit = document.getAudit();
             val documentAuditTimestamps = documentAudit.getTimestamps();
@@ -111,17 +112,17 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
                 .numberOfRatings(documentRating == null ? 0 : documentRating.getNumberOfRatings())
 
                 .documentCoverImageFilePath(documentCoverImage != null
-                    ? saveDocumentCoverImageAndGetPath(documentCoverImage.getBytes())
-                    : ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH)
-                )
+                    ? saveDocumentCoverImageAndGetPath(fileStorageProvider, documentCoverImage)
+                    : ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH))
 
                 .build();
         }
 
         @SneakyThrows
-        private static @NonNull String saveDocumentCoverImageAndGetPath(byte @NonNull [] rawDocumentCoverImage) {
+        private static @NonNull String saveDocumentCoverImageAndGetPath(@NonNull FileStorageProvider fileStorageProvider, Document.@NonNull CoverImage documentCoverImage) {
             try {
-                return TemporaryFileProvider.save(COVER_IMAGE_FILE_EXTENSION, rawDocumentCoverImage);
+                val rawDocumentCoverImage = documentCoverImage.getBytes();
+                return fileStorageProvider.save(rawDocumentCoverImage);
 
             } catch (IOException exception) {
                 return ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH);

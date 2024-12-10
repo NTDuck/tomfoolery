@@ -20,9 +20,11 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryBorrowingSessionRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryDocumentContentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryReviewRepository;
@@ -41,7 +43,7 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.docume
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
-import org.tomfoolery.infrastructures.utils.helpers.verifiers.apache.tika.ApacheTikaFileVerifier;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 
 import java.util.List;
 
@@ -143,5 +145,10 @@ public class InMemoryApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull FileVerifier createFileVerifier() {
         return ApacheTikaFileVerifier.of();
+    }
+
+    @Override
+    protected @NonNull FileStorageProvider createFileStorageProvider() {
+        return ApacheTikaTemporaryFileStorageProvider.of();
     }
 }

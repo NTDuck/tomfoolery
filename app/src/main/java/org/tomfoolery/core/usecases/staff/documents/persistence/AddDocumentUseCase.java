@@ -13,10 +13,9 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.utils.helpers.verifiers.StringVerifier;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Set;
 
@@ -58,11 +57,11 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         this.ensureDocumentMetadataIsValid(documentMetadata);
 
         val documentCoverImage = request.getDocumentCoverImage();
-        // this.ensureDocumentCoverImageIsValid(documentCoverImage);
+        this.ensureDocumentCoverImageIsValid(documentCoverImage);
 
         val rawDocumentContent = request.getDocumentContent();
         val documentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawDocumentContent);
-        // this.ensureDocumentContentIsValid(documentContent);
+        this.ensureDocumentContentIsValid(documentContent);
 
         this.documentContentRepository.save(documentContent);
 
