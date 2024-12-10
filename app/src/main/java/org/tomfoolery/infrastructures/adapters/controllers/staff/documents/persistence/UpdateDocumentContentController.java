@@ -9,6 +9,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentContentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
@@ -16,16 +17,16 @@ import java.io.IOException;
 public final class UpdateDocumentContentController implements ThrowableConsumer<UpdateDocumentContentController.RequestObject> {
     private final @NonNull UpdateDocumentContentUseCase updateDocumentContentUseCase;
 
-    public static @NonNull UpdateDocumentContentController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new UpdateDocumentContentController(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull UpdateDocumentContentController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new UpdateDocumentContentController(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
-    private UpdateDocumentContentController(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.updateDocumentContentUseCase = UpdateDocumentContentUseCase.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private UpdateDocumentContentController(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        this.updateDocumentContentUseCase = UpdateDocumentContentUseCase.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws DocumentContentFilePathInvalidException, UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException, UpdateDocumentContentUseCase.AuthenticationTokenInvalidException, UpdateDocumentContentUseCase.DocumentISBNInvalidException, UpdateDocumentContentUseCase.DocumentNotFoundException {
+    public void accept(@NonNull RequestObject requestObject) throws DocumentContentFilePathInvalidException, UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException, UpdateDocumentContentUseCase.AuthenticationTokenInvalidException, UpdateDocumentContentUseCase.DocumentISBNInvalidException, UpdateDocumentContentUseCase.DocumentNotFoundException, UpdateDocumentContentUseCase.DocumentContentInvalidException {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         this.updateDocumentContentUseCase.accept(requestModel);
     }

@@ -14,6 +14,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.AddDocumentController;
 
 import java.util.Arrays;
@@ -21,14 +22,14 @@ import java.util.Arrays;
 public final class AddDocumentActionView extends UserActionView {
     private final @NonNull AddDocumentController addDocumentController;
 
-    public static @NonNull AddDocumentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull AddDocumentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new AddDocumentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
-    private AddDocumentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private AddDocumentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
         super(ioProvider);
 
-        this.addDocumentController = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.addDocumentController = AddDocumentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
     @Override
@@ -40,7 +41,7 @@ public final class AddDocumentActionView extends UserActionView {
 
         } catch (AddDocumentUseCase.AuthenticationTokenNotFoundException | AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
             this.onException(exception, GuestSelectionView.class);
-        } catch (DocumentPublishedYearInvalidException | AddDocumentController.DocumentPublishedYearInvalidException | AddDocumentController.DocumentContentFilePathInvalidException | AddDocumentController.DocumentCoverImageFilePathInvalidException | AddDocumentUseCase.DocumentISBNInvalidException | AddDocumentUseCase.DocumentAlreadyExistsException exception) {
+        } catch (DocumentPublishedYearInvalidException | AddDocumentController.DocumentPublishedYearInvalidException | AddDocumentController.DocumentContentFilePathInvalidException | AddDocumentController.DocumentCoverImageFilePathInvalidException | AddDocumentUseCase.DocumentISBNInvalidException | AddDocumentUseCase.DocumentAlreadyExistsException | AddDocumentUseCase.DocumentContentInvalidException | AddDocumentUseCase.DocumentCoverImageInvalidException exception) {
             this.onException(exception);
         }
     }

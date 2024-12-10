@@ -13,80 +13,93 @@ import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 
 import java.time.Instant;
 import java.util.Set;
 
 public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdateDocumentContentUseCase.Request> {
-   private final @NonNull DocumentRepository documentRepository;
-   private final @NonNull DocumentContentRepository documentContentRepository;
+    private final @NonNull DocumentRepository documentRepository;
+    private final @NonNull DocumentContentRepository documentContentRepository;
 
-   public static @NonNull UpdateDocumentContentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-       return new UpdateDocumentContentUseCase(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-   }
+    private final @NonNull FileVerifier fileVerifier;
 
-   private UpdateDocumentContentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-       super(authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull UpdateDocumentContentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new UpdateDocumentContentUseCase(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
+    }
 
-       this.documentRepository = documentRepository;
-       this.documentContentRepository = documentContentRepository;
-   }
+    private UpdateDocumentContentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        super(authenticationTokenGenerator, authenticationTokenRepository);
 
-   @Override
-   protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
+        this.documentRepository = documentRepository;
+        this.documentContentRepository = documentContentRepository;
+
+        this.fileVerifier = fileVerifier;
+    }
+
+    @Override
+    protected @NonNull Set<Class<? extends BaseUser>> getAllowedUserClasses() {
        return Set.of(Staff.class);
-   }
+    }
 
-   @Override
-   public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException {
-       val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
-       this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
-       val staffId = this.getUserIdFromAuthenticationToken(staffAuthenticationToken);
+    @Override
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentContentInvalidException {
+        val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
+        val staffId = this.getUserIdFromAuthenticationToken(staffAuthenticationToken);
 
-       val documentISBN = request.getDocumentISBN();
-       val documentId = this.getDocumentIdFromISBN(documentISBN);
-       val document = this.getDocumentById(documentId);
+        val documentISBN = request.getDocumentISBN();
+        val documentId = this.getDocumentIdFromISBN(documentISBN);
+        val document = this.getDocumentById(documentId);
 
-       val rawNewDocumentContent = request.getNewDocumentContent();
-       val newDocumentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawNewDocumentContent);
-       this.documentContentRepository.save(newDocumentContent);
+        val rawNewDocumentContent = request.getNewDocumentContent();
+        val newDocumentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawNewDocumentContent);
+        this.ensureDocumentContentIsValid(newDocumentContent);
 
-       this.markDocumentAsLastModifiedByStaff(document, staffId);
-       this.documentRepository.save(document);
-   }
+        this.documentContentRepository.save(newDocumentContent);
 
-   private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
+        this.markDocumentAsLastModifiedByStaff(document, staffId);
+        this.documentRepository.save(document);
+    }
+
+    private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {
        val documentId = Document.Id.of(documentISBN);
 
        if (documentId == null)
            throw new DocumentISBNInvalidException();
 
        return documentId;
-   }
+    }
 
-   private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
-       val document = this.documentRepository.getById(documentId);
+    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) throws DocumentNotFoundException {
+        val document = this.documentRepository.getById(documentId);
 
-       if (document == null)
-           throw new DocumentNotFoundException();
+        if (document == null)
+            throw new DocumentNotFoundException();
 
-       return document;
-   }
+        return document;
+    }
 
-   private void markDocumentAsLastModifiedByStaff(@NonNull Document document, Staff.@NonNull Id staffId) {
-       val documentAudit = document.getAudit();
-       val documentAuditTimestamps = documentAudit.getTimestamps();
+    private void ensureDocumentContentIsValid(@NonNull DocumentContent documentContent) throws DocumentContentInvalidException {
+        if (!this.fileVerifier.isDocument(documentContent.getBytes()))
+            throw new DocumentContentInvalidException();
+    }
 
-       documentAudit.setLastModifiedByStaffId(staffId);
-       documentAuditTimestamps.setLastModified(Instant.now());
-   }
+    private void markDocumentAsLastModifiedByStaff(@NonNull Document document, Staff.@NonNull Id staffId) {
+        val documentAudit = document.getAudit();
+        val documentAuditTimestamps = documentAudit.getTimestamps();
 
-   @Value(staticConstructor = "of")
-   public static class Request {
-       @NonNull String documentISBN;
-       byte @NonNull [] newDocumentContent;
-   }
+        documentAudit.setLastModifiedByStaffId(staffId);
+        documentAuditTimestamps.setLastModified(Instant.now());
+    }
 
-   public static class DocumentISBNInvalidException extends Exception {}
-   public static class DocumentNotFoundException extends Exception {}
+    @Value(staticConstructor = "of")
+    public static class Request {
+        @NonNull String documentISBN;
+        byte @NonNull [] newDocumentContent;
+    }
+
+    public static class DocumentISBNInvalidException extends Exception {}
+    public static class DocumentNotFoundException extends Exception {}
+    public static class DocumentContentInvalidException extends Exception {}
 }

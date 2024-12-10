@@ -11,21 +11,24 @@ import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 
 import java.time.Instant;
 import java.util.Set;
 
 public final class UpdateDocumentCoverImageUseCase extends AuthenticatedUserUseCase implements ThrowableConsumer<UpdateDocumentCoverImageUseCase.Request> {
     private final @NonNull DocumentRepository documentRepository;
+    private final @NonNull FileVerifier fileVerifier;
 
-    public static @NonNull UpdateDocumentCoverImageUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new UpdateDocumentCoverImageUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull UpdateDocumentCoverImageUseCase of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new UpdateDocumentCoverImageUseCase(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
-    private UpdateDocumentCoverImageUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private UpdateDocumentCoverImageUseCase(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
 
         this.documentRepository = documentRepository;
+        this.fileVerifier = fileVerifier;
     }
 
     @Override
@@ -34,7 +37,7 @@ public final class UpdateDocumentCoverImageUseCase extends AuthenticatedUserUseC
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, DocumentNotFoundException, DocumentCoverImageInvalidException {
         val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
         val staffId = this.getUserIdFromAuthenticationToken(staffAuthenticationToken);
@@ -44,8 +47,11 @@ public final class UpdateDocumentCoverImageUseCase extends AuthenticatedUserUseC
         val document = this.getDocumentById(documentId);
 
         val newDocumentCoverImage = request.getNewDocumentCoverImage();
+        this.ensureDocumentCoverImageIsValid(newDocumentCoverImage);
+
         document.setCoverImage(newDocumentCoverImage);
         this.markDocumentAsLastModifiedByStaff(document, staffId);
+
         this.documentRepository.save(document);
     }
 
@@ -67,6 +73,11 @@ public final class UpdateDocumentCoverImageUseCase extends AuthenticatedUserUseC
         return document;
     }
 
+    private void ensureDocumentCoverImageIsValid(Document.@NonNull CoverImage documentCoverImage) throws DocumentCoverImageInvalidException {
+        if (!this.fileVerifier.isImage(documentCoverImage.getBytes()))
+            throw new DocumentCoverImageInvalidException();
+    }
+
     private void markDocumentAsLastModifiedByStaff(@NonNull Document document, Staff.@NonNull Id staffId) {
         val documentAudit = document.getAudit();
         val documentAuditTimestamps = documentAudit.getTimestamps();
@@ -83,4 +94,5 @@ public final class UpdateDocumentCoverImageUseCase extends AuthenticatedUserUseC
 
     public static class DocumentISBNInvalidException extends Exception {}
     public static class DocumentNotFoundException extends Exception {}
+    public static class DocumentCoverImageInvalidException extends Exception {}
 }

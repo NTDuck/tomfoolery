@@ -56,6 +56,9 @@ dependencies {
     // Uses Apache's `URIBuilder` for clean and lightweight URI construction
     implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
 
+    // Uses Apache Tika for file type detection
+    implementation("org.apache.tika:tika-core:2.9.0")
+
     // Contains necessary implementation of Directed Acyclic Subsequence Graph
     // required for efficient in-memory indexing of documents
     implementation("com.github.Qualtagh:DAWG:e98133f757")

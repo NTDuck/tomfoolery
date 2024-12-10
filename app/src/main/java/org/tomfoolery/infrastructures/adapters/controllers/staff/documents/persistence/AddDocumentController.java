@@ -11,6 +11,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.staff.documents.persistence.AddDocumentUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 
 import java.io.IOException;
@@ -21,16 +22,16 @@ import java.util.List;
 public final class AddDocumentController implements ThrowableConsumer<AddDocumentController.RequestObject> {
     private final @NonNull AddDocumentUseCase addDocumentUseCase;
 
-    public static @NonNull AddDocumentController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentController(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull AddDocumentController of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new AddDocumentController(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
-    private AddDocumentController(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.addDocumentUseCase = AddDocumentUseCase.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private AddDocumentController(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        this.addDocumentUseCase = AddDocumentUseCase.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException, AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentISBNInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException {
+    public void accept(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException, AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentISBNInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException, AddDocumentUseCase.DocumentCoverImageInvalidException, AddDocumentUseCase.DocumentContentInvalidException {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         this.addDocumentUseCase.accept(requestModel);
     }

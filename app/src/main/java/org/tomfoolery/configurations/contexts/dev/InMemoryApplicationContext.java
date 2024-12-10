@@ -1,6 +1,7 @@
 package org.tomfoolery.configurations.contexts.dev;
 
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
@@ -19,6 +20,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryBorrowingSessionRepository;
@@ -39,6 +41,7 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.docume
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
+import org.tomfoolery.infrastructures.utils.helpers.verifiers.apache.tika.ApacheTikaFileVerifier;
 
 import java.util.List;
 
@@ -118,7 +121,8 @@ public class InMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull AuthenticationTokenRepository createAuthenticationTokenRepository() {
-        return KeyStoreAuthenticationTokenRepository.of(this.getDotenvProvider());
+        val dotenvProvider = this.getDotenvProvider();
+        return KeyStoreAuthenticationTokenRepository.of(dotenvProvider);
     }
 
     @Override
@@ -134,5 +138,10 @@ public class InMemoryApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull HttpClientProvider createHttpClientProvider() {
         return OkHttpClientProvider.of();
+    }
+
+    @Override
+    protected @NonNull FileVerifier createFileVerifier() {
+        return ApacheTikaFileVerifier.of();
     }
 }

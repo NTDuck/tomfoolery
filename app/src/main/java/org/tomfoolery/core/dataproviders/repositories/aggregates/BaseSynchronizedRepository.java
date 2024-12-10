@@ -1,4 +1,4 @@
-package org.tomfoolery.core.dataproviders.aggregates;
+package org.tomfoolery.core.dataproviders.repositories.aggregates;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
