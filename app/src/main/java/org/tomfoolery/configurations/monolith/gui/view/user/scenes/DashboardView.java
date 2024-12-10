@@ -145,7 +145,7 @@ public class DashboardView {
     private @Unsigned int getNumberOfDocuments() {
         int numberOfDocuments = 0;
         try {
-            val requestObject = ShowDocumentsController.RequestObject.of(1, Message.Page.MAX_PAGE_SIZE);
+            val requestObject = ShowDocumentsController.RequestObject.of(1, Integer.MAX_VALUE);
             val viewModel = this.showDocumentsController.apply(requestObject);
             return viewModel.getPaginatedDocuments().size();
 

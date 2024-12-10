@@ -78,17 +78,17 @@ public class StageManager {
         double currentWidth = primaryStage.getWidth();
         double currentHeight = primaryStage.getHeight();
 
-        if (currentHeight < 720 || currentWidth < 1280) {
-            primaryStage.setWidth(1280);
-            primaryStage.setHeight(720);
+        if (currentHeight < 1080 || currentWidth < 1920) {
+            primaryStage.setWidth(1920);
+            primaryStage.setHeight(1080);
         } else {
             primaryStage.setMaximized(isMaximized);
             primaryStage.setWidth(currentWidth);
             primaryStage.setHeight(currentHeight);
         }
 
-        primaryStage.setMinHeight(720);
-        primaryStage.setMinWidth(1280);
+        primaryStage.setMinHeight(1080);
+        primaryStage.setMinWidth(1920);
 
         primaryStage.setTitle("Tomfoolery - Library Management Application");
     }
