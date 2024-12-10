@@ -32,6 +32,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudBorrowingSessionRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudDocumentContentRepository;
@@ -88,7 +89,7 @@ public class CloudApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentRecommendationGenerator createDocumentRecommendationGenerator() {
-        return null;
+        return CloudIndexedDocumentRecommendationGenerator.of(CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override
