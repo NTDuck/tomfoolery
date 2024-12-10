@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.monolith.console.views.selection.abc;
 
+import com.github.freva.asciitable.*;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -62,19 +63,23 @@ public abstract class BaseSelectionView extends BaseView {
     }
 
     private void displayViewModel(SelectionController.@NonNull ViewModel viewModel) {
-        viewModel.getSelectionItems()
-            .forEach(this::displayViewableSelectionItem);
-    }
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getSelectionItems(), List.of(
+                new Column()
+                    .dataAlign(HorizontalAlign.RIGHT)
+                    .with(SelectionController.ViewableSelectionItem::getIndex),
+                new Column()
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(SelectionController.ViewableSelectionItem::getLabel)
+            ))
+            .asString();
 
-    private void displayViewableSelectionItem(SelectionController.@NonNull ViewableSelectionItem viewableSelectionItem) {
-        val index = viewableSelectionItem.getIndex();
-        val label = viewableSelectionItem.getLabel();
-
-        this.ioProvider.writeLine("[%d] %s", index, label);
+        this.ioProvider.writeLine(table);
     }
 
     private SelectionController.@NonNull RequestObject collectRequestObject() throws SelectionItemIndexInvalidException {
-        val rawSelectionItemIndex = this.ioProvider.readLine();
+        val rawSelectionItemIndex = this.ioProvider.readLine(" ");
 
         try {
             val selectionItemIndex = Integer.parseInt(rawSelectionItemIndex);
@@ -90,6 +95,7 @@ public abstract class BaseSelectionView extends BaseView {
 
         val message = getMessageOnSuccess();
         this.ioProvider.writeLine(message);
+        this.ioProvider.writeLine("");
     }
 
     private void onSelectionItemIndexInvalidException() {

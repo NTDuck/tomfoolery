@@ -1,5 +1,8 @@
 package org.tomfoolery.configurations.monolith.console.views.action.administrator.users.retrieval;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -12,7 +15,10 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.administrator.users.retrieval.ShowStaffAccountsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.GetStaffByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.ShowStaffAccountsController;
+
+import java.util.List;
 
 public final class ShowStaffAccountsActionView extends UserActionView {
     private final @NonNull ShowStaffAccountsController showStaffAccountsController;
@@ -61,10 +67,21 @@ public final class ShowStaffAccountsActionView extends UserActionView {
     private void displayViewModel(ShowStaffAccountsController.@NonNull ViewModel viewModel) {
         this.ioProvider.writeLine("Displaying staff accounts, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        viewModel.getStaff()
-            .forEach(staff -> {
-                this.ioProvider.writeLine("- [%s] %s", staff.getStaffUuid(), staff.getStaffUsername());
-            });
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getStaff(), List.of(
+                new Column()
+                    .header("UUID")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetStaffByIdController.ViewModel::getStaffUuid),
+                new Column()
+                    .header("username")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetStaffByIdController.ViewModel::getStaffUsername)
+            ))
+            .asString();
+
+        this.ioProvider.writeLine(table);
     }
 
     private void onSuccess(ShowStaffAccountsController.@NonNull ViewModel viewModel) {

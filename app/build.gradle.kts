@@ -43,6 +43,13 @@ dependencies {
     // File type detection
     implementation("org.apache.tika:tika-core:2.9.0")
 
+    /* Console rendering */
+    // Figlet fonts support
+    implementation("com.github.lalyos:jfiglet:0.0.9")
+
+    // Table support
+    implementation("com.github.freva:ascii-table:1.8.0")
+
     /* Cloud repositories */
     implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
@@ -86,14 +93,11 @@ dependencies {
     implementation("com.google.zxing:core:3.5.1")
     implementation("com.google.zxing:javase:3.5.1")
 
-    // Console Figlet fonts rendering
-    implementation("com.github.lalyos:jfiglet:0.0.9")
+    /* Testing */
+    testImplementation(libs.testng)
 
     // Mock data generation
     implementation("com.github.javafaker:javafaker:1.0.2")
-
-    /* Testing */
-    testImplementation(libs.testng)
 
     /* Guava dependencies provider */
     implementation(libs.guava)
@@ -223,7 +227,7 @@ tasks.register<JavaExec>("runConsole") {
     classpath = sourceSets["main"].runtimeClasspath
 
     // Specify application context
-    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.InMemoryTestApplicationContext"
+    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.PartiallyMockedInMemoryTestApplicationContext"
 
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`
