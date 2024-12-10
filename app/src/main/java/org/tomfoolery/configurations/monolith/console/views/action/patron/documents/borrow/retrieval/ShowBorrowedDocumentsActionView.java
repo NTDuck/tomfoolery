@@ -1,5 +1,9 @@
 package org.tomfoolery.configurations.monolith.console.views.action.patron.documents.borrow.retrieval;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
+import com.github.freva.asciitable.OverflowBehaviour;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -13,7 +17,10 @@ import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSession
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
+
+import java.util.List;
 
 public final class ShowBorrowedDocumentsActionView extends UserActionView {
     private final @NonNull ShowBorrowedDocumentsController showBorrowedDocumentsController;
@@ -62,10 +69,44 @@ public final class ShowBorrowedDocumentsActionView extends UserActionView {
     private void displayViewModel(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {
         this.ioProvider.writeLine("Showing borrowed documents, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        viewModel.getPaginatedBorrowedDocuments()
-            .forEach(document -> {
-                this.ioProvider.writeLine("- [%s] %s", document.getDocumentISBN_10(), document.getDocumentTitle());
-            });
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getPaginatedBorrowedDocuments(), List.of(
+                new Column()
+                    .header("ISBN 10")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_10),
+                new Column()
+                    .header("ISBN 13")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_13),
+                new Column()
+                    .header("Title")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(30, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentTitle),
+                new Column()
+                    .header("Authors")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentAuthors())),
+                new Column()
+                    .header("Genres")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentGenres())),
+                new Column()
+                    .header("Year")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.RIGHT)
+                    .with(document -> String.valueOf(document.getDocumentPublishedYear()))
+            ))
+            .asString();
+
+        this.ioProvider.writeLine(table);
     }
 
     private void onSuccess(ShowBorrowedDocumentsController.@NonNull ViewModel viewModel) {

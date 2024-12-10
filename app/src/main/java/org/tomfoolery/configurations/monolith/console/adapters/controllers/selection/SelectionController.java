@@ -37,7 +37,10 @@ public class SelectionController implements Supplier<SelectionController.ViewMod
 
     private @NonNull List<ViewableSelectionItem> getViewableSelectionItems() {
         return IntStream.range(0, this.selectionItems.size())
-            .mapToObj(selectionItemIndex -> ViewableSelectionItem.of(selectionItemIndex, this.selectionItems.get(selectionItemIndex).getLabel()))
+            .mapToObj(selectionItemIndex -> ViewableSelectionItem.of(
+                String.valueOf(selectionItemIndex),
+                this.selectionItems.get(selectionItemIndex).getLabel()
+            ))
             .collect(Collectors.toUnmodifiableList());
     }
 
@@ -68,7 +71,7 @@ public class SelectionController implements Supplier<SelectionController.ViewMod
 
     @Value(staticConstructor = "of")
     public static class ViewableSelectionItem {
-        @Unsigned int index;
+        @NonNull String index;
         @NonNull String label;
     }
 }

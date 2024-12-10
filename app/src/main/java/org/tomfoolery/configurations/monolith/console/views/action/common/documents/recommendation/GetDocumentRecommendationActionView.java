@@ -1,5 +1,9 @@
 package org.tomfoolery.configurations.monolith.console.views.action.common.documents.recommendation;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
+import com.github.freva.asciitable.OverflowBehaviour;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
@@ -13,7 +17,9 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.common.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.recommendation.GetDocumentRecommendationController;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class GetDocumentRecommendationActionView extends UserActionView {
@@ -75,12 +81,44 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
     }
 
     private void displayViewModel(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
-        this.ioProvider.writeLine("Showing recommended documents:");
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getDocumentRecommendation(), List.of(
+                new Column()
+                    .header("ISBN 10")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_10),
+                new Column()
+                    .header("ISBN 13")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_13),
+                new Column()
+                    .header("Title")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(30, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentTitle),
+                new Column()
+                    .header("Authors")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentAuthors())),
+                new Column()
+                    .header("Genres")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentGenres())),
+                new Column()
+                    .header("Year")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.RIGHT)
+                    .with(document -> String.valueOf(document.getDocumentPublishedYear()))
+            ))
+            .asString();
 
-        viewModel.getDocumentRecommendation()
-            .forEach(document -> {
-                this.ioProvider.writeLine("- [%s] %s", document.getDocumentISBN_10(), document.getDocumentTitle());
-            });
+        this.ioProvider.writeLine(table);
     }
 
     private static class RecommendationTypeIndexInvalidException extends Exception {}
