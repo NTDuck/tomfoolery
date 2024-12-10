@@ -227,7 +227,7 @@ tasks.register<JavaExec>("runConsole") {
     classpath = sourceSets["main"].runtimeClasspath
 
     // Specify application context
-    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.InMemoryTestApplicationContext"
+    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.PartiallyMockedInMemoryTestApplicationContext"
 
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`

@@ -7,8 +7,6 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.abc.EntityMocker;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.documents.DocumentMocker;
 
-import static org.testng.Assert.*;
-
 @Test(groups = { "unit", "repository", "documents" })
 public abstract class DocumentRepositoryTest extends BaseRepositoryTest<Document, Document.Id> {
     @Override

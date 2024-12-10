@@ -54,7 +54,7 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
 
         val rawNewDocumentContent = request.getNewDocumentContent();
         val newDocumentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawNewDocumentContent);
-        this.ensureDocumentContentIsValid(newDocumentContent);
+        // this.ensureDocumentContentIsValid(newDocumentContent);
 
         this.documentContentRepository.save(newDocumentContent);
 

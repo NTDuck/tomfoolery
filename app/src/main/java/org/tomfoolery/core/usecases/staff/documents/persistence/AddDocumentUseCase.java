@@ -58,16 +58,16 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         this.ensureDocumentMetadataIsValid(documentMetadata);
 
         val documentCoverImage = request.getDocumentCoverImage();
-        this.ensureDocumentCoverImageIsValid(documentCoverImage);
-
-        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentCoverImage, documentMetadata, staffId);
-        this.documentRepository.save(document);
+        // this.ensureDocumentCoverImageIsValid(documentCoverImage);
 
         val rawDocumentContent = request.getDocumentContent();
         val documentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawDocumentContent);
-        this.ensureDocumentContentIsValid(documentContent);
+        // this.ensureDocumentContentIsValid(documentContent);
 
         this.documentContentRepository.save(documentContent);
+
+        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentCoverImage, documentMetadata, staffId);
+        this.documentRepository.save(document);
     }
 
     private Document.@NonNull Id getDocumentIdFromISBN(@NonNull String documentISBN) throws DocumentISBNInvalidException {

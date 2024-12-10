@@ -47,7 +47,7 @@ public final class UpdateDocumentCoverImageUseCase extends AuthenticatedUserUseC
         val document = this.getDocumentById(documentId);
 
         val newDocumentCoverImage = request.getNewDocumentCoverImage();
-        this.ensureDocumentCoverImageIsValid(newDocumentCoverImage);
+        // this.ensureDocumentCoverImageIsValid(newDocumentCoverImage);
 
         document.setCoverImage(newDocumentCoverImage);
         this.markDocumentAsLastModifiedByStaff(document, staffId);
