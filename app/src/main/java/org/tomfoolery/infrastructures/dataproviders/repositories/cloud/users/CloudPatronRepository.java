@@ -1,12 +1,11 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users;
 
 import lombok.RequiredArgsConstructor;
-import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
-import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
-import org.tomfoolery.core.domain.users.Administrator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.domain.users.Staff;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.domain.users.Administrator;
+import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
@@ -17,18 +16,18 @@ import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor(staticName = "of")
-public class CloudStaffRepository implements StaffRepository {
+public class CloudPatronRepository implements PatronRepository {
     private final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider;
 
     @Override
-    public @Nullable Staff getByUsername(@NonNull String username) {
-        String query = "SELECT * FROM Staff WHERE username = ?";
+    public @Nullable Patron getByUsername(@NonNull String username) {
+        String query = "SELECT * FROM Patrons WHERE username = ?";
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapResultSetToStaff(rs);
+                return mapResultSetToPatron(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -37,18 +36,25 @@ public class CloudStaffRepository implements StaffRepository {
     }
 
     @Override
-    public void save(@NonNull Staff entity) {
+    public void save(@NonNull Patron entity) {
         String query = """
-            INSERT INTO Staff (id, username, password, created, lastLogin, lastLogout, lastModified, 
-                               createdByAdministratorId, lastModifiedByAdministratorId)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO Patrons (
+                id, username, password, created, lastLogin, lastLogout,
+                firstName, lastName, dateOfBirth, phoneNumber, city, country, email
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (id) DO UPDATE SET
                 username = EXCLUDED.username,
                 password = EXCLUDED.password,
                 lastLogin = EXCLUDED.lastLogin,
                 lastLogout = EXCLUDED.lastLogout,
-                lastModified = EXCLUDED.lastModified,
-                lastModifiedByAdministratorId = EXCLUDED.lastModifiedByAdministratorId;
+                firstName = EXCLUDED.firstName,
+                lastName = EXCLUDED.lastName,
+                dateOfBirth = EXCLUDED.dateOfBirth,
+                phoneNumber = EXCLUDED.phoneNumber,
+                city = EXCLUDED.city,
+                country = EXCLUDED.country,
+                email = EXCLUDED.email;
         """;
 
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
@@ -63,13 +69,13 @@ public class CloudStaffRepository implements StaffRepository {
             stmt.setTimestamp(6, entity.getAudit().getTimestamps().getLastLogout() != null
                     ? Timestamp.from(entity.getAudit().getTimestamps().getLastLogout())
                     : null);
-            stmt.setTimestamp(7, entity.getAudit().getTimestamps().getLastModified() != null
-                    ? Timestamp.from(entity.getAudit().getTimestamps().getLastModified())
-                    : null);
-            stmt.setString(8, entity.getAudit().getCreatedByAdministratorId().getUuid().toString());
-            stmt.setString(9, entity.getAudit().getLastModifiedByAdministratorId() != null
-                    ? entity.getAudit().getLastModifiedByAdministratorId().getUuid().toString()
-                    : null);
+            stmt.setString(7, entity.getMetadata().getName().getFirstName());
+            stmt.setString(8, entity.getMetadata().getName().getLastName());
+            stmt.setDate(9, Date.valueOf(entity.getMetadata().getDateOfBirth()));
+            stmt.setString(10, entity.getMetadata().getPhoneNumber());
+            stmt.setString(11, entity.getMetadata().getAddress().getCity());
+            stmt.setString(12, entity.getMetadata().getAddress().getCountry());
+            stmt.setString(13, entity.getMetadata().getEmail());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -78,7 +84,7 @@ public class CloudStaffRepository implements StaffRepository {
 
     @Override
     public void delete(BaseUser.@NonNull Id entityId) {
-        String query = "DELETE FROM Staff WHERE id = ?";
+        String query = "DELETE FROM Patrons WHERE id = ?";
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, entityId.getUuid().toString());
@@ -89,14 +95,14 @@ public class CloudStaffRepository implements StaffRepository {
     }
 
     @Override
-    public @Nullable Staff getById(BaseUser.@NonNull Id entityId) {
-        String query = "SELECT * FROM Staff WHERE id = ?";
+    public @Nullable Patron getById(BaseUser.@NonNull Id entityId) {
+        String query = "SELECT * FROM Patrons WHERE id = ?";
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, entityId.getUuid().toString());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapResultSetToStaff(rs);
+                return mapResultSetToPatron(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,29 +111,29 @@ public class CloudStaffRepository implements StaffRepository {
     }
 
     @Override
-    public @NonNull List<Staff> show() {
-        List<Staff> staffList = new ArrayList<>();
-        String query = "SELECT * FROM Staff";
+    public @NonNull List<Patron> show() {
+        List<Patron> patrons = new ArrayList<>();
+        String query = "SELECT * FROM Patrons";
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                staffList.add(mapResultSetToStaff(rs));
+                patrons.add(mapResultSetToPatron(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return staffList;
+        return patrons;
     }
 
-    private Staff mapResultSetToStaff(ResultSet rs) throws SQLException {
-        Staff.Id id = Staff.Id.of(UUID.fromString(rs.getString("id")));
-        Staff.Credentials credentials = Staff.Credentials.of(
+    @SuppressWarnings("unchecked")
+    private Patron mapResultSetToPatron(ResultSet rs) throws SQLException {
+        Patron.Id id = Patron.Id.of(UUID.fromString(rs.getString("id")));
+        Patron.Credentials credentials = Patron.Credentials.of(
                 rs.getString("username"),
                 SecureString.of(rs.getString("password").toCharArray())
         );
-
-        Staff.Audit.Timestamps timestamps = Staff.Audit.Timestamps.of(
+        Patron.Audit.Timestamps timestamps = Patron.Audit.Timestamps.of(
                 rs.getTimestamp("created").toInstant()
         );
         timestamps.setLastLogin(rs.getTimestamp("lastLogin") != null
@@ -136,18 +142,23 @@ public class CloudStaffRepository implements StaffRepository {
         timestamps.setLastLogout(rs.getTimestamp("lastLogout") != null
                 ? rs.getTimestamp("lastLogout").toInstant()
                 : null);
-        timestamps.setLastModified(rs.getTimestamp("lastModified") != null
-                ? rs.getTimestamp("lastModified").toInstant()
-                : null);
+        Patron.Audit audit = Patron.Audit.of(timestamps);
 
-        Staff.Audit audit = Staff.Audit.of(
-                timestamps,
-                Administrator.Id.of(UUID.fromString(rs.getString("createdByAdministratorId")))
+        Patron.Metadata metadata = Patron.Metadata.of(
+                Patron.Metadata.Name.of(
+                        rs.getString("firstName"),
+                        rs.getString("lastName")
+                ),
+                rs.getDate("dateOfBirth").toLocalDate(),
+                rs.getString("phoneNumber"),
+                Patron.Metadata.Address.of(
+                        rs.getString("city"),
+                        rs.getString("country")
+                ),
+                rs.getString("email")
         );
-        audit.setLastModifiedByAdministratorId(rs.getString("lastModifiedByAdministratorId") != null
-                ? Administrator.Id.of(UUID.fromString(rs.getString("lastModifiedByAdministratorId")))
-                : null);
 
-        return Staff.of(id, audit, credentials);
+        return Patron.of(id, audit, credentials, metadata);
     }
 }
+

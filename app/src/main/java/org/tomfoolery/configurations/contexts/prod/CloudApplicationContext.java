@@ -24,32 +24,40 @@ import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudAdministratorRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudPatronRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudStaffRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.utils.helpers.verifiers.apache.tika.ApacheTikaFileVerifier;
 
 public class CloudApplicationContext extends ApplicationContext {
+    DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
+    CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
+
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
-        return null;
+        return CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull AdministratorRepository createAdministratorRepository() {
-        return null;
+        return CloudAdministratorRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull PatronRepository createPatronRepository() {
-        return null;
+        return CloudPatronRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull StaffRepository createStaffRepository() {
-        return null;
+        return CloudStaffRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
