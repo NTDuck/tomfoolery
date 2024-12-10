@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.contexts.dev;
 
+
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -11,6 +12,7 @@ import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSea
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
@@ -20,14 +22,8 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryBorrowingSessionRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryDocumentContentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryReviewRepository;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.InMemoryLinearUserSearchGenerator;
@@ -37,21 +33,27 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dot
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.FileCachedInMemoryDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.FileCachedInMemoryDocumentContentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryBorrowingSessionRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryReviewRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 
 import java.util.List;
 
 @NoArgsConstructor
-public class InMemoryApplicationContext extends ApplicationContext {
+public class FileCachedInMemoryApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
-        return InMemoryDocumentRepository.of();
+        val fileStorageProvider = this.getFileStorageProvider();
+        return FileCachedInMemoryDocumentRepository.of(fileStorageProvider);
     }
 
     @Override
@@ -59,7 +61,7 @@ public class InMemoryApplicationContext extends ApplicationContext {
         val httpClientProvider = this.getHttpClientProvider();
 
         return List.of(
-                GoogleApiDocumentRepository.of(httpClientProvider)
+            GoogleApiDocumentRepository.of(httpClientProvider)
         );
     }
 
@@ -80,7 +82,8 @@ public class InMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentContentRepository createDocumentContentRepository() {
-        return InMemoryDocumentContentRepository.of();
+        val fileStorageProvider = this.getFileStorageProvider();
+        return FileCachedInMemoryDocumentContentRepository.of(fileStorageProvider);
     }
 
     @Override

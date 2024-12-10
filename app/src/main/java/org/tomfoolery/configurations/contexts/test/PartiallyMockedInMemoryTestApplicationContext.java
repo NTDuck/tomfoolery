@@ -7,7 +7,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
-import org.tomfoolery.configurations.contexts.dev.InMemoryApplicationContext;
+import org.tomfoolery.configurations.contexts.dev.FileCachedInMemoryApplicationContext;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.relations.DocumentContent;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @NoArgsConstructor
-public class PartiallyMockedInMemoryTestApplicationContext extends InMemoryApplicationContext {
+public class PartiallyMockedInMemoryTestApplicationContext extends FileCachedInMemoryApplicationContext {
     private static final @NonNull String DOCUMENT_DATASET_PATH = "datasets/kaggle/saurabhbagchi/books.csv";
 
     private static final @Unsigned int NUMBER_OF_ADMINISTRATORS = 4;

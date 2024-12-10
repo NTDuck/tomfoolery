@@ -58,23 +58,27 @@ public class FileCachedInMemoryDocumentContentRepository implements DocumentCont
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<DocumentContent> show() {
         return this.documentContentFilePathsByIds.keySet().parallelStream()
-            .map(this::getById)
+            .map(this::getById)   // Guaranteed to be not null
             .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
+    @Locked.Read
     public boolean contains(DocumentContent.@NonNull Id documentContentId) {
         return this.documentContentFilePathsByIds.containsKey(documentContentId);
     }
 
     @Override
+    @Locked.Read
     public @Unsigned int size() {
         return this.documentContentFilePathsByIds.size();
     }
 
     @Override
+    @Locked.Read
     public @Nullable Page<DocumentContent> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val unpaginatedDocumentContentIds = this.documentContentFilePathsByIds.keySet().parallelStream()
             .collect(Collectors.toUnmodifiableList());
@@ -87,6 +91,7 @@ public class FileCachedInMemoryDocumentContentRepository implements DocumentCont
     }
 
     @Override
+    @Locked.Write
     public void synchronizeDeletedEntity(Document.@NonNull Id documentId) {
         val documentContentId = DocumentContent.Id.of(documentId);
         this.delete(documentContentId);

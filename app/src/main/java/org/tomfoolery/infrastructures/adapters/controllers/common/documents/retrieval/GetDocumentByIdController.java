@@ -82,7 +82,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         @NonNull String documentCoverImageFilePath;
 
         @SneakyThrows
-        private static @NonNull ViewModel of(@NonNull Document document, @NonNull FileStorageProvider fileStorageProvider) {
+        public static @NonNull ViewModel of(@NonNull Document document, @NonNull FileStorageProvider fileStorageProvider) {
             val documentId = document.getId();
             val documentAudit = document.getAudit();
             val documentAuditTimestamps = documentAudit.getTimestamps();
