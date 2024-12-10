@@ -115,6 +115,12 @@ public class DashboardView {
 
     private void topRatedOnSuccess(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
         val documentsList = viewModel.getDocumentRecommendation();
+        if (documentsList.isEmpty()) {
+            topRatedCoverImage.setImage(null);
+            topRatedTitle.setText("No top rated documents");
+            topRatedAuthors.setText(null);
+            return;
+        }
         val document = documentsList.getFirst();
         topRatedCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
         topRatedTitle.setText(document.getDocumentTitle());
@@ -123,6 +129,12 @@ public class DashboardView {
 
     private void recentOnSuccess(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
         val documentsList = viewModel.getDocumentRecommendation();
+        if (documentsList.isEmpty()) {
+            recentCoverImage.setImage(null);
+            recentTitle.setText("No recent documents");
+            recentAuthors.setText(null);
+            return;
+        }
         val document = documentsList.getFirst();
         recentCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
         recentTitle.setText(document.getDocumentTitle());

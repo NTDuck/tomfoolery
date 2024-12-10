@@ -19,7 +19,6 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents.PatronSingleDocumentView;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
@@ -27,8 +26,10 @@ import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retr
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class DiscoverView {
-    private final int NUMBER_OF_TOTAL_DOCUMENTS = StageManager.getInstance().getResources().getHybridDocumentRepository().show().size();
     private final @NonNull SearchDocumentsController searchController;
     private final @NonNull GetDocumentByIdController getByIdController;
 
@@ -154,24 +155,35 @@ public class DiscoverView {
         }
 
         booksContainer.getChildren().clear();
-        viewModel.getPaginatedDocuments().forEach(document ->
-        {
+        val documents = viewModel.getPaginatedDocuments();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        documents.forEach(document -> executorService.submit(() -> {
             String authors = String.join(", ", document.getDocumentAuthors());
             String documentTitle = document.getDocumentTitle();
             String isbn = document.getDocumentISBN_13();
             String coverImagePath = document.getDocumentCoverImageFilePath();
 
             ImageView coverImage = getCoverImageFromPath(coverImagePath);
-            booksContainer.getChildren().add(createDocumentTileWithImage(authors, documentTitle, isbn, coverImage));
-        });
+            var documentTile = createDocumentTileWithImage(authors, documentTitle, isbn, coverImage);
+
+            Platform.runLater(() -> booksContainer.getChildren().add(documentTile));
+        }));
+
+        executorService.shutdown();
     }
 
     private @NonNull ImageView getCoverImageFromPath(@NonNull String path) {
-        ImageView imageView = new ImageView(new Image("/images/default/placeholder-book-cover.png", 160, 240, false, true));
-        new Thread(() -> {
-            Image image = new Image("file:" + path, 160, 240, false, true);
-            Platform.runLater(() -> imageView.setImage(image));
-        }).start();
+        ImageView imageView = new ImageView(new Image("/images/default/placeholder-book-cover.png", 200, 240, false, true));
+
+        try {
+            Image image = new Image("file:" + path, 200, 240, false, true);
+            imageView.setImage(image);
+        } catch (NullPointerException | IllegalArgumentException e) {
+            System.err.println("Failed to load cover image: " + path);
+        }
+
         return imageView;
     }
 
