@@ -16,13 +16,13 @@ public class InMemoryIndexedDocumentRecommendationGenerator implements DocumentR
     private static final int NUMBER_OF_DOCUMENTS_PER_RECOMMENDATION = 10;
 
     private final @NonNull Set<Document> documentsByCreationTimestamps = new TreeSet<>(
-        DocumentComparator.byCreationTimestampDescending
-            .thenComparing(DocumentComparator.byIdAscending)
+        DocumentComparator.byCreationTimestampDescending()
+            .thenComparing(DocumentComparator.byIdAscending())
     );
 
     private final @NonNull Set<Document> documentsByAverageRatings = new TreeSet<>(
-        DocumentComparator.byAverageRatingDescending
-            .thenComparing(DocumentComparator.byIdAscending)
+        DocumentComparator.byAverageRatingDescending()
+            .thenComparing(DocumentComparator.byIdAscending())
     );
 
     @Override
@@ -48,7 +48,7 @@ public class InMemoryIndexedDocumentRecommendationGenerator implements DocumentR
     }
 
     private static @NonNull List<Document> getDocumentRecommendation(@NonNull Set<Document> documents) {
-        return documents.stream()   // parallelStream() does not guarantee order
+        return documents.parallelStream()
             .limit(NUMBER_OF_DOCUMENTS_PER_RECOMMENDATION)
             .collect(Collectors.toUnmodifiableList());
     }

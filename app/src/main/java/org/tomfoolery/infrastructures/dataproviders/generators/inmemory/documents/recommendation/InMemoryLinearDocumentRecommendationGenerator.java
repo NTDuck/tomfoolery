@@ -18,16 +18,16 @@ public class InMemoryLinearDocumentRecommendationGenerator extends InMemoryLinea
     @Override
     public @NonNull List<Document> getLatestDocumentRecommendation() {
         return generateDocumentRecommendationByComparator(
-            DocumentComparator.byCreationTimestampDescending
-                .thenComparing(DocumentComparator.byIdAscending)
+            DocumentComparator.byCreationTimestampDescending()
+                .thenComparing(DocumentComparator.byIdAscending())
         );
     }
 
     @Override
     public @NonNull List<Document> getTopRatedDocumentRecommendation() {
         return generateDocumentRecommendationByComparator(
-            DocumentComparator.byAverageRatingDescending
-                .thenComparing(DocumentComparator.byIdAscending)
+            DocumentComparator.byAverageRatingDescending()
+                .thenComparing(DocumentComparator.byIdAscending())
         );
     }
 

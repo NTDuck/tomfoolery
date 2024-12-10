@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.contexts.prod;
 
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
@@ -18,8 +19,17 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
+import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
+import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.utils.helpers.verifiers.apache.tika.ApacheTikaFileVerifier;
 
 public class CloudApplicationContext extends ApplicationContext {
     @Override
@@ -74,36 +84,42 @@ public class CloudApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentQrCodeGenerator createDocumentQrCodeGenerator() {
-        return null;
+        return ZxingDocumentQrCodeGenerator.of();
     }
 
     @Override
     protected @NonNull DocumentUrlGenerator createDocumentUrlGenerator() {
-        return null;
+        return CustomLandingPageDocumentUrlGenerator.of();
     }
 
     @Override
     protected @NonNull AuthenticationTokenGenerator createAuthenticationTokenGenerator() {
-        return null;
+        return JJWTAuthenticationTokenGenerator.of();
     }
 
     @Override
     protected @NonNull AuthenticationTokenRepository createAuthenticationTokenRepository() {
-        return null;
+        val dotenvProvider = this.getDotenvProvider();
+        return KeyStoreAuthenticationTokenRepository.of(dotenvProvider);
     }
 
     @Override
     protected @NonNull PasswordEncoder createPasswordEncoder() {
-        return null;
+        return BCryptPasswordEncoder.of();
     }
 
     @Override
     protected @NonNull DotenvProvider createDotenvProvider() {
-        return null;
+        return CdimascioDotenvProvider.of();
     }
 
     @Override
     protected @NonNull HttpClientProvider createHttpClientProvider() {
-        return null;
+        return OkHttpClientProvider.of();
+    }
+
+    @Override
+    protected @NonNull FileVerifier createFileVerifier() {
+        return ApacheTikaFileVerifier.of();
     }
 }

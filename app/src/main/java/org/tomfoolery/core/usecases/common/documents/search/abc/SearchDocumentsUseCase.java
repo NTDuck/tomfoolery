@@ -30,18 +30,12 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
         this.ensureAuthenticationTokenIsValid(userAuthenticationToken);
 
         val searchTerm = request.getSearchTerm();
-        val normalizedSearchTerm = this.normalizeSearchTerm(searchTerm);
-
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedFragmentaryDocuments = this.searchDocuments(normalizedSearchTerm, pageIndex, maxPageSize);
+        val paginatedFragmentaryDocuments = this.searchDocuments(searchTerm, pageIndex, maxPageSize);
 
         return Response.of(paginatedFragmentaryDocuments);
-    }
-
-    private @NonNull String normalizeSearchTerm(@NonNull String searchTerm) {
-        return searchTerm.toLowerCase().trim();
     }
 
     private @NonNull Page<Document> searchDocuments(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {

@@ -26,75 +26,76 @@ repositories {
 }
 
 dependencies {
-    // Uses `Lombok` for reduced boilerplate
-    compileOnly("org.projectlombok:lombok:1.18.34")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    /* Providers */
+    // Local secrets management
+    implementation("io.github.cdimascio:dotenv-java:3.0.0")
 
-    testCompileOnly("org.projectlombok:lombok:1.18.34")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
-
-    // Uses `Bcrypt` for password hashing (no need to reinvent the wheel)
-    implementation("at.favre.lib:bcrypt:0.10.2")
-
-    // Uses `JJWT` for generation and verification of authentication tokens
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
-    // runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.6")
-
-    // Os-specific secure storage for persistence of authentication tokens
-    implementation("com.microsoft:credential-secure-storage:1.0.0")
-
-    // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
-    implementation("org.slf4j:slf4j-api:2.0.9")
-    implementation("org.slf4j:slf4j-nop:2.0.9")
-
-    // Uses `Zxing` for QR code generation
-    implementation("com.google.zxing:core:3.5.1")
-    implementation("com.google.zxing:javase:3.5.1")
-
-    // Uses Apache's `URIBuilder` for clean and lightweight URI construction
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
-
-    // Contains necessary implementation of Directed Acyclic Subsequence Graph
-    // required for efficient in-memory indexing of documents
-    implementation("com.github.Qualtagh:DAWG:e98133f757")
-
-    // Contains necessary implementation for Trie HashMap
-    // required for efficient in-memory autocompletion
-    // implementation("com.github.doried-a-a:java-trie"
-
-    // Uses `OkHttp` as HTTP Client
+    // Alternative HTTP Client
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-    // Uses `Jsoniter` for performant JSON parsing
+    // Cleaner URI construction
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.1")
+
+    // Performant JSON parsing
     implementation("com.jsoniter:jsoniter:0.9.23")
 
-    //
+    // File type detection
+    implementation("org.apache.tika:tika-core:2.9.0")
+
+    /* Cloud repositories */
     implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("io.github.jan-tennert.supabase:realtime-kt")
 
-    //
     implementation("io.ktor:ktor-client-apache5:3.0.1")
 
     implementation ("org.postgresql:postgresql:42.6.0")
 
-    // For Figlet fonts
+    /* Search generators */
+    // Contains necessary implementation of Directed Acyclic Subsequence Graph
+    // required for efficient in-memory indexing of documents
+    implementation("com.github.Qualtagh:DAWG:e98133f757")
+
+    /* Authentication & Security */
+    // Password encryption & verification
+    implementation("at.favre.lib:bcrypt:0.10.2")
+
+    // Authentication token generation & verification
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    // runtimeOnly("io.jsonwebtoken:jjwt-gson:0.12.6")
+
+    // Authentication token persistence with os-specific secure storage
+    implementation("com.microsoft:credential-secure-storage:1.0.0")
+
+    /* Miscellaneous */
+    // Reduced compile-time boilerplate
+    compileOnly("org.projectlombok:lombok:1.18.34")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    testCompileOnly("org.projectlombok:lombok:1.18.34")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+
+    // Prevents "Failed to load class org.slf4j.impl.StaticLoggerBinder"
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("org.slf4j:slf4j-nop:2.0.9")
+
+    // QR Code generation
+    implementation("com.google.zxing:core:3.5.1")
+    implementation("com.google.zxing:javase:3.5.1")
+
+    // Console Figlet fonts rendering
     implementation("com.github.lalyos:jfiglet:0.0.9")
 
-    // SKT T1
+    // Mock data generation
     implementation("com.github.javafaker:javafaker:1.0.2")
 
-    // Secrets management
-    implementation("io.github.cdimascio:dotenv-java:3.0.0")
-
-    // Uses `TestNG` framework, also requires calling test.useTestNG() below
+    /* Testing */
     testImplementation(libs.testng)
 
-    // Used by `application`
+    /* Guava dependencies provider */
     implementation(libs.guava)
 }
 

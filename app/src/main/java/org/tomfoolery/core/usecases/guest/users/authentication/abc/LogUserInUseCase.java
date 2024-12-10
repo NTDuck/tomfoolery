@@ -15,6 +15,7 @@ public abstract class LogUserInUseCase {
 
     @Value(staticConstructor = "of")
     public static class Response {
+        @NonNull String loggedInUsername;
         @NonNull Class<? extends BaseUser> loggedInUserClass;
     }
 

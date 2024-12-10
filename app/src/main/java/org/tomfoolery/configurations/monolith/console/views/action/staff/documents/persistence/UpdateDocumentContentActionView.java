@@ -13,19 +13,20 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentContentUseCase;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentContentController;
 
 public final class UpdateDocumentContentActionView extends UserActionView {
     private final @NonNull UpdateDocumentContentController controller;
 
-    public static @NonNull UpdateDocumentContentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new UpdateDocumentContentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull UpdateDocumentContentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new UpdateDocumentContentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
-    private UpdateDocumentContentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private UpdateDocumentContentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
         super(ioProvider);
 
-        this.controller = UpdateDocumentContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = UpdateDocumentContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
     @Override
@@ -38,7 +39,7 @@ public final class UpdateDocumentContentActionView extends UserActionView {
 
         } catch (UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException | AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
             this.onException(exception, GuestSelectionView.class);
-        } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException | UpdateDocumentContentUseCase.DocumentISBNInvalidException | UpdateDocumentContentUseCase.DocumentNotFoundException exception) {
+        } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException | UpdateDocumentContentUseCase.DocumentISBNInvalidException | UpdateDocumentContentUseCase.DocumentNotFoundException | UpdateDocumentContentUseCase.DocumentContentInvalidException exception) {
             this.onException(exception);
         }
     }

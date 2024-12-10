@@ -4,7 +4,6 @@ import lombok.Cleanup;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.BuiltinIOProvider;
-import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.ConsoleIOProvider;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.containers.Views;
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
@@ -116,10 +115,10 @@ public final class Application implements Runnable, Closeable {
             RemoveDocumentRatingActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getReviewRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
 
             // Staff action views
-            AddDocumentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            AddDocumentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier()),
             RemoveDocumentRatingActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getReviewRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
-            UpdateDocumentContentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
-            UpdateDocumentCoverImageActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            UpdateDocumentContentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier()),
+            UpdateDocumentCoverImageActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier()),
             UpdateDocumentMetadataActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository())
         );
     }

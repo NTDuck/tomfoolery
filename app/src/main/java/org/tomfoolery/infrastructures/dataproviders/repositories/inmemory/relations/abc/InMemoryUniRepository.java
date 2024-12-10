@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.aggregates.abc;
+package org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.abc;
 
 import org.tomfoolery.core.dataproviders.repositories.relations.abc.BaseUniRepository;
 import org.tomfoolery.core.utils.contracts.ddd;

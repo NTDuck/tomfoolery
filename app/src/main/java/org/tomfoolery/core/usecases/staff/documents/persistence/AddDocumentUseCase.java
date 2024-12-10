@@ -13,8 +13,10 @@ import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.core.utils.helpers.verifiers.StringVerifier;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Set;
 
@@ -22,15 +24,19 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
     private final @NonNull DocumentRepository documentRepository;
     private final @NonNull DocumentContentRepository documentContentRepository;
 
-    public static @NonNull AddDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentUseCase(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    private final @NonNull FileVerifier fileVerifier;
+
+    public static @NonNull AddDocumentUseCase of(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new AddDocumentUseCase(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
-    private AddDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private AddDocumentUseCase(@NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
         super(authenticationTokenGenerator, authenticationTokenRepository);
         
         this.documentRepository = documentRepository;
         this.documentContentRepository = documentContentRepository;
+
+        this.fileVerifier = fileVerifier;
     }
 
     @Override
@@ -39,7 +45,7 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
     }
 
     @Override
-    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, TitleInvalidException, DescriptionInvalidException, AuthorInvalidException, GenreInvalidException, PublisherInvalidException, DocumentAlreadyExistsException {
+    public void accept(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, DocumentISBNInvalidException, TitleInvalidException, DescriptionInvalidException, AuthorInvalidException, GenreInvalidException, PublisherInvalidException, DocumentCoverImageInvalidException, DocumentContentInvalidException, DocumentAlreadyExistsException {
         val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
         this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
         val staffId = this.getUserIdFromAuthenticationToken(staffAuthenticationToken);
@@ -52,12 +58,15 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
         this.ensureDocumentMetadataIsValid(documentMetadata);
 
         val documentCoverImage = request.getDocumentCoverImage();
-        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentCoverImage, documentMetadata, staffId);
+        this.ensureDocumentCoverImageIsValid(documentCoverImage);
 
+        val document = this.createDocumentAndMarkAsCreatedByStaff(documentId, documentCoverImage, documentMetadata, staffId);
         this.documentRepository.save(document);
 
         val rawDocumentContent = request.getDocumentContent();
         val documentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawDocumentContent);
+        this.ensureDocumentContentIsValid(documentContent);
+
         this.documentContentRepository.save(documentContent);
     }
 
@@ -91,6 +100,16 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
             throw new PublisherInvalidException();
     }
 
+    private void ensureDocumentContentIsValid(@NonNull DocumentContent documentContent) throws DocumentContentInvalidException {
+        if (!this.fileVerifier.isDocument(documentContent.getBytes()))
+            throw new DocumentContentInvalidException();
+    }
+
+    private void ensureDocumentCoverImageIsValid(Document.@NonNull CoverImage documentCoverImage) throws DocumentCoverImageInvalidException {
+        if (!this.fileVerifier.isImage(documentCoverImage.getBytes()))
+            throw new DocumentCoverImageInvalidException();
+    }
+
     private void ensureDocumentDoesNotExist(Document.@NonNull Id documentId) throws DocumentAlreadyExistsException {
         if (this.documentRepository.contains(documentId))
             throw new DocumentAlreadyExistsException();
@@ -121,5 +140,7 @@ public final class AddDocumentUseCase extends AuthenticatedUserUseCase implement
     public static class PublisherInvalidException extends DocumentMetadataInvalidException {}
 
     public static class DocumentMetadataInvalidException extends RuntimeException {}
+    public static class DocumentContentInvalidException extends Exception {}
+    public static class DocumentCoverImageInvalidException extends Exception {}
     public static class DocumentAlreadyExistsException extends Exception {}
 }

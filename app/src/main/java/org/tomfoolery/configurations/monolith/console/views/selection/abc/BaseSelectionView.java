@@ -108,7 +108,8 @@ public abstract class BaseSelectionView extends BaseView {
 
     @SneakyThrows
     protected @NonNull String getPrompt() {
-        return "Please select something";
+        return String.format("Please select something%s",
+            loggedInUsername != null ? String.format(", %s", loggedInUsername) : "");
     }
 
     protected @NonNull String getMessageOnSuccess() {

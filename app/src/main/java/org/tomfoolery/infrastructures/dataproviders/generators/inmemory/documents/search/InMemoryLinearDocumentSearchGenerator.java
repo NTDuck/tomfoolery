@@ -13,18 +13,21 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(staticName = "of")
 public class InMemoryLinearDocumentSearchGenerator extends InMemoryLinearDocumentGenerator implements DocumentSearchGenerator {
     @Override
-    public @NonNull List<Document> searchByTitle(@NonNull String title) {
-        return this.searchDocumentsByPredicate(document -> isSubsequence(title, document.getMetadata().getTitle()));
+    public @NonNull List<Document> searchByNormalizedTitle(@NonNull String normalizedTitle) {
+        return this.searchDocumentsByPredicate(document ->
+            isSubsequence(normalizedTitle, this.normalize(document.getMetadata().getTitle())));
     }
 
     @Override
-    public @NonNull List<Document> searchByAuthor(@NonNull String author) {
-        return this.searchDocumentsByPredicate(document -> isSubsequence(author, document.getMetadata().getAuthors()));
+    public @NonNull List<Document> searchByNormalizedAuthor(@NonNull String normalizedAuthor) {
+        return this.searchDocumentsByPredicate(document ->
+            isSubsequence(normalizedAuthor, this.normalize(document.getMetadata().getAuthors())));
     }
 
     @Override
-    public @NonNull List<Document> searchByGenre(@NonNull String genre) {
-        return this.searchDocumentsByPredicate(document -> isSubsequence(genre, document.getMetadata().getGenres()));
+    public @NonNull List<Document> searchByNormalizedGenre(@NonNull String normalizedGenre) {
+        return this.searchDocumentsByPredicate(document ->
+            isSubsequence(normalizedGenre, this.normalize(document.getMetadata().getGenres())));
     }
 
     private @NonNull List<Document> searchDocumentsByPredicate(@NonNull Predicate<? super Document> predicate) {

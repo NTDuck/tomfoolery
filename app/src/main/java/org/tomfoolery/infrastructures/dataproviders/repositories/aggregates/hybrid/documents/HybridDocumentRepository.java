@@ -1,7 +1,7 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.aggregates.BaseHybridRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.BaseHybridRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.domain.documents.Document;
 

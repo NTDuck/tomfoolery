@@ -11,19 +11,20 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentCoverImageUseCase;
+import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentCoverImageController;
 
 public final class UpdateDocumentCoverImageActionView extends UserActionView {
     private final @NonNull UpdateDocumentCoverImageController updateDocumentCoverImageController;
 
-    public static @NonNull UpdateDocumentCoverImageActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new UpdateDocumentCoverImageActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull UpdateDocumentCoverImageActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
+        return new UpdateDocumentCoverImageActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
-    private UpdateDocumentCoverImageActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private UpdateDocumentCoverImageActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier) {
         super(ioProvider);
 
-        this.updateDocumentCoverImageController = UpdateDocumentCoverImageController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.updateDocumentCoverImageController = UpdateDocumentCoverImageController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
     }
 
     @Override
@@ -36,7 +37,7 @@ public final class UpdateDocumentCoverImageActionView extends UserActionView {
 
         } catch (UpdateDocumentCoverImageUseCase.AuthenticationTokenNotFoundException | UpdateDocumentCoverImageUseCase.AuthenticationTokenInvalidException exception) {
             this.onException(exception, GuestSelectionView.class);
-        } catch (UpdateDocumentCoverImageUseCase.DocumentISBNInvalidException | UpdateDocumentCoverImageUseCase.DocumentNotFoundException | UpdateDocumentCoverImageController.DocumentCoverImageFilePathInvalidException exception) {
+        } catch (UpdateDocumentCoverImageUseCase.DocumentISBNInvalidException | UpdateDocumentCoverImageUseCase.DocumentNotFoundException | UpdateDocumentCoverImageUseCase.DocumentCoverImageInvalidException | UpdateDocumentCoverImageController.DocumentCoverImageFilePathInvalidException exception) {
             this.onException(exception);
         }
     }

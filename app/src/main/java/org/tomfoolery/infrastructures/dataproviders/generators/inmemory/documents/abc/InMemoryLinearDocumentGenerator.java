@@ -6,6 +6,6 @@ import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparat
 
 public class InMemoryLinearDocumentGenerator extends InMemoryLinearGenerator<Document, Document.Id> {
     protected InMemoryLinearDocumentGenerator() {
-        super(DocumentComparator.byIdAscending);
+        super(DocumentComparator.byIdAscending());
     }
 }
