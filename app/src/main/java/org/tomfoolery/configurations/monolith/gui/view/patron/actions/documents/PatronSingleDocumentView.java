@@ -1,33 +1,54 @@
 package org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
+import org.tomfoolery.configurations.monolith.console.views.action.common.documents.references.GetDocumentQrCodeActionView;
+import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
+import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
+import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.common.documents.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.BorrowDocumentUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.references.GetDocumentQrCodeController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PatronSingleDocumentView {
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
     private final @NonNull GetDocumentByIdController getDocumentByIdController;
     private final @NonNull BorrowDocumentController borrowDocumentController;
     private final @NonNull ReturnDocumentController returnDocumentController;
+    private final @NonNull GetDocumentQrCodeController getDocumentQrCodeController;
     private final @NonNull GetDocumentBorrowStatusController getDocumentBorrowStatusController;
     private final @NonNull String documentISBN;
 
@@ -36,13 +57,16 @@ public class PatronSingleDocumentView {
             @NonNull HybridDocumentRepository documentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
-            @NonNull BorrowingSessionRepository borrowingSessionRepository
+            @NonNull BorrowingSessionRepository borrowingSessionRepository,
+            @NonNull DocumentQrCodeGenerator documentQrCodeGenerator,
+            @NonNull DocumentUrlGenerator documentUrlGenerator
             ) {
         this.documentISBN = documentISBN;
         this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.borrowDocumentController = BorrowDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.getDocumentByIdController = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.returnDocumentController = ReturnDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentQrCodeController = GetDocumentQrCodeController.of(documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @FXML
@@ -62,6 +86,9 @@ public class PatronSingleDocumentView {
 
     @FXML
     private Button closeButton;
+
+    @FXML
+    private Button showQRButton;
 
     @FXML
     private Label message;
@@ -97,6 +124,7 @@ public class PatronSingleDocumentView {
         borrowButton.setOnAction(event -> borrowDocument());
         returnButton.setOnAction(event -> returnDocument());
         closeButton.setOnAction(event -> closeView());
+        showQRButton.setOnAction(event -> showQRCode());
         message.setVisible(false);
         this.loadInfo();
         this.setStatusLabel();
@@ -228,6 +256,48 @@ public class PatronSingleDocumentView {
 
     private ReturnDocumentController.@NonNull RequestObject collectReturnDocumentRequestObject() {
         return ReturnDocumentController.RequestObject.of(documentISBN);
+    }
+
+    private void showQRCode() {
+        val requestObject = this.collectQRCodeRequestObject();
+
+        try {
+            val viewModel = this.getDocumentQrCodeController.apply(requestObject);
+            this.displayQRCode(viewModel);
+
+        } catch (GetDocumentQrCodeUseCase.AuthenticationTokenNotFoundException | GetDocumentQrCodeUseCase.AuthenticationTokenInvalidException exception) {
+            StageManager.getInstance().openLoginMenu();
+        } catch (GetDocumentQrCodeUseCase.DocumentNotFoundException |
+                 GetDocumentQrCodeUseCase.DocumentISBNInvalidException e) {
+            System.err.println("never happens");
+        } catch (GetDocumentQrCodeController.DocumentQrCodeUnavailable e) {
+            MessageLabelFactory.createErrorLabel("QR code unavailable.", 16, message);
+        }
+    }
+
+    private GetDocumentQrCodeController.@NonNull RequestObject collectQRCodeRequestObject() {
+        return GetDocumentQrCodeController.RequestObject.of(documentISBN);
+    }
+
+    private void displayQRCode(GetDocumentQrCodeController.@NonNull ViewModel viewModel) {
+        val documentQrCodeFilePath = viewModel.getDocumentQrCodeFilePath();
+
+        executor.submit(() -> {
+            File pdfFile = new File(documentQrCodeFilePath);
+            if (pdfFile.exists()) {
+                try {
+                    Desktop.getDesktop().open(pdfFile);
+                } catch (IOException e) {
+                    Platform.runLater(() -> {
+                        System.err.println("Error opening pdf: " + e.getMessage());
+                    });
+                }
+            } else {
+                Platform.runLater(() -> {
+                    System.err.println("File not found" + documentQrCodeFilePath);
+                });
+            }
+        });
     }
 
     private void closeView() {

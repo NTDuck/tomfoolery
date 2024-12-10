@@ -46,6 +46,25 @@
     -fx-cursor: hand;
 }
 
+.qr-button {
+    -fx-alignment: center;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: #EBEEF4;
+    -fx-font-size: 16;
+    -fx-pref-height: 40;
+    -fx-pref-width: 140;
+    -fx-background-color: #81a1c1;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: #d8dee9;
+    -fx-border-radius: 8;
+}
+
+.qr-button:hover {
+    -fx-background-color: #5E81AC;
+    -fx-cursor: hand;
+}
+
 .document-info {
     -fx-padding: 0 20 0 0;
     -fx-spacing: 10;

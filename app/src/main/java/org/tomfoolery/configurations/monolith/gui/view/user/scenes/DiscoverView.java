@@ -206,7 +206,9 @@ public class DiscoverView {
                 StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
-                StageManager.getInstance().getResources().getBorrowingSessionRepository()
+                StageManager.getInstance().getResources().getBorrowingSessionRepository(),
+                StageManager.getInstance().getResources().getDocumentQrCodeGenerator(),
+                StageManager.getInstance().getResources().getDocumentUrlGenerator()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronSingleDocumentView.fxml"));

@@ -42,6 +42,10 @@
             <Button mnemonicParsing="false" text="Close"
                     styleClass="action-button" fx:id="closeButton" HBox.hgrow="ALWAYS">
             </Button>
+
+            <Button mnemonicParsing="false" text="View QR Code"
+                    styleClass="action-button" fx:id="showQRButton" HBox.hgrow="ALWAYS">
+            </Button>
          </HBox>
 
          <VBox prefWidth="600.0" VBox.vgrow="ALWAYS" styleClass="document-info">
