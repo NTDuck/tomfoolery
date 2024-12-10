@@ -2,10 +2,12 @@ package org.tomfoolery.configurations.monolith.gui.view.user.scenes;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
+import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
@@ -13,13 +15,16 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.common.documents.recommendation.abc.GetDocumentRecommendationUseCase;
+import org.tomfoolery.core.usecases.common.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.recommendation.GetDocumentRecommendationController;
+import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.ShowDocumentsController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
 
 public class DashboardView {
     private final @NonNull GetDocumentRecommendationController getRecommendationController;
     private final @NonNull ShowBorrowedDocumentsController showBorrowedDocumentsController;
+    private final @NonNull ShowDocumentsController showDocumentsController;
 
     public DashboardView(@NonNull DocumentRepository documentRepository,
                          @NonNull BorrowingSessionRepository borrowingSessionRepository,
@@ -38,6 +43,11 @@ public class DashboardView {
                 authenticationTokenGenerator,
                 authenticationTokenRepository
         );
+        this.showDocumentsController = ShowDocumentsController.of(
+                documentRepository,
+                authenticationTokenGenerator,
+                authenticationTokenRepository
+        );
     }
 
     @FXML
@@ -53,42 +63,70 @@ public class DashboardView {
     private Label numberOfAvailableDocuments;
 
     @FXML
-    private ImageView recommendedDocumentCoverImage;
+    private ImageView topRatedCoverImage;
 
     @FXML
-    private Label recommendedDocumentTitle;
+    private Label topRatedTitle;
 
     @FXML
-    private Label recommendedDocumentAuthor;
+    private Label topRatedAuthors;
+
+    @FXML
+    private ImageView recentCoverImage;
+
+    @FXML
+    private Label recentTitle;
+
+    @FXML
+    private Label recentAuthors;
 
     @FXML
     public void initialize() {
         numberOfBorrowedDocuments.setText(String.valueOf(getNumberOfBorrowedDocuments()));
         numberOfPatrons.setText(String.valueOf(StageManager.getInstance().getResources().getPatronRepository().show().size()));
-        numberOfAvailableDocuments.setText(String.valueOf(StageManager.getInstance().getResources().getDocumentRepository().show().size()));
+        numberOfAvailableDocuments.setText(String.valueOf(getNumberOfDocuments()));
+        
         this.loadRecommendation();
     }
 
     private void loadRecommendation() {
-        val requestObject = this.getRequestObject();
+        val topRatedRequestObject = this.getTopRatedRequestObject();
+        val recentRequestObject = this.getRecentRequestObject();
+
         try {
-            val viewModel = this.getRecommendationController.apply(requestObject);
-            this.onSuccess(viewModel);
+            val topRatedViewModel = this.getRecommendationController.apply(topRatedRequestObject);
+            this.topRatedOnSuccess(topRatedViewModel);
+
+            val recentViewModel = this.getRecommendationController.apply(recentRequestObject);
+            this.recentOnSuccess(recentViewModel);
         } catch (GetDocumentRecommendationUseCase.AuthenticationTokenNotFoundException |
                  GetDocumentRecommendationUseCase.AuthenticationTokenInvalidException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private GetDocumentRecommendationController.@NonNull RequestObject getRequestObject() {
+    private GetDocumentRecommendationController.@NonNull RequestObject getTopRatedRequestObject() {
         return GetDocumentRecommendationController.RequestObject.of(GetDocumentRecommendationController.RecommendationType.TOP_RATED);
     }
 
-    private void onSuccess(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
+    private GetDocumentRecommendationController.@NonNull RequestObject getRecentRequestObject() {
+        return GetDocumentRecommendationController.RequestObject.of(GetDocumentRecommendationController.RecommendationType.LATEST);
+    }
+
+    private void topRatedOnSuccess(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
         val documentsList = viewModel.getDocumentRecommendation();
         val document = documentsList.getFirst();
-        recommendedDocumentTitle.setText(document.getDocumentTitle());
-        recommendedDocumentAuthor.setText("By: " + String.join(",", document.getDocumentAuthors()));
+        topRatedCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
+        topRatedTitle.setText(document.getDocumentTitle());
+        topRatedAuthors.setText("By: " + String.join(",", document.getDocumentAuthors()));
+    }
+
+    private void recentOnSuccess(GetDocumentRecommendationController.@NonNull ViewModel viewModel) {
+        val documentsList = viewModel.getDocumentRecommendation();
+        val document = documentsList.getFirst();
+        recentCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
+        recentTitle.setText(document.getDocumentTitle());
+        recentAuthors.setText("By: " + String.join(",", document.getDocumentAuthors()));
     }
 
     private @Unsigned int getNumberOfBorrowedDocuments() {
@@ -102,5 +140,20 @@ public class DashboardView {
             return 0;
         }
         return 0;
+    }
+    
+    private @Unsigned int getNumberOfDocuments() {
+        int numberOfDocuments = 0;
+        try {
+            val requestObject = ShowDocumentsController.RequestObject.of(1, Message.Page.MAX_PAGE_SIZE);
+            val viewModel = this.showDocumentsController.apply(requestObject);
+            return viewModel.getPaginatedDocuments().size();
+
+        } catch (ShowDocumentsUseCase.AuthenticationTokenNotFoundException | ShowDocumentsUseCase.AuthenticationTokenInvalidException exception) {
+            StageManager.getInstance().openLoginMenu();
+        } catch (ShowDocumentsUseCase.PaginationInvalidException exception) {
+            return 0;
+        }
+        return numberOfDocuments;
     }
 }

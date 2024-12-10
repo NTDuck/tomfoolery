@@ -30,7 +30,7 @@
       </VBox>
 
       <VBox prefWidth="800.0" HBox.hgrow="ALWAYS" styleClass="right-side">
-         <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="800.0" spacing="10.0">
+         <HBox alignment="CENTER_LEFT" prefHeight="60.0" spacing="10.0">
             <Button mnemonicParsing="false" text="Borrow"
                     styleClass="action-button" fx:id="borrowButton" HBox.hgrow="ALWAYS">
             </Button>
@@ -44,7 +44,7 @@
             </Button>
 
             <Button mnemonicParsing="false" text="View QR Code"
-                    styleClass="action-button" fx:id="showQRButton" HBox.hgrow="ALWAYS">
+                    styleClass="qr-button" fx:id="showQRButton" HBox.hgrow="ALWAYS">
             </Button>
          </HBox>
 
