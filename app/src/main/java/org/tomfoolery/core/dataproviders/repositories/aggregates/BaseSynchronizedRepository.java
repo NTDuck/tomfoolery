@@ -1,5 +1,6 @@
 package org.tomfoolery.core.dataproviders.repositories.aggregates;
 
+import lombok.Locked;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -34,6 +35,7 @@ public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, Ent
     }
 
     @Override
+    @Locked.Write
     public void save(@NonNull Entity entity) {
         this.repository.save(entity);
 
@@ -42,6 +44,7 @@ public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, Ent
     }
 
     @Override
+    @Locked.Write
     public void delete(@NonNull EntityId entityId) {
         val entity = this.repository.getById(entityId);
 
@@ -59,22 +62,32 @@ public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, Ent
     }
 
     @Override
+    @Locked.Read
     public @Nullable Entity getById(@NonNull EntityId entityId) {
         return this.repository.getById(entityId);
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<Entity> show() {
         return this.repository.show();
     }
 
     @Override
+    @Locked.Read
+    public @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return this.repository.showPaginated(pageIndex, maxPageSize);
+    }
+
+    @Override
+    @Locked.Read
     public boolean contains(@NonNull EntityId entityId) {
         return this.repository.contains(entityId);
     }
 
     @Override
-    public @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        return this.repository.showPaginated(pageIndex, maxPageSize);
+    @Locked.Read
+    public @Unsigned int size() {
+        return this.repository.size();
     }
 }

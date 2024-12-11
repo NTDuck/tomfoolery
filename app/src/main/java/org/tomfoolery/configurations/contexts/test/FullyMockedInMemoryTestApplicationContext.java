@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 
 @NoArgsConstructor
 public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemoryApplicationContext {
-    private static final @Unsigned int NUMBER_OF_DOCUMENTS = 444;
+    private static final @Unsigned int NUMBER_OF_DOCUMENTS = 4444;
     private static final @Unsigned int NUMBER_OF_ADMINISTRATORS = 4;
     private static final @Unsigned int NUMBER_OF_PATRONS = 44;
     private static final @Unsigned int NUMBER_OF_STAFF = 4;
@@ -46,26 +46,7 @@ public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemor
 
     private void populate() {
         this.populateUserRepositoriesWithDeterministicUsers();
-        // this.seedRepositories().join();
-
-        System.out.println("Starting population...");
-
-        val seedTask = this.seedRepositories();
-
-        while (!seedTask.isDone()) {
-            // System.out.printf("%d/%d%n", documentRepository.size(), NUMBER_OF_DOCUMENTS);
-            System.out.print('.');
-
-            try {
-                Thread.sleep(1444);
-
-            } catch (InterruptedException exception) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        seedTask.join();
-        System.out.println("\nPopulation completed!");
+        this.seedRepositories();
     }
 
     private @NonNull CompletableFuture<Void> seedRepositories() {

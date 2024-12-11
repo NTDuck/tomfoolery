@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.abc;
 
+import lombok.Locked;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.aggregates.BaseBiRepositories;
@@ -26,11 +27,13 @@ public class SynchronizedUserRepository<User extends BaseUser> extends BaseSynch
     }
 
     @Override
+    @Locked.Read
     public @Nullable User getByUsername(@NonNull String username) {
         return ((UserRepository<User>) this.repository).getByUsername(username);
     }
 
     @Override
+    @Locked.Read
     public boolean contains(@NonNull String username) {
         return ((UserRepository<User>) this.repository).contains(username);
     }

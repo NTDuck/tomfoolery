@@ -1,10 +1,13 @@
 package org.tomfoolery.core.dataproviders.repositories.aggregates;
 
+import lombok.Locked;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.utils.contracts.ddd;
+import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,16 +26,19 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
     }
 
     @Override
+    @Locked.Write
     public void save(@NonNull Entity entity) {
         accept(this.persistenceRepositories, repository -> repository.save(entity));
     }
 
     @Override
+    @Locked.Write
     public void delete(@NonNull EntityId entityId) {
         accept(this.persistenceRepositories, repository -> repository.delete(entityId));
     }
 
     @Override
+    @Locked.Read
     public @Nullable Entity getById(@NonNull EntityId entityId) {
         val entityFromPersistenceRepositories = getById(this.persistenceRepositories, entityId);
 
@@ -48,6 +54,7 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<Entity> show() {
         return this.persistenceRepositories.stream()
             .flatMap(repository -> repository.show().stream())
@@ -55,6 +62,13 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
     }
 
     @Override
+    @Locked.Read
+    public @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return BaseRepository.super.showPaginated(pageIndex, maxPageSize);
+    }
+
+    @Override
+    @Locked.Read
     public boolean contains(@NonNull EntityId entityId) {
         val containsFromPersistenceRepositories = contains(this.persistenceRepositories, entityId);
 
@@ -73,6 +87,14 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
         }
 
         return containsFromRetrievalRepositories;
+    }
+
+    @Override
+    @Locked.Read
+    public @Unsigned int size() {
+        return this.persistenceRepositories.parallelStream()
+            .mapToInt(BaseRepository::size)
+            .sum();
     }
 
     private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @Nullable Entity getById(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {

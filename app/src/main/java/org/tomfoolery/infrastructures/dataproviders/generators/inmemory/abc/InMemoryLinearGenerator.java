@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.abc;
 
+import lombok.Locked;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.abc.BaseSynchronizedGenerator;
@@ -18,11 +19,13 @@ public class InMemoryLinearGenerator<Entity extends ddd.Entity<EntityId>, Entity
     }
 
     @Override
+    @Locked.Write
     public void synchronizeSavedEntity(@NonNull Entity savedEntity) {
         this.cachedEntities.add(savedEntity);
     }
 
     @Override
+    @Locked.Write
     public void synchronizeDeletedEntity(@NonNull Entity deletedEntity) {
         this.cachedEntities.remove(deletedEntity);
     }

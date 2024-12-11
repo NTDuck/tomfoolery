@@ -88,16 +88,19 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
     }
 
     @Override
+    @Locked.Read
     public boolean contains(Document.@NonNull Id documentId) {
         return this.minimalDocumentRepository.contains(documentId);
     }
 
     @Override
+    @Locked.Read
     public @Unsigned int size() {
         return this.minimalDocumentRepository.size();
     }
 
     @Override
+    @Locked.Read
     public @Nullable Page<Document> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val paginatedMinimalDocuments = this.minimalDocumentRepository.showPaginated(pageIndex, maxPageSize);
         return Page.fromPaginated(paginatedMinimalDocuments, minimalDocument -> {
