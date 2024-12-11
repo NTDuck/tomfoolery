@@ -14,17 +14,16 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.external.common.documents.recommendation.abc.GetDocumentRecommendationUseCase;
-import org.tomfoolery.core.usecases.external.common.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.core.usecases.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.recommendation.GetDocumentRecommendationController;
-import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.ShowDocumentsController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
+import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public class DashboardView {
     private final @NonNull GetDocumentRecommendationController getRecommendationController;
     private final @NonNull ShowBorrowedDocumentsController showBorrowedDocumentsController;
-    private final @NonNull ShowDocumentsController showDocumentsController;
+    private final @NonNull GetStatisticsController getStatisticsController;
 
     public DashboardView(@NonNull DocumentRepository documentRepository,
                          @NonNull BorrowingSessionRepository borrowingSessionRepository,
@@ -46,11 +45,11 @@ public class DashboardView {
                 authenticationTokenRepository,
                 fileStorageProvider
         );
-        this.showDocumentsController = ShowDocumentsController.of(
-                documentRepository,
-                authenticationTokenGenerator,
-                authenticationTokenRepository,
-                fileStorageProvider
+        this.getStatisticsController = GetStatisticsController.of(
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getAdministratorRepository(),
+                StageManager.getInstance().getResources().getPatronRepository(),
+                StageManager.getInstance().getResources().getStaffRepository()
         );
     }
 
@@ -87,10 +86,15 @@ public class DashboardView {
     @FXML
     public void initialize() {
         numberOfBorrowedDocuments.setText(String.valueOf(getNumberOfBorrowedDocuments()));
-        numberOfPatrons.setText(String.valueOf(StageManager.getInstance().getResources().getPatronRepository().show().size()));
+        numberOfPatrons.setText(String.valueOf(getNumberOfPatrons()));
         numberOfAvailableDocuments.setText(String.valueOf(getNumberOfDocuments()));
         
         this.loadRecommendation();
+    }
+
+    private @Unsigned int getNumberOfPatrons() {
+        val viewModel = this.getStatisticsController.get();
+        return viewModel.getNumberOfPatrons();
     }
 
     private void loadRecommendation() {
@@ -159,17 +163,7 @@ public class DashboardView {
     }
     
     private @Unsigned int getNumberOfDocuments() {
-        int numberOfDocuments = 0;
-        try {
-            val requestObject = ShowDocumentsController.RequestObject.of(1, Integer.MAX_VALUE);
-            val viewModel = this.showDocumentsController.apply(requestObject);
-            return viewModel.getPaginatedDocuments().size();
-
-        } catch (ShowDocumentsUseCase.AuthenticationTokenNotFoundException | ShowDocumentsUseCase.AuthenticationTokenInvalidException exception) {
-            StageManager.getInstance().openLoginMenu();
-        } catch (ShowDocumentsUseCase.PaginationInvalidException exception) {
-            return 0;
-        }
-        return numberOfDocuments;
+        val viewModel = this.getStatisticsController.get();
+        return viewModel.getNumberOfDocuments();
     }
 }

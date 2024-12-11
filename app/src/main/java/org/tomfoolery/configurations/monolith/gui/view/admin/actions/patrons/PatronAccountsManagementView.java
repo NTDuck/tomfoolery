@@ -16,10 +16,18 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.external.administrator.users.retrieval.ShowPatronAccountsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.ShowPatronAccountsController;
+import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 
 import java.util.function.Consumer;
 
 public class PatronAccountsManagementView {
+    private final @NonNull GetStatisticsController getStatisticsController = GetStatisticsController.of(
+            StageManager.getInstance().getResources().getDocumentRepository(),
+            StageManager.getInstance().getResources().getAdministratorRepository(),
+            StageManager.getInstance().getResources().getPatronRepository(),
+            StageManager.getInstance().getResources().getStaffRepository()
+    );
+
     private final @NonNull ShowPatronAccountsController showController;
 
     public PatronAccountsManagementView(@NonNull PatronRepository patronRepository,
@@ -44,6 +52,7 @@ public class PatronAccountsManagementView {
         });
 
         loadAccounts();
+        counterLabel.setText(this.getStatisticsController.get().getNumberOfPatrons() + " patrons");
     }
 
     private void addButtonToColumn(@NonNull TableColumn<PatronAccountViewModel, Void> column, String buttonText, Consumer<PatronAccountViewModel> action) {
@@ -88,7 +97,6 @@ public class PatronAccountsManagementView {
 
     public void loadAccounts() {
         val patronAccounts = getPatronAccounts();
-        counterLabel.setText(String.valueOf(patronAccounts.size()) + " patrons");
         patronAccountsTable.getItems().clear();
         patronAccountsTable.setItems(patronAccounts);
     }

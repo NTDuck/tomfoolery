@@ -18,11 +18,19 @@ import org.tomfoolery.core.usecases.external.administrator.users.persistence.Del
 import org.tomfoolery.core.usecases.external.administrator.users.retrieval.ShowStaffAccountsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.persistence.DeleteStaffAccountController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.ShowStaffAccountsController;
+import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
 import java.util.function.Consumer;
 
 public class StaffAccountsManagementView {
+    private final @NonNull GetStatisticsController getStatisticsController = GetStatisticsController.of(
+            StageManager.getInstance().getResources().getDocumentRepository(),
+            StageManager.getInstance().getResources().getAdministratorRepository(),
+            StageManager.getInstance().getResources().getPatronRepository(),
+            StageManager.getInstance().getResources().getStaffRepository()
+    );
+
     private final @NonNull DeleteStaffAccountController deleteController;
     private final @NonNull ShowStaffAccountsController showController;
 
@@ -64,8 +72,6 @@ public class StaffAccountsManagementView {
     }
 
     private void addButtonToColumn(@NonNull TableColumn<StaffAccountViewModel, Void> column, String buttonText, Consumer<StaffAccountViewModel> action) {
-
-
         column.setCellFactory(param -> new TableCell<>() {
             private final Button button = new Button(buttonText);
 
@@ -117,7 +123,7 @@ public class StaffAccountsManagementView {
             accountList.add(accountViewModel);
         });
 
-        counterLabel.setText(accountList.size() + " staffs");
+        counterLabel.setText(this.getStatisticsController.get().getNumberOfStaff() + " staffs");
         staffAccountsTable.getItems().clear();
         staffAccountsTable.setItems(accountList);
     }

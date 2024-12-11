@@ -7,6 +7,8 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.abc.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.user.scenes.DashboardView;
 import org.tomfoolery.configurations.monolith.gui.view.user.scenes.DiscoverView;
+import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
+
 import java.io.IOException;
 
 public class AdminView extends BaseView {
