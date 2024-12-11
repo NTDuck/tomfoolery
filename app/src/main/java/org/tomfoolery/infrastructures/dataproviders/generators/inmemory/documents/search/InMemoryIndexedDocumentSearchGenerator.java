@@ -3,6 +3,7 @@ package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documen
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import lombok.Locked;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -27,21 +28,25 @@ public class InMemoryIndexedDocumentSearchGenerator implements DocumentSearchGen
     private final @NonNull Multimap<String, Document> documentsByNormalizedGenres = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
 
     @Override
+    @Locked.Read
     public @NonNull List<Document> searchByNormalizedTitle(@NonNull String title) {
         return searchDocuments(title, this.normalizedTitles::getStringsWithSubstring, this.documentsByNormalizedTitles);
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<Document> searchByNormalizedAuthor(@NonNull String author) {
         return searchDocuments(author, this.normalizedAuthors::getStringsWithSubstring, this.documentsByNormalizedAuthors);
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<Document> searchByNormalizedGenre(@NonNull String genre) {
         return searchDocuments(genre, this.normalizedGenres::getStringsWithSubstring, this.documentsByNormalizedGenres);
     }
 
     @Override
+    @Locked.Write
     public void synchronizeSavedEntity(@NonNull Document savedDocument) {
         val documentMetadata = savedDocument.getMetadata();
 
@@ -59,6 +64,7 @@ public class InMemoryIndexedDocumentSearchGenerator implements DocumentSearchGen
     }
 
     @Override
+    @Locked.Write
     public void synchronizeDeletedEntity(@NonNull Document deletedDocument) {
         val documentMetadata = deletedDocument.getMetadata();
 

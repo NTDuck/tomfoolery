@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation;
 
+import lombok.Locked;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
@@ -16,16 +17,18 @@ public class InMemoryLinearDocumentRecommendationGenerator extends InMemoryLinea
     private static final int DOCUMENT_COUNT_PER_RECOMMENDATION = 10;
 
     @Override
+    @Locked.Read
     public @NonNull List<Document> getLatestDocumentRecommendation() {
-        return generateDocumentRecommendationByComparator(
+        return this.generateDocumentRecommendationByComparator(
             DocumentComparator.byCreationTimestampDescending()
                 .thenComparing(DocumentComparator.byIdAscending())
         );
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<Document> getTopRatedDocumentRecommendation() {
-        return generateDocumentRecommendationByComparator(
+        return this.generateDocumentRecommendationByComparator(
             DocumentComparator.byAverageRatingDescending()
                 .thenComparing(DocumentComparator.byIdAscending())
         );

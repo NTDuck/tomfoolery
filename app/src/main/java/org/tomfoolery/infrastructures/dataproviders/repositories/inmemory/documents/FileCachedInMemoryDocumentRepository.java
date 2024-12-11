@@ -17,26 +17,24 @@ import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileSt
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.abc.BaseInMemoryRepository;
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class FileCachedInMemoryDocumentRepository implements DocumentRepository {
     private final @NonNull FileStorageProvider fileStorageProvider;
 
-    private final @NonNull BaseRepository<MinimalDocument, Document.Id> minimalDocumentRepository = new BaseInMemoryRepository<MinimalDocument, Document.Id>() {
+    private final @NonNull BaseRepository<MinimalDocument, Document.Id> minimalDocumentRepository = new BaseInMemoryRepository<>() {
         @Override
         protected @NonNull Comparator<Document.Id> getEntityIdComparator() {
             return DocumentComparator.compareId();
         }
     };
 
-    private final @NonNull Map<Document.Id, String> documentCoverImageFilePathsByIds = Collections.synchronizedNavigableMap(
-        new TreeMap<>(DocumentComparator.compareId()));
+    private final @NonNull Map<Document.Id, String> documentCoverImageFilePathsByIds = new ConcurrentSkipListMap<>(DocumentComparator.compareId());
 
     @Override
     @SneakyThrows
@@ -90,16 +88,19 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
     }
 
     @Override
+    @Locked.Read
     public boolean contains(Document.@NonNull Id documentId) {
         return this.minimalDocumentRepository.contains(documentId);
     }
 
     @Override
+    @Locked.Read
     public @Unsigned int size() {
         return this.minimalDocumentRepository.size();
     }
 
     @Override
+    @Locked.Read
     public @Nullable Page<Document> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val paginatedMinimalDocuments = this.minimalDocumentRepository.showPaginated(pageIndex, maxPageSize);
         return Page.fromPaginated(paginatedMinimalDocuments, minimalDocument -> {

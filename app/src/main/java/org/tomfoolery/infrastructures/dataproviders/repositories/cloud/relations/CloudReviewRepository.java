@@ -21,17 +21,21 @@ public class CloudReviewRepository implements ReviewRepository {
     @Override
     public void save(@NonNull Review review) {
         String query = """
-            INSERT INTO Review (documentId, patronId, rating)
-            VALUES (?, ?, ?)
-            ON CONFLICT (documentId, patronId) DO UPDATE SET
+            INSERT INTO Review (id, documentId, patronId, rating)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT (id) DO UPDATE SET
+                documentId = EXCLUDED.documentId,
+                patronId = EXCLUDED.patronId,
                 rating = EXCLUDED.rating;
         """;
 
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, review.getId().getFirstEntityId().getISBN_10());
-            stmt.setString(2, review.getId().getSecondEntityId().getUuid().toString());
-            stmt.setDouble(3, review.getRating());
+
+            stmt.setString(1, review.getId().toString());
+            stmt.setString(2, review.getId().getFirstEntityId().getISBN_10());
+            stmt.setString(3, review.getId().getSecondEntityId().getUuid().toString());
+            stmt.setDouble(4, review.getRating());
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -41,12 +45,12 @@ public class CloudReviewRepository implements ReviewRepository {
 
     @Override
     public void delete(Review.@NonNull Id reviewId) {
-        String query = "DELETE FROM Review WHERE documentId = ? AND patronId = ?";
+        String query = "DELETE FROM Review WHERE id = ?";
 
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, reviewId.getFirstEntityId().getISBN_10());
-            stmt.setString(2, reviewId.getSecondEntityId().getUuid().toString());
+
+            stmt.setString(1, reviewId.toString()); // Use the review's unique id for deletion
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -56,11 +60,12 @@ public class CloudReviewRepository implements ReviewRepository {
 
     @Override
     public @Nullable Review getById(Review.@NonNull Id reviewId) {
-        String query = "SELECT * FROM Review WHERE documentId = ? AND patronId = ?";
+        String query = "SELECT * FROM Review WHERE id = ?";
+
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, reviewId.getFirstEntityId().getISBN_10());
-            stmt.setString(2, reviewId.getSecondEntityId().getUuid().toString());
+
+            stmt.setString(1, reviewId.toString()); // Use the review's unique id to query
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -92,6 +97,7 @@ public class CloudReviewRepository implements ReviewRepository {
     }
 
     private Review mapResultSetToReview(ResultSet rs) throws SQLException {
+        String id = rs.getString("id");
         Document.Id documentId = Document.Id.of(rs.getString("documentId"));
         Patron.Id patronId = Patron.Id.of(UUID.fromString(rs.getString("patronId")));
         double rating = rs.getDouble("rating");

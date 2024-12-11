@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search;
 
+import lombok.Locked;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
@@ -13,18 +14,21 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(staticName = "of")
 public class InMemoryLinearDocumentSearchGenerator extends InMemoryLinearDocumentGenerator implements DocumentSearchGenerator {
     @Override
+    @Locked.Read
     public @NonNull List<Document> searchByNormalizedTitle(@NonNull String normalizedTitle) {
         return this.searchDocumentsByPredicate(document ->
             isSubsequence(normalizedTitle, this.normalize(document.getMetadata().getTitle())));
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<Document> searchByNormalizedAuthor(@NonNull String normalizedAuthor) {
         return this.searchDocumentsByPredicate(document ->
             isSubsequence(normalizedAuthor, this.normalize(document.getMetadata().getAuthors())));
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<Document> searchByNormalizedGenre(@NonNull String normalizedGenre) {
         return this.searchDocumentsByPredicate(document ->
             isSubsequence(normalizedGenre, this.normalize(document.getMetadata().getGenres())));

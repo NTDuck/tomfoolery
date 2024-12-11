@@ -14,19 +14,17 @@ import org.tomfoolery.core.utils.dataclasses.Page;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class FileCachedInMemoryDocumentContentRepository implements DocumentContentRepository {
     private final @NonNull FileStorageProvider fileStorageProvider;
 
-    private final @NonNull Map<DocumentContent.Id, String> documentContentFilePathsByIds = Collections.synchronizedNavigableMap(
-        new TreeMap<>(Comparator.comparing(DocumentContent.Id::getEntityId, DocumentComparator.compareId())));
+    private final @NonNull Map<DocumentContent.Id, String> documentContentFilePathsByIds = new ConcurrentSkipListMap<>(Comparator.comparing(DocumentContent.Id::getEntityId, DocumentComparator.compareId()));
 
     @Override
     @SneakyThrows

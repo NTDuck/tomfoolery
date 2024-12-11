@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users;
 
+import lombok.Locked;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
@@ -19,6 +20,7 @@ public class InMemoryLinearUserSearchGenerator<User extends BaseUser> extends In
     }
 
     @Override
+    @Locked.Read
     public @NonNull List<User> searchByNormalizedUsername(@NonNull String normalizedUsername) {
         return super.cachedEntities.stream()
             .filter(user -> isSubsequence(normalizedUsername, this.normalize(user.getCredentials().getUsername())))
