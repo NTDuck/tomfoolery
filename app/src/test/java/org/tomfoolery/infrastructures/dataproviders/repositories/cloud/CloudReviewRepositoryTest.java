@@ -18,7 +18,6 @@ import static org.testng.Assert.*;
 import static org.testng.AssertJUnit.fail;
 
 public class CloudReviewRepositoryTest extends BaseUnitTest<CloudReviewRepository> {
-
     @Override
     protected @NonNull CloudReviewRepository createTestSubject() {
         DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
@@ -37,7 +36,6 @@ public class CloudReviewRepositoryTest extends BaseUnitTest<CloudReviewRepositor
         try {
             this.testSubject.save(review);
 
-            // Retrieve the saved review to assert it was saved correctly
             Review retrievedReview = this.testSubject.getById(reviewId);
             assertNotNull(retrievedReview, "Saved review should not be null");
             assertEquals(retrievedReview.getRating(), 4.5, "Review rating should match the saved value");

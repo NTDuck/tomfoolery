@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.contexts.prod;
 
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
@@ -36,8 +37,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentRecommendationGenerator;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.*;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudBorrowingSessionRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudDocumentContentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudReviewRepository;
@@ -47,9 +47,10 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.Clo
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 
+@NoArgsConstructor
 public class CloudApplicationContext extends ApplicationContext {
-    DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
-    CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
+    private final @NonNull DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
+    private final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
 
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
@@ -98,17 +99,17 @@ public class CloudApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull AdministratorSearchGenerator createAdministratorSearchGenerator() {
-        return InMemoryLinearAdministratorSearchGenerator.of();
+        return CloudLinearAdministratorSearchGenerator.of(CloudAdministratorRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override
     protected @NonNull PatronSearchGenerator createPatronSearchGenerator() {
-        return InMemoryLinearPatronSearchGenerator.of();
+        return CloudLinearPatronSearchGenerator.of(CloudPatronRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override
     protected @NonNull StaffSearchGenerator createStaffSearchGenerator() {
-        return InMemoryLinearStaffSearchGenerator.of();
+        return CloudLinearStaffSearchGenerator.of(CloudStaffRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override
