@@ -12,10 +12,10 @@ import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.guest.users.authentication.LogUserInByCredentialsUseCase;
+import org.tomfoolery.core.usecases.external.guest.users.authentication.LogUserInByCredentialsUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.LogUserInByCredentialsController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.guest.users.authentication.LogUserInByCredentialsController;
 
 public class LoginView {
     private final @NonNull LogUserInByCredentialsController controller;

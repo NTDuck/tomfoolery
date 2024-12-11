@@ -15,15 +15,15 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
-import org.tomfoolery.core.usecases.patron.users.persistence.UpdatePatronMetadataUseCase;
-import org.tomfoolery.core.usecases.patron.users.persistence.UpdatePatronPasswordUseCase;
-import org.tomfoolery.core.usecases.patron.users.retrieval.GetPatronUsernameAndMetadataUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.UpdatePatronMetadataController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.UpdatePatronPasswordController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.users.retrieval.GetPatronUsernameAndMetadataController;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.usecases.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
+import org.tomfoolery.core.usecases.external.patron.users.persistence.UpdatePatronMetadataUseCase;
+import org.tomfoolery.core.usecases.external.patron.users.persistence.UpdatePatronPasswordUseCase;
+import org.tomfoolery.core.usecases.external.patron.users.retrieval.GetPatronUsernameAndMetadataUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.persistence.UpdatePatronMetadataController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.persistence.UpdatePatronPasswordController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.retrieval.GetPatronUsernameAndMetadataController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public class PatronAccountCenter {

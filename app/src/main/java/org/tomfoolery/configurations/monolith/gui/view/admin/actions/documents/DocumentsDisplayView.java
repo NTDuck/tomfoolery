@@ -9,8 +9,8 @@ import org.tomfoolery.configurations.monolith.gui.view.user.documents.ShowDocume
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.common.documents.retrieval.ShowDocumentsUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.ShowDocumentsController;
+import org.tomfoolery.core.usecases.external.common.documents.retrieval.ShowDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.ShowDocumentsController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public class DocumentsDisplayView extends ShowDocumentsView {

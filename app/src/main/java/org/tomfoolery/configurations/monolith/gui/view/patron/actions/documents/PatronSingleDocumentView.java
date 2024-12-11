@@ -18,16 +18,16 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.common.documents.references.GetDocumentQrCodeUseCase;
-import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
-import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.BorrowDocumentUseCase;
-import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
-import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.common.documents.references.GetDocumentQrCodeController;
-import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
+import org.tomfoolery.core.usecases.external.common.documents.references.GetDocumentQrCodeUseCase;
+import org.tomfoolery.core.usecases.external.common.documents.retrieval.GetDocumentByIdUseCase;
+import org.tomfoolery.core.usecases.external.patron.documents.borrow.persistence.BorrowDocumentUseCase;
+import org.tomfoolery.core.usecases.external.patron.documents.borrow.persistence.ReturnDocumentUseCase;
+import org.tomfoolery.core.usecases.external.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.references.GetDocumentQrCodeController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.GetDocumentByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.persistence.BorrowDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.persistence.ReturnDocumentController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 

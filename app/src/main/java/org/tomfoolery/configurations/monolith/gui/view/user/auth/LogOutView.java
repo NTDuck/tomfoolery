@@ -7,7 +7,7 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.adapters.controllers.common.users.authentication.LogUserOutController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.users.authentication.LogUserOutController;
 
 public class LogOutView {
     private final @NonNull LogUserOutController controller;
