@@ -33,7 +33,7 @@ public final class AddDocumentController implements ThrowableConsumer<AddDocumen
     }
 
     @Override
-    public void accept(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException, AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentISBNInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException, AddDocumentUseCase.DocumentCoverImageInvalidException, AddDocumentUseCase.DocumentContentInvalidException {
+    public void accept(@NonNull RequestObject requestObject) throws DocumentPublishedYearInvalidException, DocumentContentFilePathInvalidException, DocumentCoverImageFilePathInvalidException, AddDocumentUseCase.AuthenticationTokenNotFoundException, AddDocumentUseCase.AuthenticationTokenInvalidException, AddDocumentUseCase.DocumentISBNInvalidException, AddDocumentUseCase.DocumentAlreadyExistsException, AddDocumentUseCase.DocumentCoverImageInvalidException, AddDocumentUseCase.DocumentContentInvalidException {
         val requestModel = this.mapRequestObjectToRequestModel(requestObject);
         this.addDocumentUseCase.accept(requestModel);
     }

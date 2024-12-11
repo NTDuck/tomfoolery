@@ -1,10 +1,6 @@
 package org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.SneakyThrows;
-import lombok.Value;
-import lombok.val;
+import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
@@ -82,7 +78,7 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
         @NonNull String documentCoverImageFilePath;
 
         @SneakyThrows
-        public static @NonNull ViewModel of(@NonNull Document document, @NonNull FileStorageProvider fileStorageProvider) {
+        private static @NonNull ViewModel of(@NonNull Document document, @NonNull FileStorageProvider fileStorageProvider) {
             val documentId = document.getId();
             val documentAudit = document.getAudit();
             val documentAuditTimestamps = documentAudit.getTimestamps();
@@ -112,20 +108,30 @@ public final class GetDocumentByIdController implements ThrowableFunction<GetDoc
                 .numberOfRatings(documentRating == null ? 0 : documentRating.getNumberOfRatings())
 
                 .documentCoverImageFilePath(documentCoverImage != null
-                    ? saveDocumentCoverImageAndGetPath(fileStorageProvider, documentCoverImage)
+                    ? saveDocumentCoverImageAndGetPath(documentCoverImage, fileStorageProvider)
                     : ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH))
 
                 .build();
         }
 
         @SneakyThrows
-        private static @NonNull String saveDocumentCoverImageAndGetPath(@NonNull FileStorageProvider fileStorageProvider, Document.@NonNull CoverImage documentCoverImage) {
+        private static @NonNull String saveDocumentCoverImageAndGetPath(Document.@NonNull CoverImage documentCoverImage, @NonNull FileStorageProvider fileStorageProvider) {
             try {
                 val rawDocumentCoverImage = documentCoverImage.getBytes();
                 return fileStorageProvider.save(rawDocumentCoverImage);
 
             } catch (IOException exception) {
                 return ResourceProvider.getResourceAbsolutePath(DEFAULT_COVER_IMAGE_RESOURCE_PATH);
+            }
+        }
+
+        @Value(staticConstructor = "with")
+        public static class Builder_ {
+            @Getter(value = AccessLevel.NONE)
+            @NonNull FileStorageProvider fileStorageProvider;
+
+            public @NonNull ViewModel build(@NonNull Document document) {
+                return ViewModel.of(document, this.fileStorageProvider);
             }
         }
     }

@@ -9,6 +9,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.common.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,20 +17,22 @@ import java.util.stream.StreamSupport;
 
 public final class ShowDocumentsController implements ThrowableFunction<ShowDocumentsController.RequestObject, ShowDocumentsController.ViewModel> {
     private final @NonNull ShowDocumentsUseCase showDocumentsUseCase;
+    private final @NonNull FileStorageProvider fileStorageProvider;
 
-    public static @NonNull ShowDocumentsController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowDocumentsController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowDocumentsController of(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new ShowDocumentsController(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private ShowDocumentsController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowDocumentsController(@NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         this.showDocumentsUseCase = ShowDocumentsUseCase.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.fileStorageProvider = fileStorageProvider;
     }
 
     @Override
     public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ShowDocumentsUseCase.AuthenticationTokenInvalidException, ShowDocumentsUseCase.AuthenticationTokenNotFoundException, ShowDocumentsUseCase.PaginationInvalidException {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.showDocumentsUseCase.apply(requestModel);
-        val viewModel = mapResponseModelToViewModel(responseModel);
+        val viewModel = this.mapResponseModelToViewModel(responseModel);
 
         return viewModel;
     }
@@ -38,11 +41,12 @@ public final class ShowDocumentsController implements ThrowableFunction<ShowDocu
         return ShowDocumentsUseCase.Request.of(requestObject.getPageIndex(), requestObject.getMaxPageSize());
     }
 
-    private static @NonNull ViewModel mapResponseModelToViewModel(ShowDocumentsUseCase.@NonNull Response responseModel) {
+    private @NonNull ViewModel mapResponseModelToViewModel(ShowDocumentsUseCase.@NonNull Response responseModel) {
         val page = responseModel.getPaginatedDocuments();
 
-        val paginatedDocuments = StreamSupport.stream(page.spliterator(), true)
-            .map(GetDocumentByIdController.ViewModel::of)
+        val builder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
+        val paginatedDocuments = StreamSupport.stream(responseModel.getPaginatedDocuments().spliterator(), true)
+            .map(builder::build)
             .collect(Collectors.toUnmodifiableList());
 
         val pageIndex = page.getPageIndex();

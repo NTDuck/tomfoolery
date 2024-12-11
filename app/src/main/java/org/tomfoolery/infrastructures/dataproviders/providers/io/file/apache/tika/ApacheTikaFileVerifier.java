@@ -1,14 +1,19 @@
 package org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.tika.Tika;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 
-@NoArgsConstructor(staticName = "of")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApacheTikaFileVerifier implements FileVerifier {
     protected final @NonNull Tika tika = new Tika();
+
+    public static @NonNull ApacheTikaFileVerifier of() {
+        return new ApacheTikaFileVerifier();
+    }
 
     @Override
     public boolean isDocument(byte @NonNull [] bytes) {

@@ -79,10 +79,10 @@ public final class Application implements Runnable, Closeable {
             LogUserOutActionView.of(this.ioProvider, this.context.getUserRepositories(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
 
             GetDocumentByIdActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
-            SearchDocumentsActionView.of(this.ioProvider, this.context.getDocumentSearchGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            SearchDocumentsActionView.of(this.ioProvider, this.context.getDocumentSearchGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
             GetDocumentQrCodeActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getDocumentQrCodeGenerator(), this.context.getDocumentUrlGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
-            ShowDocumentsActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
-            GetDocumentRecommendationActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentRecommendationGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            ShowDocumentsActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
+            GetDocumentRecommendationActionView.of(this.ioProvider, this.context.getDocumentRecommendationGenerator(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
 
             // Administrator action views
             CreateStaffAccountActionView.of(this.ioProvider, this.context.getStaffRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getPasswordEncoder()),
@@ -108,17 +108,17 @@ public final class Application implements Runnable, Closeable {
             BorrowDocumentActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
             ReadBorrowedDocumentActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
             ReturnDocumentActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
-            ShowBorrowedDocumentsActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            ShowBorrowedDocumentsActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider()),
             GetDocumentBorrowStatusActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getBorrowingSessionRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
 
             AddDocumentReviewActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getReviewRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
             RemoveDocumentRatingActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getReviewRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
 
             // Staff action views
-            AddDocumentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier()),
+            AddDocumentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier(), this.context.getFileStorageProvider()),
             RemoveDocumentRatingActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getReviewRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
-            UpdateDocumentContentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier()),
-            UpdateDocumentCoverImageActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier()),
+            UpdateDocumentContentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier(), this.context.getFileStorageProvider()),
+            UpdateDocumentCoverImageActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier(), this.context.getFileStorageProvider()),
             UpdateDocumentMetadataActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository())
         );
     }

@@ -11,6 +11,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,20 +19,22 @@ import java.util.stream.StreamSupport;
 
 public final class ShowBorrowedDocumentsController implements ThrowableFunction<ShowBorrowedDocumentsController.RequestObject, ShowBorrowedDocumentsController.ViewModel> {
     private final @NonNull ShowBorrowedDocumentsUseCase showBorrowedDocumentsUseCase;
+    private final @NonNull FileStorageProvider fileStorageProvider;
 
-    public static @NonNull ShowBorrowedDocumentsController of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowBorrowedDocumentsController(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowBorrowedDocumentsController of(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new ShowBorrowedDocumentsController(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private ShowBorrowedDocumentsController(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowBorrowedDocumentsController(@NonNull DocumentRepository documentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         this.showBorrowedDocumentsUseCase = ShowBorrowedDocumentsUseCase.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.fileStorageProvider = fileStorageProvider;
     }
 
     @Override
     public @NonNull ViewModel apply(@NonNull RequestObject requestObject) throws ShowBorrowedDocumentsUseCase.AuthenticationTokenInvalidException, ShowBorrowedDocumentsUseCase.AuthenticationTokenNotFoundException, ShowBorrowedDocumentsUseCase.PaginationInvalidException {
         val requestModel = mapRequestObjectToRequestModel(requestObject);
         val responseModel = this.showBorrowedDocumentsUseCase.apply(requestModel);
-        val viewModel = mapResponseModelToViewModel(responseModel);
+        val viewModel = this.mapResponseModelToViewModel(responseModel);
 
         return viewModel;
     }
@@ -40,11 +43,12 @@ public final class ShowBorrowedDocumentsController implements ThrowableFunction<
         return ShowBorrowedDocumentsUseCase.Request.of(requestObject.getPageIndex(), requestObject.getMaxPageSize());
     }
 
-    private static @NonNull ViewModel mapResponseModelToViewModel(ShowBorrowedDocumentsUseCase.@NonNull Response responseModel) {
+    private @NonNull ViewModel mapResponseModelToViewModel(ShowBorrowedDocumentsUseCase.@NonNull Response responseModel) {
         val page = responseModel.getPaginatedBorrowedDocuments();
 
+        val builder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
         val paginatedBorrowedDocuments = StreamSupport.stream(page.spliterator(), true)
-            .map(GetDocumentByIdController.ViewModel::of)
+            .map(builder::build)
             .collect(Collectors.toUnmodifiableList());
 
         val pageIndex = page.getPageIndex();
