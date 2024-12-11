@@ -15,10 +15,9 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Staff;
-import org.tomfoolery.core.usecases.administrator.users.search.SearchStaffByUsernameUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.GetPatronByIdController;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.GetStaffByIdController;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.search.SearchStaffByUsernameController;
+import org.tomfoolery.core.usecases.external.administrator.users.search.SearchStaffByUsernameUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetStaffByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchStaffByUsernameController;
 
 import java.util.List;
 

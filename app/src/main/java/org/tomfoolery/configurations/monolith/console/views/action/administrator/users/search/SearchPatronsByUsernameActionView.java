@@ -15,9 +15,9 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Patron;
-import org.tomfoolery.core.usecases.administrator.users.search.SearchPatronsByUsernameUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.GetPatronByIdController;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.search.SearchPatronsByUsernameController;
+import org.tomfoolery.core.usecases.external.administrator.users.search.SearchPatronsByUsernameUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetPatronByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchPatronsByUsernameController;
 
 import java.util.List;
 

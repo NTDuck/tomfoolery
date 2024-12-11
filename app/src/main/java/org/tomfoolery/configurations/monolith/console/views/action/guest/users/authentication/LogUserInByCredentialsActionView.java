@@ -9,9 +9,9 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.BaseActio
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.guest.users.authentication.LogUserInByCredentialsUseCase;
+import org.tomfoolery.core.usecases.external.guest.users.authentication.LogUserInByCredentialsUseCase;
 import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.LogUserInByCredentialsController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.guest.users.authentication.LogUserInByCredentialsController;
 
 public final class LogUserInByCredentialsActionView extends BaseActionView {
     private final @NonNull LogUserInByCredentialsController controller;

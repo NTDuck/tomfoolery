@@ -8,7 +8,7 @@ import org.tomfoolery.configurations.monolith.console.views.selection.Administra
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.abc.UserSelectionView;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.abc.LogUserInController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.guest.users.authentication.abc.LogUserInController;
 
 import java.util.Map;
 import java.util.function.Function;
