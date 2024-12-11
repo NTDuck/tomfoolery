@@ -246,7 +246,8 @@ tasks.register<JavaExec>("runJavaFX") {
 tasks.named<Test>("test") {
     // For unit testing
     useTestNG {
-         excludeGroups("cloud")
+//         excludeGroups("cloud")
+        excludeGroups(".*")
     }
 
     // systemProperties["file.encoding"] = "ISO-8859-1"

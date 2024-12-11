@@ -13,6 +13,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.Htt
 import org.tomfoolery.infrastructures.dataproviders.providers.resources.ResourceProvider;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.documents.DocumentMocker;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Year;
@@ -33,15 +34,13 @@ public class KaggleDocumentDatasetApplicationContextProxy implements Application
     @Override
     @SneakyThrows
     public @NonNull CompletableFuture<Void> intercept(@NonNull ApplicationContext applicationContext) {
-        System.out.println("Kaggle!@");
-
         val documentRepository = applicationContext.getDocumentRepository();
         val httpClientProvider = applicationContext.getHttpClientProvider();
 
         val csvPath = Path.of(ResourceProvider.getResourceAbsolutePath(DOCUMENT_DATASET_PATH));
 
         @Cleanup
-        val csvLines = Files.lines(csvPath);
+        val csvLines = Files.lines(csvPath, StandardCharsets.ISO_8859_1);
 
         val futures = csvLines.skip(1)   // Skip header row
             // .parallel()
@@ -93,7 +92,6 @@ public class KaggleDocumentDatasetApplicationContextProxy implements Application
             return Document.CoverImage.of(rawCoverImage);
 
         } catch (Exception exception) {
-            exception.printStackTrace();
             return null;
         }
     }

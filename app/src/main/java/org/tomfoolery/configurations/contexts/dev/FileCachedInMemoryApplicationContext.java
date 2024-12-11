@@ -22,7 +22,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.AdministratorReposit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.IsbnSearchDocumentUrlGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
@@ -131,7 +131,7 @@ public class FileCachedInMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentUrlGenerator createDocumentUrlGenerator() {
-        return IsbnSearchDocumentUrlGenerator.of();
+        return CustomLandingPageDocumentUrlGenerator.of();
     }
 
     @Override
