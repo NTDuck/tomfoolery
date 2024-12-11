@@ -157,7 +157,6 @@ public class CloudPatronRepository implements PatronRepository {
                 ),
                 rs.getString("email")
         );
-
         return Patron.of(id, audit, credentials, metadata);
     }
 }

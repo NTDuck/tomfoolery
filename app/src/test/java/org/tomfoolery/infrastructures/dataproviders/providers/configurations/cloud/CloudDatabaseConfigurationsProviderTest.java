@@ -14,7 +14,6 @@ import java.sql.Statement;
 
 import static org.testng.Assert.*;
 
-@Test(groups = { "unit", "provider", "configurations", "cloud" })
 public class CloudDatabaseConfigurationsProviderTest extends BaseUnitTest<CloudDatabaseConfigurationsProvider> {
     @Override
     protected @NonNull CloudDatabaseConfigurationsProvider createTestSubject() {
