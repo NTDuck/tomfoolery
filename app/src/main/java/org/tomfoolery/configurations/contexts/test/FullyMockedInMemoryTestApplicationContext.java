@@ -22,6 +22,8 @@ import org.tomfoolery.infrastructures.utils.helpers.mockers.users.abc.UserMocker
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,6 +35,12 @@ public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemor
     private static final @Unsigned int NUMBER_OF_PATRONS = 44;
     private static final @Unsigned int NUMBER_OF_STAFF = 4;
     private static final @Unsigned double PROPORTION_OF_DOCUMENTS_WITH_CONTENT = 0.9;
+
+    // Prevents thread starvation
+    // private final @NonNull Executor executor = Executors.newVirtualThreadPerTaskExecutor();
+    private final @NonNull Executor executor = Executors.newFixedThreadPool(
+        Runtime.getRuntime().availableProcessors()
+    );
 
     private final @NonNull DocumentMocker documentMocker = DocumentMocker.of();
     private final @NonNull AdministratorMocker administratorMocker = AdministratorMocker.of();
@@ -52,7 +60,7 @@ public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemor
     private @NonNull CompletableFuture<Void> seedRepositories() {
         return CompletableFuture.allOf(
             this.seedDocumentRepository()
-                .thenComposeAsync(_ -> this.seedDocumentContentRepository()),
+                .thenRunAsync(this::seedDocumentContentRepository),
             this.seedAdministratorRepository(),
             this.seedPatronRepository(),
             this.seedStaffRepository()
@@ -61,22 +69,22 @@ public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemor
 
     private @NonNull CompletableFuture<Void> seedDocumentRepository() {
         val documentRepository = this.getDocumentRepository();
-        return seedRepositoryWithMockEntities(documentRepository, this.documentMocker, NUMBER_OF_DOCUMENTS);
+        return this.seedRepositoryWithMockEntities(documentRepository, this.documentMocker, NUMBER_OF_DOCUMENTS);
     }
 
     private @NonNull CompletableFuture<Void> seedAdministratorRepository() {
         val administratorRepository = this.getAdministratorRepository();
-        return seedRepositoryWithMockEntities(administratorRepository, this.administratorMocker, NUMBER_OF_ADMINISTRATORS);
+        return this.seedRepositoryWithMockEntities(administratorRepository, this.administratorMocker, NUMBER_OF_ADMINISTRATORS);
     }
 
     private @NonNull CompletableFuture<Void> seedPatronRepository() {
         val patronRepository = this.getPatronRepository();
-        return seedRepositoryWithMockEntities(patronRepository, this.patronMocker, NUMBER_OF_PATRONS);
+        return this.seedRepositoryWithMockEntities(patronRepository, this.patronMocker, NUMBER_OF_PATRONS);
     }
 
     private @NonNull CompletableFuture<Void> seedStaffRepository() {
         val staffRepository = this.getStaffRepository();
-        return seedRepositoryWithMockEntities(staffRepository, this.staffMocker, NUMBER_OF_STAFF);
+        return this.seedRepositoryWithMockEntities(staffRepository, this.staffMocker, NUMBER_OF_STAFF);
     }
 
     private @NonNull CompletableFuture<Void> seedDocumentContentRepository() {
@@ -113,7 +121,7 @@ public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemor
     /**
      * Prone to race conditions.
      */
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull CompletableFuture<Void> seedRepositoryWithMockEntities(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull EntityMocker<Entity, EntityId> entityMocker, @Unsigned int numberOfEntities) {
+    private <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull CompletableFuture<Void> seedRepositoryWithMockEntities(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull EntityMocker<Entity, EntityId> entityMocker, @Unsigned int numberOfEntities) {
         val futures = IntStream.range(0, numberOfEntities)
             // .parallel()
             .mapToObj(_ -> CompletableFuture.runAsync(() -> {
@@ -125,16 +133,16 @@ public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemor
 
                 val mockEntity = entityMocker.createMockEntityWithId(entityId);
                 repository.save(mockEntity);
-            }))
+            }, this.executor))
             .collect(Collectors.toUnmodifiableList());
 
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
     }
 
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull CompletableFuture<Void> seedRepositoryWithMockEntities(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull Collection<EntityId> entityIds, @NonNull Function<EntityId, Entity> entityByIdFunction) {
+    private <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull CompletableFuture<Void> seedRepositoryWithMockEntities(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull Collection<EntityId> entityIds, @NonNull Function<EntityId, Entity> entityByIdFunction) {
         val futures = entityIds.parallelStream()
             .map(entityId -> CompletableFuture
-                .supplyAsync(() -> entityByIdFunction.apply(entityId))
+                .supplyAsync(() -> entityByIdFunction.apply(entityId), this.executor)
                 .thenAccept(repository::save))
             .collect(Collectors.toUnmodifiableList());
 
