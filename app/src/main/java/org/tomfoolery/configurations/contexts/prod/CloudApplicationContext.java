@@ -1,5 +1,6 @@
 package org.tomfoolery.configurations.contexts.prod;
 
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
@@ -9,7 +10,9 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.AdministratorSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.StaffSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
@@ -18,10 +21,12 @@ import org.tomfoolery.core.dataproviders.repositories.users.AdministratorReposit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearAdministratorSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearPatronSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearStaffSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
@@ -32,8 +37,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentRecommendationGenerator;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.*;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudBorrowingSessionRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudDocumentContentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudReviewRepository;
@@ -43,10 +47,10 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.Clo
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 
+@NoArgsConstructor
 public class CloudApplicationContext extends ApplicationContext {
-    DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
-    CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
-
+    private static final @NonNull DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
+    private static final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
         return CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider);
@@ -93,8 +97,18 @@ public class CloudApplicationContext extends ApplicationContext {
     }
 
     @Override
-    protected @NonNull <User extends BaseUser> UserSearchGenerator<User> createUserSearchGenerator() {
-        return null;
+    protected @NonNull AdministratorSearchGenerator createAdministratorSearchGenerator() {
+        return CloudLinearAdministratorSearchGenerator.of(CloudAdministratorRepository.of(cloudDatabaseConfigurationsProvider));
+    }
+
+    @Override
+    protected @NonNull PatronSearchGenerator createPatronSearchGenerator() {
+        return CloudLinearPatronSearchGenerator.of(CloudPatronRepository.of(cloudDatabaseConfigurationsProvider));
+    }
+
+    @Override
+    protected @NonNull StaffSearchGenerator createStaffSearchGenerator() {
+        return CloudLinearStaffSearchGenerator.of(CloudStaffRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override

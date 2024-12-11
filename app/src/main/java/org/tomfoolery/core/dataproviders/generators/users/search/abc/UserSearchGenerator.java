@@ -1,4 +1,4 @@
-package org.tomfoolery.core.dataproviders.generators.users.search;
+package org.tomfoolery.core.dataproviders.generators.users.search.abc;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;

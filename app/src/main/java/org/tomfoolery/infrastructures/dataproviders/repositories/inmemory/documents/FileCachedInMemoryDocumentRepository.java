@@ -30,7 +30,7 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
     private final @NonNull BaseRepository<MinimalDocument, Document.Id> minimalDocumentRepository = new BaseInMemoryRepository<>() {
         @Override
         protected @NonNull Comparator<Document.Id> getEntityIdComparator() {
-            return DocumentComparator.compareId();
+        return DocumentComparator.compareId();
         }
     };
 

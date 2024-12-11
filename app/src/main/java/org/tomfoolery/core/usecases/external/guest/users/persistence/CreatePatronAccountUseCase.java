@@ -76,7 +76,7 @@ public final class CreatePatronAccountUseCase implements ThrowableConsumer<Creat
             throw new PatronAlreadyExistsException();
     }
 
-    private Patron.@NonNull Credentials encodePatronCredentials(Staff.@NonNull Credentials rawPatronCredentials) {
+    private Patron.@NonNull Credentials encodePatronCredentials(Patron.@NonNull Credentials rawPatronCredentials) {
         val rawPatronPassword = rawPatronCredentials.getPassword();
         val encodedPatronPassword = this.passwordEncoder.encode(rawPatronPassword);
 

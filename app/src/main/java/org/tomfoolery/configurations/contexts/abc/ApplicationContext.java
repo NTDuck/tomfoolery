@@ -8,7 +8,9 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.AdministratorSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.StaffSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
@@ -17,10 +19,6 @@ import org.tomfoolery.core.dataproviders.repositories.users.AdministratorReposit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Administrator;
-import org.tomfoolery.core.domain.users.Patron;
-import org.tomfoolery.core.domain.users.Staff;
-import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.containers.UserRepositories;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
@@ -50,9 +48,9 @@ public abstract class ApplicationContext implements Closeable {
     private final @NonNull DocumentSearchGenerator documentSearchGenerator = this.createDocumentSearchGenerator();
     private final @NonNull DocumentRecommendationGenerator documentRecommendationGenerator = this.createDocumentRecommendationGenerator();
 
-    private final @NonNull UserSearchGenerator<Administrator> administratorSearchGenerator = this.createUserSearchGenerator();
-    private final @NonNull UserSearchGenerator<Patron> patronSearchGenerator = this.createUserSearchGenerator();
-    private final @NonNull UserSearchGenerator<Staff> staffSearchGenerator = this.createUserSearchGenerator();
+    private final @NonNull AdministratorSearchGenerator administratorSearchGenerator = this.createAdministratorSearchGenerator();
+    private final @NonNull PatronSearchGenerator patronSearchGenerator = this.createPatronSearchGenerator();
+    private final @NonNull StaffSearchGenerator staffSearchGenerator = this.createStaffSearchGenerator();
 
     private final @NonNull DocumentQrCodeGenerator documentQrCodeGenerator = this.createDocumentQrCodeGenerator();
     private final @NonNull DocumentUrlGenerator documentUrlGenerator = this.createDocumentUrlGenerator();
@@ -91,7 +89,6 @@ public abstract class ApplicationContext implements Closeable {
     ));
 
     protected abstract @NonNull DocumentRepository createDocumentRepository();
-
     protected @NonNull List<DocumentRepository> createRetrievalDocumentRepositories() {
         return List.of();
     }
@@ -106,7 +103,10 @@ public abstract class ApplicationContext implements Closeable {
 
     protected abstract @NonNull DocumentSearchGenerator createDocumentSearchGenerator();
     protected abstract @NonNull DocumentRecommendationGenerator createDocumentRecommendationGenerator();
-    protected abstract <User extends BaseUser> @NonNull UserSearchGenerator<User> createUserSearchGenerator();
+
+    protected abstract @NonNull AdministratorSearchGenerator createAdministratorSearchGenerator();
+    protected abstract @NonNull PatronSearchGenerator createPatronSearchGenerator();
+    protected abstract @NonNull StaffSearchGenerator createStaffSearchGenerator();
 
     protected abstract @NonNull DocumentQrCodeGenerator createDocumentQrCodeGenerator();
     protected abstract @NonNull DocumentUrlGenerator createDocumentUrlGenerator();

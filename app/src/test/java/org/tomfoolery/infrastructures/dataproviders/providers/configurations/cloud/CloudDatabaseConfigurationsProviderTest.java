@@ -28,7 +28,7 @@ public class CloudDatabaseConfigurationsProviderTest extends BaseUnitTest<CloudD
             assertTrue(connection.isValid(5), "Connection should be valid");
 
         } catch (SQLException e) {
-            fail("Failed to connect to the database: " + e.getMessage());
+            fail("Failed to connect to the database:");
         }
     }
 

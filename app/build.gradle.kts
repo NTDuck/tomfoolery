@@ -226,10 +226,6 @@ tasks.register<JavaExec>("runConsole") {
     mainClass = "${project.group}.configurations.monolith.console.Application"
     classpath = sourceSets["main"].runtimeClasspath
 
-    // Specify application context
-    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.FullyMockedInMemoryTestApplicationContext"
-    // environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.PartiallyMockedInMemoryTestApplicationContext"
-
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`
 }
@@ -252,7 +248,7 @@ tasks.register<JavaExec>("runJavaFX") {
 tasks.named<Test>("test") {
     // For unit testing
     useTestNG {
-        //excludeGroups("cloud")
+        excludeGroups("cloud")
     }
 
     // systemProperties["file.encoding"] = "ISO-8859-1"

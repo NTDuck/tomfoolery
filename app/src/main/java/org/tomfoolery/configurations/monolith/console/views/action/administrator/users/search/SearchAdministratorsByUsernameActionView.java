@@ -12,9 +12,8 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActio
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.AdministratorSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.usecases.external.administrator.users.search.SearchAdministratorsByUsernameUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetAdministratorByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchAdministratorsByUsernameController;
@@ -24,14 +23,14 @@ import java.util.List;
 public final class SearchAdministratorsByUsernameActionView extends UserActionView {
     private final @NonNull SearchAdministratorsByUsernameController searchAdministratorsByUsernameController;
 
-    public static @NonNull SearchAdministratorsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Administrator> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchAdministratorsByUsernameActionView(ioProvider, userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchAdministratorsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull AdministratorSearchGenerator administratorSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchAdministratorsByUsernameActionView(ioProvider, administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchAdministratorsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Administrator> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchAdministratorsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull AdministratorSearchGenerator administratorSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.searchAdministratorsByUsernameController = SearchAdministratorsByUsernameController.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.searchAdministratorsByUsernameController = SearchAdministratorsByUsernameController.of(administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

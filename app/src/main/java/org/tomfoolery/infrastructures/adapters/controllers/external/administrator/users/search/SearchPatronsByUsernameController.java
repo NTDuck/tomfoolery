@@ -5,7 +5,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.external.administrator.users.search.SearchPatronsByUsernameUseCase;
@@ -19,12 +19,12 @@ import java.util.stream.StreamSupport;
 public final class SearchPatronsByUsernameController implements ThrowableFunction<SearchPatronsByUsernameController.RequestObject, SearchPatronsByUsernameController.ViewModel> {
     private final @NonNull SearchPatronsByUsernameUseCase searchAdministratorsByUsernameUseCase;
 
-    public static @NonNull SearchPatronsByUsernameController of(@NonNull UserSearchGenerator<Patron> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchPatronsByUsernameController(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchPatronsByUsernameController of(@NonNull PatronSearchGenerator patronSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchPatronsByUsernameController(patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchPatronsByUsernameController(@NonNull UserSearchGenerator<Patron> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.searchAdministratorsByUsernameUseCase = SearchPatronsByUsernameUseCase.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    private SearchPatronsByUsernameController(@NonNull PatronSearchGenerator patronSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.searchAdministratorsByUsernameUseCase = SearchPatronsByUsernameUseCase.of(patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
