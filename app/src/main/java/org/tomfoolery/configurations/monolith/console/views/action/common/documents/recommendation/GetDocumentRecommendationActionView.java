@@ -14,10 +14,10 @@ import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.recommendation.DocumentRecommendationGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.usecases.common.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.recommendation.GetDocumentRecommendationController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,14 +29,14 @@ public final class GetDocumentRecommendationActionView extends UserActionView {
 
     private final @NonNull GetDocumentRecommendationController getDocumentRecommendationController;
 
-    public static @NonNull GetDocumentRecommendationActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentRecommendationActionView(ioProvider, documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentRecommendationActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new GetDocumentRecommendationActionView(ioProvider, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private GetDocumentRecommendationActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private GetDocumentRecommendationActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRecommendationGenerator documentRecommendationGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.getDocumentRecommendationController = GetDocumentRecommendationController.of(documentRepository, documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentRecommendationController = GetDocumentRecommendationController.of(documentRecommendationGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @Override

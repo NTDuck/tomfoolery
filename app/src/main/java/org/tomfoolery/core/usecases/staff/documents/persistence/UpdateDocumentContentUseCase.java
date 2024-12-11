@@ -13,7 +13,7 @@ import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 
 import java.time.Instant;
 import java.util.Set;
@@ -54,7 +54,7 @@ public final class UpdateDocumentContentUseCase extends AuthenticatedUserUseCase
 
         val rawNewDocumentContent = request.getNewDocumentContent();
         val newDocumentContent = DocumentContent.of(DocumentContent.Id.of(documentId), rawNewDocumentContent);
-        // this.ensureDocumentContentIsValid(newDocumentContent);
+        this.ensureDocumentContentIsValid(newDocumentContent);
 
         this.documentContentRepository.save(newDocumentContent);
 

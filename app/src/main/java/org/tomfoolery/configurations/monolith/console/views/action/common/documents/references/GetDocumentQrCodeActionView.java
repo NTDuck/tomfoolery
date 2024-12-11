@@ -12,22 +12,24 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.common.documents.references.GetDocumentQrCodeUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.references.GetDocumentQrCodeController;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.io.IOException;
 
 public final class GetDocumentQrCodeActionView extends UserActionView {
     private final @NonNull GetDocumentQrCodeController getDocumentQrCodeController;
+    private final @NonNull FileStorageProvider fileStorageProvider;
 
-    public static @NonNull GetDocumentQrCodeActionView of(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentQrCodeActionView(ioProvider, hybridDocumentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentQrCodeActionView of(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new GetDocumentQrCodeActionView(ioProvider, hybridDocumentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private GetDocumentQrCodeActionView(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private GetDocumentQrCodeActionView(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull DocumentQrCodeGenerator documentQrCodeGenerator, @NonNull DocumentUrlGenerator documentUrlGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.getDocumentQrCodeController = GetDocumentQrCodeController.of(hybridDocumentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentQrCodeController = GetDocumentQrCodeController.of(hybridDocumentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
+        this.fileStorageProvider = fileStorageProvider;
     }
 
     @Override
@@ -40,7 +42,7 @@ public final class GetDocumentQrCodeActionView extends UserActionView {
 
         } catch (GetDocumentQrCodeUseCase.AuthenticationTokenNotFoundException | GetDocumentQrCodeUseCase.AuthenticationTokenInvalidException exception) {
             this.onException(exception, GuestSelectionView.class);
-        } catch (GetDocumentQrCodeUseCase.DocumentISBNInvalidException | GetDocumentQrCodeUseCase.DocumentNotFoundException | GetDocumentQrCodeController.DocumentQrCodeUnavailable | DocumentQrCodeNotOpenableException exception) {
+        } catch (GetDocumentQrCodeUseCase.DocumentISBNInvalidException | GetDocumentQrCodeUseCase.DocumentNotFoundException | GetDocumentQrCodeController.DocumentQrCodeFileWriteException | DocumentQrCodeFileReadException exception) {
             this.onException(exception);
         }
     }
@@ -51,23 +53,23 @@ public final class GetDocumentQrCodeActionView extends UserActionView {
         return GetDocumentQrCodeController.RequestObject.of(ISBN);
     }
 
-    private void displayViewModel(GetDocumentQrCodeController.@NonNull ViewModel viewModel) throws DocumentQrCodeNotOpenableException {
+    private void displayViewModel(GetDocumentQrCodeController.@NonNull ViewModel viewModel) throws DocumentQrCodeFileReadException {
         val documentQrCodeFilePath = viewModel.getDocumentQrCodeFilePath();
 
         try {
-            TemporaryFileProvider.open(documentQrCodeFilePath);
+            fileStorageProvider.open(documentQrCodeFilePath);
         } catch (IOException exception) {
-            throw new DocumentQrCodeNotOpenableException();
+            throw new DocumentQrCodeFileReadException();
         }
 
         this.ioProvider.writeLine(Message.Format.SUCCESS, "The QR code should be opened promptly");
     }
 
-    private void onSuccess(GetDocumentQrCodeController.@NonNull ViewModel viewModel) throws DocumentQrCodeNotOpenableException {
+    private void onSuccess(GetDocumentQrCodeController.@NonNull ViewModel viewModel) throws DocumentQrCodeFileReadException {
         this.nextViewClass = cachedViewClass;
 
         this.displayViewModel(viewModel);
     }
 
-        private static class DocumentQrCodeNotOpenableException extends Exception {}
+    private static class DocumentQrCodeFileReadException extends Exception {}
 }

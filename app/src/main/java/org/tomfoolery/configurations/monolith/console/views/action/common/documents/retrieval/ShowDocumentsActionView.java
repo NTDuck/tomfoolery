@@ -17,20 +17,21 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.usecases.common.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.ShowDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
 
 public final class ShowDocumentsActionView extends UserActionView {
     private final @NonNull ShowDocumentsController showDocumentsController;
 
-    public static @NonNull ShowDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowDocumentsActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new ShowDocumentsActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private ShowDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.showDocumentsController = ShowDocumentsController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.showDocumentsController = ShowDocumentsController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,14 +30,14 @@ public final class SearchDocumentsActionView extends UserActionView {
 
     private final @NonNull SearchDocumentsController controller;
 
-    public static @NonNull SearchDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchDocumentsActionView(ioProvider, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new SearchDocumentsActionView(ioProvider, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private SearchDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.controller = SearchDocumentsController.of(documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = SearchDocumentsController.of(documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @Override

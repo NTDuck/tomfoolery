@@ -10,22 +10,24 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.io.IOException;
 
 public final class GetDocumentByIdActionView extends UserActionView {
     private final @NonNull GetDocumentByIdController getDocumentByIdController;
+    private final @NonNull FileStorageProvider fileStorageProvider;
 
-    public static @NonNull GetDocumentByIdActionView of(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new GetDocumentByIdActionView(ioProvider, hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull GetDocumentByIdActionView of(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new GetDocumentByIdActionView(ioProvider, hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private GetDocumentByIdActionView(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private GetDocumentByIdActionView(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.getDocumentByIdController = GetDocumentByIdController.of(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentByIdController = GetDocumentByIdController.of(hybridDocumentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
+        this.fileStorageProvider = fileStorageProvider;
     }
 
     @Override
@@ -38,7 +40,7 @@ public final class GetDocumentByIdActionView extends UserActionView {
 
         } catch (GetDocumentByIdUseCase.AuthenticationTokenNotFoundException | GetDocumentByIdUseCase.AuthenticationTokenInvalidException exception) {
             this.onException(exception, GuestSelectionView.class);
-        } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException | GetDocumentByIdUseCase.DocumentNotFoundException | DocumentCoverImageNotOpenableException exception) {
+        } catch (GetDocumentByIdUseCase.DocumentISBNInvalidException | GetDocumentByIdUseCase.DocumentNotFoundException | DocumentCoverImageFileReadException exception) {
             this.onException(exception);
         }
     }
@@ -49,13 +51,13 @@ public final class GetDocumentByIdActionView extends UserActionView {
         return GetDocumentByIdController.RequestObject.of(ISBN);
     }
 
-    private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageNotOpenableException {
+    private void displayViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageFileReadException {
         val documentCoverImageFilePath = viewModel.getDocumentCoverImageFilePath();
 
         try {
-            TemporaryFileProvider.open(documentCoverImageFilePath);
+            this.fileStorageProvider.open(documentCoverImageFilePath);
         } catch (IOException exception) {
-            this.ioProvider.writeLine(Message.Format.ERROR, "Failed to open document cover image");
+            throw new DocumentCoverImageFileReadException();
         }
 
         this.ioProvider.writeLine("""
@@ -81,11 +83,11 @@ public final class GetDocumentByIdActionView extends UserActionView {
         );
     }
 
-    private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageNotOpenableException {
+    private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) throws DocumentCoverImageFileReadException {
         this.nextViewClass = cachedViewClass;
 
         this.displayViewModel(viewModel);
     }
 
-    private static class DocumentCoverImageNotOpenableException extends Exception {}
+    private static class DocumentCoverImageFileReadException extends Exception {}
 }

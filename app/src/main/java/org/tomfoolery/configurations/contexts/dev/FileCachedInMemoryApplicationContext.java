@@ -1,5 +1,7 @@
-package org.tomfoolery.configurations.contexts.prod;
+package org.tomfoolery.configurations.contexts.dev;
 
+
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
@@ -10,6 +12,7 @@ import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSea
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
@@ -19,82 +22,93 @@ import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.InMemoryLinearUserSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
-import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.documents.CloudDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentRecommendationGenerator;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators.CloudIndexedDocumentSearchGenerator;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudBorrowingSessionRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudDocumentContentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudReviewRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudAdministratorRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudPatronRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.CloudStaffRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.FileCachedInMemoryDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.FileCachedInMemoryDocumentContentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryBorrowingSessionRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryReviewRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryPatronRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryStaffRepository;
 
-public class CloudApplicationContext extends ApplicationContext {
-    DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
-    CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
+import java.util.List;
 
+@NoArgsConstructor
+public class FileCachedInMemoryApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
-        return CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider);
+        val fileStorageProvider = this.getFileStorageProvider();
+        return FileCachedInMemoryDocumentRepository.of(fileStorageProvider);
+    }
+
+    @Override
+    protected @NonNull List<DocumentRepository> createRetrievalDocumentRepositories() {
+        val httpClientProvider = this.getHttpClientProvider();
+
+        return List.of(
+            GoogleApiDocumentRepository.of(httpClientProvider)
+        );
     }
 
     @Override
     protected @NonNull AdministratorRepository createAdministratorRepository() {
-        return CloudAdministratorRepository.of(cloudDatabaseConfigurationsProvider);
+        return InMemoryAdministratorRepository.of();
     }
 
     @Override
     protected @NonNull PatronRepository createPatronRepository() {
-        return CloudPatronRepository.of(cloudDatabaseConfigurationsProvider);
+        return InMemoryPatronRepository.of();
     }
 
     @Override
     protected @NonNull StaffRepository createStaffRepository() {
-        return CloudStaffRepository.of(cloudDatabaseConfigurationsProvider);
+        return InMemoryStaffRepository.of();
     }
 
     @Override
     protected @NonNull DocumentContentRepository createDocumentContentRepository() {
-        return CloudDocumentContentRepository.of(cloudDatabaseConfigurationsProvider);
+        val fileStorageProvider = this.getFileStorageProvider();
+        return FileCachedInMemoryDocumentContentRepository.of(fileStorageProvider);
     }
 
     @Override
     protected @NonNull BorrowingSessionRepository createBorrowingSessionRepository() {
-        return CloudBorrowingSessionRepository.of(cloudDatabaseConfigurationsProvider);
+        return InMemoryBorrowingSessionRepository.of();
     }
 
     @Override
     protected @NonNull ReviewRepository createReviewRepository() {
-        return CloudReviewRepository.of(cloudDatabaseConfigurationsProvider);
+        return InMemoryReviewRepository.of();
     }
 
     @Override
     protected @NonNull DocumentSearchGenerator createDocumentSearchGenerator() {
-        return CloudIndexedDocumentSearchGenerator.of(cloudDatabaseConfigurationsProvider);
+        return InMemoryIndexedDocumentSearchGenerator.of();
     }
 
     @Override
     protected @NonNull DocumentRecommendationGenerator createDocumentRecommendationGenerator() {
-        return CloudIndexedDocumentRecommendationGenerator.of(CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider));
+        return InMemoryIndexedDocumentRecommendationGenerator.of();
     }
 
     @Override
     protected @NonNull <User extends BaseUser> UserSearchGenerator<User> createUserSearchGenerator() {
-        return null;
+        return InMemoryLinearUserSearchGenerator.of();
     }
 
     @Override

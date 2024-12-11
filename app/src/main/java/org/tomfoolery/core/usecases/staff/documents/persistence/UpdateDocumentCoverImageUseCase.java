@@ -11,7 +11,7 @@ import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 
 import java.time.Instant;
 import java.util.Set;
@@ -47,7 +47,7 @@ public final class UpdateDocumentCoverImageUseCase extends AuthenticatedUserUseC
         val document = this.getDocumentById(documentId);
 
         val newDocumentCoverImage = request.getNewDocumentCoverImage();
-        // this.ensureDocumentCoverImageIsValid(newDocumentCoverImage);
+        this.ensureDocumentCoverImageIsValid(newDocumentCoverImage);
 
         document.setCoverImage(newDocumentCoverImage);
         this.markDocumentAsLastModifiedByStaff(document, staffId);

@@ -19,20 +19,21 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.usecases.staff.documents.retrieval.ShowDocumentsWithoutContentUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.retrieval.ShowDocumentsWithoutContentController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
 
 public final class ShowDocumentsWithoutContentActionView extends UserActionView {
     private final @NonNull ShowDocumentsWithoutContentController showDocumentsWithoutContentController;
 
-    public static @NonNull ShowDocumentsWithoutContentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowDocumentsWithoutContentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowDocumentsWithoutContentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new ShowDocumentsWithoutContentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private ShowDocumentsWithoutContentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowDocumentsWithoutContentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.showDocumentsWithoutContentController = ShowDocumentsWithoutContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.showDocumentsWithoutContentController = ShowDocumentsWithoutContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @Override

@@ -228,6 +228,7 @@ tasks.register<JavaExec>("runConsole") {
 
     // Specify application context
     environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.FullyMockedInMemoryTestApplicationContext"
+    // environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.PartiallyMockedInMemoryTestApplicationContext"
 
     // Prevents non-blocking `java.util.Scanner`
     standardInput = System.`in`
@@ -236,8 +237,6 @@ tasks.register<JavaExec>("runConsole") {
 tasks.register<JavaExec>("runJavaFX") {
     mainClass = "${project.group}.configurations.monolith.gui.MainApplication"
     classpath = sourceSets["main"].runtimeClasspath
-
-    environment["tomfoolery.context"] = "${project.group}.configurations.contexts.test.FullyMockedInMemoryTestApplicationContext"
 
     // Ensure JavaFX runtime components are registered
     jvmArgs = listOf(

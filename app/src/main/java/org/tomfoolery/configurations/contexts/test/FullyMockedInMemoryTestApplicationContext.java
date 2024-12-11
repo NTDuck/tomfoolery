@@ -4,12 +4,12 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
+import org.tomfoolery.configurations.contexts.dev.FileCachedInMemoryApplicationContext;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.relations.DocumentContent;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.contracts.ddd;
-import org.tomfoolery.configurations.contexts.dev.InMemoryApplicationContext;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.abc.EntityMocker;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.documents.DocumentMocker;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @NoArgsConstructor
-public class FullyMockedInMemoryTestApplicationContext extends InMemoryApplicationContext {
+public class FullyMockedInMemoryTestApplicationContext extends FileCachedInMemoryApplicationContext {
     private static final @Unsigned int NUMBER_OF_DOCUMENTS = 4444;
     private static final @Unsigned int NUMBER_OF_ADMINISTRATORS = 4;
     private static final @Unsigned int NUMBER_OF_PATRONS = 44;
