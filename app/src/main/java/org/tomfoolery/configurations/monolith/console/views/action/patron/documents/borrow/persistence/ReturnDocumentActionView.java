@@ -10,8 +10,8 @@ import org.tomfoolery.configurations.monolith.console.views.selection.PatronSele
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.ReturnDocumentUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
+import org.tomfoolery.core.usecases.external.patron.documents.borrow.persistence.ReturnDocumentUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.persistence.ReturnDocumentController;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 public final class ReturnDocumentActionView extends UserActionView {

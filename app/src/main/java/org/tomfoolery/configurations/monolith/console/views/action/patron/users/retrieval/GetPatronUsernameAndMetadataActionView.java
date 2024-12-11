@@ -9,8 +9,8 @@ import org.tomfoolery.configurations.monolith.console.views.selection.PatronSele
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.patron.users.retrieval.GetPatronUsernameAndMetadataUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.users.retrieval.GetPatronUsernameAndMetadataController;
+import org.tomfoolery.core.usecases.external.patron.users.retrieval.GetPatronUsernameAndMetadataUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.retrieval.GetPatronUsernameAndMetadataController;
 
 public final class GetPatronUsernameAndMetadataActionView extends UserActionView {
     private final @NonNull GetPatronUsernameAndMetadataController getPatronUsernameAndMetadataController;

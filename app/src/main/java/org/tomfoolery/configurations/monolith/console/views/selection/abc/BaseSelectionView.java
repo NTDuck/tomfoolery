@@ -1,6 +1,8 @@
 package org.tomfoolery.configurations.monolith.console.views.selection.abc;
 
-import com.github.freva.asciitable.*;
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -10,38 +12,46 @@ import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.utils.helpers.FontFormatter;
 import org.tomfoolery.configurations.monolith.console.views.abc.BaseView;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
+import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 
 import java.util.List;
 
 public abstract class BaseSelectionView extends BaseView {
     private static final @NonNull String TITLE = "tomfoolery";
 
-    private final @NonNull SelectionController controller;
+    private final @NonNull GetStatisticsController getStatisticsController;
+    private final @NonNull SelectionController selectionController;
 
-    protected BaseSelectionView(@NonNull IOProvider ioProvider, @NonNull List<SelectionItem> selectionItems) {
+    protected BaseSelectionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AdministratorRepository administratorRepository, @NonNull PatronRepository patronRepository, @NonNull StaffRepository staffRepository, @NonNull List<SelectionItem> selectionItems) {
         super(ioProvider);
 
-        this.controller = SelectionController.of(selectionItems);
+        this.getStatisticsController = GetStatisticsController.of(documentRepository, administratorRepository, patronRepository, staffRepository);
+        this.selectionController = SelectionController.of(selectionItems);
     }
 
     @Override
     public final void run() {
         this.displayTitle();
+
+        val statisticsViewModel = this.getStatisticsController.get();
+        this.displayStatisticsViewModel(statisticsViewModel);
+
         this.displayPrompt();
 
-        val viewModel = this.controller.get();
-        this.displayViewModel(viewModel);
+        val selectionViewModel = this.selectionController.get();
+        this.displaySelectionViewModel(selectionViewModel);
 
         try {
             val requestObject = this.collectRequestObject();
-            val responseModel = this.controller.apply(requestObject);
+            val responseModel = this.selectionController.apply(requestObject);
             this.onSuccess(responseModel);
 
-        } catch (SelectionItemIndexInvalidException exception) {
-            this.onSelectionItemIndexInvalidException();
-
-        } catch (SelectionController.SelectionItemNotFoundException exception) {
-            this.onSelectionItemNotFoundException();
+        } catch (SelectionItemIndexInvalidException | SelectionController.SelectionItemNotFoundException exception) {
+            this.onException(exception, this.getClass());
         }
     }
 
@@ -53,16 +63,37 @@ public abstract class BaseSelectionView extends BaseView {
         this.ioProvider.writeLine(formattedTitle);
     }
 
-    private void displayPrompt() {
-        val prompt = this.getPrompt();
+    private void displayStatisticsViewModel(GetStatisticsController.@NonNull ViewModel viewModel) {
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(List.of(viewModel), List.of(
+                new Column()
+                    .header("D")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.CENTER)
+                    .with(model -> String.valueOf(model.getNumberOfDocuments())),
+                new Column()
+                    .header("A")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.CENTER)
+                    .with(model -> String.valueOf(model.getNumberOfAdministrators())),
+                new Column()
+                    .header("P")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.CENTER)
+                    .with(model -> String.valueOf(model.getNumberOfPatrons())),
+                new Column()
+                    .header("S")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.CENTER)
+                    .with(model -> String.valueOf(model.getNumberOfStaff()))
+            ))
+            .asString();
 
-        if (prompt.isBlank())
-            return;
-
-        this.ioProvider.writeLine(prompt);
+        this.ioProvider.writeLine(table);
     }
 
-    private void displayViewModel(SelectionController.@NonNull ViewModel viewModel) {
+    private void displaySelectionViewModel(SelectionController.@NonNull ViewModel viewModel) {
         val table = AsciiTable.builder()
             .border(AsciiTable.NO_BORDERS)
             .data(viewModel.getSelectionItems(), List.of(
@@ -93,41 +124,22 @@ public abstract class BaseSelectionView extends BaseView {
     private void onSuccess(SelectionController.@NonNull ResponseModel responseModel) {
         this.nextViewClass = responseModel.getNextViewClass();
 
-        val message = getMessageOnSuccess();
-        this.ioProvider.writeLine(message);
+        this.ioProvider.writeLine(Message.Format.SUCCESS, "Redirecting ...");
         this.ioProvider.writeLine("");
     }
 
-    private void onSelectionItemIndexInvalidException() {
-        this.nextViewClass = this.getClass();
+    private void displayPrompt() {
+        val prompt = this.getPrompt();
 
-        val message = getMessageOnInputMismatchException();
-        this.ioProvider.writeLine(message);
+        if (prompt.isBlank())
+            return;
+
+        this.ioProvider.writeLine(prompt);
     }
 
-    private void onSelectionItemNotFoundException() {
-        this.nextViewClass = this.getClass();
-
-        val message = getMessageOnItemNotFoundException();
-        this.ioProvider.writeLine(message);
-    }
-
-    @SneakyThrows
     protected @NonNull String getPrompt() {
         return String.format("Please select something%s",
             loggedInUsername != null ? String.format(", %s", loggedInUsername) : "");
-    }
-
-    protected @NonNull String getMessageOnSuccess() {
-        return String.format(Message.Format.SUCCESS, "Redirecting ...");
-    }
-
-    protected @NonNull String getMessageOnInputMismatchException() {
-        return String.format(Message.Format.ERROR, "Invalid input format");
-    }
-
-    protected @NonNull String getMessageOnItemNotFoundException() {
-        return String.format(Message.Format.ERROR, "Selection not found");
     }
 
     private static class SelectionItemIndexInvalidException extends Exception {}

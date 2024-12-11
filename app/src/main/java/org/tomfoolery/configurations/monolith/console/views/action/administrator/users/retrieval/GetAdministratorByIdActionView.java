@@ -10,8 +10,8 @@ import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.administrator.users.retrieval.GetAdministratorByIdUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.GetAdministratorByIdController;
+import org.tomfoolery.core.usecases.external.administrator.users.retrieval.GetAdministratorByIdUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetAdministratorByIdController;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
 public final class GetAdministratorByIdActionView extends UserActionView {

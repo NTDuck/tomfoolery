@@ -6,7 +6,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.domain.relations.Review;
-import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
+import org.tomfoolery.core.usecases.external.patron.documents.review.persistence.AddDocumentReviewUseCase;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.abc.EntityMocker;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.documents.DocumentMocker;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.users.PatronMocker;

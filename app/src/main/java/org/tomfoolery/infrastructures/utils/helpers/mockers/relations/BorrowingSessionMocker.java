@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.domain.relations.BorrowingSession;
-import org.tomfoolery.core.usecases.patron.documents.borrow.persistence.BorrowDocumentUseCase;
+import org.tomfoolery.core.usecases.external.patron.documents.borrow.persistence.BorrowDocumentUseCase;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.abc.EntityMocker;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.common.TimestampsMocker;
 import org.tomfoolery.infrastructures.utils.helpers.mockers.documents.DocumentMocker;

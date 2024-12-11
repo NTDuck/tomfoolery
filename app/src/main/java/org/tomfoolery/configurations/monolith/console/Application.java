@@ -65,11 +65,10 @@ public final class Application implements Runnable, Closeable {
 
         this.views = Views.of(
             // Selection views
-            GuestSelectionView.of(this.ioProvider),
-
-            AdministratorSelectionView.of(this.ioProvider),
-            PatronSelectionView.of(this.ioProvider),
-            StaffSelectionView.of(this.ioProvider),
+            GuestSelectionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAdministratorRepository(), this.context.getPatronRepository(), this.context.getStaffRepository()),
+            AdministratorSelectionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAdministratorRepository(), this.context.getPatronRepository(), this.context.getStaffRepository()),
+            PatronSelectionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAdministratorRepository(), this.context.getPatronRepository(), this.context.getStaffRepository()),
+            StaffSelectionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAdministratorRepository(), this.context.getPatronRepository(), this.context.getStaffRepository()),
 
             // Guest action views
             CreatePatronAccountActionView.of(this.ioProvider, this.context.getPatronRepository(), this.context.getPasswordEncoder()),
