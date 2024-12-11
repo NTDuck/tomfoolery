@@ -10,7 +10,9 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.AdministratorSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.StaffSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
@@ -19,10 +21,12 @@ import org.tomfoolery.core.dataproviders.repositories.users.AdministratorReposit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearAdministratorSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearPatronSearchGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearStaffSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryBorrowingSessionRepository;
@@ -30,7 +34,6 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relati
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryReviewRepository;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.InMemoryLinearUserSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
@@ -59,7 +62,7 @@ public class InMemoryApplicationContext extends ApplicationContext {
         val httpClientProvider = this.getHttpClientProvider();
 
         return List.of(
-                GoogleApiDocumentRepository.of(httpClientProvider)
+            GoogleApiDocumentRepository.of(httpClientProvider)
         );
     }
 
@@ -104,8 +107,18 @@ public class InMemoryApplicationContext extends ApplicationContext {
     }
 
     @Override
-    protected @NonNull <User extends BaseUser> UserSearchGenerator<User> createUserSearchGenerator() {
-        return InMemoryLinearUserSearchGenerator.of();
+    protected @NonNull AdministratorSearchGenerator createAdministratorSearchGenerator() {
+        return InMemoryLinearAdministratorSearchGenerator.of();
+    }
+
+    @Override
+    protected @NonNull PatronSearchGenerator createPatronSearchGenerator() {
+        return InMemoryLinearPatronSearchGenerator.of();
+    }
+
+    @Override
+    protected @NonNull StaffSearchGenerator createStaffSearchGenerator() {
+        return InMemoryLinearStaffSearchGenerator.of();
     }
 
     @Override

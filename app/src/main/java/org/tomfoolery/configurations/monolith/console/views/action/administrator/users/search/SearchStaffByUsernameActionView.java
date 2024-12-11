@@ -12,9 +12,8 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActio
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.StaffSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.usecases.external.administrator.users.search.SearchStaffByUsernameUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetStaffByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchStaffByUsernameController;
@@ -24,14 +23,14 @@ import java.util.List;
 public final class SearchStaffByUsernameActionView extends UserActionView {
     private final @NonNull SearchStaffByUsernameController searchStaffByUsernameController;
 
-    public static @NonNull SearchStaffByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Staff> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchStaffByUsernameActionView(ioProvider, userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchStaffByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull StaffSearchGenerator staffSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchStaffByUsernameActionView(ioProvider, staffSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchStaffByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Staff> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchStaffByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull StaffSearchGenerator staffSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.searchStaffByUsernameController = SearchStaffByUsernameController.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.searchStaffByUsernameController = SearchStaffByUsernameController.of(staffSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

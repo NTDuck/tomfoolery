@@ -5,7 +5,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.AdministratorSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.domain.users.Administrator;
 import org.tomfoolery.core.usecases.external.administrator.users.search.SearchAdministratorsByUsernameUseCase;
@@ -19,12 +19,12 @@ import java.util.stream.StreamSupport;
 public final class SearchAdministratorsByUsernameController implements ThrowableFunction<SearchAdministratorsByUsernameController.RequestObject, SearchAdministratorsByUsernameController.ViewModel> {
     private final @NonNull SearchAdministratorsByUsernameUseCase searchAdministratorsByUsernameUseCase;
 
-    public static @NonNull SearchAdministratorsByUsernameController of(@NonNull UserSearchGenerator<Administrator> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchAdministratorsByUsernameController(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchAdministratorsByUsernameController of(@NonNull AdministratorSearchGenerator administratorSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchAdministratorsByUsernameController(administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchAdministratorsByUsernameController(@NonNull UserSearchGenerator<Administrator> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        this.searchAdministratorsByUsernameUseCase = SearchAdministratorsByUsernameUseCase.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    private SearchAdministratorsByUsernameController(@NonNull AdministratorSearchGenerator administratorSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        this.searchAdministratorsByUsernameUseCase = SearchAdministratorsByUsernameUseCase.of(administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

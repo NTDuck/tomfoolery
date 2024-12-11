@@ -1,8 +1,8 @@
-package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users;
+package org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.abc;
 
 import lombok.Locked;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.abc.UserSearchGenerator;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.abc.InMemoryLinearGenerator;
 

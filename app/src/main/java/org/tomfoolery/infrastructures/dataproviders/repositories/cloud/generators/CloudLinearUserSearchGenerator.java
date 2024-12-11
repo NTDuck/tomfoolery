@@ -1,16 +1,14 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.generators;
 
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.abc.UserSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.abc.UserRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 

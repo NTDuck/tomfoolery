@@ -12,9 +12,8 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActio
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.core.usecases.external.administrator.users.search.SearchPatronsByUsernameUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetPatronByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchPatronsByUsernameController;
@@ -24,14 +23,14 @@ import java.util.List;
 public final class SearchPatronsByUsernameActionView extends UserActionView {
     private final @NonNull SearchPatronsByUsernameController searchPatronsByUsernameController;
 
-    public static @NonNull SearchPatronsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Patron> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchPatronsByUsernameActionView(ioProvider, userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchPatronsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull PatronSearchGenerator patronSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchPatronsByUsernameActionView(ioProvider, patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchPatronsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Patron> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchPatronsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull PatronSearchGenerator patronSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.searchPatronsByUsernameController = SearchPatronsByUsernameController.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.searchPatronsByUsernameController = SearchPatronsByUsernameController.of(patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
