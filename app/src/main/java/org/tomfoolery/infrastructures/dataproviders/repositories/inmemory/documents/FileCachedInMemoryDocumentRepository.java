@@ -103,6 +103,10 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
     @Locked.Read
     public @Nullable Page<Document> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val paginatedMinimalDocuments = this.minimalDocumentRepository.showPaginated(pageIndex, maxPageSize);
+
+        if (paginatedMinimalDocuments == null)
+            return null;
+
         return Page.fromPaginated(paginatedMinimalDocuments, minimalDocument -> {
             val documentId = minimalDocument.getId();
             val documentCoverImage = this.getDocumentCoverImageById(documentId);

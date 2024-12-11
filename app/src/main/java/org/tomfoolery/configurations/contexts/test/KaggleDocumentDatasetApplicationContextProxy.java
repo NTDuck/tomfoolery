@@ -17,16 +17,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Year;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(staticName = "of")
 public class KaggleDocumentDatasetApplicationContextProxy implements ApplicationContextProxy {
     private static final @NonNull String DOCUMENT_DATASET_PATH = "datasets/kaggle/saurabhbagchi/books.csv";
 
+    private final @NonNull Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
     private final @NonNull DocumentMocker documentMocker = DocumentMocker.of();
 
     @Override
     @SneakyThrows
-    public void intercept(@NonNull ApplicationContext applicationContext) {
+    public @NonNull CompletableFuture<Void> intercept(@NonNull ApplicationContext applicationContext) {
+        System.out.println("Kaggle!@");
+
         val documentRepository = applicationContext.getDocumentRepository();
         val httpClientProvider = applicationContext.getHttpClientProvider();
 
@@ -35,11 +43,15 @@ public class KaggleDocumentDatasetApplicationContextProxy implements Application
         @Cleanup
         val csvLines = Files.lines(csvPath);
 
-        csvLines
-            .skip(1)   // Skip header row
-            .parallel()
-            .map(csvRow -> this.parseCsvRow(httpClientProvider, csvRow))
-            .forEach(documentRepository::save);
+        val futures = csvLines.skip(1)   // Skip header row
+            // .parallel()
+            .map(csvRow -> CompletableFuture
+                .supplyAsync(() -> this.parseCsvRow(httpClientProvider, csvRow), this.executor)
+                .thenAccept(documentRepository::save)
+            )
+            .collect(Collectors.toUnmodifiableList());
+
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
     }
 
     private @NonNull Document parseCsvRow(@NonNull HttpClientProvider httpClientProvider, @NonNull String csvRow) {

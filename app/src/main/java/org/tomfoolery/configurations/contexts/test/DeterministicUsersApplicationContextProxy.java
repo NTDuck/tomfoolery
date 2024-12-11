@@ -44,12 +44,12 @@ public class DeterministicUsersApplicationContextProxy implements ApplicationCon
     private final @NonNull StaffMocker staffMocker = StaffMocker.of();
 
     @Override
-    public void intercept(@NonNull ApplicationContext applicationContext) {
-        CompletableFuture.allOf(
+    public @NonNull CompletableFuture<Void> intercept(@NonNull ApplicationContext applicationContext) {
+        return CompletableFuture.allOf(
             this.populateAdministratorRepository(applicationContext),
             this.populatePatronRepository(applicationContext),
             this.populateStaffRepository(applicationContext)
-        ).join();
+        );
     }
 
     private @NonNull CompletableFuture<Void> populateAdministratorRepository(@NonNull ApplicationContext applicationContext) {

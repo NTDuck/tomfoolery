@@ -43,14 +43,14 @@ public final class MockingApplicationContextProxy implements ApplicationContextP
     private final @NonNull DocumentContentMocker documentContentMocker = DocumentContentMocker.of();
 
     @Override
-    public void intercept(@NonNull ApplicationContext applicationContext) {
-        CompletableFuture.allOf(
+    public @NonNull CompletableFuture<Void> intercept(@NonNull ApplicationContext applicationContext) {
+        return CompletableFuture.allOf(
             this.populateDocumentRepository(applicationContext)
                 .thenCompose(_ -> this.populateDocumentContentRepository(applicationContext)),
             this.populateAdministratorRepository(applicationContext),
             this.populatePatronRepository(applicationContext),
             this.populateStaffRepository(applicationContext)
-        ).join();
+        );
     }
 
     private @NonNull CompletableFuture<Void> populateDocumentRepository(@NonNull ApplicationContext applicationContext) {
