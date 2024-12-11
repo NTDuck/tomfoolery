@@ -37,7 +37,7 @@ public class KaggleDocumentDatasetApplicationContextProxy implements Application
 
         csvLines
             .skip(1)   // Skip header row
-            // .parallel()
+            .parallel()
             .map(csvRow -> this.parseCsvRow(httpClientProvider, csvRow))
             .forEach(documentRepository::save);
     }
@@ -76,12 +76,12 @@ public class KaggleDocumentDatasetApplicationContextProxy implements Application
 
     private Document.@Nullable CoverImage loadCoverImage(@NonNull HttpClientProvider httpClientProvider, @NonNull String coverImageUrl) {
         try {
-            System.out.println(coverImageUrl);
             val rawCoverImage = httpClientProvider
                 .sendSynchronousGETForBytes(coverImageUrl, HttpClientProvider.Headers.builder().build());
             return Document.CoverImage.of(rawCoverImage);
 
         } catch (Exception exception) {
+            exception.printStackTrace();
             return null;
         }
     }

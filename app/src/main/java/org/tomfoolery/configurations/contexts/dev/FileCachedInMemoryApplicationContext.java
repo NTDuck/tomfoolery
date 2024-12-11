@@ -22,7 +22,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.AdministratorReposit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.IsbnSearchDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.recommendation.InMemoryIndexedDocumentRecommendationGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.documents.search.InMemoryIndexedDocumentSearchGenerator;
@@ -34,7 +34,7 @@ import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.r
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
-import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.builtin.BuiltinHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
@@ -131,7 +131,7 @@ public class FileCachedInMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentUrlGenerator createDocumentUrlGenerator() {
-        return CustomLandingPageDocumentUrlGenerator.of();
+        return IsbnSearchDocumentUrlGenerator.of();
     }
 
     @Override
@@ -157,7 +157,7 @@ public class FileCachedInMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull HttpClientProvider createHttpClientProvider() {
-        return BuiltinHttpClientProvider.of();
+        return OkHttpClientProvider.of();
     }
 
     @Override

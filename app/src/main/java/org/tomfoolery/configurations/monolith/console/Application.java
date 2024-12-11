@@ -152,17 +152,12 @@ public final class Application implements Runnable, Closeable {
             DeterministicUsersApplicationContextProxy.of(),
             KaggleDocumentDatasetApplicationContextProxy.of()
         ));
-        val interceptionFuture = CompletableFuture.runAsync(() -> applicationContextProxies.intercept(applicationContext));
+        CompletableFuture.runAsync(() -> applicationContextProxies.intercept(applicationContext));
 
         @Cleanup
         val application = Application.of(applicationContext);
 
         // Prevents blocking when application terminates
-        try {
-            application.run();
-        } finally {
-            interceptionFuture.cancel(true);
-            interceptionFuture.join();
-        }
+        application.run();
     }
 }
