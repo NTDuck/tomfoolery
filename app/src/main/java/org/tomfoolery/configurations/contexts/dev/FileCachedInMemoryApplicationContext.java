@@ -34,7 +34,7 @@ import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.r
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
-import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.builtin.BuiltinHttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
@@ -50,11 +50,12 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.
 
 import java.util.List;
 
-@NoArgsConstructor
+@NoArgsConstructor(staticName = "of")
 public class FileCachedInMemoryApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
         val fileStorageProvider = this.getFileStorageProvider();
+
         return FileCachedInMemoryDocumentRepository.of(fileStorageProvider);
     }
 
@@ -156,7 +157,7 @@ public class FileCachedInMemoryApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull HttpClientProvider createHttpClientProvider() {
-        return OkHttpClientProvider.of();
+        return BuiltinHttpClientProvider.of();
     }
 
     @Override

@@ -3,6 +3,11 @@ package org.tomfoolery.configurations.monolith.console;
 import lombok.Cleanup;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.contexts.dev.FileCachedInMemoryApplicationContext;
+import org.tomfoolery.configurations.contexts.test.DeterministicUsersApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.test.KaggleDocumentDatasetApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.test.MockingApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.utils.containers.ApplicationContextProxies;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.BuiltinIOProvider;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
 import org.tomfoolery.configurations.monolith.console.utils.containers.Views;
@@ -47,11 +52,11 @@ import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.infrastructures.utils.helpers.reflection.Closeable;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.MissingResourceException;
+import java.util.concurrent.CompletableFuture;
 
 public final class Application implements Runnable, Closeable {
-    private static final @NonNull String APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME = "tomfoolery.context";
-
     private final @NonNull ApplicationContext context;
     private final @NonNull IOProvider ioProvider = BuiltinIOProvider.of();
     private final @NonNull Views views;
@@ -139,61 +144,25 @@ public final class Application implements Runnable, Closeable {
         } while (viewClass != null);
     }
 
-    private static @NonNull ApplicationContext getApplicationContextFromEnvironment() {
-        val contextClassName = System.getenv(APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
-
-        if (contextClassName == null || contextClassName.isBlank()) {
-            throw new MissingResourceException(String.format("""
-            Required resource is missing: `ApplicationContext`.
-            Specify in `build.gradle.kts` as follows:
-
-            ```
-            tasks.register<JavaExec>("runXXX") {
-                environment[%s] = "<path.to.ApplicationContextYYY>"
-            }
-            ```""", APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME
-            ), contextClassName, APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
-        }
-
-        try {
-            val contextClass = Class.forName(contextClassName);
-            val contextConstructor = contextClass.getDeclaredConstructor();
-
-            return (ApplicationContext) contextConstructor.newInstance();
-
-        } catch (ClassNotFoundException exception) {
-            throw new MissingResourceException(String.format("""
-                Required resource is invalid: `ApplicationContext`.
-                Specify in `build.gradle.kts` as follows:
-                
-                ```
-                tasks.register<JavaExec>("runXXX") {
-                    environment[%s] = "<path.to.ApplicationContextYYY>"
-                }
-                ```""", APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME
-            ), contextClassName, APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
-
-        } catch (NoSuchMethodException | IllegalAccessException exception) {
-            throw new RuntimeException(String.format("""
-                Class `%s` must provide a public default constructor.
-                """, contextClassName));
-
-        } catch (InvocationTargetException exception) {
-            throw new RuntimeException(exception.getCause());
-
-        } catch (InstantiationException e) {
-            throw new RuntimeException(String.format("""
-                Class `%s` must not be abstract.
-                """, contextClassName));
-        }
-    }
-
     public static void main(@NonNull String[] args) throws Exception {
-        val applicationContext = getApplicationContextFromEnvironment();
+        val applicationContext = FileCachedInMemoryApplicationContext.of();
+
+        val applicationContextProxies = ApplicationContextProxies.of(List.of(
+            MockingApplicationContextProxy.of(),
+            DeterministicUsersApplicationContextProxy.of(),
+            KaggleDocumentDatasetApplicationContextProxy.of()
+        ));
+        val interceptionFuture = CompletableFuture.runAsync(() -> applicationContextProxies.intercept(applicationContext));
 
         @Cleanup
         val application = Application.of(applicationContext);
 
-        application.run();
+        // Prevents blocking when application terminates
+        try {
+            application.run();
+        } finally {
+            interceptionFuture.complete(null);
+            interceptionFuture.join();
+        }
     }
 }

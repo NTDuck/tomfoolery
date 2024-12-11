@@ -50,7 +50,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tik
 
 import java.util.List;
 
-@NoArgsConstructor
+@NoArgsConstructor(staticName = "of")
 public class InMemoryApplicationContext extends ApplicationContext {
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
