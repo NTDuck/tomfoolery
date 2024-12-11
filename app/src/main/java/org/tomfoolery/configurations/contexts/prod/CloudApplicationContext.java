@@ -24,9 +24,6 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearAdministratorSearchGenerator;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearPatronSearchGenerator;
-import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearStaffSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
@@ -47,67 +44,82 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.users.Clo
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 
-@NoArgsConstructor
+@NoArgsConstructor(staticName = "of")
 public class CloudApplicationContext extends ApplicationContext {
-    private static final @NonNull DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
-    private static final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
+    private static @NonNull CloudDatabaseConfigurationsProvider createCloudDatabaseConfigurationsProvider() {
+        DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
+        return CloudDatabaseConfigurationsProvider.of(dotenvProvider);
+    }
+
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull AdministratorRepository createAdministratorRepository() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudAdministratorRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull PatronRepository createPatronRepository() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudPatronRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull StaffRepository createStaffRepository() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudStaffRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull DocumentContentRepository createDocumentContentRepository() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudDocumentContentRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull BorrowingSessionRepository createBorrowingSessionRepository() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudBorrowingSessionRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull ReviewRepository createReviewRepository() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudReviewRepository.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull DocumentSearchGenerator createDocumentSearchGenerator() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudIndexedDocumentSearchGenerator.of(cloudDatabaseConfigurationsProvider);
     }
 
     @Override
     protected @NonNull DocumentRecommendationGenerator createDocumentRecommendationGenerator() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudIndexedDocumentRecommendationGenerator.of(CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override
     protected @NonNull AdministratorSearchGenerator createAdministratorSearchGenerator() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudLinearAdministratorSearchGenerator.of(CloudAdministratorRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override
     protected @NonNull PatronSearchGenerator createPatronSearchGenerator() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudLinearPatronSearchGenerator.of(CloudPatronRepository.of(cloudDatabaseConfigurationsProvider));
     }
 
     @Override
     protected @NonNull StaffSearchGenerator createStaffSearchGenerator() {
+        val cloudDatabaseConfigurationsProvider = createCloudDatabaseConfigurationsProvider();
         return CloudLinearStaffSearchGenerator.of(CloudStaffRepository.of(cloudDatabaseConfigurationsProvider));
     }
 

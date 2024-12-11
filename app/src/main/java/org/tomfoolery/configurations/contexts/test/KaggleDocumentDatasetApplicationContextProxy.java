@@ -66,7 +66,7 @@ public class KaggleDocumentDatasetApplicationContextProxy implements Application
             publisher
         );
 
-        val coverImage = loadCoverImage(httpClientProvider, coverImageUrl);
+        val coverImage = this.loadCoverImage(httpClientProvider, coverImageUrl);
 
         fullyMockedDocument.setMetadata(metadata);
         fullyMockedDocument.setCoverImage(coverImage);
@@ -76,6 +76,7 @@ public class KaggleDocumentDatasetApplicationContextProxy implements Application
 
     private Document.@Nullable CoverImage loadCoverImage(@NonNull HttpClientProvider httpClientProvider, @NonNull String coverImageUrl) {
         try {
+            System.out.println(coverImageUrl);
             val rawCoverImage = httpClientProvider
                 .sendSynchronousGETForBytes(coverImageUrl, HttpClientProvider.Headers.builder().build());
             return Document.CoverImage.of(rawCoverImage);

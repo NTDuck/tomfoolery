@@ -161,7 +161,7 @@ public final class Application implements Runnable, Closeable {
         try {
             application.run();
         } finally {
-            interceptionFuture.complete(null);
+            interceptionFuture.cancel(true);
             interceptionFuture.join();
         }
     }
