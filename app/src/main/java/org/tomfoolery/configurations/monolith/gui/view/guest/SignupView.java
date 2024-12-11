@@ -76,6 +76,18 @@ public class SignupView {
     public void initialize() {
         message.setVisible(false);
         signupButton.setOnAction(this::signup);
+
+        firstNameTextField.setOnAction(this::signup);
+        lastNameTextField.setOnAction(this::signup);
+        usernameTextField.setOnAction(this::signup);
+        countryTextField.setOnAction(this::signup);
+        cityTextField.setOnAction(this::signup);
+        birthdayTextField.setOnAction(this::signup);
+        phoneNumberTextField.setOnAction(this::signup);
+        emailTextField.setOnAction(this::signup);
+        passwordField.setOnAction(this::signup);
+        retypePasswordField.setOnAction(this::signup);
+
         returnButton.setOnMouseClicked(event -> returnToLogin());
     }
 
