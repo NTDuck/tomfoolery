@@ -20,6 +20,7 @@ import org.tomfoolery.core.usecases.patron.documents.borrow.retrieval.ShowBorrow
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.recommendation.GetDocumentRecommendationController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.ShowDocumentsController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public class DashboardView {
     private final @NonNull GetDocumentRecommendationController getRecommendationController;
@@ -30,23 +31,27 @@ public class DashboardView {
                          @NonNull BorrowingSessionRepository borrowingSessionRepository,
                          @NonNull DocumentRecommendationGenerator documentRecommendationGenerator,
                          @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-                         @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+                         @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+                         @NonNull FileStorageProvider fileStorageProvider
+                         ) {
         this.getRecommendationController = GetDocumentRecommendationController.of(
-                documentRepository,
                 documentRecommendationGenerator,
                 authenticationTokenGenerator,
-                authenticationTokenRepository
+                authenticationTokenRepository,
+                fileStorageProvider
         );
         this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(
                 documentRepository,
                 borrowingSessionRepository,
                 authenticationTokenGenerator,
-                authenticationTokenRepository
+                authenticationTokenRepository,
+                fileStorageProvider
         );
         this.showDocumentsController = ShowDocumentsController.of(
                 documentRepository,
                 authenticationTokenGenerator,
-                authenticationTokenRepository
+                authenticationTokenRepository,
+                fileStorageProvider
         );
     }
 

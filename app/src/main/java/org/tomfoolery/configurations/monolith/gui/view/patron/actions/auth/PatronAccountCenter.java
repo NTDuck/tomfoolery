@@ -24,6 +24,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borr
 import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.UpdatePatronMetadataController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.UpdatePatronPasswordController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.users.retrieval.GetPatronUsernameAndMetadataController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public class PatronAccountCenter {
     private final @NonNull GetPatronUsernameAndMetadataController getUsernameAndMetadataController;
@@ -37,7 +38,8 @@ public class PatronAccountCenter {
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
             @NonNull PasswordEncoder passwordEncoder,
             @NonNull DocumentRepository documentRepository,
-            @NonNull BorrowingSessionRepository borrowingSessionRepository
+            @NonNull BorrowingSessionRepository borrowingSessionRepository,
+            @NonNull FileStorageProvider fileStorageProvider
             ) {
         this.getUsernameAndMetadataController = GetPatronUsernameAndMetadataController.of(
                 patronRepository, authenticationTokenGenerator, authenticationTokenRepository
@@ -49,7 +51,7 @@ public class PatronAccountCenter {
                 patronRepository, authenticationTokenGenerator, authenticationTokenRepository, passwordEncoder
         );
         this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(
-                documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository
+                documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider
         );
     }
 

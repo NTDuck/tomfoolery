@@ -24,6 +24,7 @@ import org.tomfoolery.core.usecases.common.documents.retrieval.GetDocumentByIdUs
 import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.util.concurrent.ExecutorService;
@@ -37,18 +38,22 @@ public class DiscoverView {
             @NonNull HybridDocumentRepository documentRepository,
             @NonNull DocumentSearchGenerator documentSearchGenerator,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-            @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+            @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+            @NonNull FileStorageProvider fileStorageProvider
+            ) {
 
         this.searchController = SearchDocumentsController.of(
                 documentSearchGenerator,
                 authenticationTokenGenerator,
-                authenticationTokenRepository
+                authenticationTokenRepository,
+                fileStorageProvider
         );
 
         this.getByIdController = GetDocumentByIdController.of(
                 documentRepository,
                 authenticationTokenGenerator,
-                authenticationTokenRepository
+                authenticationTokenRepository,
+                fileStorageProvider
         );
     }
 
@@ -220,7 +225,8 @@ public class DiscoverView {
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
                 StageManager.getInstance().getResources().getBorrowingSessionRepository(),
                 StageManager.getInstance().getResources().getDocumentQrCodeGenerator(),
-                StageManager.getInstance().getResources().getDocumentUrlGenerator()
+                StageManager.getInstance().getResources().getDocumentUrlGenerator(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronSingleDocumentView.fxml"));

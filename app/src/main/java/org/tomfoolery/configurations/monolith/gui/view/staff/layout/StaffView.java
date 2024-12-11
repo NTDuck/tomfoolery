@@ -41,7 +41,8 @@ public class StaffView extends BaseView {
                 StageManager.getInstance().getResources().getBorrowingSessionRepository(),
                 StageManager.getInstance().getResources().getDocumentRecommendationGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/fxml/User/Dashboard.fxml"));
@@ -54,7 +55,8 @@ public class StaffView extends BaseView {
                 StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getDocumentSearchGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader discoverLoader = new FXMLLoader(getClass().getResource("/fxml/User/Discover.fxml"));
@@ -66,7 +68,8 @@ public class StaffView extends BaseView {
         DocumentsManagementView controller = new DocumentsManagementView(
                 StageManager.getInstance().getResources().getDocumentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader documentsManagementLoader = new FXMLLoader(getClass().getResource("/fxml/Staff/DocumentsManagement.fxml"));

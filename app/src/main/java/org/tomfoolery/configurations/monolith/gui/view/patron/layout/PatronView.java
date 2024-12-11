@@ -1,6 +1,7 @@
 package org.tomfoolery.configurations.monolith.gui.view.patron.layout;
 
 import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
@@ -45,7 +46,8 @@ public class PatronView extends BaseView {
                 StageManager.getInstance().getResources().getBorrowingSessionRepository(),
                 StageManager.getInstance().getResources().getDocumentRecommendationGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/fxml/User/Dashboard.fxml"));
@@ -59,7 +61,8 @@ public class PatronView extends BaseView {
                 StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getDocumentSearchGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader discoverLoader = new FXMLLoader(getClass().getResource("/fxml/User/Discover.fxml"));
@@ -74,7 +77,8 @@ public class PatronView extends BaseView {
                 StageManager.getInstance().getResources().getDocumentContentRepository(),
                 StageManager.getInstance().getResources().getBorrowingSessionRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/ShowBorrowedDocumentsView.fxml"));
@@ -90,7 +94,8 @@ public class PatronView extends BaseView {
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
                 StageManager.getInstance().getResources().getPasswordEncoder(),
                 StageManager.getInstance().getResources().getDocumentRepository(),
-                StageManager.getInstance().getResources().getBorrowingSessionRepository()
+                StageManager.getInstance().getResources().getBorrowingSessionRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronAccountCenter.fxml"));

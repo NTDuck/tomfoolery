@@ -12,6 +12,7 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.common.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.ShowDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public class ShowDocumentsView {
     @FXML
@@ -21,11 +22,14 @@ public class ShowDocumentsView {
 
     public ShowDocumentsView(@NonNull DocumentRepository documentRepository,
                              @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-                             @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+                             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+                             @NonNull FileStorageProvider fileStorageProvider
+                             ) {
         this.controller = ShowDocumentsController.of(
                 documentRepository,
                 authenticationTokenGenerator,
-                authenticationTokenRepository
+                authenticationTokenRepository,
+                fileStorageProvider
         );
     }
 

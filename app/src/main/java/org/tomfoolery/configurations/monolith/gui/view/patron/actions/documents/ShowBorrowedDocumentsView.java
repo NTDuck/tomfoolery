@@ -28,6 +28,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borr
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ReadBorrowedDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.awt.*;
@@ -49,10 +50,11 @@ public class ShowBorrowedDocumentsView {
                                      @NonNull DocumentContentRepository contentRepository,
                                      @NonNull BorrowingSessionRepository borrowingSessionRepository,
                                      @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-                                     @NonNull AuthenticationTokenRepository authenticationTokenRepository
-    ) {
-        this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.readBorrowedDocumentController = ReadBorrowedDocumentController.of(documentRepository, contentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
+                                     @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+                                     @NonNull FileStorageProvider fileStorageProvider
+                                     ) {
+        this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
+        this.readBorrowedDocumentController = ReadBorrowedDocumentController.of(documentRepository, contentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
         this.returnDocumentController = ReturnDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
@@ -119,17 +121,16 @@ public class ShowBorrowedDocumentsView {
             this.onAuthenticationTokenNotFoundException();
         } catch (ReadBorrowedDocumentUseCase.AuthenticationTokenInvalidException exception) {
             this.onAuthenticationTokenInvalidException();
-        } catch (ReadBorrowedDocumentController.DocumentContentUnavailable exception) {
-            this.onDocumentContentUnavailable();
         } catch (ReadBorrowedDocumentUseCase.DocumentNotFoundException |
-                 ReadBorrowedDocumentUseCase.DocumentNotBorrowedException | IOException e) {
-            throw new RuntimeException(e);
-        } catch (ReadBorrowedDocumentUseCase.DocumentISBNInvalidException e) {
+                 ReadBorrowedDocumentUseCase.DocumentNotBorrowedException | IOException |
+                 ReadBorrowedDocumentUseCase.DocumentISBNInvalidException e) {
             throw new RuntimeException(e);
         } catch (ReadBorrowedDocumentUseCase.DocumentContentNotFoundException e) {
             System.err.println("This document's content is not found.");
         } catch (ReadBorrowedDocumentUseCase.DocumentOverdueException e) {
-            throw new RuntimeException(e);
+            System.err.println("This document is overdue.");
+        } catch (ReadBorrowedDocumentController.DocumentContentFileWriteException e) {
+            this.onDocumentContentUnavailable();
         }
     }
 
@@ -249,7 +250,7 @@ public class ShowBorrowedDocumentsView {
     }
 
     private void onAuthenticationTokenNotFoundException() {
-        System.err.println("user doesn't exist???");
+        StageManager.getInstance().openLoginMenu();
     }
 
     private void onAuthenticationTokenInvalidException() {

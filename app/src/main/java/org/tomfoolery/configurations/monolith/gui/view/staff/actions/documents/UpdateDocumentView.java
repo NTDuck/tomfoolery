@@ -15,16 +15,18 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.user.documents.ShowDocumentsView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentContentUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentCoverImageUseCase;
 import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentMetadataUseCase;
-import org.tomfoolery.core.utils.helpers.verifiers.FileVerifier;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentContentController;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentCoverImageController;
 import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentMetadataController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -85,12 +87,13 @@ public class UpdateDocumentView {
             @NonNull DocumentContentRepository documentContentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
-            @NonNull FileVerifier fileVerifier
+            @NonNull FileVerifier fileVerifier,
+            @NonNull FileStorageProvider fileStorageProvider
     ) {
         this.documentViewModel = documentViewModel;
         this.metadataController = UpdateDocumentMetadataController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.contentController = UpdateDocumentContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
-        this.coverImageController = UpdateDocumentCoverImageController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier);
+        this.contentController = UpdateDocumentContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier, fileStorageProvider);
+        this.coverImageController = UpdateDocumentCoverImageController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier, fileStorageProvider);
     }
 
     @FXML

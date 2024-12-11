@@ -2,7 +2,6 @@ package org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -12,15 +11,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
-import org.tomfoolery.configurations.monolith.console.views.action.common.documents.references.GetDocumentQrCodeActionView;
-import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.common.documents.references.GetDocumentQrCodeUseCase;
@@ -33,7 +28,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retr
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.BorrowDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.persistence.ReturnDocumentController;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
-import org.tomfoolery.infrastructures.dataproviders.providers.io.file.TemporaryFileProvider;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.awt.*;
@@ -59,14 +54,15 @@ public class PatronSingleDocumentView {
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
             @NonNull BorrowingSessionRepository borrowingSessionRepository,
             @NonNull DocumentQrCodeGenerator documentQrCodeGenerator,
-            @NonNull DocumentUrlGenerator documentUrlGenerator
+            @NonNull DocumentUrlGenerator documentUrlGenerator,
+            @NonNull FileStorageProvider fileStorageProvider
             ) {
         this.documentISBN = documentISBN;
         this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
         this.borrowDocumentController = BorrowDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.getDocumentByIdController = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentByIdController = GetDocumentByIdController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
         this.returnDocumentController = ReturnDocumentController.of(documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.getDocumentQrCodeController = GetDocumentQrCodeController.of(documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.getDocumentQrCodeController = GetDocumentQrCodeController.of(documentRepository, documentQrCodeGenerator, documentUrlGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @FXML
@@ -270,8 +266,9 @@ public class PatronSingleDocumentView {
         } catch (GetDocumentQrCodeUseCase.DocumentNotFoundException |
                  GetDocumentQrCodeUseCase.DocumentISBNInvalidException e) {
             System.err.println("never happens");
-        } catch (GetDocumentQrCodeController.DocumentQrCodeUnavailable e) {
+        } catch (GetDocumentQrCodeController.DocumentQrCodeFileWriteException e) {
             MessageLabelFactory.createErrorLabel("QR code unavailable.", 16, message);
+
         }
     }
 

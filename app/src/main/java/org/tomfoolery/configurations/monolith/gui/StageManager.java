@@ -85,7 +85,7 @@ public class StageManager {
             primaryStage.setMaximized(isMaximized);
             primaryStage.setWidth(currentWidth);
             primaryStage.setHeight(currentHeight);
-        }
+    }
 
         primaryStage.setMinHeight(1080);
         primaryStage.setMinWidth(1920);

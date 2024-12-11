@@ -19,7 +19,8 @@ public class ControlCenter {
         documentsDisplayView = new DocumentsDisplayView(
                 StageManager.getInstance().getResources().getDocumentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
-                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
         staffAccountsDisplayView = new StaffAccountsManagementView(
                 StageManager.getInstance().getResources().getStaffRepository(),

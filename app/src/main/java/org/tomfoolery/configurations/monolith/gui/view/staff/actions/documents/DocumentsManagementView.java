@@ -11,6 +11,7 @@ import org.tomfoolery.configurations.monolith.gui.view.user.documents.ShowDocume
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public class DocumentsManagementView extends ShowDocumentsView{
     @FXML
@@ -25,9 +26,10 @@ public class DocumentsManagementView extends ShowDocumentsView{
     public DocumentsManagementView(
             @NonNull DocumentRepository documentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-            @NonNull AuthenticationTokenRepository authenticationTokenRepository
-    ) {
-        super(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+            @NonNull AuthenticationTokenRepository authenticationTokenRepository,
+            @NonNull FileStorageProvider fileStorageProvider
+            ) {
+        super(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @FXML @Override
@@ -79,7 +81,8 @@ public class DocumentsManagementView extends ShowDocumentsView{
                 StageManager.getInstance().getResources().getDocumentContentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
-                StageManager.getInstance().getResources().getFileVerifier()
+                StageManager.getInstance().getResources().getFileVerifier(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/UpdateDocumentView.fxml"));
@@ -96,7 +99,8 @@ public class DocumentsManagementView extends ShowDocumentsView{
                 StageManager.getInstance().getResources().getDocumentContentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
                 StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
-                StageManager.getInstance().getResources().getFileVerifier()
+                StageManager.getInstance().getResources().getFileVerifier(),
+                StageManager.getInstance().getResources().getFileStorageProvider()
         );
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/AddDocumentView.fxml"));
         loader.setController(controller);
