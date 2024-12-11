@@ -1,6 +1,5 @@
 package org.tomfoolery.configurations.contexts.dev;
 
-
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;

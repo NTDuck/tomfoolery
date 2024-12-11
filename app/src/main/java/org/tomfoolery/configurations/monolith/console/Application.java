@@ -38,6 +38,7 @@ import org.tomfoolery.configurations.monolith.console.views.action.staff.documen
 import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentContentActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentCoverImageActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.UpdateDocumentMetadataActionView;
+import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.retrieval.ShowDocumentsWithoutContentActionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
@@ -119,7 +120,8 @@ public final class Application implements Runnable, Closeable {
             RemoveDocumentRatingActionView.of(this.ioProvider, this.context.getHybridDocumentRepository(), this.context.getReviewRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
             UpdateDocumentContentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier(), this.context.getFileStorageProvider()),
             UpdateDocumentCoverImageActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileVerifier(), this.context.getFileStorageProvider()),
-            UpdateDocumentMetadataActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository())
+            UpdateDocumentMetadataActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository()),
+            ShowDocumentsWithoutContentActionView.of(this.ioProvider, this.context.getDocumentRepository(), this.context.getDocumentContentRepository(), this.context.getAuthenticationTokenGenerator(), this.context.getAuthenticationTokenRepository(), this.context.getFileStorageProvider())
         );
     }
 

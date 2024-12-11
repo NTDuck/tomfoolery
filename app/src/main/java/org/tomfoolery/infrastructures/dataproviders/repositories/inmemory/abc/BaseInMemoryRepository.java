@@ -8,11 +8,10 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.utils.contracts.ddd;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 
 public abstract class BaseInMemoryRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
@@ -20,7 +19,7 @@ public abstract class BaseInMemoryRepository<Entity extends ddd.Entity<EntityId>
 
     protected BaseInMemoryRepository() {
         val entityComparator = this.getEntityIdComparator();
-        this.entitiesByIds = Collections.synchronizedNavigableMap(new TreeMap<>(entityComparator));
+        this.entitiesByIds = new ConcurrentSkipListMap<>(entityComparator);
     }
 
     protected abstract @NonNull Comparator<EntityId> getEntityIdComparator();
