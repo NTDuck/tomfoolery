@@ -8,10 +8,12 @@ import javafx.scene.image.ImageView;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
 import org.tomfoolery.core.usecases.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.AddDocumentReviewController;
@@ -90,22 +92,20 @@ public class RateDocumentView {
             val requestObject = this.collectRequestObject();
             this.controller.accept(requestObject);
             this.closeView();
-        } catch (AddDocumentReviewUseCase.AuthenticationTokenNotFoundException exception) {
-            System.err.println("user doesn't exist?");
-        } catch (AddDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
-            System.err.println("user isn't invalid?");
+        } catch (AddDocumentReviewUseCase.AuthenticationTokenNotFoundException |
+                 AddDocumentReviewUseCase.AuthenticationTokenInvalidException exception) {
+            StageManager.getInstance().openLoginMenu();
         } catch (AddDocumentReviewUseCase.ReviewAlreadyExistsException e) {
             this.onPatronRatingAlreadyExistsException();
         } catch (AddDocumentReviewUseCase.DocumentISBNInvalidException |
-                 AddDocumentReviewUseCase.DocumentNotFoundException |
-                 AddDocumentReviewUseCase.RatingInvalidException e) {
-            throw new RuntimeException(e);
+                 AddDocumentReviewUseCase.DocumentNotFoundException e) {
+            MessageLabelFactory.createErrorLabel("Document not found!", 16, errorMessage);
+        } catch (AddDocumentReviewUseCase.RatingInvalidException _) {
         }
     }
 
     private void onPatronRatingAlreadyExistsException() {
-        errorMessage.setText("You have already rated this document");
-        errorMessage.setVisible(true);
+        MessageLabelFactory.createErrorLabel("You have already rated this document", 16, errorMessage);
     }
 
     private AddDocumentReviewController.@NonNull RequestObject collectRequestObject() {

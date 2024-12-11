@@ -124,7 +124,7 @@ public class ShowBorrowedDocumentsView {
         } catch (ReadBorrowedDocumentUseCase.DocumentNotFoundException |
                  ReadBorrowedDocumentUseCase.DocumentNotBorrowedException | IOException |
                  ReadBorrowedDocumentUseCase.DocumentISBNInvalidException e) {
-            throw new RuntimeException(e);
+            System.err.println("Failed to read document: " + isbn);
         } catch (ReadBorrowedDocumentUseCase.DocumentContentNotFoundException e) {
             System.err.println("This document's content is not found.");
         } catch (ReadBorrowedDocumentUseCase.DocumentOverdueException e) {

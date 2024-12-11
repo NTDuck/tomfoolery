@@ -13,6 +13,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.configurations.monolith.gui.view.user.documents.ShowDocumentsView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
@@ -227,7 +228,7 @@ public class UpdateDocumentView {
         } catch (UpdateDocumentContentUseCase.DocumentNotFoundException |
                  UpdateDocumentCoverImageUseCase.DocumentNotFoundException |
                  UpdateDocumentMetadataUseCase.DocumentNotFoundException exception) {
-            System.err.println("This never happens btw");
+            this.onDocumentNotFoundException();
         } catch (UpdateDocumentCoverImageUseCase.DocumentCoverImageInvalidException exception) {
             this.onDocumentCoverImageInvalidException();
         } catch (UpdateDocumentCoverImageController.DocumentCoverImageFilePathInvalidException exception) {
@@ -237,6 +238,10 @@ public class UpdateDocumentView {
         } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException exception) {
             this.onDocumentContentFilePathInvalidException();
         }
+    }
+
+    private void onDocumentNotFoundException() {
+        showErrorMessage("Document not found!");
     }
 
     private UpdateDocumentMetadataController.@NonNull RequestObject collectMetadataRequestObject() throws DocumentPublishedYearInvalidException {
