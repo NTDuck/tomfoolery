@@ -49,9 +49,8 @@ import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tik
 
 @NoArgsConstructor
 public class CloudApplicationContext extends ApplicationContext {
-    private final @NonNull DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
-    private final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
-
+    private static final @NonNull DotenvProvider dotenvProvider = CdimascioDotenvProvider.of();
+    private static final @NonNull CloudDatabaseConfigurationsProvider cloudDatabaseConfigurationsProvider = CloudDatabaseConfigurationsProvider.of(dotenvProvider);
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
         return CloudDocumentRepository.of(cloudDatabaseConfigurationsProvider);
