@@ -13,7 +13,6 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
-import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.configurations.monolith.gui.view.user.documents.ShowDocumentsView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
@@ -34,7 +33,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-public class UpdateDocumentView {
+public class UpdateDocumentMetadataView {
     private @NonNull String currentDocumentContentPath = "";
 
     private final @NonNull UpdateDocumentMetadataController metadataController;
@@ -82,7 +81,7 @@ public class UpdateDocumentView {
     @FXML
     private Button cancelButton;
 
-    public UpdateDocumentView(
+    public UpdateDocumentMetadataView(
             ShowDocumentsView.@NonNull DocumentViewModel documentViewModel,
             @NonNull DocumentRepository documentRepository,
             @NonNull DocumentContentRepository documentContentRepository,
@@ -112,13 +111,13 @@ public class UpdateDocumentView {
     }
 
     private void loadInitialInfo() {
-        ISBN.setText(documentViewModel.getISBN());
-        title.setText(documentViewModel.getTitle());
-        authors.setText(documentViewModel.getAuthors());
-        genres.setText(documentViewModel.getGenres());
-        description.setText(documentViewModel.getDescription());
-        publisher.setText(documentViewModel.getPublisher());
-        publishedYear.setText(documentViewModel.getPublishedYear());
+        ISBN.setText(documentViewModel.getDocumentISBN_13());
+        title.setText(documentViewModel.getDocumentTitle());
+        authors.setText(documentViewModel.getDocumentAuthors());
+        genres.setText(documentViewModel.getDocumentGenres());
+        description.setText(documentViewModel.getDocumentDescription());
+        publisher.setText(documentViewModel.getDocumentPublisher());
+        publishedYear.setText(documentViewModel.getDocumentPublishedYear());
     }
 
     private @NonNull ImageView getDefaultCoverImage() {

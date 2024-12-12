@@ -1,20 +1,20 @@
 package org.tomfoolery.configurations.monolith.gui.view.user.documents;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import lombok.Value;
-import lombok.val;
+import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.signedness.qual.Unsigned;
+import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.external.common.documents.retrieval.ShowDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.ShowDocumentsController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
+import java.util.List;
 
-public class ShowDocumentsView {
+public abstract class ShowDocumentsView {
     @FXML
     protected TableView<DocumentViewModel> documentsTable;
 
@@ -24,7 +24,7 @@ public class ShowDocumentsView {
                              @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
                              @NonNull AuthenticationTokenRepository authenticationTokenRepository,
                              @NonNull FileStorageProvider fileStorageProvider
-                             ) {
+    ) {
         this.controller = ShowDocumentsController.of(
                 documentRepository,
                 authenticationTokenGenerator,
@@ -38,72 +38,60 @@ public class ShowDocumentsView {
         showDocuments();
     }
 
-    public void showDocuments() {
-        try {
-            val requestObject = this.collectRequestObject();
-            val viewModel = this.controller.apply(requestObject);
+    public abstract void showDocuments();
 
-            this.onSuccess(viewModel);
-        } catch (ShowDocumentsUseCase.AuthenticationTokenNotFoundException exception) {
-            this.onAuthenticationTokenNotFoundException();
-        } catch (ShowDocumentsUseCase.AuthenticationTokenInvalidException exception) {
-            this.onAuthenticationTokenInvalidException();
-        } catch (ShowDocumentsUseCase.PaginationInvalidException exception) {
-            this.onPaginationInvalidException();
-        }
+    public void onPaginationInvalidException() {
+        System.err.println("No documents found");
     }
 
-    private ShowDocumentsController.@NonNull RequestObject collectRequestObject() {
-        return ShowDocumentsController.RequestObject.of(1, 1000);
+    public void onAuthenticationTokenInvalidException() {
+        StageManager.getInstance().openLoginMenu();
     }
 
-    private void onSuccess(ShowDocumentsController.ViewModel viewModel) {
-        ObservableList<DocumentViewModel> documents = FXCollections.observableArrayList();
-        viewModel.getPaginatedDocuments()
-                .forEach(document -> {
-                    String ISBN = document.getDocumentISBN_13();
-                    String title = document.getDocumentTitle();
-                    String authors = String.join(", ", document.getDocumentAuthors());
-                    String genres = String.join(", ", document.getDocumentGenres());
-                    String description = document.getDocumentDescription();
-                    String yearPublished = String.valueOf(document.getDocumentPublishedYear());
-                    String publisher = document.getDocumentPublisher();
-                    String created = document.getCreatedTimestamp();
-                    String lastModified = document.getLastModifiedTimestamp();
-
-                    documents.add(DocumentViewModel.of(
-                            ISBN, title, authors, genres, description, yearPublished, publisher, created, lastModified)
-                    );
-                });
-
-        documentsTable.getItems().clear();
-        documentsTable.setItems(documents);
+    public void onAuthenticationTokenNotFoundException() {
+        StageManager.getInstance().openLoginMenu();
     }
 
-    private void onPaginationInvalidException() {
-        Label placeholder = new Label("Our library is currently not having any documents");
-        placeholder.setStyle("-fx-font-size: 30;");
-        documentsTable.setPlaceholder(new Label());
-    }
-
-    private void onAuthenticationTokenInvalidException() {
-    }
-
-    private void onAuthenticationTokenNotFoundException() {
-    }
-
-    private static class PageIndexInvalidException extends Exception {}
-
-    @Value(staticConstructor = "of")
+    @Getter
     public static class DocumentViewModel {
-        String ISBN;
-        String title;
-        String authors;
-        String genres;
-        String description;
-        String publishedYear;
-        String publisher;
-        String created;
-        String lastModified;
+        String documentISBN_10;
+        String documentISBN_13;
+
+        String createdTimestamp;
+        String lastModifiedTimestamp;
+        String createdByStaffId;
+        String lastModifiedByStaffId;
+
+        String documentTitle;
+        String documentDescription;
+
+        String documentAuthors;
+        String documentGenres;
+
+        String documentPublishedYear;
+        String documentPublisher;
+
+        String averageRating;
+        String numberOfRatings;
+
+        String documentCoverImageFilePath;
+
+        public DocumentViewModel(GetDocumentByIdController.@NonNull ViewModel viewModel) {
+            this.documentISBN_10 = viewModel.getDocumentISBN_10();
+            this.documentISBN_13 = viewModel.getDocumentISBN_13();
+            this.createdTimestamp = viewModel.getCreatedTimestamp();
+            this.lastModifiedTimestamp = viewModel.getLastModifiedTimestamp();
+            this.createdByStaffId = viewModel.getCreatedByStaffId();
+            this.lastModifiedByStaffId = viewModel.getLastModifiedByStaffId();
+            this.documentTitle = viewModel.getDocumentTitle();
+            this.documentDescription = viewModel.getDocumentDescription();
+            this.documentAuthors = String.join(", ", viewModel.getDocumentAuthors());
+            this.documentGenres = String.join(", ", viewModel.getDocumentGenres());
+            this.documentPublishedYear = String.valueOf(viewModel.getDocumentPublishedYear());
+            this.documentPublisher = viewModel.getDocumentPublisher();
+            this.averageRating = String.valueOf(viewModel.getAverageRating());
+            this.numberOfRatings = String.valueOf(viewModel.getNumberOfRatings());
+            this.documentCoverImageFilePath = viewModel.getDocumentCoverImageFilePath();
+        }
     }
 }

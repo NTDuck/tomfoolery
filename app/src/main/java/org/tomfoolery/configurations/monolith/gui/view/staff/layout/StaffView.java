@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.view.abc.BaseView;
 import org.tomfoolery.configurations.monolith.gui.view.staff.actions.documents.DocumentsManagementView;
+import org.tomfoolery.configurations.monolith.gui.view.staff.actions.documents.UpdateDocumentContentView;
 import org.tomfoolery.configurations.monolith.gui.view.user.scenes.DashboardView;
 import org.tomfoolery.configurations.monolith.gui.view.user.scenes.DiscoverView;
 import java.io.IOException;
@@ -32,10 +33,14 @@ public class StaffView extends BaseView {
             case STAFF_DOCUMENTS_MANAGEMENT:
                 loadDocumentsManagement();
                 break;
+            case STAFF_SHOW_DOCUMENTS_WITHOUT_CONTENT:
+                loadShowDocumentsWithoutContentView();
+                break;
         }
     }
 
-    private void loadDashboard() throws IOException {
+    @SneakyThrows
+    private void loadDashboard() {
         DashboardView controller = new DashboardView(
                 StageManager.getInstance().getResources().getDocumentRepository(),
                 StageManager.getInstance().getResources().getBorrowingSessionRepository(),
@@ -50,7 +55,8 @@ public class StaffView extends BaseView {
         content = dashboardLoader.load();
     }
 
-    private void loadDiscover() throws IOException {
+    @SneakyThrows
+    private void loadDiscover() {
         DiscoverView controller = new DiscoverView(
                 StageManager.getInstance().getResources().getHybridDocumentRepository(),
                 StageManager.getInstance().getResources().getDocumentSearchGenerator(),
@@ -64,7 +70,8 @@ public class StaffView extends BaseView {
         content = discoverLoader.load();
     }
 
-    private void loadDocumentsManagement() throws IOException {
+    @SneakyThrows
+    private void loadDocumentsManagement() {
         DocumentsManagementView controller = new DocumentsManagementView(
                 StageManager.getInstance().getResources().getDocumentRepository(),
                 StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
@@ -75,5 +82,21 @@ public class StaffView extends BaseView {
         FXMLLoader documentsManagementLoader = new FXMLLoader(getClass().getResource("/fxml/Staff/DocumentsManagement.fxml"));
         documentsManagementLoader.setController(controller);
         content = documentsManagementLoader.load();
+    }
+
+    @SneakyThrows
+    private void loadShowDocumentsWithoutContentView() {
+        UpdateDocumentContentView controller = new UpdateDocumentContentView(
+                StageManager.getInstance().getResources().getDocumentRepository(),
+                StageManager.getInstance().getResources().getDocumentContentRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository(),
+                StageManager.getInstance().getResources().getFileStorageProvider(),
+                StageManager.getInstance().getResources().getFileVerifier()
+        );
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Staff/UpdateDocumentContentView.fxml"));
+        loader.setController(controller);
+        content = loader.load();
     }
 }

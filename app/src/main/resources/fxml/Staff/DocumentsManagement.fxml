@@ -9,86 +9,58 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="content-container" stylesheets="/css/Staff/DocumentsManagement.css"
       VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" spacing="20">
-
     <HBox styleClass="panel" prefHeight="60" spacing="20">
-        <Button fx:id="addDocumentButton">
-            <graphic>
-                <ImageView fitHeight="40" fitWidth="40">
-                    <Image url="/images/add_book.png"/>
-                </ImageView>
-            </graphic>
-        </Button>
-
-        <Button fx:id="deleteDocumentButton" styleClass="button">
-            <graphic>
-                <ImageView fitHeight="40" fitWidth="40">
-                    <Image url="/images/delete.png"/>
-                </ImageView>
-            </graphic>
-        </Button>
-
-        <Button fx:id="editDocumentButton">
-            <graphic>
-                <ImageView fitHeight="40" fitWidth="40">
-                    <Image url="/images/edit.png"/>
-                </ImageView>
-            </graphic>
-        </Button>
+        <Button fx:id="addDocumentButton" styleClass="button" text="Add document" prefWidth="100"/>
+        <Button fx:id="showDocumentsWithoutContentButton" styleClass="button" text="Show missing content documents" prefWidth="250"/>
     </HBox>
 
-    <TableView fx:id="documentsTable"
-               styleClass="documents-table"
-               VBox.vgrow="ALWAYS">
+    <HBox prefHeight="60" spacing="5" alignment="CENTER_LEFT" styleClass="search-field-container">
+        <ImageView fitHeight="35" fitWidth="35">
+            <Image url="/images/search.png"/>
+        </ImageView>
+        <TextField prefHeight="60" prefWidth="300" promptText="Search through documents"
+                   styleClass="search-field" fx:id="searchField"/>
+        <ComboBox fx:id="pageChooserBox"/>
+    </HBox>
+
+    <TableView fx:id="documentsTable" styleClass="documents-table" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn text="ISBN" prefWidth="40">
+            <TableColumn text="ISBN" prefWidth="80">
                 <cellValueFactory>
                     <PropertyValueFactory property="ISBN"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Title" prefWidth="50">
+            <TableColumn text="Title" prefWidth="120">
                 <cellValueFactory>
                     <PropertyValueFactory property="title"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Authors" prefWidth="50">
+            <TableColumn text="Authors" prefWidth="120">
                 <cellValueFactory>
                     <PropertyValueFactory property="authors"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Genres" prefWidth="50">
-                <cellValueFactory>
-                    <PropertyValueFactory property="genres"/>
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Description" prefWidth="50">
-                <cellValueFactory>
-                    <PropertyValueFactory property="description"/>
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Year" prefWidth="50">
-                <cellValueFactory>
-                    <PropertyValueFactory property="publishedYear"/>
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Publisher" prefWidth="50">
-                <cellValueFactory>
-                    <PropertyValueFactory property="publisher"/>
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Created" prefWidth="50">
+            <TableColumn text="Created" prefWidth="120">
                 <cellValueFactory>
                     <PropertyValueFactory property="created"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Last Modified" prefWidth="50">
+            <TableColumn text="Last Modified" prefWidth="120">
                 <cellValueFactory>
                     <PropertyValueFactory property="lastModified"/>
                 </cellValueFactory>
             </TableColumn>
+
+            <TableColumn fx:id="showDetailsColumn" prefWidth="120"/>
+            <TableColumn fx:id="updateMetadataColumn" prefWidth="120"/>
+            <TableColumn fx:id="updateCoverImageColumn" prefWidth="150"/>
+            <TableColumn fx:id="updateContentColumn" prefWidth="120"/>
         </columns>
 
         <columnResizePolicy>

@@ -33,6 +33,14 @@
                 </ImageView>
             </graphic>
         </Button>
+
+        <Button styleClass="sidebar-button" fx:id="showDocumentsWithoutContentButton">
+            <graphic>
+                <ImageView fitHeight="32" fitWidth="32">
+                    <Image url="/images/add_book.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
     </VBox>
 
     <!-- Bottom section -->

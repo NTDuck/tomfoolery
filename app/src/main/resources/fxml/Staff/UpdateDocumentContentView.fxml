@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<?import javafx.scene.control.Label?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="content-container" stylesheets="/css/Staff/UpdateDocumentContentView.css"
+      VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" spacing="20">
+
+    <HBox styleClass="panel" prefHeight="60" spacing="20">
+        <Label styleClass="header" text="XX documents missing content" fx:id="headerLabel"/>
+    </HBox>
+
+    <TableView fx:id="documentsTable"
+               styleClass="documents-table"
+               VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ISBN" prefWidth="60">
+                <cellValueFactory>
+                    <PropertyValueFactory property="isbn"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Title" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="title"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Authors" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="authors"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Genres" prefWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="created"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Description" prefWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="lastModified"/>
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn prefWidth="120.0" fx:id="addContentColumn"/>
+        </columns>
+
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+</VBox>

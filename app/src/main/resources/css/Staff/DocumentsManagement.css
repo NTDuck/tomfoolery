@@ -7,18 +7,34 @@
 
 .panel {
     -fx-background-color: transparent;
-    -fx-background-radius: 15;
 }
 
 .button {
-    -fx-padding: 10 10 10 10;
+    -fx-pref-height: 60;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 14;
     -fx-background-color: rgba(96, 150, 186, 0.5);
-    -fx-background-radius: 50;
+    -fx-background-radius: 10;
 }
 
 .button:hover {
     -fx-background-color: rgb(96, 150, 186);
     -fx-cursor: hand;
+}
+
+.search-field {
+    -fx-font-size: 25;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: #2f374f;
+    -fx-background-color: transparent;
+}
+
+.search-field-container {
+    -fx-border-width: 2;
+    -fx-border-color: #2f374f;
+    -fx-border-radius: 15;
+    -fx-background-color: rgba(96, 150, 186, 0.5);
+    -fx-background-radius: 15;
 }
 
 /* Table styling */
