@@ -6,9 +6,12 @@ import org.tomfoolery.core.dataproviders.repositories.documents.DocumentReposito
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
+import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
+
 import java.sql.*;
 import java.time.Year;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CloudDocumentRepository implements DocumentRepository {
@@ -95,8 +98,13 @@ public class CloudDocumentRepository implements DocumentRepository {
     }
 
     @Override
+    public @NonNull Set<Document.Id> showIds() {
+        return Set.of();
+    }
+
+    @Override
     @NonNull
-    public List<Document> show() {
+    public Set<Document> show() {
         List<Document> documents = new ArrayList<>();
         String query = "SELECT * FROM Document";
 
@@ -110,7 +118,8 @@ public class CloudDocumentRepository implements DocumentRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return documents;
+
+        return documents.parallelStream().collect(Collectors.toUnmodifiableSet());
     }
 
     private Document mapResultSetToDocument(ResultSet rs) throws SQLException {

@@ -15,10 +15,9 @@ import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileSt
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class FileCachedInMemoryDocumentContentRepository implements DocumentContentRepository {
@@ -56,11 +55,24 @@ public class FileCachedInMemoryDocumentContentRepository implements DocumentCont
     }
 
     @Override
+    public @NonNull Set<DocumentContent.Id> showIds() {
+        return documentContentFilePathsByIds.keySet();
+    }
+
+    @Override
+    public @Nullable Page<DocumentContent.Id> showIdsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return DocumentContentRepository.super.showIdsPage(pageIndex, maxPageSize);
+    }
+
+    @Override
+    public @NonNull Set<DocumentContent> show() {
+        return DocumentContentRepository.super.show();
+    }
+
+    @Override
     @Locked.Read
-    public @NonNull List<DocumentContent> show() {
-        return this.documentContentFilePathsByIds.keySet().parallelStream()
-            .map(this::getById)   // Guaranteed to be not null
-            .collect(Collectors.toUnmodifiableList());
+    public @Nullable Page<DocumentContent> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return DocumentContentRepository.super.showPage(pageIndex, maxPageSize);
     }
 
     @Override
@@ -73,17 +85,6 @@ public class FileCachedInMemoryDocumentContentRepository implements DocumentCont
     @Locked.Read
     public @Unsigned int size() {
         return this.documentContentFilePathsByIds.size();
-    }
-
-    @Override
-    @Locked.Read
-    public @Nullable Page<DocumentContent> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val paginatedDocumentContentIds = this.showIdsPage(pageIndex, maxPageSize);
-
-        if (paginatedDocumentContentIds == null)
-            return null;
-
-        return paginatedDocumentContentIds.map(this::getById);
     }
 
     @Override

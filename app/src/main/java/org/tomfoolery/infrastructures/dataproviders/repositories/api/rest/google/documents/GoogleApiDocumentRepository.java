@@ -1,41 +1,27 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents;
 
-import com.google.errorprone.annotations.DoNotCall;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.documents.RetrievalDocumentRepository;
 import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 
 import java.time.Instant;
 import java.time.Year;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
-public class GoogleApiDocumentRepository implements DocumentRepository {
+public class GoogleApiDocumentRepository implements RetrievalDocumentRepository {
     private static final Staff.@NonNull Id DECOY_STAFF_ID = Staff.Id.of(UUID.fromString("00000000-0000-0000-0000-000000000000"));
     private static final @NonNull String ENDPOINT_URL = "https://www.googleapis.com/books/v1/volumes/";
 
     private final @NonNull HttpClientProvider httpClientProvider;
-
-    @Override
-    @DoNotCall
-    public void save(@NonNull Document entity) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    @DoNotCall
-    public void delete(Document.@NonNull Id entityId) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public @Nullable Document getById(Document.@NonNull Id entityId) {
@@ -50,12 +36,6 @@ public class GoogleApiDocumentRepository implements DocumentRepository {
         } catch (Exception exception) {
             return null;
         }
-    }
-
-    @Override
-    @DoNotCall
-    public @NonNull List<Document> show() {
-        throw new UnsupportedOperationException();
     }
 
     private @Nullable Document constructDocumentFromHttpResponse(@NonNull String httpResponse) {

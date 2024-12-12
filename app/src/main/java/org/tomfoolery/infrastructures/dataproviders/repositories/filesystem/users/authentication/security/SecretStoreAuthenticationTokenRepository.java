@@ -4,6 +4,7 @@ import com.microsoft.credentialstorage.SecretStore;
 import com.microsoft.credentialstorage.StorageProvider;
 import com.microsoft.credentialstorage.model.StoredToken;
 import com.microsoft.credentialstorage.model.StoredTokenType;
+import lombok.Locked;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -23,6 +24,7 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
     private final @NonNull SecretStore<StoredToken> secretStore = StorageProvider.getTokenStorage(PERSIST, SECURE_OPTION);
 
     @Override
+    @Locked.Write
     public void save(@NonNull AuthenticationToken authenticationToken) {
         val storedToken = getStoredTokenFromAuthenticationToken(authenticationToken);
         this.secretStore.add(ENTRY_ALIAS, storedToken);
@@ -30,11 +32,13 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
     }
 
     @Override
+    @Locked.Write
     public void remove() {
         this.secretStore.delete(ENTRY_ALIAS);
     }
 
     @Override
+    @Locked.Read
     public @Nullable AuthenticationToken get() {
         val storedToken = this.secretStore.get(ENTRY_ALIAS);
 
@@ -42,6 +46,12 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
             return null;
 
         return getAuthenticationTokenFromStoredToken(storedToken);
+    }
+
+    @Override
+    @Locked.Read
+    public boolean contains() {
+        return AuthenticationTokenRepository.super.contains();
     }
 
     private static @NonNull StoredToken getStoredTokenFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {

@@ -19,16 +19,16 @@ import org.tomfoolery.core.dataproviders.repositories.users.AdministratorReposit
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.utils.containers.UserRepositories;
+import org.tomfoolery.core.utils.containers.users.UserRepositories;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.documents.SynchronizedDocumentRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedAdministratorRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedPatronRepository;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.SynchronizedStaffRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.documents.HybridDocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.documents.SynchronizedDocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.users.SynchronizedAdministratorRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.users.SynchronizedPatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.users.SynchronizedStaffRepository;
 import org.tomfoolery.infrastructures.utils.helpers.reflection.Closeable;
 
 import java.util.List;

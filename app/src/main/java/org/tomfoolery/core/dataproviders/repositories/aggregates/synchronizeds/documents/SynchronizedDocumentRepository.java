@@ -1,14 +1,15 @@
-package org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.documents;
+package org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.documents;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.core.dataproviders.repositories.aggregates.BaseBiRepositories;
-import org.tomfoolery.core.dataproviders.repositories.aggregates.BaseSynchronizedRepository;
+import org.tomfoolery.core.utils.containers.relations.BiRelationRepositories;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.abc.BaseSynchronizedRepository;
 import org.tomfoolery.core.dataproviders.generators.abc.BaseSynchronizedGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.domain.documents.Document;
+import org.tomfoolery.core.utils.containers.relations.UniRelationRepositories;
 
 import java.util.List;
 
@@ -20,8 +21,8 @@ public class SynchronizedDocumentRepository extends BaseSynchronizedRepository<D
     protected SynchronizedDocumentRepository(@NonNull DocumentRepository documentRepository, @NonNull List<BaseSynchronizedGenerator<Document, Document.Id>> synchronizedDocumentGenerators, @NonNull DocumentContentRepository documentContentRepository, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull ReviewRepository reviewRepository) {
         super(
             documentRepository, synchronizedDocumentGenerators,
-            List.of(documentContentRepository),
-            BaseBiRepositories.of(List.of(borrowingSessionRepository, reviewRepository), List.of())
+            UniRelationRepositories.of(List.of(documentContentRepository)),
+            BiRelationRepositories.of(List.of(borrowingSessionRepository, reviewRepository), List.of())
         );
     }
 }

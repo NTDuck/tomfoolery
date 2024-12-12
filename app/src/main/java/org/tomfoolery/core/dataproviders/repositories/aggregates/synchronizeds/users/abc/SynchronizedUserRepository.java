@@ -1,15 +1,16 @@
-package org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.synced.users.abc;
+package org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.users.abc;
 
 import lombok.Locked;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.dataproviders.repositories.aggregates.BaseBiRepositories;
-import org.tomfoolery.core.dataproviders.repositories.aggregates.BaseSynchronizedRepository;
+import org.tomfoolery.core.utils.containers.relations.BiRelationRepositories;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.abc.BaseSynchronizedRepository;
 import org.tomfoolery.core.dataproviders.generators.abc.BaseSynchronizedGenerator;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.abc.UserRepository;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
+import org.tomfoolery.core.utils.containers.relations.UniRelationRepositories;
 
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class SynchronizedUserRepository<User extends BaseUser> extends BaseSynch
     protected SynchronizedUserRepository(@NonNull UserRepository<User> userRepository, @NonNull List<? extends BaseSynchronizedGenerator<User, BaseUser.Id>> synchronizedUserGenerators, @NonNull BorrowingSessionRepository borrowingSessionRepository, @NonNull ReviewRepository reviewRepository) {
         super(
             userRepository, synchronizedUserGenerators,
-            List.of(),
-            BaseBiRepositories.of(List.of(), List.of(borrowingSessionRepository, reviewRepository))
+            UniRelationRepositories.of(List.of()),
+            BiRelationRepositories.of(List.of(), List.of(borrowingSessionRepository, reviewRepository))
         );
     }
 

@@ -18,10 +18,9 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.abc.Ba
 import org.tomfoolery.infrastructures.utils.helpers.comparators.DocumentComparator;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class FileCachedInMemoryDocumentRepository implements DocumentRepository {
@@ -30,7 +29,7 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
     private final @NonNull BaseRepository<MinimalDocument, Document.Id> minimalDocumentRepository = new BaseInMemoryRepository<>() {
         @Override
         protected @NonNull Comparator<Document.Id> getEntityIdComparator() {
-        return DocumentComparator.compareId();
+            return DocumentComparator.compareId();
         }
     };
 
@@ -43,15 +42,7 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
         val minimalDocument = mapDocumentToMinimalDocument(document);
         this.minimalDocumentRepository.save(minimalDocument);
 
-        val documentCoverImage = document.getCoverImage();
-
-        if (documentCoverImage == null)
-            return;
-
-        val rawDocumentCoverImage = documentCoverImage.getBytes();
-        val documentCoverImageFilePath = this.fileStorageProvider.save(rawDocumentCoverImage);
-
-        this.documentCoverImageFilePathsByIds.put(document.getId(), documentCoverImageFilePath);
+        this.saveDocumentCoverImage(document);
     }
 
     @Override
@@ -77,14 +68,26 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
 
     @Override
     @Locked.Read
-    public @NonNull List<Document> show() {
-        return this.minimalDocumentRepository.show().parallelStream()
-            .map(minimalDocument -> {
-                val documentId = minimalDocument.getId();
-                val documentCoverImage = this.getDocumentCoverImageById(documentId);
-                return mapMinimalDocumentAndCoverImageToDocument(minimalDocument, documentCoverImage);
-        })
-        .collect(Collectors.toUnmodifiableList());
+    public @NonNull Set<Document.Id> showIds() {
+        return this.minimalDocumentRepository.showIds();
+    }
+
+    @Override
+    @Locked.Read
+    public @Nullable Page<Document.Id> showIdsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return this.minimalDocumentRepository.showIdsPage(pageIndex, maxPageSize);
+    }
+
+    @Override
+    @Locked.Read
+    public @NonNull Set<Document> show() {
+        return DocumentRepository.super.show();
+    }
+
+    @Override
+    @Locked.Read
+    public @Nullable Page<Document> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return DocumentRepository.super.showPage(pageIndex, maxPageSize);
     }
 
     @Override
@@ -99,23 +102,6 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
         return this.minimalDocumentRepository.size();
     }
 
-    @Override
-    @Locked.Read
-    public @Nullable Page<Document> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val minimalDocumentsPage = this.minimalDocumentRepository.showPage(pageIndex, maxPageSize);
-
-        if (minimalDocumentsPage == null)
-            return null;
-
-        return minimalDocumentsPage
-            .map(minimalDocument -> {
-                val documentId = minimalDocument.getId();
-                val documentCoverImage = this.getDocumentCoverImageById(documentId);
-
-                return mapMinimalDocumentAndCoverImageToDocument(minimalDocument, documentCoverImage);
-            });
-    }
-
     private static @NonNull MinimalDocument mapDocumentToMinimalDocument(@NonNull Document document) {
         return MinimalDocument.of(document.getId(), document.getAudit(), document.getMetadata(), document.getRating());
     }
@@ -128,7 +114,20 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
     }
 
     @SneakyThrows
-    @Locked.Read
+    private void saveDocumentCoverImage(@NonNull Document document) {
+        val documentCoverImage = document.getCoverImage();
+
+        if (documentCoverImage == null)
+            return;
+
+        val rawDocumentCoverImage = documentCoverImage.getBytes();
+        val documentCoverImageFilePath = this.fileStorageProvider.save(rawDocumentCoverImage);
+
+        val documentId = document.getId();
+        this.documentCoverImageFilePathsByIds.put(documentId, documentCoverImageFilePath);
+    }
+
+    @SneakyThrows
     private Document.@Nullable CoverImage getDocumentCoverImageById(Document.@NonNull Id documentId) {
         val documentCoverImageFilePath = this.documentCoverImageFilePathsByIds.get(documentId);
 

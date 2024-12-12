@@ -1,143 +1,73 @@
-package org.tomfoolery.core.dataproviders.repositories.aggregates;
+package org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.abc;
 
 import lombok.Locked;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
+import org.tomfoolery.core.dataproviders.repositories.abc.BaseRetrievalRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.abc.BaseAggregateRepository;
 import org.tomfoolery.core.utils.contracts.ddd;
-import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
-    protected final @NonNull List<? extends BaseRepository<Entity, EntityId>> persistenceRepositories;
-    protected final @NonNull List<? extends BaseRepository<Entity, EntityId>> retrievalRepositories;
+/**
+ * A Hybrid Repository allows invocation of fallback repositories in the retrieval of entities.
+ */
+public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends BaseAggregateRepository<Entity, EntityId> {
+    protected final @NonNull List<? extends BaseRepository<Entity, EntityId>> retrievedRepositories;
 
-    protected BaseHybridRepository(@NonNull List<? extends BaseRepository<Entity, EntityId>> persistenceRepositories, @NonNull List<? extends BaseRepository<Entity, EntityId>> retrievalRepositories) {
-        this.persistenceRepositories = persistenceRepositories;
-        this.retrievalRepositories = retrievalRepositories;
-    }
+    protected BaseHybridRepository(@NonNull BaseRepository<Entity, EntityId> persistenceRepository, @NonNull List<? extends BaseRetrievalRepository<Entity, EntityId>> retrievalRepositories) {
+        super(persistenceRepository);
 
-    @Override
-    @Locked.Write
-    public void save(@NonNull Entity entity) {
-        accept(this.persistenceRepositories, repository -> repository.save(entity));
-    }
-
-    @Override
-    @Locked.Write
-    public void delete(@NonNull EntityId entityId) {
-        accept(this.persistenceRepositories, repository -> repository.delete(entityId));
+        this.retrievedRepositories = retrievalRepositories;
+        this.retrievedRepositories.remove(this.repository);
     }
 
     @Override
     @Locked.Read
     public @Nullable Entity getById(@NonNull EntityId entityId) {
-        val entityFromPersistenceRepositories = getById(this.persistenceRepositories, entityId);
+        val persistedEntity = this.repository.getById(entityId);
 
-        if (entityFromPersistenceRepositories != null)
-            return entityFromPersistenceRepositories;
+        if (persistedEntity != null)
+            return persistedEntity;
 
-        val entityFromRetrievalRepositories = getById(this.retrievalRepositories, entityId);
+        val retrievedEntity = this.retrievedRepositories.parallelStream()
+            .map(repository -> repository.getById(entityId))
+            .filter(Objects::nonNull)
+            .findAny()
+            .orElse(null);
 
-        if (entityFromRetrievalRepositories != null)
-            CompletableFuture.runAsync(() -> this.save(entityFromRetrievalRepositories));
+        if (retrievedEntity != null)
+            CompletableFuture.runAsync(() -> this.repository.save(retrievedEntity));
 
-        return entityFromRetrievalRepositories;
-    }
-
-    @Override
-    @Locked.Read
-    public @NonNull List<Entity> show() {
-        return this.persistenceRepositories.stream()
-            .flatMap(repository -> repository.show().stream())
-            .collect(Collectors.toUnmodifiableList());
-    }
-
-    @Override
-    @Locked.Read
-    public @Nullable Page<Entity> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val persistenceRepository = this.getAnyPersistenceRepository();
-        return persistenceRepository.showPage(pageIndex, maxPageSize);
-    }
-
-    @Override
-    @Locked.Read
-    public @NonNull Set<EntityId> showIds() {
-        val persistenceRepository = this.getAnyPersistenceRepository();
-        return persistenceRepository.showIds();
-    }
-
-    @Override
-    @Locked.Read
-    public @Nullable Page<EntityId> showIdsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val persistenceRepository = this.getAnyPersistenceRepository();
-        return persistenceRepository.showIdsPage(pageIndex, maxPageSize);
+        return retrievedEntity;
     }
 
     @Override
     @Locked.Read
     public boolean contains(@NonNull EntityId entityId) {
-        val containsFromPersistenceRepositories = contains(this.persistenceRepositories, entityId);
+        val persistedEntityExists = this.repository.contains(entityId);
 
-        if (containsFromPersistenceRepositories)
+        if (persistedEntityExists)
             return true;
 
-        val containsFromRetrievalRepositories = contains(this.retrievalRepositories, entityId);
+        val retrievalRepositoryWithEntity = this.retrievedRepositories.parallelStream()
+            .filter(repository -> repository.contains(entityId))
+            .findAny()
+            .orElse(null);
 
-        if (containsFromRetrievalRepositories) {
+        if (retrievalRepositoryWithEntity != null) {
             CompletableFuture.runAsync(() -> {
-                val retrievedEntity = getById(retrievalRepositories, entityId);
+                val retrievedEntity = retrievalRepositoryWithEntity.getById(entityId);
+                assert retrievedEntity != null;
 
-                if (retrievedEntity != null)
-                    this.save(retrievedEntity);
+                this.repository.save(retrievedEntity);
             });
         }
 
-        return containsFromRetrievalRepositories;
-    }
-
-    @Override
-    @Locked.Read
-    public @Unsigned int size() {
-        return this.persistenceRepositories.parallelStream()
-            .mapToInt(BaseRepository::size)
-            .sum();
-    }
-
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @Nullable Entity getById(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {
-        return apply(repositories, repository -> repository.getById(entityId));
-    }
-
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> boolean contains(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull EntityId entityId) {
-        val contains = apply(repositories, repository -> repository.contains(entityId));
-        return contains != null ? contains : false;
-    }
-
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> @Nullable T apply(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull Function<BaseRepository<Entity, EntityId>, T> function) {
-        return repositories.parallelStream()
-            .map(function)
-            .filter(Objects::nonNull)
-            .findAny()
-            .orElse(null);
-    }
-
-    private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> void accept(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull Consumer<BaseRepository<Entity, EntityId>> consumer) {
-        repositories.parallelStream()
-            .forEach(consumer);
-    }
-
-    private @NonNull BaseRepository<Entity, EntityId> getAnyPersistenceRepository() {
-        return this.persistenceRepositories.parallelStream()
-            .findAny()
-            .orElseThrow();
+        return retrievalRepositoryWithEntity != null;
     }
 }

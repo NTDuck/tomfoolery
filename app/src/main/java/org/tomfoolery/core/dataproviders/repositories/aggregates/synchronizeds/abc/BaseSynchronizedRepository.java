@@ -1,38 +1,35 @@
-package org.tomfoolery.core.dataproviders.repositories.aggregates;
+package org.tomfoolery.core.dataproviders.repositories.aggregates.synchronizeds.abc;
 
 import lombok.Locked;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.core.dataproviders.generators.abc.BaseSynchronizedGenerator;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
-import org.tomfoolery.core.dataproviders.repositories.relations.abc.BaseUniRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.abc.BaseAggregateRepository;
+import org.tomfoolery.core.utils.containers.relations.BiRelationRepositories;
+import org.tomfoolery.core.utils.containers.relations.UniRelationRepositories;
 import org.tomfoolery.core.utils.contracts.ddd;
-import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
-public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
-    protected final @NonNull BaseRepository<Entity, EntityId> repository;
-
+public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> extends BaseAggregateRepository<Entity, EntityId> {
     private final @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators;
 
-    private final @NonNull List<? extends BaseUniRepository<?, ?, EntityId>> uniRepositories;
-    private final @NonNull BaseBiRepositories<EntityId> biRepositories;
+    private final @NonNull UniRelationRepositories<EntityId> uniRelationRepositories;
+    private final @NonNull BiRelationRepositories<EntityId> biRelationRepositories;
 
-    public static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull BaseSynchronizedRepository<Entity, EntityId> of(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators, List<? extends BaseUniRepository<?, ?, EntityId>> uniRepositories, @NonNull BaseBiRepositories<EntityId> biRepositories) {
-        return new BaseSynchronizedRepository<>(repository, generators, uniRepositories, biRepositories);
+    public static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> @NonNull BaseSynchronizedRepository<Entity, EntityId> of(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators, UniRelationRepositories<EntityId> uniRelationRepositories, @NonNull BiRelationRepositories<EntityId> biRelationRepositories) {
+        return new BaseSynchronizedRepository<>(repository, generators, uniRelationRepositories, biRelationRepositories);
     }
 
-    protected BaseSynchronizedRepository(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators, @NonNull List<? extends BaseUniRepository<?, ?, EntityId>> uniRepositories, @NonNull BaseBiRepositories<EntityId> biRepositories) {
-        this.repository = repository;
+    protected BaseSynchronizedRepository(@NonNull BaseRepository<Entity, EntityId> repository, @NonNull List<? extends BaseSynchronizedGenerator<Entity, EntityId>> generators, @NonNull UniRelationRepositories<EntityId> uniRelationRepositories, @NonNull BiRelationRepositories<EntityId> biRelationRepositories) {
+        super(repository);
 
         this.generators = generators;
 
-        this.uniRepositories = uniRepositories;
-        this.biRepositories = biRepositories;
+        this.uniRelationRepositories = uniRelationRepositories;
+        this.biRelationRepositories = biRelationRepositories;
     }
 
     @Override
@@ -52,55 +49,12 @@ public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, Ent
         if (entity == null)
             return;
 
-        this.repository.delete(entityId);
-
-        this.generators.parallelStream()
-            .forEach(generator -> generator.synchronizeDeletedEntity(entity));
-
-        this.uniRepositories.parallelStream()
-            .forEach(repository -> repository.synchronizeDeletedEntity(entityId));
-        this.biRepositories.synchronizeDeletedEntity(entityId);
-    }
-
-    @Override
-    @Locked.Read
-    public @Nullable Entity getById(@NonNull EntityId entityId) {
-        return this.repository.getById(entityId);
-    }
-
-    @Override
-    @Locked.Read
-    public @NonNull List<Entity> show() {
-        return this.repository.show();
-    }
-
-    @Override
-    @Locked.Read
-    public @Nullable Page<Entity> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        return this.repository.showPage(pageIndex, maxPageSize);
-    }
-
-    @Override
-    @Locked.Read
-    public @NonNull Set<EntityId> showIds() {
-        return this.repository.showIds();
-    }
-
-    @Override
-    @Locked.Read
-    public @Nullable Page<EntityId> showIdsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        return this.repository.showIdsPage(pageIndex, maxPageSize);
-    }
-
-    @Override
-    @Locked.Read
-    public boolean contains(@NonNull EntityId entityId) {
-        return this.repository.contains(entityId);
-    }
-
-    @Override
-    @Locked.Read
-    public @Unsigned int size() {
-        return this.repository.size();
+        CompletableFuture.allOf(
+            CompletableFuture.runAsync(() -> this.repository.delete(entityId)),
+            CompletableFuture.runAsync(() -> this.generators.parallelStream()
+                .forEach(generator -> generator.synchronizeDeletedEntity(entity))),
+            CompletableFuture.runAsync(() -> this.uniRelationRepositories.synchronizeDeletedEntity(entityId)),
+            CompletableFuture.runAsync(() -> this.biRelationRepositories.synchronizeDeletedEntity(entityId))
+        ).join();
     }
 }

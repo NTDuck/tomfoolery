@@ -12,7 +12,9 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CloudAdministratorRepository implements AdministratorRepository {
@@ -93,7 +95,12 @@ public class CloudAdministratorRepository implements AdministratorRepository {
     }
 
     @Override
-    public @NonNull List<Administrator> show() {
+    public @NonNull Set<BaseUser.Id> showIds() {
+        return Set.of();
+    }
+
+    @Override
+    public @NonNull Set<Administrator> show() {
         List<Administrator> administrators = new ArrayList<>();
         String query = "SELECT * FROM Administrators";
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
@@ -105,7 +112,7 @@ public class CloudAdministratorRepository implements AdministratorRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return administrators;
+        return administrators.parallelStream().collect(Collectors.toUnmodifiableSet());
     }
 
     @SuppressWarnings("unchecked")

@@ -1,4 +1,4 @@
-package org.tomfoolery.core.utils.containers;
+package org.tomfoolery.core.utils.containers.users;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
