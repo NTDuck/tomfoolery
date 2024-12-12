@@ -39,7 +39,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
-import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiRetrievalDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.FileCachedInMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.FileCachedInMemoryDocumentContentRepository;
@@ -65,7 +65,7 @@ public class FileCachedInMemoryApplicationContext extends ApplicationContext {
         val httpClientProvider = this.getHttpClientProvider();
 
         return List.of(
-            GoogleApiDocumentRepository.of(httpClientProvider)
+            GoogleApiRetrievalDocumentRepository.of(httpClientProvider)
         );
     }
 

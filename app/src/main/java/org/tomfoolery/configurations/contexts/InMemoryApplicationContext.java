@@ -41,7 +41,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dot
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.abc.HttpClientProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.OkHttpClientProvider;
-import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleApiRetrievalDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.documents.InMemoryDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.InMemoryAdministratorRepository;
@@ -63,7 +63,7 @@ public class InMemoryApplicationContext extends ApplicationContext {
         val httpClientProvider = this.getHttpClientProvider();
 
         return List.of(
-            GoogleApiDocumentRepository.of(httpClientProvider)
+            GoogleApiRetrievalDocumentRepository.of(httpClientProvider)
         );
     }
 

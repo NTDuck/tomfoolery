@@ -23,7 +23,7 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
         super(persistenceRepository);
 
         this.retrievedRepositories = retrievalRepositories;
-        this.retrievedRepositories.remove(this.repository);
+        assert !this.retrievedRepositories.contains(this.repository);
     }
 
     @Override

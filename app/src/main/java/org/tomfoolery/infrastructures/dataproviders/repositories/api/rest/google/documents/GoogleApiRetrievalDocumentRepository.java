@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
-public class GoogleApiDocumentRepository implements RetrievalDocumentRepository {
+public class GoogleApiRetrievalDocumentRepository implements RetrievalDocumentRepository {
     private static final Staff.@NonNull Id DECOY_STAFF_ID = Staff.Id.of(UUID.fromString("00000000-0000-0000-0000-000000000000"));
     private static final @NonNull String ENDPOINT_URL = "https://www.googleapis.com/books/v1/volumes/";
 

@@ -10,19 +10,18 @@ public interface BaseRetrievalRepository<Entity extends ddd.Entity<EntityId>, En
     @Override
     @DoNotCall
     default void save(@NonNull Entity entity) {
-        // throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     @DoNotCall
     default void delete(@NonNull EntityId entityId) {
-        // throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     @DoNotCall
     default @NonNull Set<EntityId> showIds() {
-        // throw new UnsupportedOperationException();
-        return Set.of();
+        throw new UnsupportedOperationException();
     }
 }
