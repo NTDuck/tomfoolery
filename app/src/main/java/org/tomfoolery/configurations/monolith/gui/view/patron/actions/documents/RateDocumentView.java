@@ -10,13 +10,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.documents.HybridDocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.external.patron.documents.review.persistence.AddDocumentReviewUseCase;
 import org.tomfoolery.core.usecases.external.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.review.persistence.AddDocumentReviewController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.review.persistence.RemoveDocumentReviewController;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
 
 import java.util.ArrayList;
 import java.util.List;

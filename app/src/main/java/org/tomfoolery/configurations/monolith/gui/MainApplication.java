@@ -3,11 +3,10 @@ package org.tomfoolery.configurations.monolith.gui;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import lombok.val;
-import org.tomfoolery.configurations.contexts.test.DeterministicUsersApplicationContextProxy;
-import org.tomfoolery.configurations.contexts.test.KaggleDocumentDatasetApplicationContextProxy;
-import org.tomfoolery.configurations.contexts.test.MockingApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.proxies.DeterministicUsersApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.proxies.KaggleDocumentDatasetApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.proxies.MockingApplicationContextProxy;
 import org.tomfoolery.configurations.contexts.utils.containers.ApplicationContextProxies;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 

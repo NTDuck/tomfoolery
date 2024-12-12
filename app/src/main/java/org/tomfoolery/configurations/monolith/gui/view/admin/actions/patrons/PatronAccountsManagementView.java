@@ -108,7 +108,7 @@ public class PatronAccountsManagementView {
 
         try {
             val viewModel = showController.apply(requestObject);
-            viewModel.getPatrons().forEach(patronAccount -> {
+            viewModel.getPaginatedPatrons().forEach(patronAccount -> {
                 String id = patronAccount.getPatronUuid();
                 String username = patronAccount.getPatronUsername();
                 String created = patronAccount.getCreationTimestamp();

@@ -108,7 +108,7 @@ public class StaffAccountsManagementView {
     }
 
     private void onShowSuccess(ShowStaffAccountsController.@NonNull ViewModel viewModel) {
-        val accounts = viewModel.getStaff();
+        val accounts = viewModel.getPaginatedStaff();
 
         ObservableList<StaffAccountViewModel> accountList = FXCollections.observableArrayList();
 

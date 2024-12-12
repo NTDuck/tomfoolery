@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.contexts.FileCachedInMemoryApplicationContext;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
-import org.tomfoolery.configurations.contexts.dev.FileCachedInMemoryApplicationContext;
 import org.tomfoolery.configurations.monolith.gui.view.admin.layout.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.LoginView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.SignupView;
@@ -146,55 +146,6 @@ public class StageManager {
         PatronView patronView = new PatronView();
         patronView.loadView(contentType);
     }
-
-//    private @NonNull ApplicationContext getApplicationContextFromEnvironment() {
-//        val contextClassName = System.getenv(APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
-//
-//        if (contextClassName == null || contextClassName.isBlank()) {
-//            throw new MissingResourceException(String.format("""
-//            Required resource is missing: `ApplicationContext`.
-//            Specify in `build.gradle.kts` as follows:
-//
-//            ```
-//            tasks.register<JavaExec>("runXXX") {
-//                environment[%s] = "<path.to.ApplicationContextYYY>"
-//            }
-//            ```""", APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME
-//            ), contextClassName, APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
-//        }
-//
-//        try {
-//            val contextClass = Class.forName(contextClassName);
-//            val contextConstructor = contextClass.getDeclaredConstructor();
-//
-//            return (ApplicationContext) contextConstructor.newInstance();
-//
-//        } catch (ClassNotFoundException exception) {
-//            throw new MissingResourceException(String.format("""
-//                Required resource is invalid: `ApplicationContext`.
-//                Specify in `build.gradle.kts` as follows:
-//
-//                ```
-//                tasks.register<JavaExec>("runXXX") {
-//                    environment[%s] = "<path.to.ApplicationContextYYY>"
-//                }
-//                ```""", APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME
-//            ), contextClassName, APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME);
-//
-//        } catch (NoSuchMethodException | IllegalAccessException exception) {
-//            throw new RuntimeException(String.format("""
-//                Class `%s` must provide a public default constructor.
-//                """, contextClassName));
-//
-//        } catch (InvocationTargetException exception) {
-//            throw new RuntimeException(exception.getCause());
-//
-//        } catch (InstantiationException e) {
-//            throw new RuntimeException(String.format("""
-//                Class `%s` must not be abstract.
-//                """, contextClassName));
-//        }
-//    }
 
     public enum ContentType {
         ADMIN_DASHBOARD,
