@@ -15,6 +15,7 @@ import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGen
 import org.tomfoolery.core.dataproviders.generators.users.search.StaffSearchGenerator;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.documents.RetrievalDocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
@@ -60,7 +61,7 @@ public class FileCachedInMemoryApplicationContext extends ApplicationContext {
     }
 
     @Override
-    protected @NonNull List<DocumentRepository> createRetrievalDocumentRepositories() {
+    protected @NonNull List<RetrievalDocumentRepository> createRetrievalDocumentRepositories() {
         val httpClientProvider = this.getHttpClientProvider();
 
         return List.of(

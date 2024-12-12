@@ -12,6 +12,7 @@ import org.tomfoolery.core.dataproviders.generators.users.search.AdministratorSe
 import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.search.StaffSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.documents.RetrievalDocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
@@ -66,7 +67,7 @@ public abstract class ApplicationContext implements Closeable {
     );
 
     private final @NonNull HybridDocumentRepository hybridDocumentRepository = HybridDocumentRepository.of(
-        List.of(this.documentRepository), this.createRetrievalDocumentRepositories()
+        this.documentRepository, this.createRetrievalDocumentRepositories()
     );
 
     private final @NonNull AdministratorRepository administratorRepository = SynchronizedAdministratorRepository.of(
@@ -89,7 +90,7 @@ public abstract class ApplicationContext implements Closeable {
     ));
 
     protected abstract @NonNull DocumentRepository createDocumentRepository();
-    protected @NonNull List<DocumentRepository> createRetrievalDocumentRepositories() {
+    protected @NonNull List<RetrievalDocumentRepository> createRetrievalDocumentRepositories() {
         return List.of();
     }
 
