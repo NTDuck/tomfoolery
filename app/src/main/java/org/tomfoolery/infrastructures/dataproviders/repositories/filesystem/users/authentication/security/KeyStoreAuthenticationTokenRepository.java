@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security;
 
+import lombok.Locked;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -45,6 +46,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
+    @Locked.Write
     public void save(@NonNull AuthenticationToken authenticationToken) {
         val secretKeyEntry = getSecretKeyEntryFromToken(authenticationToken);
         val protectionParameter = this.getProtectionParameter();
@@ -56,6 +58,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
+    @Locked.Write
     public void remove() {
         this.keyStore.deleteEntry(KEYSTORE_ENTRY_ALIAS);
 
@@ -64,6 +67,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
+    @Locked.Read
     public @Nullable AuthenticationToken get() {
         val protectionParameter = this.getProtectionParameter();
         val entry = (KeyStore.SecretKeyEntry) this.keyStore.getEntry(KEYSTORE_ENTRY_ALIAS, protectionParameter);
@@ -76,6 +80,7 @@ public class KeyStoreAuthenticationTokenRepository implements AuthenticationToke
 
     @Override
     @SneakyThrows
+    @Locked.Read
     public boolean contains() {
         return this.keyStore.containsAlias(KEYSTORE_ENTRY_ALIAS);
     }

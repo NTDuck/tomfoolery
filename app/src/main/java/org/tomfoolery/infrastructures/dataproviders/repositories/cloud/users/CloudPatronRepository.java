@@ -13,7 +13,9 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CloudPatronRepository implements PatronRepository {
@@ -111,7 +113,12 @@ public class CloudPatronRepository implements PatronRepository {
     }
 
     @Override
-    public @NonNull List<Patron> show() {
+    public @NonNull Set<BaseUser.Id> showIds() {
+        return Set.of();
+    }
+
+    @Override
+    public @NonNull Set<Patron> show() {
         List<Patron> patrons = new ArrayList<>();
         String query = "SELECT * FROM Patrons";
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
@@ -123,7 +130,7 @@ public class CloudPatronRepository implements PatronRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return patrons;
+        return patrons.parallelStream().collect(Collectors.toUnmodifiableSet());
     }
 
     @SuppressWarnings("unchecked")

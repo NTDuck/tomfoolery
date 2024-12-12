@@ -12,8 +12,6 @@ import org.tomfoolery.core.usecases.external.administrator.users.retrieval.ShowA
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class ShowAdministratorAccountsController implements ThrowableFunction<ShowAdministratorAccountsController.RequestObject, ShowAdministratorAccountsController.ViewModel> {
     private final @NonNull ShowAdministratorAccountsUseCase showAdministratorAccountsUseCase;
@@ -40,16 +38,15 @@ public final class ShowAdministratorAccountsController implements ThrowableFunct
     }
 
     private static @NonNull ViewModel mapResponseModelToViewModel(ShowAdministratorAccountsUseCase.@NonNull Response<Administrator> responseModel) {
-        val paginatedAdministrators = responseModel.getPaginatedUsers();
-
-        val pageIndex = paginatedAdministrators.getPageIndex();
-        val maxPageIndex = paginatedAdministrators.getMaxPageIndex();
-
-        val viewablePaginatedAdministrators = StreamSupport.stream(paginatedAdministrators.spliterator(), true)
+        val administratorsPage = responseModel.getUsersPage();
+        val paginatedAdministrators = administratorsPage
             .map(GetAdministratorByIdController.ViewModel::of)
-            .collect(Collectors.toUnmodifiableList());
+            .toPaginatedList();
 
-        return ViewModel.of(viewablePaginatedAdministrators, pageIndex, maxPageIndex);
+        val pageIndex = administratorsPage.getPageIndex();
+        val maxPageIndex = administratorsPage.getMaxPageIndex();
+
+        return ViewModel.of(paginatedAdministrators, pageIndex, maxPageIndex);
     }
 
     @Value(staticConstructor = "of")
@@ -60,7 +57,7 @@ public final class ShowAdministratorAccountsController implements ThrowableFunct
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<GetAdministratorByIdController.ViewModel> administrators;
+        @NonNull List<GetAdministratorByIdController.ViewModel> paginatedAdministrators;
 
         @Unsigned int pageIndex;
         @Unsigned int maxPageIndex;

@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.external.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableConsumer;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.documents.HybridDocumentRepository;
 
 public final class RemoveDocumentReviewController implements ThrowableConsumer<RemoveDocumentReviewController.RequestObject> {
     private final @NonNull RemoveDocumentReviewUseCase removeDocumentReviewUseCase;

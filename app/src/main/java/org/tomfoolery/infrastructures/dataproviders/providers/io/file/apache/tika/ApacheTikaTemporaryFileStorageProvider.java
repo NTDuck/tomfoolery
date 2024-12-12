@@ -38,6 +38,7 @@ public class ApacheTikaTemporaryFileStorageProvider implements FileStorageProvid
         return this.save(baseFileName, fileExtension, bytes);
     }
 
+    @Override
     public void open(@NonNull String filePathName) throws IOException {
         if (!Desktop.isDesktopSupported())
             throw new IOException();
@@ -56,6 +57,7 @@ public class ApacheTikaTemporaryFileStorageProvider implements FileStorageProvid
         desktop.open(file);
     }
 
+    @Override
     public byte @NonNull [] read(@NonNull String filePathName) throws IOException {
         val filePath = Path.of(filePathName).toAbsolutePath();
 

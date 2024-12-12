@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
 
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.Test;
 import org.tomfoolery.abc.BaseUnitTest;
@@ -97,7 +98,7 @@ public class CloudBorrowingSessionRepositoryTest extends BaseUnitTest<CloudBorro
             this.testSubject.save(session1);
             this.testSubject.save(session2);
 
-            List<BorrowingSession> sessions = this.testSubject.show();
+            val sessions = this.testSubject.show();
 
             assertNotNull(sessions, "Borrowing sessions list should not be null");
             assertTrue(sessions.size() >= 2, "There should be at least two sessions in the database");

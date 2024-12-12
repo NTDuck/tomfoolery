@@ -70,7 +70,7 @@ public final class SearchAdministratorsByUsernameActionView extends UserActionVi
 
         val table = AsciiTable.builder()
             .border(AsciiTable.NO_BORDERS)
-            .data(viewModel.getAdministrators(), List.of(
+            .data(viewModel.getPaginatedAdministrators(), List.of(
                 new Column()
                     .header("UUID")
                     .headerAlign(HorizontalAlign.CENTER)

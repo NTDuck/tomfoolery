@@ -14,7 +14,9 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CloudStaffRepository implements StaffRepository {
@@ -105,7 +107,12 @@ public class CloudStaffRepository implements StaffRepository {
     }
 
     @Override
-    public @NonNull List<Staff> show() {
+    public @NonNull Set<BaseUser.Id> showIds() {
+        return Set.of();
+    }
+
+    @Override
+    public @NonNull Set<Staff> show() {
         List<Staff> staffList = new ArrayList<>();
         String query = "SELECT * FROM Staff";
         try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
@@ -117,7 +124,7 @@ public class CloudStaffRepository implements StaffRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return staffList;
+        return staffList.parallelStream().collect(Collectors.toUnmodifiableSet());
     }
 
     private Staff mapResultSetToStaff(ResultSet rs) throws SQLException {

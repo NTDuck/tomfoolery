@@ -70,7 +70,7 @@ public final class SearchPatronsByUsernameActionView extends UserActionView {
 
         val table = AsciiTable.builder()
             .border(AsciiTable.NO_BORDERS)
-            .data(viewModel.getPatrons(), List.of(
+            .data(viewModel.getPaginatedPatrons(), List.of(
                 new Column()
                     .header("UUID")
                     .headerAlign(HorizontalAlign.CENTER)

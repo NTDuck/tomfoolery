@@ -10,8 +10,8 @@ import org.tomfoolery.core.utils.contracts.ddd;
 import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 
@@ -46,16 +46,31 @@ public abstract class BaseInMemoryRepository<Entity extends ddd.Entity<EntityId>
 
     @Override
     @Locked.Read
-    public @NonNull List<Entity> show() {
-        return this.entitiesByIds.values()
-            .parallelStream()
-            .collect(Collectors.toUnmodifiableList());
+    public @NonNull Set<EntityId> showIds() {
+        return this.entitiesByIds.keySet();
     }
 
     @Override
     @Locked.Read
-    public @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        return BaseRepository.super.showPaginated(pageIndex, maxPageSize);
+    public @Nullable Page<EntityId> showIdsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return BaseRepository.super.showIdsPage(pageIndex, maxPageSize);
+    }
+
+    @Override
+    @Locked.Read
+    public @NonNull Set<Entity> show() {
+        return this.entitiesByIds.values()
+            .parallelStream()
+            .collect(Collectors.toUnmodifiableSet());
+    }
+
+    @Override
+    @Locked.Read
+    public @Nullable Page<Entity> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val unpaginatedEntities = this.show().parallelStream()
+            .collect(Collectors.toUnmodifiableList());
+
+        return Page.fromUnpaginated(unpaginatedEntities, pageIndex, maxPageSize);
     }
 
     @Override

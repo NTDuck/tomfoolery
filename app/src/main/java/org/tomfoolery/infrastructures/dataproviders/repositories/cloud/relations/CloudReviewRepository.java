@@ -12,7 +12,9 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CloudReviewRepository implements ReviewRepository {
@@ -78,8 +80,13 @@ public class CloudReviewRepository implements ReviewRepository {
     }
 
     @Override
+    public @NonNull Set<Review.Id> showIds() {
+        return Set.of();
+    }
+
+    @Override
     @NonNull
-    public List<Review> show() {
+    public Set<Review> show() {
         List<Review> reviews = new ArrayList<>();
         String query = "SELECT * FROM Review";
 
@@ -93,7 +100,7 @@ public class CloudReviewRepository implements ReviewRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return reviews;
+        return reviews.parallelStream().collect(Collectors.toUnmodifiableSet());
     }
 
     private Review mapResultSetToReview(ResultSet rs) throws SQLException {

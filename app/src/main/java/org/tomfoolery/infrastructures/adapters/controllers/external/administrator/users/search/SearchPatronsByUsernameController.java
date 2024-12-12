@@ -13,8 +13,6 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetPatronByIdController;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class SearchPatronsByUsernameController implements ThrowableFunction<SearchPatronsByUsernameController.RequestObject, SearchPatronsByUsernameController.ViewModel> {
     private final @NonNull SearchPatronsByUsernameUseCase searchAdministratorsByUsernameUseCase;
@@ -41,16 +39,15 @@ public final class SearchPatronsByUsernameController implements ThrowableFunctio
     }
 
     private static @NonNull ViewModel mapResponseModelToViewModel(SearchPatronsByUsernameUseCase.@NonNull Response<Patron> responseModel) {
-        val paginatedPatrons = responseModel.getPaginatedUsers();
-
-        val pageIndex = paginatedPatrons.getPageIndex();
-        val maxPageIndex = paginatedPatrons.getMaxPageIndex();
-
-        val viewablePaginatedPatrons = StreamSupport.stream(paginatedPatrons.spliterator(), true)
+        val patronsPage = responseModel.getUsersPage();
+        val paginatedPatrons = patronsPage
             .map(GetPatronByIdController.ViewModel::of)
-            .collect(Collectors.toUnmodifiableList());
+            .toPaginatedList();
 
-        return ViewModel.of(viewablePaginatedPatrons, pageIndex, maxPageIndex);
+        val pageIndex = patronsPage.getPageIndex();
+        val maxPageIndex = patronsPage.getMaxPageIndex();
+
+        return ViewModel.of(paginatedPatrons, pageIndex, maxPageIndex);
     }
 
     @Value(staticConstructor = "of")
@@ -63,7 +60,7 @@ public final class SearchPatronsByUsernameController implements ThrowableFunctio
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<GetPatronByIdController.ViewModel> patrons;
+        @NonNull List<GetPatronByIdController.ViewModel> paginatedPatrons;
 
         @Unsigned int pageIndex;
         @Unsigned int maxPageIndex;

@@ -4,7 +4,7 @@ import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.utils.containers.UserRepositories;
+import org.tomfoolery.core.utils.containers.users.UserRepositories;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableRunnable;
@@ -29,8 +29,9 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
     @Override
     public void run() throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException {
         val authenticationToken = this.getAuthenticationTokenFromRepository();
+        val userId = this.getUserIdFromAuthenticationToken(authenticationToken);
 
-        val userAndRepository = this.getUserAndRepositoryFromAuthenticationToken(authenticationToken);
+        val userAndRepository = this.getUserAndRepositoryFromUserId(userId);
         val userRepository = userAndRepository.getUserRepository();
         val user = userAndRepository.getUser();
 
@@ -40,12 +41,9 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
         this.invalidateAuthenticationToken(authenticationToken);
     }
 
-    private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        val userId = this.getUserIdFromAuthenticationToken(authenticationToken);
+    private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromUserId(User.@NonNull Id userId) throws AuthenticationTokenInvalidException {
         UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUserId(userId);
-
-        if (userAndRepository == null)
-            throw new AuthenticationTokenInvalidException();
+        assert userAndRepository != null;
 
         return userAndRepository;
     }

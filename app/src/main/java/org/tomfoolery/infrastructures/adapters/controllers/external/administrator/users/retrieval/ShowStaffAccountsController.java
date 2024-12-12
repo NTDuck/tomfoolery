@@ -12,8 +12,6 @@ import org.tomfoolery.core.usecases.external.administrator.users.retrieval.ShowS
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class ShowStaffAccountsController implements ThrowableFunction<ShowStaffAccountsController.RequestObject, ShowStaffAccountsController.ViewModel> {
     private final @NonNull ShowStaffAccountsUseCase showStaffAccountsUseCase;
@@ -40,16 +38,15 @@ public final class ShowStaffAccountsController implements ThrowableFunction<Show
     }
 
     private static @NonNull ViewModel mapResponseModelToViewModel(ShowStaffAccountsUseCase.@NonNull Response<Staff> responseModel) {
-        val paginatedStaff = responseModel.getPaginatedUsers();
-
-        val pageIndex = paginatedStaff.getPageIndex();
-        val maxPageIndex = paginatedStaff.getMaxPageIndex();
-
-        val viewablePaginatedStaff = StreamSupport.stream(paginatedStaff.spliterator(), true)
+        val staffPage = responseModel.getUsersPage();
+        val paginatedStaff = staffPage
             .map(GetStaffByIdController.ViewModel::of)
-            .collect(Collectors.toUnmodifiableList());
+            .toPaginatedList();
 
-        return ViewModel.of(viewablePaginatedStaff, pageIndex, maxPageIndex);
+        val pageIndex = staffPage.getPageIndex();
+        val maxPageIndex = staffPage.getMaxPageIndex();
+
+        return ViewModel.of(paginatedStaff, pageIndex, maxPageIndex);
     }
 
     @Value(staticConstructor = "of")
@@ -60,7 +57,7 @@ public final class ShowStaffAccountsController implements ThrowableFunction<Show
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<GetStaffByIdController.ViewModel> staff;
+        @NonNull List<GetStaffByIdController.ViewModel> paginatedStaff;
 
         @Unsigned int pageIndex;
         @Unsigned int maxPageIndex;

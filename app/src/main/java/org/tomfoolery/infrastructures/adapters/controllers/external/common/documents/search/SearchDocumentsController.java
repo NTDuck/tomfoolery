@@ -18,7 +18,6 @@ import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileSt
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class SearchDocumentsController implements ThrowableFunction<SearchDocumentsController.RequestObject, SearchDocumentsController.ViewModel> {
     private final @NonNull Map<SearchCriterion, SearchDocumentsUseCase> searchDocumentsUseCasesBySearchCriteria;
@@ -59,15 +58,15 @@ public final class SearchDocumentsController implements ThrowableFunction<Search
     }
 
     private @NonNull ViewModel mapResponseModelToViewModel(SearchDocumentsUseCase.@NonNull Response responseModel) {
-        val page = responseModel.getPaginatedDocuments();
+        val documentsPage = responseModel.getDocumentsPage();
 
-        val builder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
-        val paginatedDocuments = StreamSupport.stream(page.spliterator(), true)
-            .map(builder::build)
-            .collect(Collectors.toUnmodifiableList());
+        val paginatedDocumentsBuilder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
+        val paginatedDocuments = documentsPage
+            .map(paginatedDocumentsBuilder::build)
+            .toPaginatedList();
 
-        val pageIndex = page.getPageIndex();
-        val maxPageIndex = page.getMaxPageIndex();
+        val pageIndex = documentsPage.getPageIndex();
+        val maxPageIndex = documentsPage.getMaxPageIndex();
 
         return ViewModel.of(paginatedDocuments, pageIndex, maxPageIndex);
     }

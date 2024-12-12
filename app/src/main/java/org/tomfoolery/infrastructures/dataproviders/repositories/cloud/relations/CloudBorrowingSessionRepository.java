@@ -10,9 +10,8 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 
 import java.sql.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CloudBorrowingSessionRepository implements BorrowingSessionRepository {
@@ -74,7 +73,12 @@ public class CloudBorrowingSessionRepository implements BorrowingSessionReposito
     }
 
     @Override
-    public @NonNull List<BorrowingSession> show() {
+    public @NonNull Set<BorrowingSession.Id> showIds() {
+        return Set.of();
+    }
+
+    @Override
+    public @NonNull Set<BorrowingSession> show() {
         List<BorrowingSession> borrowingSessions = new ArrayList<>();
         String query = "SELECT * FROM BorrowingSessions";
 
@@ -88,7 +92,8 @@ public class CloudBorrowingSessionRepository implements BorrowingSessionReposito
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return borrowingSessions;
+
+        return borrowingSessions.parallelStream().collect(Collectors.toUnmodifiableSet());
     }
 
     private BorrowingSession mapResultSetToBorrowingSession(ResultSet rs) throws SQLException {

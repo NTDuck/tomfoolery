@@ -3,6 +3,7 @@ package org.tomfoolery.core.domain.users.abc;
 import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.tomfoolery.core.utils.contracts.ddd;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 

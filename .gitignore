@@ -34,8 +34,8 @@ bin
 .vscode
 .idea
 
-# IDEA rubbish
-*.java~
+# Temporary files
+*~
 
 # Credentials
 src/main/resources/config.properties

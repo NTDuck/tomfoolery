@@ -11,6 +11,8 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
 public class CloudDocumentContentRepository implements DocumentContentRepository {
@@ -69,11 +71,17 @@ public class CloudDocumentContentRepository implements DocumentContentRepository
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
     @Override
-    public @NonNull List<DocumentContent> show() {
+    public @NonNull Set<DocumentContent.Id> showIds() {
+        return Set.of();
+    }
+
+    @Override
+    public @NonNull Set<DocumentContent> show() {
         List<DocumentContent> documentContents = new ArrayList<>();
         String query = "SELECT * FROM DocumentContent";
 
@@ -87,7 +95,8 @@ public class CloudDocumentContentRepository implements DocumentContentRepository
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return documentContents;
+
+        return documentContents.parallelStream().collect(Collectors.toUnmodifiableSet());
     }
 
     private DocumentContent mapResultSetToDocumentContent(ResultSet rs) throws SQLException {

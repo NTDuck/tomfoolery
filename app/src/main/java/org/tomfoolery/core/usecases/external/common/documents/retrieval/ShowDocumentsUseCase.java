@@ -33,18 +33,18 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedDocuments = this.getPaginatedDocuments(pageIndex, maxPageSize);
+        val paginatedDocuments = this.getDocumentsPage(pageIndex, maxPageSize);
 
         return Response.of(paginatedDocuments);
     }
 
-    private @NonNull Page<Document> getPaginatedDocuments(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val paginatedFragmentaryDocuments = this.documentRepository.showPaginated(pageIndex, maxPageSize);
+    private @NonNull Page<Document> getDocumentsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val documentsPage = this.documentRepository.showPage(pageIndex, maxPageSize);
 
-        if (paginatedFragmentaryDocuments == null)
+        if (documentsPage == null)
             throw new PaginationInvalidException();
 
-        return paginatedFragmentaryDocuments;
+        return documentsPage;
     }
 
     @Value(staticConstructor = "of")
@@ -55,7 +55,7 @@ public final class ShowDocumentsUseCase extends AuthenticatedUserUseCase impleme
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document> paginatedDocuments;
+        @NonNull Page<Document> documentsPage;
     }
 
     public static class PaginationInvalidException extends Exception {}

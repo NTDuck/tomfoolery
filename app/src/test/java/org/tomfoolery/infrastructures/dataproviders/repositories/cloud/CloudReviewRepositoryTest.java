@@ -1,5 +1,6 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
 
+import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.annotations.Test;
 import org.tomfoolery.abc.BaseUnitTest;
@@ -90,7 +91,7 @@ public class CloudReviewRepositoryTest extends BaseUnitTest<CloudReviewRepositor
             this.testSubject.save(review1);
             this.testSubject.save(review2);
 
-            List<Review> reviews = this.testSubject.show();
+            val reviews = this.testSubject.show();
 
             assertNotNull(reviews, "Reviews list should not be null");
             assertTrue(reviews.size() >= 2, "There should be at least two reviews in the database");

@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.usecases.external.guest.users.authentication.abc.LogUserInUseCase;
-import org.tomfoolery.core.utils.containers.UserRepositories;
+import org.tomfoolery.core.utils.containers.users.UserRepositories;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;

@@ -117,7 +117,7 @@ public class CloudPatronRepositoryTest extends BaseUnitTest<CloudPatronRepositor
             this.testSubject.save(patron1);
             this.testSubject.save(patron2);
 
-            List<Patron> patrons = this.testSubject.show();
+            val patrons = this.testSubject.show();
 
             assertNotNull(patrons, "Patrons list should not be null");
             assertTrue(patrons.size() >= 2, "There should be at least two patrons in the database");

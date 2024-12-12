@@ -21,6 +21,7 @@ import java.util.Map;
 
 @NoArgsConstructor(staticName = "of")
 public class ZxingDocumentQrCodeGenerator implements DocumentQrCodeGenerator {
+    private static final @NonNull String QR_CODE_EXTENSION = "png";
     private static final @Unsigned int IMAGE_SIZE = 512;
 
     private static final @NonNull Map<EncodeHintType, ?> HINTS = Map.of(

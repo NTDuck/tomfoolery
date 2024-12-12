@@ -1,12 +1,11 @@
 package org.tomfoolery.configurations.monolith.console;
 
-import lombok.Cleanup;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.contexts.dev.FileCachedInMemoryApplicationContext;
-import org.tomfoolery.configurations.contexts.test.DeterministicUsersApplicationContextProxy;
-import org.tomfoolery.configurations.contexts.test.KaggleDocumentDatasetApplicationContextProxy;
-import org.tomfoolery.configurations.contexts.test.MockingApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.FileCachedInMemoryApplicationContext;
+import org.tomfoolery.configurations.contexts.proxies.DeterministicUsersApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.proxies.KaggleDocumentDatasetApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.proxies.MockingApplicationContextProxy;
 import org.tomfoolery.configurations.contexts.utils.containers.ApplicationContextProxies;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.BuiltinIOProvider;
 import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io.abc.IOProvider;
@@ -51,10 +50,7 @@ import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelec
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.infrastructures.utils.helpers.reflection.Closeable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.MissingResourceException;
-import java.util.concurrent.CompletableFuture;
 
 public final class Application implements Runnable, Closeable {
     private final @NonNull ApplicationContext context;
@@ -152,17 +148,13 @@ public final class Application implements Runnable, Closeable {
             DeterministicUsersApplicationContextProxy.of(),
             KaggleDocumentDatasetApplicationContextProxy.of()
         ));
-        val interceptionFuture = CompletableFuture.runAsync(() -> applicationContextProxies.intercept(applicationContext));
+        applicationContextProxies.intercept(applicationContext);
 
-        @Cleanup
-        val application = Application.of(applicationContext);
-
-        // Prevents blocking when application terminates
-        try {
+        try (val application = Application.of(applicationContext)) {
             application.run();
-        } finally {
-            interceptionFuture.complete(null);
-            interceptionFuture.join();
         }
+
+        // Ensures termination even if `applicationContextProxies` is still intercepting
+        System.exit(0);
     }
 }

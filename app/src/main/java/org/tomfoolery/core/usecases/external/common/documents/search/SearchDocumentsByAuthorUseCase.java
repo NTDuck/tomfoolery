@@ -17,6 +17,6 @@ public final class SearchDocumentsByAuthorUseCase extends SearchDocumentsUseCase
 
     @Override
     protected @NonNull DocumentSearchFunction getDocumentSearchFunction() {
-        return this.documentSearchGenerator::searchPaginatedByAuthor;
+        return this.documentSearchGenerator::searchPageByAuthor;
     }
 }

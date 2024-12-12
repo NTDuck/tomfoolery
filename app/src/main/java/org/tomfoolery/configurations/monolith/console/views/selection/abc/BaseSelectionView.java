@@ -64,33 +64,8 @@ public abstract class BaseSelectionView extends BaseView {
     }
 
     private void displayStatisticsViewModel(GetStatisticsController.@NonNull ViewModel viewModel) {
-        val table = AsciiTable.builder()
-            .border(AsciiTable.NO_BORDERS)
-            .data(List.of(viewModel), List.of(
-                new Column()
-                    .header("D")
-                    .headerAlign(HorizontalAlign.CENTER)
-                    .dataAlign(HorizontalAlign.CENTER)
-                    .with(model -> String.valueOf(model.getNumberOfDocuments())),
-                new Column()
-                    .header("A")
-                    .headerAlign(HorizontalAlign.CENTER)
-                    .dataAlign(HorizontalAlign.CENTER)
-                    .with(model -> String.valueOf(model.getNumberOfAdministrators())),
-                new Column()
-                    .header("P")
-                    .headerAlign(HorizontalAlign.CENTER)
-                    .dataAlign(HorizontalAlign.CENTER)
-                    .with(model -> String.valueOf(model.getNumberOfPatrons())),
-                new Column()
-                    .header("S")
-                    .headerAlign(HorizontalAlign.CENTER)
-                    .dataAlign(HorizontalAlign.CENTER)
-                    .with(model -> String.valueOf(model.getNumberOfStaff()))
-            ))
-            .asString();
-
-        this.ioProvider.writeLine(table);
+        this.ioProvider.writeLine("D[%d] A[%d] P[%d] S[%d]",
+            viewModel.getNumberOfDocuments(), viewModel.getNumberOfAdministrators(), viewModel.getNumberOfPatrons(), viewModel.getNumberOfStaff());
     }
 
     private void displaySelectionViewModel(SelectionController.@NonNull ViewModel viewModel) {

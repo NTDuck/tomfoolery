@@ -8,7 +8,7 @@ import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSession
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.external.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
-import org.tomfoolery.infrastructures.dataproviders.repositories.aggregates.hybrid.documents.HybridDocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.documents.HybridDocumentRepository;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.TimestampBiAdapter;
 
 public final class GetDocumentBorrowStatusController implements ThrowableFunction<GetDocumentBorrowStatusController.RequestObject, GetDocumentBorrowStatusController.ViewModel> {
