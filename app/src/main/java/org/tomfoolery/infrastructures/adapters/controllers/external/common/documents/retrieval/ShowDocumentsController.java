@@ -12,8 +12,6 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class ShowDocumentsController implements ThrowableFunction<ShowDocumentsController.RequestObject, ShowDocumentsController.ViewModel> {
     private final @NonNull ShowDocumentsUseCase showDocumentsUseCase;
@@ -42,15 +40,15 @@ public final class ShowDocumentsController implements ThrowableFunction<ShowDocu
     }
 
     private @NonNull ViewModel mapResponseModelToViewModel(ShowDocumentsUseCase.@NonNull Response responseModel) {
-        val page = responseModel.getPaginatedDocuments();
+        val documentsPage = responseModel.getDocumentsPage();
 
-        val builder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
-        val paginatedDocuments = StreamSupport.stream(responseModel.getPaginatedDocuments().spliterator(), true)
-            .map(builder::build)
-            .collect(Collectors.toUnmodifiableList());
+        val paginatedDocumentsBuilder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
+        val paginatedDocuments = documentsPage
+            .map(paginatedDocumentsBuilder::build)
+            .toPaginatedList();
 
-        val pageIndex = page.getPageIndex();
-        val maxPageIndex = page.getMaxPageIndex();
+        val pageIndex = documentsPage.getPageIndex();
+        val maxPageIndex = documentsPage.getMaxPageIndex();
 
         return ViewModel.of(paginatedDocuments, pageIndex, maxPageIndex);
     }

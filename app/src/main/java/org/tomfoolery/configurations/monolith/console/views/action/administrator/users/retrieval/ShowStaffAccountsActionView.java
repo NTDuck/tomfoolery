@@ -69,7 +69,7 @@ public final class ShowStaffAccountsActionView extends UserActionView {
 
         val table = AsciiTable.builder()
             .border(AsciiTable.NO_BORDERS)
-            .data(viewModel.getStaff(), List.of(
+            .data(viewModel.getPaginatedStaff(), List.of(
                 new Column()
                     .header("UUID")
                     .headerAlign(HorizontalAlign.CENTER)

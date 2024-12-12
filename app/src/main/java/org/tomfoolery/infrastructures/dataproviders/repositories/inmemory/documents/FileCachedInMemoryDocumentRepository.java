@@ -79,10 +79,10 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
     @Locked.Read
     public @NonNull List<Document> show() {
         return this.minimalDocumentRepository.show().parallelStream()
-        .map(minimalDocument -> {
-            val documentId = minimalDocument.getId();
-            val documentCoverImage = this.getDocumentCoverImageById(documentId);
-            return mapMinimalDocumentAndCoverImageToDocument(minimalDocument, documentCoverImage);
+            .map(minimalDocument -> {
+                val documentId = minimalDocument.getId();
+                val documentCoverImage = this.getDocumentCoverImageById(documentId);
+                return mapMinimalDocumentAndCoverImageToDocument(minimalDocument, documentCoverImage);
         })
         .collect(Collectors.toUnmodifiableList());
     }
@@ -101,17 +101,19 @@ public class FileCachedInMemoryDocumentRepository implements DocumentRepository 
 
     @Override
     @Locked.Read
-    public @Nullable Page<Document> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val paginatedMinimalDocuments = this.minimalDocumentRepository.showPaginated(pageIndex, maxPageSize);
+    public @Nullable Page<Document> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val minimalDocumentsPage = this.minimalDocumentRepository.showPage(pageIndex, maxPageSize);
 
-        if (paginatedMinimalDocuments == null)
+        if (minimalDocumentsPage == null)
             return null;
 
-        return Page.fromPaginated(paginatedMinimalDocuments, minimalDocument -> {
-            val documentId = minimalDocument.getId();
-            val documentCoverImage = this.getDocumentCoverImageById(documentId);
-            return mapMinimalDocumentAndCoverImageToDocument(minimalDocument, documentCoverImage);
-        });
+        return minimalDocumentsPage
+            .map(minimalDocument -> {
+                val documentId = minimalDocument.getId();
+                val documentCoverImage = this.getDocumentCoverImageById(documentId);
+
+                return mapMinimalDocumentAndCoverImageToDocument(minimalDocument, documentCoverImage);
+            });
     }
 
     private static @NonNull MinimalDocument mapDocumentToMinimalDocument(@NonNull Document document) {

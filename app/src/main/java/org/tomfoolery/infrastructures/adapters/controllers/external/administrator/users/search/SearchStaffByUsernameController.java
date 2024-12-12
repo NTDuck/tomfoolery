@@ -14,8 +14,6 @@ import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetStaffByIdController;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class SearchStaffByUsernameController implements ThrowableFunction<SearchStaffByUsernameController.RequestObject, SearchStaffByUsernameController.ViewModel> {
     private final @NonNull SearchStaffByUsernameUseCase searchStaffByUsernameUseCase;
@@ -42,16 +40,15 @@ public final class SearchStaffByUsernameController implements ThrowableFunction<
     }
 
     private static @NonNull ViewModel mapResponseModelToViewModel(SearchStaffByUsernameUseCase.@NonNull Response<Staff> responseModel) {
-        val paginatedStaff = responseModel.getPaginatedUsers();
-
-        val pageIndex = paginatedStaff.getPageIndex();
-        val maxPageIndex = paginatedStaff.getMaxPageIndex();
-
-        val viewablePaginatedStaff = StreamSupport.stream(paginatedStaff.spliterator(), true)
+        val staffPage = responseModel.getUsersPage();
+        val paginatedStaff = staffPage
             .map(GetStaffByIdController.ViewModel::of)
-            .collect(Collectors.toUnmodifiableList());
+            .toPaginatedList();
 
-        return ViewModel.of(viewablePaginatedStaff, pageIndex, maxPageIndex);
+        val pageIndex = staffPage.getPageIndex();
+        val maxPageIndex = staffPage.getMaxPageIndex();
+
+        return ViewModel.of(paginatedStaff, pageIndex, maxPageIndex);
     }
 
     @Value(staticConstructor = "of")
@@ -64,7 +61,7 @@ public final class SearchStaffByUsernameController implements ThrowableFunction<
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
-        @NonNull List<GetStaffByIdController.ViewModel> staff;
+        @NonNull List<GetStaffByIdController.ViewModel> paginatedStaff;
 
         @Unsigned int pageIndex;
         @Unsigned int maxPageIndex;

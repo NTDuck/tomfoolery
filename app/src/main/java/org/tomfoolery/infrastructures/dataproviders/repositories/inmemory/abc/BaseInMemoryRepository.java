@@ -54,8 +54,8 @@ public abstract class BaseInMemoryRepository<Entity extends ddd.Entity<EntityId>
 
     @Override
     @Locked.Read
-    public @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        return BaseRepository.super.showPaginated(pageIndex, maxPageSize);
+    public @Nullable Page<Entity> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return BaseRepository.super.showPage(pageIndex, maxPageSize);
     }
 
     @Override

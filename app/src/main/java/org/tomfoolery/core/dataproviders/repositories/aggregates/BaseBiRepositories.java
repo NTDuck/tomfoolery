@@ -1,5 +1,6 @@
 package org.tomfoolery.core.dataproviders.repositories.aggregates;
 
+import lombok.Locked;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.core.dataproviders.repositories.relations.abc.BaseBiRepository;
 import org.tomfoolery.core.utils.contracts.ddd;
@@ -19,6 +20,7 @@ public class BaseBiRepositories<EntityId extends ddd.EntityId> {
         this.secondBiRepositories = secondBiRepositories;
     }
 
+    @Locked.Write
     public void synchronizeDeletedEntity(@NonNull EntityId entityId) {
         this.firstBiRepositories.parallelStream()
             .forEach(repository -> repository.synchronizeDeletedFirstEntity(entityId));

@@ -29,17 +29,17 @@ public class ShowUsersUseCase<User extends BaseUser> extends AuthenticatedUserUs
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedUsers = this.getPaginatedUsers(pageIndex, maxPageSize);
+        val paginatedUsers = this.getUsersPage(pageIndex, maxPageSize);
         return Response.of(paginatedUsers);
     }
 
-    private @NonNull Page<User> getPaginatedUsers(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val paginatedUsers = this.userRepository.showPaginated(pageIndex, maxPageSize);
+    private @NonNull Page<User> getUsersPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val usersPage = this.userRepository.showPage(pageIndex, maxPageSize);
 
-        if (paginatedUsers == null)
+        if (usersPage == null)
             throw new PaginationInvalidException();
 
-        return paginatedUsers;
+        return usersPage;
     }
 
     @Value(staticConstructor = "of")
@@ -50,7 +50,7 @@ public class ShowUsersUseCase<User extends BaseUser> extends AuthenticatedUserUs
 
     @Value(staticConstructor = "of")
     public static class Response<User extends BaseUser> {
-        @NonNull Page<User> paginatedUsers;
+        @NonNull Page<User> usersPage;
     }
 
     public static class PaginationInvalidException extends Exception {}

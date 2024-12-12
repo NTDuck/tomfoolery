@@ -17,7 +17,7 @@ public interface UserSearchGenerator<User extends BaseUser> extends BaseSearchGe
         return this.searchByNormalizedCriterion(this::searchByNormalizedUsername, username);
     }
 
-    default @Nullable Page<User> searchPaginatedByUsername(@NonNull String username, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
+    default @Nullable Page<User> searchPageByUsername(@NonNull String username, @Unsigned int pageIndex, @Unsigned int maxPageSize) {
         val unpaginatedUsers = this.searchByUsername(username);
         return Page.fromUnpaginated(unpaginatedUsers, pageIndex, maxPageSize);
     }

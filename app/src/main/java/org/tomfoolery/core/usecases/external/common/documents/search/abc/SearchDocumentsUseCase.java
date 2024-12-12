@@ -33,19 +33,19 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedFragmentaryDocuments = this.searchDocuments(searchTerm, pageIndex, maxPageSize);
+        val documentsPage = this.searchDocuments(searchTerm, pageIndex, maxPageSize);
 
-        return Response.of(paginatedFragmentaryDocuments);
+        return Response.of(documentsPage);
     }
 
     private @NonNull Page<Document> searchDocuments(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
         val documentSearchFunction = this.getDocumentSearchFunction();
-        val paginatedDocuments = documentSearchFunction.apply(searchTerm, pageIndex, maxPageSize);
+        val documentsPage = documentSearchFunction.apply(searchTerm, pageIndex, maxPageSize);
 
-        if (paginatedDocuments == null)
+        if (documentsPage == null)
             throw new PaginationInvalidException();
 
-        return paginatedDocuments;
+        return documentsPage;
     }
 
     @Value(staticConstructor = "of")
@@ -58,7 +58,7 @@ public abstract class SearchDocumentsUseCase extends AuthenticatedUserUseCase im
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document> paginatedDocuments;
+        @NonNull Page<Document> documentsPage;
     }
 
     public static class PaginationInvalidException extends Exception {}

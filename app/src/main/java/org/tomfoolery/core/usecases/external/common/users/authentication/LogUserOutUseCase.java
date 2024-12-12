@@ -29,8 +29,9 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
     @Override
     public void run() throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException {
         val authenticationToken = this.getAuthenticationTokenFromRepository();
+        val userId = this.getUserIdFromAuthenticationToken(authenticationToken);
 
-        val userAndRepository = this.getUserAndRepositoryFromAuthenticationToken(authenticationToken);
+        val userAndRepository = this.getUserAndRepositoryFromUserId(userId);
         val userRepository = userAndRepository.getUserRepository();
         val user = userAndRepository.getUser();
 
@@ -40,12 +41,9 @@ public final class LogUserOutUseCase extends AuthenticatedUserUseCase implements
         this.invalidateAuthenticationToken(authenticationToken);
     }
 
-    private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
-        val userId = this.getUserIdFromAuthenticationToken(authenticationToken);
+    private <User extends BaseUser> UserAndRepository<User> getUserAndRepositoryFromUserId(User.@NonNull Id userId) throws AuthenticationTokenInvalidException {
         UserAndRepository<User> userAndRepository = this.userRepositories.getUserAndRepositoryByUserId(userId);
-
-        if (userAndRepository == null)
-            throw new AuthenticationTokenInvalidException();
+        assert userAndRepository != null;
 
         return userAndRepository;
     }

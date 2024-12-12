@@ -11,6 +11,7 @@ import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -63,8 +64,23 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
 
     @Override
     @Locked.Read
-    public @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        return BaseRepository.super.showPaginated(pageIndex, maxPageSize);
+    public @Nullable Page<Entity> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val persistenceRepository = this.getAnyPersistenceRepository();
+        return persistenceRepository.showPage(pageIndex, maxPageSize);
+    }
+
+    @Override
+    @Locked.Read
+    public @NonNull Set<EntityId> showIds() {
+        val persistenceRepository = this.getAnyPersistenceRepository();
+        return persistenceRepository.showIds();
+    }
+
+    @Override
+    @Locked.Read
+    public @Nullable Page<EntityId> showIdsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val persistenceRepository = this.getAnyPersistenceRepository();
+        return persistenceRepository.showIdsPage(pageIndex, maxPageSize);
     }
 
     @Override
@@ -117,5 +133,11 @@ public class BaseHybridRepository<Entity extends ddd.Entity<EntityId>, EntityId 
     private static <Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId, T> void accept(@NonNull List<? extends BaseRepository<Entity, EntityId>> repositories, @NonNull Consumer<BaseRepository<Entity, EntityId>> consumer) {
         repositories.parallelStream()
             .forEach(consumer);
+    }
+
+    private @NonNull BaseRepository<Entity, EntityId> getAnyPersistenceRepository() {
+        return this.persistenceRepositories.parallelStream()
+            .findAny()
+            .orElseThrow();
     }
 }

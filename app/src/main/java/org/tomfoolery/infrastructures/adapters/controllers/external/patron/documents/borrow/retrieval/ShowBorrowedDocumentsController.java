@@ -14,8 +14,6 @@ import org.tomfoolery.infrastructures.adapters.controllers.external.common.docum
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class ShowBorrowedDocumentsController implements ThrowableFunction<ShowBorrowedDocumentsController.RequestObject, ShowBorrowedDocumentsController.ViewModel> {
     private final @NonNull ShowBorrowedDocumentsUseCase showBorrowedDocumentsUseCase;
@@ -44,15 +42,15 @@ public final class ShowBorrowedDocumentsController implements ThrowableFunction<
     }
 
     private @NonNull ViewModel mapResponseModelToViewModel(ShowBorrowedDocumentsUseCase.@NonNull Response responseModel) {
-        val page = responseModel.getPaginatedBorrowedDocuments();
+        val borrowedDocumentsPage = responseModel.getBorrowedDocumentsPage();
 
-        val builder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
-        val paginatedBorrowedDocuments = StreamSupport.stream(page.spliterator(), true)
-            .map(builder::build)
-            .collect(Collectors.toUnmodifiableList());
+        val paginatedBorrowedDocumentsBuilder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
+        val paginatedBorrowedDocuments = borrowedDocumentsPage
+            .map(paginatedBorrowedDocumentsBuilder::build)
+            .toPaginatedList();
 
-        val pageIndex = page.getPageIndex();
-        val maxPageIndex = page.getMaxPageIndex();
+        val pageIndex = borrowedDocumentsPage.getPageIndex();
+        val maxPageIndex = borrowedDocumentsPage.getMaxPageIndex();
 
         return ViewModel.of(paginatedBorrowedDocuments, pageIndex, maxPageIndex);
     }

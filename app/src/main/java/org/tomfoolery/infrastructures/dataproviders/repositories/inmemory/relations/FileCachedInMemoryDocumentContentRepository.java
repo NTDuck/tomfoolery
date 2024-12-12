@@ -77,15 +77,13 @@ public class FileCachedInMemoryDocumentContentRepository implements DocumentCont
 
     @Override
     @Locked.Read
-    public @Nullable Page<DocumentContent> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        val unpaginatedDocumentContentIds = this.documentContentFilePathsByIds.keySet().parallelStream()
-            .collect(Collectors.toUnmodifiableList());
-        val paginatedDocumentContentIds = Page.fromUnpaginated(unpaginatedDocumentContentIds, pageIndex, maxPageSize);
+    public @Nullable Page<DocumentContent> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        val paginatedDocumentContentIds = this.showIdsPage(pageIndex, maxPageSize);
 
         if (paginatedDocumentContentIds == null)
             return null;
 
-        return Page.fromPaginated(paginatedDocumentContentIds, this::getById);
+        return paginatedDocumentContentIds.map(this::getById);
     }
 
     @Override

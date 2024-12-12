@@ -17,7 +17,7 @@ public final class SearchDocumentsByGenreUseCase extends SearchDocumentsUseCase 
 
     @Override
     protected @NonNull DocumentSearchFunction getDocumentSearchFunction() {
-        return this.documentSearchGenerator::searchPaginatedByGenre;
+        return this.documentSearchGenerator::searchPageByGenre;
     }
 }
 

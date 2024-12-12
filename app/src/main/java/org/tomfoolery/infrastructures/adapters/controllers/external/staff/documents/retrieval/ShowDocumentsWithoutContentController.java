@@ -14,8 +14,6 @@ import org.tomfoolery.infrastructures.adapters.controllers.external.common.docum
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public final class ShowDocumentsWithoutContentController implements ThrowableFunction<ShowDocumentsWithoutContentController.RequestObject, ShowDocumentsWithoutContentController.ViewModel> {
     private final @NonNull ShowDocumentsWithoutContentUseCase showDocumentsWithoutContentUseCase;
@@ -44,17 +42,17 @@ public final class ShowDocumentsWithoutContentController implements ThrowableFun
     }
 
     private @NonNull ViewModel mapResponseModelToViewModel(ShowDocumentsWithoutContentUseCase.@NonNull Response responseModel) {
-        val page = responseModel.getPaginatedDocumentsWithoutContent();
+        val documentsWithoutContentPage = responseModel.getDocumentsWithoutContentPage();
 
-        val builder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
-        val paginatedDocuments = StreamSupport.stream(page.spliterator(), true)
-            .map(builder::build)
-            .collect(Collectors.toUnmodifiableList());
+        val paginatedDocumentsWithoutContentBuilder = GetDocumentByIdController.ViewModel.Builder_.with(this.fileStorageProvider);
+        val paginatedDocumentsWithoutContent = documentsWithoutContentPage
+            .map(paginatedDocumentsWithoutContentBuilder::build)
+            .toPaginatedList();
 
-        val pageIndex = page.getPageIndex();
-        val maxPageIndex = page.getMaxPageIndex();
+        val pageIndex = documentsWithoutContentPage.getPageIndex();
+        val maxPageIndex = documentsWithoutContentPage.getMaxPageIndex();
 
-        return ViewModel.of(paginatedDocuments, pageIndex, maxPageIndex);
+        return ViewModel.of(paginatedDocumentsWithoutContent, pageIndex, maxPageIndex);
     }
 
     @Value(staticConstructor = "of")

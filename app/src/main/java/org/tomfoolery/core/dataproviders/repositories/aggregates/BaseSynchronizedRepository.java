@@ -12,6 +12,7 @@ import org.tomfoolery.core.utils.contracts.ddd;
 import org.tomfoolery.core.utils.dataclasses.Page;
 
 import java.util.List;
+import java.util.Set;
 
 public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, EntityId extends ddd.EntityId> implements BaseRepository<Entity, EntityId> {
     protected final @NonNull BaseRepository<Entity, EntityId> repository;
@@ -75,8 +76,20 @@ public class BaseSynchronizedRepository<Entity extends ddd.Entity<EntityId>, Ent
 
     @Override
     @Locked.Read
-    public @Nullable Page<Entity> showPaginated(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
-        return this.repository.showPaginated(pageIndex, maxPageSize);
+    public @Nullable Page<Entity> showPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return this.repository.showPage(pageIndex, maxPageSize);
+    }
+
+    @Override
+    @Locked.Read
+    public @NonNull Set<EntityId> showIds() {
+        return this.repository.showIds();
+    }
+
+    @Override
+    @Locked.Read
+    public @Nullable Page<EntityId> showIdsPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return this.repository.showIdsPage(pageIndex, maxPageSize);
     }
 
     @Override

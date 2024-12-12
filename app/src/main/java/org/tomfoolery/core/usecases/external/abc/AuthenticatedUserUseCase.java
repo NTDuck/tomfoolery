@@ -45,7 +45,7 @@ public abstract class AuthenticatedUserUseCase {
             throw new AuthenticationTokenInvalidException();
     }
 
-    protected BaseUser.@NonNull Id getUserIdFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
+    protected <User extends BaseUser> User.@NonNull Id getUserIdFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) throws AuthenticationTokenInvalidException {
         val userId = this.authenticationTokenGenerator.getUserIdFromAuthenticationToken(authenticationToken);
 
         if (userId == null)

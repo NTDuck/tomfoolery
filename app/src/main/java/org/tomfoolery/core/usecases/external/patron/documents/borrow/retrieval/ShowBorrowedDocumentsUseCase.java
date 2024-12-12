@@ -16,9 +16,7 @@ import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.utils.contracts.functional.ThrowableFunction;
 import org.tomfoolery.core.utils.dataclasses.Page;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase implements ThrowableFunction<ShowBorrowedDocumentsUseCase.Request, ShowBorrowedDocumentsUseCase.Response> {
     private final @NonNull DocumentRepository documentRepository;
@@ -49,38 +47,26 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val currentlyBorrowedRecords = this.getCurrentlyBorrowedRecordsByPatron(patronId);
-        val paginatedBorrowedDocumentIds = this.getPaginatedBorrowedDocumentIds(currentlyBorrowedRecords, pageIndex, maxPageSize);
-        val paginatedBorrowedDocuments = this.getPaginatedBorrowedDocuments(paginatedBorrowedDocumentIds);
+        val borrowingSessionsPage = this.getBorrowingSessionsPage(patronId, pageIndex, maxPageSize);
+        val borrowingDocumentsPage = this.getBorrowingDocumentsPage(borrowingSessionsPage);
 
-        return Response.of(paginatedBorrowedDocuments);
+        return Response.of(borrowingDocumentsPage);
     }
 
-    private @NonNull List<BorrowingSession> getCurrentlyBorrowedRecordsByPatron(Patron.@NonNull Id patronId) {
-        return this.borrowingSessionRepository.show(patronId);
-    }
+    private @NonNull Page<BorrowingSession> getBorrowingSessionsPage(Patron.@NonNull Id patronId, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val borrowingSessionsPage = this.borrowingSessionRepository.showPageByPatronId(patronId, pageIndex, maxPageSize);
 
-    private @NonNull Page<Document.Id> getPaginatedBorrowedDocumentIds(@NonNull List<BorrowingSession> borrowingSessions, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val unpaginatedBorrowedDocumentIds = borrowingSessions.parallelStream()
-            .map(borrowingRecord -> borrowingRecord.getId().getFirstEntityId())
-            .collect(Collectors.toUnmodifiableList());
-        val paginatedBorrowedDocumentIds = Page.fromUnpaginated(unpaginatedBorrowedDocumentIds, pageIndex, maxPageSize);
-
-        if (paginatedBorrowedDocumentIds == null)
+        if (borrowingSessionsPage == null)
             throw new PaginationInvalidException();
 
-        return paginatedBorrowedDocumentIds;
+        return borrowingSessionsPage;
     }
 
-    private @NonNull Page<Document> getPaginatedBorrowedDocuments(@NonNull Page<Document.Id> paginatedBorrowedDocumentIds) {
-        return Page.fromPaginated(paginatedBorrowedDocumentIds, this::getDocumentById);
-    }
-
-    private @NonNull Document getDocumentById(Document.@NonNull Id documentId) {
-        val document = this.documentRepository.getById(documentId);
-        assert document != null;
-
-        return document;
+    private @NonNull Page<Document> getBorrowingDocumentsPage(@NonNull Page<BorrowingSession> borrowingSessionsPage) {
+        return borrowingSessionsPage
+            .map(BorrowingSession::getId)
+            .map(BorrowingSession.Id::getFirstEntityId)
+            .map(this.documentRepository::getById);
     }
 
     @Value(staticConstructor = "of")
@@ -91,7 +77,7 @@ public final class ShowBorrowedDocumentsUseCase extends AuthenticatedUserUseCase
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document> paginatedBorrowedDocuments;
+        @NonNull Page<Document> borrowedDocumentsPage;
     }
 
     public static class PaginationInvalidException extends Exception {}

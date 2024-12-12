@@ -41,28 +41,38 @@ public final class ShowDocumentsWithoutContentUseCase extends AuthenticatedUserU
 
     @Override
     public @NonNull Response apply(@NonNull Request request) throws AuthenticationTokenNotFoundException, AuthenticationTokenInvalidException, PaginationInvalidException {
-        val authenticationToken = this.getAuthenticationTokenFromRepository();
-        this.ensureAuthenticationTokenIsValid(authenticationToken);
+        val staffAuthenticationToken = this.getAuthenticationTokenFromRepository();
+        this.ensureAuthenticationTokenIsValid(staffAuthenticationToken);
 
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedDocumentsWithoutContent = this.getPaginatedDocumentWithoutContent(pageIndex, maxPageSize);
+        val documentIdsWithoutContentPage = this.generateDocumentIdsWithoutContentPage(pageIndex, maxPageSize);
+        val documentsWithoutContentPage = this.getDocumentsWithoutContentPage(documentIdsWithoutContentPage);
 
-        return Response.of(paginatedDocumentsWithoutContent);
+        return Response.of(documentsWithoutContentPage);
     }
 
-    private @NonNull Page<Document> getPaginatedDocumentWithoutContent(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val unpaginatedDocuments = this.documentRepository.show().parallelStream()
-            .filter(document -> !this.documentContentRepository.contains(DocumentContent.Id.of(document.getId())))
+    private @NonNull Page<Document.Id> generateDocumentIdsWithoutContentPage(@Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val unpaginatedDocumentIds = this.documentRepository.showIds();
+        val unpaginatedDocumentIdsWithContent = this.documentContentRepository.showIds().parallelStream()
+            .map(DocumentContent.Id::getEntityId)
+            .collect(Collectors.toUnmodifiableSet());
+
+        val unpaginatedDocumentIdsWithoutContent = unpaginatedDocumentIds.parallelStream()
+            .filter(documentId -> !unpaginatedDocumentIdsWithContent.contains(documentId))
             .collect(Collectors.toUnmodifiableList());
 
-        val paginatedDocuments = Page.fromUnpaginated(unpaginatedDocuments, pageIndex, maxPageSize);
+        val documentIdsWithoutContentPage = Page.fromUnpaginated(unpaginatedDocumentIdsWithoutContent, pageIndex, maxPageSize);
 
-        if (paginatedDocuments == null)
+        if (documentIdsWithoutContentPage == null)
             throw new PaginationInvalidException();
 
-        return paginatedDocuments;
+        return documentIdsWithoutContentPage;
+    }
+
+    private @NonNull Page<Document> getDocumentsWithoutContentPage(@NonNull Page<Document.Id> documentIdsWithoutContentPage) {
+        return documentIdsWithoutContentPage.map(this.documentRepository::getById);
     }
 
     @Value(staticConstructor = "of")
@@ -73,7 +83,7 @@ public final class ShowDocumentsWithoutContentUseCase extends AuthenticatedUserU
 
     @Value(staticConstructor = "of")
     public static class Response {
-        @NonNull Page<Document> paginatedDocumentsWithoutContent;
+        @NonNull Page<Document> documentsWithoutContentPage;
     }
 
     public static class PaginationInvalidException extends Exception {}

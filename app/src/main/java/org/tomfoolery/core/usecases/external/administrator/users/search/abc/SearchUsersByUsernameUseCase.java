@@ -30,17 +30,17 @@ public class SearchUsersByUsernameUseCase<User extends BaseUser> extends Authent
         val pageIndex = request.getPageIndex();
         val maxPageSize = request.getMaxPageSize();
 
-        val paginatedUsers = this.getPaginatedUsers(searchTerm, pageIndex, maxPageSize);
-        return Response.of(paginatedUsers);
+        val usersPage = this.getUsersPage(searchTerm, pageIndex, maxPageSize);
+        return Response.of(usersPage);
     }
 
-    private @NonNull Page<User> getPaginatedUsers(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
-        val paginatedUsers = this.userSearchGenerator.searchPaginatedByUsername(searchTerm, pageIndex, maxPageSize);
+    private @NonNull Page<User> getUsersPage(@NonNull String searchTerm, @Unsigned int pageIndex, @Unsigned int maxPageSize) throws PaginationInvalidException {
+        val usersPage = this.userSearchGenerator.searchPageByUsername(searchTerm, pageIndex, maxPageSize);
 
-        if (paginatedUsers == null)
+        if (usersPage == null)
             throw new PaginationInvalidException();
 
-        return paginatedUsers;
+        return usersPage;
     }
 
     @Value(staticConstructor = "of")
@@ -53,7 +53,7 @@ public class SearchUsersByUsernameUseCase<User extends BaseUser> extends Authent
 
     @Value(staticConstructor = "of")
     public static class Response<User extends BaseUser> {
-        @NonNull Page<User> paginatedUsers;
+        @NonNull Page<User> usersPage;
     }
 
     public static class PaginationInvalidException extends Exception {}
