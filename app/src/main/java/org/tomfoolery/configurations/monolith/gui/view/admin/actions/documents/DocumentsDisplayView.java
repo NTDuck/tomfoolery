@@ -36,4 +36,9 @@ public class DocumentsDisplayView extends ShowDocumentsView {
         counterLabel.setText(this.getStatisticsController.get().getNumberOfDocuments() + " document(s)");
         showDocuments();
     }
+
+    @Override
+    public void showDocuments() {
+
+    }
 }

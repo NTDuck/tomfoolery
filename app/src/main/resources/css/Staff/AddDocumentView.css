@@ -18,12 +18,6 @@
     -fx-background-color: transparent;
 }
 
-.document-info {
-    -fx-background-color: transparent;
-    -fx-spacing: 20;
-    -fx-padding: 10 10 10 10;
-}
-
 .text-field-container {
     -fx-alignment: center-left;
     -fx-pref-width: 300;

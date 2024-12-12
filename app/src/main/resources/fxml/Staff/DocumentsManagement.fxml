@@ -16,7 +16,7 @@
       styleClass="content-container" stylesheets="/css/Staff/DocumentsManagement.css"
       VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" spacing="20">
     <HBox styleClass="panel" prefHeight="60" spacing="20">
-        <Button fx:id="addDocumentButton" styleClass="button" text="Add document" prefWidth="100"/>
+        <Button fx:id="addDocumentButton" styleClass="button" text="Add document" prefWidth="150"/>
         <Button fx:id="showDocumentsWithoutContentButton" styleClass="button" text="Show missing content documents" prefWidth="250"/>
     </HBox>
 
@@ -24,7 +24,7 @@
         <ImageView fitHeight="35" fitWidth="35">
             <Image url="/images/search.png"/>
         </ImageView>
-        <TextField prefHeight="60" prefWidth="300" promptText="Search through documents"
+        <TextField prefHeight="60" prefWidth="600" promptText="Search through documents"
                    styleClass="search-field" fx:id="searchField"/>
         <ComboBox fx:id="pageChooserBox"/>
     </HBox>
@@ -33,27 +33,27 @@
         <columns>
             <TableColumn text="ISBN" prefWidth="80">
                 <cellValueFactory>
-                    <PropertyValueFactory property="ISBN"/>
+                    <PropertyValueFactory property="documentISBN_13"/>
                 </cellValueFactory>
             </TableColumn>
             <TableColumn text="Title" prefWidth="120">
                 <cellValueFactory>
-                    <PropertyValueFactory property="title"/>
+                    <PropertyValueFactory property="documentTitle"/>
                 </cellValueFactory>
             </TableColumn>
             <TableColumn text="Authors" prefWidth="120">
                 <cellValueFactory>
-                    <PropertyValueFactory property="authors"/>
+                    <PropertyValueFactory property="documentAuthors"/>
                 </cellValueFactory>
             </TableColumn>
             <TableColumn text="Created" prefWidth="120">
                 <cellValueFactory>
-                    <PropertyValueFactory property="created"/>
+                    <PropertyValueFactory property="createdTimestamp"/>
                 </cellValueFactory>
             </TableColumn>
             <TableColumn text="Last Modified" prefWidth="120">
                 <cellValueFactory>
-                    <PropertyValueFactory property="lastModified"/>
+                    <PropertyValueFactory property="lastModifiedTimestamp"/>
                 </cellValueFactory>
             </TableColumn>
 
@@ -61,6 +61,7 @@
             <TableColumn fx:id="updateMetadataColumn" prefWidth="120"/>
             <TableColumn fx:id="updateCoverImageColumn" prefWidth="150"/>
             <TableColumn fx:id="updateContentColumn" prefWidth="120"/>
+            <TableColumn fx:id="deleteDocumentColumn" prefWidth="120"/>
         </columns>
 
         <columnResizePolicy>

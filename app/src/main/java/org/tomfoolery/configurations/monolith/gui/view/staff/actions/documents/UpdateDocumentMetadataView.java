@@ -19,6 +19,7 @@ import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.external.staff.documents.persistence.UpdateDocumentContentUseCase;
 import org.tomfoolery.core.usecases.external.staff.documents.persistence.UpdateDocumentCoverImageUseCase;
 import org.tomfoolery.core.usecases.external.staff.documents.persistence.UpdateDocumentMetadataUseCase;
@@ -34,11 +35,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class UpdateDocumentMetadataView {
-    private @NonNull String currentDocumentContentPath = "";
-
     private final @NonNull UpdateDocumentMetadataController metadataController;
-    private final @NonNull UpdateDocumentContentController contentController;
-    private final @NonNull UpdateDocumentCoverImageController coverImageController;
 
     private final ShowDocumentsView.@NonNull DocumentViewModel documentViewModel;
 
@@ -64,15 +61,6 @@ public class UpdateDocumentMetadataView {
     private TextField publishedYear;
 
     @FXML
-    private Button coverImageChooserButton;
-
-    @FXML
-    private Button pdfChooserButton;
-
-    @FXML
-    private Label chosePdfInfo;
-
-    @FXML
     private Label errorMessage;
 
     @FXML
@@ -84,16 +72,11 @@ public class UpdateDocumentMetadataView {
     public UpdateDocumentMetadataView(
             ShowDocumentsView.@NonNull DocumentViewModel documentViewModel,
             @NonNull DocumentRepository documentRepository,
-            @NonNull DocumentContentRepository documentContentRepository,
             @NonNull AuthenticationTokenGenerator authenticationTokenGenerator,
-            @NonNull AuthenticationTokenRepository authenticationTokenRepository,
-            @NonNull FileVerifier fileVerifier,
-            @NonNull FileStorageProvider fileStorageProvider
+            @NonNull AuthenticationTokenRepository authenticationTokenRepository
     ) {
         this.documentViewModel = documentViewModel;
         this.metadataController = UpdateDocumentMetadataController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
-        this.contentController = UpdateDocumentContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier, fileStorageProvider);
-        this.coverImageController = UpdateDocumentCoverImageController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier, fileStorageProvider);
     }
 
     @FXML
@@ -103,11 +86,6 @@ public class UpdateDocumentMetadataView {
         loadInitialInfo();
         updateDocumentButton.setOnAction(event -> updateDocument());
         cancelButton.setOnAction(event -> closeView());
-        coverImageChooserButton.setOnAction(event -> openCoverImageFileChooser());
-        pdfChooserButton.setOnAction(event -> openPdfFileChooser());
-
-        coverImageChooserButton.setGraphic(getDefaultCoverImage());
-        chosePdfInfo.setText("No file selected");
     }
 
     private void loadInitialInfo() {
@@ -120,84 +98,6 @@ public class UpdateDocumentMetadataView {
         publishedYear.setText(documentViewModel.getDocumentPublishedYear());
     }
 
-    private @NonNull ImageView getDefaultCoverImage() {
-        ImageView coverImageView = new ImageView(new Image("/images/default/placeholder-book-cover.png"));
-        coverImageView.setFitHeight(160);
-        coverImageView.setFitWidth(160);
-
-        return coverImageView;
-    }
-
-    private String getCurrentCoverImagePath() {
-        Image buttonImage = ((ImageView) coverImageChooserButton.getGraphic()).getImage();
-        String imageURL = buttonImage.getUrl();
-
-        String absolutePath = null;
-
-        if (imageURL != null) {
-            try {
-                absolutePath = Paths.get(new URI(imageURL)).toString();
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            System.out.println("No image URL found");
-        }
-
-        return absolutePath;
-    }
-
-    public void openCoverImageFileChooser() {
-        FileChooser fileChooser = new FileChooser();
-
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PNG files", "*.png"),
-                new FileChooser.ExtensionFilter("JPG files", "*.jpg"),
-                new FileChooser.ExtensionFilter("All Files", "*.*")
-        );
-
-        Stage stage = StageManager.getInstance().getPrimaryStage();
-
-        File selectedFile = fileChooser.showOpenDialog(stage);
-
-        if (selectedFile != null) {
-            ImageView coverImage = new ImageView(new Image(selectedFile.toURI().toString()));
-            coverImage.setFitHeight(160);
-            coverImage.setFitWidth(160);
-            coverImageChooserButton.setGraphic(coverImage);
-        }
-    }
-
-    private File getPdfFile() {
-        FileChooser fileChooser = new FileChooser();
-
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PDF files", "*.pdf"),
-                new FileChooser.ExtensionFilter("All Files", "*.*")
-        );
-
-        Stage stage = StageManager.getInstance().getPrimaryStage();
-
-        return fileChooser.showOpenDialog(stage);
-    }
-
-    public void openPdfFileChooser() {
-        File selectedFile = getPdfFile();
-
-        if (selectedFile != null) {
-            chosePdfInfo.setText(selectedFile.getName());
-            this.currentDocumentContentPath = selectedFile.getAbsolutePath();
-        } else {
-            if (currentDocumentContentPath.isEmpty()) {
-                chosePdfInfo.setText("No file selected");
-            }
-        }
-    }
-
     public void closeView() {
         StageManager.getInstance().getRootStackPane().getChildren().removeLast();
     }
@@ -207,40 +107,21 @@ public class UpdateDocumentMetadataView {
             val metadataRequestObject = this.collectMetadataRequestObject();
             this.metadataController.accept(metadataRequestObject);
 
-            val contentRequestObject = this.collectContentRequestObject();
-            this.contentController.accept(contentRequestObject);
-
-            val coverImageRequestObject = this.collectCoverImageRequestObject();
-            this.coverImageController.accept(coverImageRequestObject);
-
             this.onSuccess();
-        } catch (UpdateDocumentCoverImageUseCase.AuthenticationTokenNotFoundException |
-                 UpdateDocumentCoverImageUseCase.AuthenticationTokenInvalidException exception) {
-            StageManager.getInstance().openLoginMenu();
         } catch (DocumentPublishedYearInvalidException |
-                 UpdateDocumentMetadataController.DocumentPublishedYearInvalidException exception) {
-            this.onDocumentPublishedYearInvalidException();
-        } catch (UpdateDocumentContentUseCase.DocumentISBNInvalidException |
-                 UpdateDocumentCoverImageUseCase.DocumentISBNInvalidException |
-                 UpdateDocumentMetadataUseCase.DocumentISBNInvalidException exception) {
-            this.onDocumentISBNInvalid();
-        } catch (UpdateDocumentContentUseCase.DocumentNotFoundException |
-                 UpdateDocumentCoverImageUseCase.DocumentNotFoundException |
-                 UpdateDocumentMetadataUseCase.DocumentNotFoundException exception) {
-            this.onDocumentNotFoundException();
-        } catch (UpdateDocumentCoverImageUseCase.DocumentCoverImageInvalidException exception) {
-            this.onDocumentCoverImageInvalidException();
-        } catch (UpdateDocumentCoverImageController.DocumentCoverImageFilePathInvalidException exception) {
-            this.onDocumentCoverImageFilePathInvalidException();
-        } catch (UpdateDocumentContentUseCase.DocumentContentInvalidException exception) {
-            this.onDocumentContentInvalidException();
-        } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException exception) {
-            this.onDocumentContentFilePathInvalidException();
+                 UpdateDocumentMetadataController.DocumentPublishedYearInvalidException e) {
+            onDocumentPublishedYearInvalidException();
+        } catch (UpdateDocumentMetadataUseCase.AuthenticationTokenInvalidException |
+                 UpdateDocumentMetadataUseCase.AuthenticationTokenNotFoundException e) {
+            StageManager.getInstance().openLoginMenu();
+        } catch (UpdateDocumentMetadataUseCase.DocumentNotFoundException |
+                 UpdateDocumentMetadataUseCase.DocumentISBNInvalidException e) {
+            onDocumentNotFoundException();
         }
     }
 
     private void onDocumentNotFoundException() {
-        showErrorMessage("Document not found!");
+        showErrorMessage("Document not found or ISBN is invalid!");
     }
 
     private UpdateDocumentMetadataController.@NonNull RequestObject collectMetadataRequestObject() throws DocumentPublishedYearInvalidException {
@@ -270,20 +151,6 @@ public class UpdateDocumentMetadataView {
         }
     }
 
-    private UpdateDocumentContentController.@NonNull RequestObject collectContentRequestObject() {
-        String ISBN = this.ISBN.getText();
-        String documentContentFilePath = this.currentDocumentContentPath;
-
-        return UpdateDocumentContentController.RequestObject.of(ISBN, documentContentFilePath);
-    }
-
-    private UpdateDocumentCoverImageController.@NonNull RequestObject collectCoverImageRequestObject() {
-        String ISBN = this.ISBN.getText();
-        String coverImagePath = this.getCurrentCoverImagePath();
-
-        return UpdateDocumentCoverImageController.RequestObject.of(ISBN, coverImagePath);
-    }
-
     private void onSuccess() {
         errorMessage.setVisible(false);
         closeView();
@@ -295,28 +162,8 @@ public class UpdateDocumentMetadataView {
         errorMessage.setText(message);
     }
 
-    private void onDocumentISBNInvalid() {
-        showErrorMessage("ISBN is invalid");
-    }
-
     private void onDocumentPublishedYearInvalidException() {
         showErrorMessage("Document published year invalid");
-    }
-
-    private void onDocumentContentInvalidException() {
-        showErrorMessage("Invalid pdf file");
-    }
-
-    private void onDocumentCoverImageInvalidException() {
-        showErrorMessage("Invalid cover image!");
-    }
-
-    private void onDocumentContentFilePathInvalidException() {
-        showErrorMessage("PDF file path is invalid!");
-    }
-
-    private void onDocumentCoverImageFilePathInvalidException() {
-        showErrorMessage("Cover image is invalid!");
     }
 
     private static class DocumentPublishedYearInvalidException extends Exception {}

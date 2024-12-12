@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
@@ -12,7 +11,6 @@ import org.tomfoolery.core.dataproviders.repositories.users.authentication.secur
 import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.GetDocumentByIdController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.ShowDocumentsController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
-import java.util.List;
 
 public abstract class ShowDocumentsView {
     @FXML

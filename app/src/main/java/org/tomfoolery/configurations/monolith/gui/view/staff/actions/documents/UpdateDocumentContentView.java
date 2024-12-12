@@ -8,6 +8,7 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.utils.ErrorDialog;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
@@ -101,15 +102,15 @@ public class UpdateDocumentContentView {
             this.updateController.accept(requestObject);
             showDocuments();
         } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException e) {
-            System.err.println("Pdf path is invalid: " + content.getAbsolutePath());
+            ErrorDialog.open("Pdf path is invalid: " + content.getAbsolutePath());
         } catch (UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException |
                  UpdateDocumentContentUseCase.AuthenticationTokenInvalidException e) {
             StageManager.getInstance().openLoginMenu();
         } catch (UpdateDocumentContentUseCase.DocumentISBNInvalidException |
                  UpdateDocumentContentUseCase.DocumentNotFoundException e) {
-            System.err.println("This document's ISBN is invalid: ");
+            ErrorDialog.open("This document's ISBN is invalid: ");
         } catch (UpdateDocumentContentUseCase.DocumentContentInvalidException e) {
-            System.err.println("Pdf file is corrupted/invalid");
+            ErrorDialog.open("Pdf file is corrupted/invalid");
         }
     }
 

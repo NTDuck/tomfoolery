@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0"
+      style="-fx-background-color: transparent;" stylesheets="/css/Staff/DocumentDetailsView.css"
+      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+   <padding>
+      <Insets bottom="150.0" left="300.0" right="300.0" top="150.0"/>
+   </padding>
+   <VBox prefHeight="600.0" style="-fx-background-color: white; -fx-background-radius: 10;"
+         VBox.vgrow="ALWAYS">
+      <effect>
+         <DropShadow/>
+      </effect>
+      <padding>
+         <Insets left="20.0" right="20.0" bottom="10"/>
+      </padding>
+      <Label prefHeight="60.0" text="Viewing document details" textFill="#4c566a">
+         <font>
+            <Font name="System Bold" size="36.0"/>
+         </font>
+      </Label>
+      <HBox prefHeight="185.0" VBox.vgrow="ALWAYS">
+         <VBox prefHeight="719.0" prefWidth="800.0" HBox.hgrow="ALWAYS">
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="isbn10"
+                       style="-fx-background-color: transparent;" text="- ISBN 10:">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="isbn13"
+                       style="-fx-background-color: transparent;" text="- ISBN 13:">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="title"
+                       style="-fx-background-color: transparent;"
+                       text="- Title: The silence of the lambs">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="authors"
+                       style="-fx-background-color: transparent;"
+                       text="- Authors: Duy, Hieu">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="genres"
+                       style="-fx-background-color: transparent;" text="- Genres:">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="publisher"
+                       style="-fx-background-color: transparent;" text="- Publisher:">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="yearPublished"
+                       style="-fx-background-color: transparent;" text="- Year published:">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="rating"
+                       style="-fx-background-color: transparent;"
+                       text="- Rating: 3.23 / 5 (847 total)">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="created"
+                       style="-fx-background-color: transparent;"
+                       text="- Added: [timestamp] by staff [id]">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <TextField prefHeight="40.0" prefWidth="840.0" fx:id="lastModified"
+                       style="-fx-background-color: transparent;"
+                       text="- Last modified: [timestamp] by staff [id]">
+               <font>
+                  <Font size="22.0"/>
+               </font>
+            </TextField>
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
+                        prefHeight="300.0" prefWidth="840.0"
+                        style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+               <TextArea prefHeight="200.0" prefWidth="200.0" fx:id="description"
+                         style="-fx-background-color: transparent;"
+                         text="Description:&#10;once upon a year,..." wrapText="true">
+                  <font>
+                     <Font size="22.0"/>
+                  </font>
+               </TextArea>
+            </ScrollPane>
+         </VBox>
+
+         <VBox alignment="CENTER" prefHeight="719.0" prefWidth="400.0" spacing="20.0"
+               HBox.hgrow="ALWAYS">
+            <ImageView fitHeight="600.0" fitWidth="400.0" pickOnBounds="true" fx:id="coverImage"/>
+         </VBox>
+      </HBox>
+
+      <HBox alignment="BOTTOM_RIGHT" prefHeight="60.0" prefWidth="200.0">
+         <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" fx:id="closeButton"
+                 text="Close" styleClass="button">
+            <font>
+               <Font size="24.0"/>
+            </font>
+         </Button>
+      </HBox>
+
+   </VBox>
+</VBox>
