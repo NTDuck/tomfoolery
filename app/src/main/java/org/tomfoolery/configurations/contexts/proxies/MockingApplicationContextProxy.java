@@ -1,11 +1,11 @@
-package org.tomfoolery.configurations.contexts.test;
+package org.tomfoolery.configurations.contexts.proxies;
 
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
-import org.tomfoolery.configurations.contexts.test.abc.ApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.proxies.abc.ApplicationContextProxy;
 import org.tomfoolery.core.dataproviders.repositories.abc.BaseRepository;
 import org.tomfoolery.core.domain.documents.Document;
 import org.tomfoolery.core.domain.relations.DocumentContent;
@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -34,7 +34,7 @@ public final class MockingApplicationContextProxy implements ApplicationContextP
     private static final @Unsigned int NUMBER_OF_STAFF = 4;
     private static final @Unsigned double PROPORTION_OF_DOCUMENTS_WITH_CONTENT = 0.9;
 
-    private final @NonNull Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final @NonNull Executor executor = ForkJoinPool.commonPool();
 
     private final @NonNull DocumentMocker documentMocker = DocumentMocker.of();
     private final @NonNull AdministratorMocker administratorMocker = AdministratorMocker.of();

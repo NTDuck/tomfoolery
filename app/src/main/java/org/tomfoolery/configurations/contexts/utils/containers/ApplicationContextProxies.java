@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
-import org.tomfoolery.configurations.contexts.test.abc.ApplicationContextProxy;
+import org.tomfoolery.configurations.contexts.proxies.abc.ApplicationContextProxy;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

@@ -1,4 +1,4 @@
-package org.tomfoolery.configurations.contexts.prod;
+package org.tomfoolery.configurations.contexts;
 
 import lombok.NoArgsConstructor;
 import lombok.val;
