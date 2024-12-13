@@ -247,7 +247,8 @@ tasks.named<Test>("test") {
     // For unit testing
     useTestNG {
         // excludeGroups("cloud")
-        excludeGroups(".*")
+        // excludeGroups(".*")
+        includeGroups("verifiers")
     }
 
     // systemProperties["file.encoding"] = "ISO-8859-1"
