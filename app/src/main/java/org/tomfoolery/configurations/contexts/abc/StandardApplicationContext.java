@@ -7,6 +7,7 @@ import org.tomfoolery.core.dataproviders.generators.documents.references.Documen
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
+import org.tomfoolery.core.dataproviders.repositories.documents.RetrievalDocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.CustomLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
@@ -19,9 +20,25 @@ import org.tomfoolery.infrastructures.dataproviders.providers.httpclient.okhttp.
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaFileVerifier;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.google.documents.GoogleBooksApiRetrievalDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.hathitrust.documents.HathiTrustBibliographyApiRetrievalDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.openlibrary.documents.OpenLibraryBooksApiRetrievalDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.filesystem.users.authentication.security.KeyStoreAuthenticationTokenRepository;
 
+import java.util.List;
+
 public abstract class StandardApplicationContext extends ApplicationContext {
+    @Override
+    protected @NonNull List<RetrievalDocumentRepository> createRetrievalDocumentRepositories() {
+        val httpClientProvider = this.getHttpClientProvider();
+
+        return List.of(
+            GoogleBooksApiRetrievalDocumentRepository.of(httpClientProvider),
+            OpenLibraryBooksApiRetrievalDocumentRepository.of(httpClientProvider),
+            HathiTrustBibliographyApiRetrievalDocumentRepository.of(httpClientProvider)
+        );
+    }
+
     @Override
     protected @NonNull DocumentQrCodeGenerator createDocumentQrCodeGenerator() {
         return ZxingDocumentQrCodeGenerator.of();

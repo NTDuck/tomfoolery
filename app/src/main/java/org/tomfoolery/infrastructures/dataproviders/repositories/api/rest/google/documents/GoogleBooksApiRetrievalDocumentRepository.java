@@ -10,18 +10,19 @@ import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.abc.Re
 
 import java.util.stream.Collectors;
 
-public class GoogleApiRetrievalDocumentRepository extends RestApiRetrievalDocumentRepository {
-    public static @NonNull GoogleApiRetrievalDocumentRepository of(@NonNull HttpClientProvider httpClientProvider) {
-        return new GoogleApiRetrievalDocumentRepository(httpClientProvider);
+public class GoogleBooksApiRetrievalDocumentRepository extends RestApiRetrievalDocumentRepository {
+    public static @NonNull GoogleBooksApiRetrievalDocumentRepository of(@NonNull HttpClientProvider httpClientProvider) {
+        return new GoogleBooksApiRetrievalDocumentRepository(httpClientProvider);
     }
 
-    protected GoogleApiRetrievalDocumentRepository(@NonNull HttpClientProvider httpClientProvider) {
+    protected GoogleBooksApiRetrievalDocumentRepository(@NonNull HttpClientProvider httpClientProvider) {
         super(httpClientProvider);
     }
 
     @Override
     protected @NonNull String getRequestUrl(Document.@NonNull Id documentId) {
-        return "https://www.googleapis.com/books/v1/volumes/?q=isbn:%s".formatted(documentId.getISBN_10());
+        return "https://www.googleapis.com/books/v1/volumes/?q=isbn:%s"
+            .formatted(documentId.getISBN_10());
     }
 
     protected @NonNull MinimalDocument constructMinimalDocumentFromHttpResponse(@NonNull String httpResponse) {
@@ -45,6 +46,7 @@ public class GoogleApiRetrievalDocumentRepository extends RestApiRetrievalDocume
             .publishedYear(volumeInfo.get("publishedDate").toString().split("-")[0])
             .publisher(volumeInfo.get("publisher").toString())
             .coverImageUrl(volumeInfo.get("imageLinks", "thumbnail").toString())
+            
             .build();
     }
 }
