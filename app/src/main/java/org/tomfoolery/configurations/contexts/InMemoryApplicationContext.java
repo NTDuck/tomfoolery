@@ -1,6 +1,5 @@
 package org.tomfoolery.configurations.contexts;
 
-import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
@@ -30,6 +29,8 @@ import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.se
 import org.tomfoolery.infrastructures.dataproviders.generators.inmemory.users.search.InMemoryLinearStaffSearchGenerator;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tika.ApacheTikaTemporaryFileStorageProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.hathitrust.documents.HathiTrustBibliographyApiRetrievalDocumentRepository;
+import org.tomfoolery.infrastructures.dataproviders.repositories.api.rest.openlibrary.documents.OpenLibraryApiRetrievalDocumentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryBorrowingSessionRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryDocumentContentRepository;
 import org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.relations.InMemoryReviewRepository;
@@ -51,8 +52,11 @@ import org.tomfoolery.infrastructures.dataproviders.providers.io.file.apache.tik
 
 import java.util.List;
 
-@NoArgsConstructor(staticName = "of")
 public class InMemoryApplicationContext extends ApplicationContext {
+    public static @NonNull InMemoryApplicationContext of() {
+        return new InMemoryApplicationContext();
+    }
+
     @Override
     protected @NonNull DocumentRepository createDocumentRepository() {
         return InMemoryDocumentRepository.of();
@@ -63,7 +67,9 @@ public class InMemoryApplicationContext extends ApplicationContext {
         val httpClientProvider = this.getHttpClientProvider();
 
         return List.of(
-            GoogleApiRetrievalDocumentRepository.of(httpClientProvider)
+            GoogleApiRetrievalDocumentRepository.of(httpClientProvider),
+            OpenLibraryApiRetrievalDocumentRepository.of(httpClientProvider),
+            HathiTrustBibliographyApiRetrievalDocumentRepository.of(httpClientProvider)
         );
     }
 
