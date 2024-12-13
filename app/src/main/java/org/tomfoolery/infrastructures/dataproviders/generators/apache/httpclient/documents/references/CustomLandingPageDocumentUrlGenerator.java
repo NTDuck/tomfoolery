@@ -12,20 +12,7 @@ import java.util.List;
 
 @NoArgsConstructor(staticName = "of")
 public class CustomLandingPageDocumentUrlGenerator extends ApacheHttpClientDocumentUrlGenerator {
-    private static final @NonNull String URL_PARAMETER_ISBN_10 = "isbn_10";
-
-    private static final @NonNull String URL_PARAMETER_TITLE = "title";
-    private static final @NonNull String URL_PARAMETER_DESCRIPTION = "description";
-    private static final @NonNull String URL_PARAMETER_AUTHORS = "authors";
-    private static final @NonNull String URL_PARAMETER_GENRES = "genres";
-
-    private static final @NonNull String URL_PARAMETER_PUBLISHED_YEAR = "year";
-    private static final @NonNull String URL_PARAMETER_PUBLISHER = "publisher";
-
-    private static final @NonNull String URL_PARAMETER_AVERAGE_RATING = "rating";
-    private static final @NonNull String URL_PARAMETER_NUMBER_OF_RATINGS = "ratingCount";
-
-    private static final @NonNull String DELIMITER = ",";
+    private static final @NonNull CharSequence DELIMITER = ",";
 
     @Override
     protected @NonNull String getUrlScheme() {
@@ -45,16 +32,17 @@ public class CustomLandingPageDocumentUrlGenerator extends ApacheHttpClientDocum
     @Override
     protected @NonNull List<NameValuePair> getUrlParameterPairs(@NonNull Document document) {
         return List.of(
-            ParameterPair.of(URL_PARAMETER_ISBN_10, document.getId().getISBN_10()),
-            ParameterPair.of(URL_PARAMETER_TITLE, document.getMetadata().getTitle()),
-            ParameterPair.of(URL_PARAMETER_DESCRIPTION, document.getMetadata().getDescription()),
-            ParameterPair.of(URL_PARAMETER_AUTHORS, String.join(DELIMITER, document.getMetadata().getAuthors())),
-            ParameterPair.of(URL_PARAMETER_GENRES, String.join(DELIMITER, document.getMetadata().getGenres())),
-            ParameterPair.of(URL_PARAMETER_PUBLISHED_YEAR, document.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
-            ParameterPair.of(URL_PARAMETER_PUBLISHER, document.getMetadata().getPublisher()),
-            ParameterPair.of(URL_PARAMETER_AVERAGE_RATING, document.getRating() == null ? "null"
+            ParameterPair.of("isbn_10", document.getId().getISBN_10()),
+            ParameterPair.of("isbn_13", document.getId().getISBN_13()),
+            ParameterPair.of("title", document.getMetadata().getTitle()),
+            ParameterPair.of("description", document.getMetadata().getDescription()),
+            ParameterPair.of("authors", String.join(DELIMITER, document.getMetadata().getAuthors())),
+            ParameterPair.of("genres", String.join(DELIMITER, document.getMetadata().getGenres())),
+            ParameterPair.of("year", document.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
+            ParameterPair.of("publisher", document.getMetadata().getPublisher()),
+            ParameterPair.of("averageRating", document.getRating() == null ? "null"
                 : String.valueOf(document.getRating().getAverageRating())),
-            ParameterPair.of(URL_PARAMETER_NUMBER_OF_RATINGS, document.getRating() == null ? "null"
+            ParameterPair.of("numberOfRatings", document.getRating() == null ? "null"
                 : String.valueOf(document.getRating().getNumberOfRatings()))
         );
     }

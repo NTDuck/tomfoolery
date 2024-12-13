@@ -144,9 +144,9 @@ public final class Application implements Runnable, Closeable {
         val applicationContext = FileCachedInMemoryApplicationContext.of();
 
         val applicationContextProxies = ApplicationContextProxies.of(List.of(
-            MockingApplicationContextProxy.of(),
-            DeterministicUsersApplicationContextProxy.of(),
-            KaggleDocumentDatasetApplicationContextProxy.of()
+            // MockingApplicationContextProxy.of(),
+            DeterministicUsersApplicationContextProxy.of()
+            // KaggleDocumentDatasetApplicationContextProxy.of()
         ));
         applicationContextProxies.intercept(applicationContext);
 
