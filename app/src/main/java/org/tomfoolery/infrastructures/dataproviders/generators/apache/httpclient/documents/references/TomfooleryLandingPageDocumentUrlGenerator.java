@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @NoArgsConstructor(staticName = "of")
-public class CustomLandingPageDocumentUrlGenerator extends ApacheHttpClientDocumentUrlGenerator {
+public class TomfooleryLandingPageDocumentUrlGenerator extends ApacheHttpClientDocumentUrlGenerator {
     private static final @NonNull CharSequence DELIMITER = ",";
 
     @Override
@@ -32,17 +32,17 @@ public class CustomLandingPageDocumentUrlGenerator extends ApacheHttpClientDocum
     @Override
     protected @NonNull List<NameValuePair> getUrlParameterPairs(@NonNull Document document) {
         return List.of(
-            ParameterPair.of("isbn_10", document.getId().getISBN_10()),
-            ParameterPair.of("isbn_13", document.getId().getISBN_13()),
+            ParameterPair.of("ISBN 10", document.getId().getISBN_10()),
+            ParameterPair.of("ISBN 13", document.getId().getISBN_13()),
             ParameterPair.of("title", document.getMetadata().getTitle()),
             ParameterPair.of("description", document.getMetadata().getDescription()),
             ParameterPair.of("authors", String.join(DELIMITER, document.getMetadata().getAuthors())),
             ParameterPair.of("genres", String.join(DELIMITER, document.getMetadata().getGenres())),
-            ParameterPair.of("year", document.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
+            ParameterPair.of("published year", document.getMetadata().getPublishedYear().format(DateTimeFormatter.ofPattern("yyyy"))),
             ParameterPair.of("publisher", document.getMetadata().getPublisher()),
-            ParameterPair.of("averageRating", document.getRating() == null ? "null"
+            ParameterPair.of("average rating", document.getRating() == null ? "null"
                 : String.valueOf(document.getRating().getAverageRating())),
-            ParameterPair.of("numberOfRatings", document.getRating() == null ? "null"
+            ParameterPair.of("number of ratings", document.getRating() == null ? "null"
                 : String.valueOf(document.getRating().getNumberOfRatings()))
         );
     }

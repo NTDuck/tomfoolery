@@ -9,7 +9,7 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
 import org.tomfoolery.core.dataproviders.repositories.documents.RetrievalDocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.LibraryThingEasyLinkingDocumentUrlGenerator;
+import org.tomfoolery.infrastructures.dataproviders.generators.apache.httpclient.documents.references.TomfooleryLandingPageDocumentUrlGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.bcrypt.users.authentication.security.BCryptPasswordEncoder;
 import org.tomfoolery.infrastructures.dataproviders.generators.jjwt.users.authentication.security.JJWTAuthenticationTokenGenerator;
 import org.tomfoolery.infrastructures.dataproviders.generators.zxing.documents.references.ZxingDocumentQrCodeGenerator;
@@ -44,7 +44,7 @@ public abstract class StandardApplicationContext extends ApplicationContext {
 
     @Override
     protected @NonNull DocumentUrlGenerator createDocumentUrlGenerator() {
-        return LibraryThingEasyLinkingDocumentUrlGenerator.of();
+        return TomfooleryLandingPageDocumentUrlGenerator.of();
     }
 
     @Override
