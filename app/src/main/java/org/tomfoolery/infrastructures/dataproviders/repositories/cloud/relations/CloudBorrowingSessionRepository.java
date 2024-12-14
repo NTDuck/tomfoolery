@@ -72,10 +72,26 @@ public class CloudBorrowingSessionRepository implements BorrowingSessionReposito
         return null;
     }
 
-    @Override
     public @NonNull Set<BorrowingSession.Id> showIds() {
-        return Set.of();
+        Set<BorrowingSession.Id> ids = new HashSet<>();
+        String query = "SELECT documentId, patronId FROM BorrowingSessions";
+
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                Document.Id documentId = Document.Id.of(rs.getString("documentId"));
+                Patron.Id patronId = Patron.Id.of(UUID.fromString(rs.getString("patronId")));
+                ids.add(BorrowingSession.Id.of(documentId, patronId));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.unmodifiableSet(ids);
     }
+
 
     @Override
     public @NonNull Set<BorrowingSession> show() {

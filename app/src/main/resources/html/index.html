@@ -3,114 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Details</title>
+    <title>tomfoolery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        body, html {
+            height: 100%;
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
+            overflow-y: auto;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #333);
+            background-size: 400% 400%;
+            animation: gradientShift1 4s ease infinite;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
             padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            min-height: 100vh;
         }
+
+        @keyframes gradientShift1 {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff7f50, #ff6347, #1e90ff);
+            background-size: 400% 400%;
+            background-clip: text;
+            animation: gradientShift2 4s ease infinite;
+            -webkit-background-clip: text;
+            color: transparent;
             text-align: center;
-            color: #4a90e2;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
-        .field {
-            margin-bottom: 15px;
+
+        @keyframes gradientShift2 {
+            0% { background-position: 0% 50%; }
+            10% { background-position: 10% 50%; }
+            20% { background-position: 20% 50%; }
+            30% { background-position: 30% 50%; }
+            40% { background-position: 40% 50%; }
+            50% { background-position: 50% 50%; }
+            60% { background-position: 40% 50%; }
+            70% { background-position: 30% 50%; }
+            80% { background-position: 20% 50%; }
+            90% { background-position: 10% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .field label {
-            font-weight: bold;
-            color: #4a4a4a;
+
+        .document-details {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ddd;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 30px;
+            background: rgba(36, 36, 36, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            margin-top: 20px;
         }
-        .field p, .field ul {
-            margin: 5px 0 0 0;
-            color: #555;
+
+        .document-details div {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
-        ul {
-            list-style-type: square;
-            padding-left: 20px;
+
+        .param-name {
+            background-color: #555;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 20px 20px 20px 0;
+            max-width: 60%;
+            word-wrap: break-word;
+            font-weight: 600;
+            align-self: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .param-value {
+            background-color: #333;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 20px 20px 0 20px;
+            max-width: 80%;
+            word-wrap: break-word;
+            font-weight: 500;
+            align-self: flex-end;
+            margin-top: 0;
+        }
+
+        p {
+            text-align: center;
+            color: #777;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .document-details {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Document Details</h1>
-
-    <div class="field">
-        <label>Title:</label>
-        <p id="title">N/A</p>
-    </div>
-
-    <div class="field">
-        <label>Description:</label>
-        <p id="description">N/A</p>
-    </div>
-
-    <div class="field">
-        <label>Authors:</label>
-        <ul id="authors">
-            <li>N/A</li>
-        </ul>
-    </div>
-
-    <div class="field">
-        <label>Genres:</label>
-        <ul id="genres">
-            <li>N/A</li>
-        </ul>
-    </div>
-</div>
+<h1 id="title">Tomfoolery</h1>
+<div id="document-info" class="document-details"></div>
 
 <script>
-    function getURLParameter(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
+    function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        let result = {};
+        for (const [key, value] of params) {
+            result[key] = value;
+        }
+        return result;
     }
 
-    function populateFields() {
-        const title = getURLParameter("title") || "No Title Provided";
-        const description = getURLParameter("description") || "No Description Provided";
-        const authors = getURLParameter("authors");
-        const genres = getURLParameter("genres");
+    function displayBookInfo(params) {
+        const info = document.getElementById("document-info");
+        for (const [key, value] of Object.entries(params)) {
+            const paramDiv = document.createElement('div');
 
-        document.getElementById("title").textContent = title;
-        document.getElementById("description").textContent = description;
+            const paramName = document.createElement('div');
+            paramName.classList.add('param-name');
+            paramName.textContent = capitalizeFirstLetter(key);
 
-        const authorsList = document.getElementById("authors");
-        authorsList.innerHTML = ""; // Clear default N/A
-        if (authors) {
-            authors.split(",").forEach(author => {
-                const li = document.createElement("li");
-                li.textContent = author.trim();
-                authorsList.appendChild(li);
-            });
-        } else {
-            authorsList.innerHTML = "<li>N/A</li>";
-        }
+            const paramValue = document.createElement('div');
+            paramValue.classList.add('param-value');
+            paramValue.textContent = value;
 
-        const genresList = document.getElementById("genres");
-        genresList.innerHTML = ""; // Clear default N/A
-        if (genres) {
-            genres.split(",").forEach(genre => {
-                const li = document.createElement("li");
-                li.textContent = genre.trim();
-                genresList.appendChild(li);
-            });
-        } else {
-            genresList.innerHTML = "<li>N/A</li>";
+            paramDiv.appendChild(paramName);
+            paramDiv.appendChild(paramValue);
+            info.appendChild(paramDiv);
         }
     }
 
-    window.onload = populateFields;
+    function capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    window.onload = function () {
+        const params = getQueryParams();
+        if (Object.keys(params).length > 0) {
+            displayBookInfo(params);
+        } else {
+            document.getElementById("document-info").innerHTML = "<p>:3</p>";
+        }
+    };
 </script>
 </body>
 </html>
