@@ -21,12 +21,12 @@ public class TomfooleryLandingPageDocumentUrlGenerator extends ApacheHttpClientD
 
     @Override
     protected @NonNull String getUrlHost() {
-        return "tomfoolery-landing-page.github.io";
+        return "ntduck.github.io";
     }
 
     @Override
     protected @NonNull String getUrlPath(@NonNull Document document) {
-        return "tomfoolery-landing-page";
+        return "tomfoolery";
     }
 
     @Override
