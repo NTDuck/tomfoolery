@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="content-container" stylesheets="/css/Admin/PatronAccountsManagementView.css"
+      VBox.vgrow="ALWAYS"
+      HBox.hgrow="ALWAYS">
+
+    <Label fx:id="counterLabel" styleClass="counter"/>
+
+    <TableView fx:id="patronAccountsTable"
+               styleClass="accounts-table"
+               VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id"/>
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Username" prefWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="username"/>
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Created at" prefWidth="180">
+                <cellValueFactory>
+                    <PropertyValueFactory property="created"/>
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Last login" prefWidth="180">
+                <cellValueFactory>
+                    <PropertyValueFactory property="lastLogin"/>
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Last logout" prefWidth="150">
+                <cellValueFactory>
+                    <PropertyValueFactory property="lastLogout"/>
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn fx:id="viewDetailsColumn" prefWidth="130"/>
+        </columns>
+
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+</VBox>

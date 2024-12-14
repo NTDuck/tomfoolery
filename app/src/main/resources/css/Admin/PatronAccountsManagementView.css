@@ -1,0 +1,89 @@
+
+.content-container {
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-background-color: transparent;
+}
+
+.counter {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 24;
+    -fx-text-fill: #424C5E;
+}
+
+.accounts-table {
+    -fx-background-color: #D8DEE8;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-width: 0;
+}
+
+.accounts-table:focused {
+    -fx-background-color: #D8DEE8;
+    -fx-border-width: 0;
+}
+
+.accounts-table .column-header-background {
+    -fx-background-color: #80A0C0;
+    -fx-background-radius: 15 15 0 0;
+    -fx-background-insets: 0;
+}
+
+.accounts-table .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 15 10;
+    -fx-pref-height: 50;
+    -fx-border-width: 0;
+}
+
+.accounts-table .column-header .label {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: #EBEEF4;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.accounts-table .table-cell {
+    -fx-padding: 12 10;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
+    -fx-text-fill: #424C5E;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.accounts-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-width: 0;
+}
+
+.accounts-table .table-row-cell:hover {
+    -fx-background-color: #D8DEE8;
+    -fx-cursor: hand;
+}
+
+.accounts-table .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 16;
+}
+
+.accounts-table .scroll-bar:vertical .thumb {
+    -fx-background-color: #80A0C04D;
+    -fx-background-radius: 5;
+}
+
+.accounts-table .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #80A0C0;
+    -fx-background-radius: 5;
+}
+
+.accounts-table .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.accounts-table .scroll-bar .increment-button,
+.accounts-table .scroll-bar .decrement-button {
+    -fx-padding: 0;
+    -fx-shape: null;
+    -fx-background-color: transparent;
+}

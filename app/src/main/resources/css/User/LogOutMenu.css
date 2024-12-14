@@ -1,0 +1,41 @@
+.container {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-padding: 0 20 0 20;
+    -fx-spacing: 20;
+    -fx-alignment: CENTER;
+}
+
+.header {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: BLACK;
+    -fx-font-size: 30;
+}
+
+.subheader {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: GRAY;
+    -fx-font-size: 20;
+}
+
+.buttons-container {
+    -fx-background-color: transparent;
+    -fx-alignment: CENTER;
+    -fx-spacing: 20;
+}
+
+.button {
+    -fx-pref-height: 45;
+    -fx-pref-width: 100;
+    -fx-background-radius: 30;
+    -fx-background-color: transparent;
+    -fx-border-width: 3;
+    -fx-border-color: #a3cef1;
+    -fx-border-radius: 30;
+}
+
+.button:hover {
+    -fx-background-color: #a3cef1;
+    -fx-cursor: hand;
+}

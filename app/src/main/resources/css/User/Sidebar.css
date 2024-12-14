@@ -1,0 +1,21 @@
+.sidebar {
+    -fx-padding: 25 0 25 0;
+    -fx-spacing: 25;
+    -fx-background-color: #F2ECEE;
+}
+
+.sidebar-button {
+    -fx-pref-width: 48;
+    -fx-pref-height: 48;
+    -fx-background-radius: 50;
+    -fx-background-color: transparent;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #E5DEE2;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:selected {
+    -fx-background-color: #DCDAF5;
+}

@@ -1,67 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
 <?import javafx.scene.control.PasswordField?>
-
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      styleClass="signup-menu" stylesheets="/css/SignupMenu.css"
-      prefWidth="600" prefHeight="800" alignment="TOP_CENTER">
-    <ImageView styleClass="user-icon" fitWidth="60" fitHeight="60">
-        <Image url="/images/user.png"/>
-    </ImageView>
-
-    <VBox style="-fx-background-color: transparent; -fx-spacing: 10; -fx-alignment: CENTER" prefHeight="500"
-          VBox.vgrow="ALWAYS">
-        <HBox styleClass="name-box">
-            <VBox styleClass="short-textbox">
-                <Label text="First Name" styleClass="textbox-label"/>
-                <TextField styleClass="input-field" fx:id="firstNameTextField"/>
-            </VBox>
-            <VBox styleClass="short-textbox">
-                <Label text="Last Name" styleClass="textbox-label"/>
-                <TextField styleClass="input-field" fx:id="lastNameTextField"/>
-            </VBox>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="600.0" prefWidth="900.0" stylesheets="/css/SignupMenu.css">
+    <VBox prefHeight="100.0" prefWidth="900.0" spacing="5.0" styleClass="header-panel">
+        <Label text="Create a Tomfoolery account" textFill="WHITE" >
+            <font>
+                <Font name="Segoe UI Variable Bold" size="24.0"/>
+            </font>
+        </Label>
+        <HBox spacing="5.0">
+            <Label text="Already have an account?" textFill="WHITE">
+                <font>
+                    <Font name="Segoe UI Variable Bold" size="20.0"/>
+                </font>
+            </Label>
+            <Label text="Log in" textFill="WHITE" underline="true" fx:id="returnButton" styleClass="return-button">
+                <font>
+                    <Font name="Segoe UI Variable Bold" size="20.0"/>
+                </font>
+            </Label>
         </HBox>
-
-        <VBox styleClass="wide-textbox">
-            <Label text="Username" styleClass="textbox-label"/>
-            <TextField styleClass="input-field" fx:id="usernameTextField"/>
-        </VBox>
-
-        <VBox styleClass="wide-textbox">
-            <Label text="Address" styleClass="textbox-label"/>
-            <TextField styleClass="input-field" fx:id="addressTextField"/>
-        </VBox>
-
-        <VBox styleClass="wide-textbox">
-            <Label text="Email" styleClass="textbox-label"/>
-            <TextField styleClass="input-field" fx:id="emailTextField"/>
-        </VBox>
-
-        <VBox styleClass="wide-textbox">
-            <Label text="Password" styleClass="textbox-label"/>
-            <PasswordField styleClass="input-field" fx:id="passwordTextField"/>
-        </VBox>
-
-        <VBox styleClass="wide-textbox">
-            <Label text="Retype Password" styleClass="textbox-label"/>
-            <PasswordField styleClass="input-field" fx:id="retypePasswordTextField"/>
-            <Label visible="false"
-                   style="-fx-label-padding: 0 0 0 10; -fx-text-fill: #BF616A; -fx-font-size: 15;
-        -fx-background-color: transparent; -fx-font-family: 'Segoe UI Variable'"
-                   fx:id="errorMessage"/>
-        </VBox>
     </VBox>
 
-    <Label styleClass="message" fx:id="message"/>
+    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="900.0" spacing="40.0">
+        <padding>
+            <Insets left="40.0" right="40.0" top="20.0"/>
+        </padding>
+        <VBox prefHeight="80.0" prefWidth="390.0">
+            <Label text="Username" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="usernameTextField"/>
+        </VBox>
 
-    <Button text="SIGN UP" styleClass="signup-button" fx:id="signupButton"/>
+        <VBox prefHeight="80.0" prefWidth="390.0">
+            <Label text="Email" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="emailTextField"/>
+        </VBox>
+    </HBox>
 
-    <Button text="Return to Login" styleClass="return-button" fx:id="returnButton"/>
+    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="900.0" spacing="40.0">
+        <padding>
+            <Insets left="40.0" right="40.0" top="20.0"/>
+        </padding>
+        <VBox prefHeight="98.0" prefWidth="390.0">
+            <Label text="Password" styleClass="text-field-label"/>
+            <PasswordField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="passwordField"/>
+        </VBox>
+
+        <VBox prefHeight="98.0" prefWidth="390.0">
+            <Label text="Confirm Password" styleClass="text-field-label"/>
+            <PasswordField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="retypePasswordField"/>
+        </VBox>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="900.0" spacing="40.0">
+        <padding>
+            <Insets left="40.0" right="40.0" top="20.0"/>
+        </padding>
+        <VBox prefHeight="98.0" prefWidth="390.0">
+            <Label text="First Name" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="firstNameTextField"/>
+        </VBox>
+
+        <VBox prefHeight="98.0" prefWidth="390.0">
+            <Label text="Last Name" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="lastNameTextField"/>
+        </VBox>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="900.0" spacing="40.0">
+        <padding>
+            <Insets left="40.0" right="40.0" top="20.0"/>
+        </padding>
+        <VBox prefHeight="80.0" prefWidth="180.0">
+            <Label text="Birthday" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" promptText="Eg: 04/26/2005" styleClass="text-field"
+                fx:id="birthdayTextField"/>
+        </VBox>
+
+        <VBox prefHeight="80.0" prefWidth="180.0">
+            <Label text="Country" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="countryTextField"/>
+        </VBox>
+
+        <VBox prefHeight="80.0" prefWidth="180.0">
+            <Label text="City" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="cityTextField"/>
+        </VBox>
+
+        <VBox prefHeight="80.0" prefWidth="160.0">
+            <Label text="Phone Number" styleClass="text-field-label"/>
+            <TextField prefHeight="40.0" prefWidth="350.0" styleClass="text-field" fx:id="phoneNumberTextField"/>
+        </VBox>
+    </HBox>
+
+    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="20">
+        <padding>
+            <Insets right="40.0"/>
+        </padding>
+
+        <Label text="message" styleClass="message" fx:id="message"/>
+
+        <Button mnemonicParsing="false" prefHeight="0.0" prefWidth="100.0" styleClass="register-button"
+                fx:id="signupButton"
+                style="-fx-background-color: #4c70f0; -fx-background-radius: 8;"
+                text="Register">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Button>
+    </HBox>
 </VBox>

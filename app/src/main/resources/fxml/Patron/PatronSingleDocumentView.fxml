@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
+      stylesheets="/css/Patron/PatronSingleDocumentView.css" prefHeight="720" prefWidth="1280"
+      style="-fx-padding: 80 200 80 200; -fx-alignment: center; -fx-background-color: transparent">
+   <HBox prefHeight="560.0" prefWidth="880.0" spacing="20.0" styleClass="root-container" HBox.hgrow="ALWAYS">
+      <VBox alignment="CENTER" prefWidth="600.0" spacing="20.0"
+            HBox.hgrow="ALWAYS" styleClass="left-side">
+         <Label prefHeight="50.0" prefWidth="230.0" text="Not borrowed" styleClass="status-label" fx:id="statusLabel"
+            VBox.vgrow="ALWAYS" alignment="CENTER"/>
+
+         <ImageView fitHeight="400" fitWidth="260" preserveRatio="true" fx:id="coverImage">
+            <Image url="/images/default/placeholder-book-cover.png"/>
+         </ImageView>
+
+         <Label prefHeight="45.0" prefWidth="250.0" text="Rating: 4.67 / 5" styleClass="rating-label" fx:id="ratingLabel"
+            VBox.vgrow="ALWAYS" alignment="CENTER"/>
+      </VBox>
+
+      <VBox prefWidth="800.0" HBox.hgrow="ALWAYS" styleClass="right-side">
+         <HBox alignment="CENTER_LEFT" prefHeight="60.0" spacing="10.0">
+            <Button mnemonicParsing="false" text="Borrow"
+                    styleClass="action-button" fx:id="borrowButton" HBox.hgrow="ALWAYS">
+            </Button>
+
+            <Button mnemonicParsing="false" text="Return"
+                    styleClass="action-button" fx:id="returnButton" HBox.hgrow="ALWAYS">
+            </Button>
+
+            <Button mnemonicParsing="false" text="Close"
+                    styleClass="action-button" fx:id="closeButton" HBox.hgrow="ALWAYS">
+            </Button>
+
+            <Button mnemonicParsing="false" text="View QR Code"
+                    styleClass="qr-button" fx:id="showQRButton" HBox.hgrow="ALWAYS">
+            </Button>
+         </HBox>
+
+         <VBox prefWidth="600.0" VBox.vgrow="ALWAYS" styleClass="document-info">
+            <Label fx:id="message" prefHeight="20" VBox.vgrow="ALWAYS"/>
+            <TextField text="Title: thrill of the hunt" styleClass="document-info-label" fx:id="titleLabel" VBox.vgrow="ALWAYS" editable="false"/>
+
+            <TextField text="Authors: Duy, Hieu" styleClass="document-info-label" fx:id="authorsLabel" VBox.vgrow="ALWAYS" editable="false"/>
+
+            <TextField text="Genres: LoL, Science" styleClass="document-info-label" fx:id="genresLabel" VBox.vgrow="ALWAYS" editable="false"/>
+
+            <TextField text="ISBN: 12378312" styleClass="document-info-label" fx:id="isbnLabel" VBox.vgrow="ALWAYS" editable="false"/>
+
+            <TextField text="Publisher: Duck" styleClass="document-info-label" fx:id="publisherLabel" VBox.vgrow="ALWAYS" editable="false"/>
+
+            <TextField text="Year Published: 2023" styleClass="document-info-label" fx:id="yearPublishedLabel" VBox.vgrow="ALWAYS" editable="false"/>
+
+            <VBox VBox.vgrow="ALWAYS">
+               <Label prefHeight="17.0" prefWidth="670.0" text="Description:" VBox.vgrow="ALWAYS">
+                  <font>
+                     <Font name="Segoe UI Variable" size="18.0" />
+                  </font>
+               </Label>
+
+               <ScrollPane hbarPolicy="NEVER" prefHeight="200" styleClass="description-scroll-pane"
+                           fx:id="descriptionScrollPane" VBox.vgrow="ALWAYS">
+                  <TextArea styleClass="description" fx:id="descriptionArea" editable="false"/>
+               </ScrollPane>
+            </VBox>
+
+            <VBox.margin>
+               <Insets top="10.0" />
+            </VBox.margin>
+         </VBox>
+      </VBox>
+   </HBox>
+</HBox>

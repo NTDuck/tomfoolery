@@ -1,0 +1,95 @@
+.root-container {
+    -fx-background-color: #EBEEF4;
+    -fx-background-radius: 10;
+    -fx-border-width: 2;
+    -fx-border-color: #4893DB;
+    -fx-border-radius: 10;
+}
+
+.left-side {
+    -fx-background-color: #4893DB;
+    -fx-padding: 20;
+}
+
+.right-side {
+    -fx-padding: 10 0 10 0;
+}
+
+.status-label {
+    -fx-text-fill: #EBEEF4;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 26;
+}
+
+.rating-label {
+    -fx-text-fill: #EBEEF4;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 24;
+}
+
+.action-button {
+    -fx-alignment: center;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: #EBEEF4;
+    -fx-font-size: 16;
+    -fx-pref-height: 40;
+    -fx-pref-width: 80;
+    -fx-background-color: #81a1c1;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: #d8dee9;
+    -fx-border-radius: 8;
+}
+
+.action-button:hover {
+    -fx-background-color: #5E81AC;
+    -fx-cursor: hand;
+}
+
+.qr-button {
+    -fx-alignment: center;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: #EBEEF4;
+    -fx-font-size: 16;
+    -fx-pref-height: 40;
+    -fx-pref-width: 140;
+    -fx-background-color: #81a1c1;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: #d8dee9;
+    -fx-border-radius: 8;
+}
+
+.qr-button:hover {
+    -fx-background-color: #5E81AC;
+    -fx-cursor: hand;
+}
+
+.document-info {
+    -fx-padding: 0 20 0 0;
+    -fx-spacing: 10;
+}
+
+.document-info-label {
+    -fx-background-color: transparent;
+    -fx-pref-height: 50;
+    -fx-pref-width: 800;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 18;
+}
+
+.description-scroll-pane {
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: #D8DEE8;
+    -fx-background-color: transparent;
+}
+
+.description {
+    -fx-background-color: transparent;
+    -fx-alignment: top-left;
+    -fx-wrap-text: true;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
+    -fx-padding: 0 0 0 0;
+}

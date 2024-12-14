@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Label?>
+
+<!-- DASHBOARD -->
+<VBox prefHeight="720" prefWidth="1200" HBox.hgrow="ALWAYS" stylesheets="/css/User/Dashboard.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml" styleClass="main">
+    <Label text="Welcome to Tomfoolery, Duy" styleClass="welcome-text" VBox.vgrow="ALWAYS" prefWidth="Infinity"
+           fx:id="welcomeLabel"/>
+    <HBox styleClass="content" prefWidth="Infinity" prefHeight="400">
+        <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+            <Label styleClass="dashboard-tile-number" fx:id="numberOfPatrons"/>
+            <Label text="patrons" styleClass="dashboard-tile-text"/>
+        </VBox>
+        <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+            <Label styleClass="dashboard-tile-number" fx:id="numberOfAvailableDocuments"/>
+            <Label text="books available" styleClass="dashboard-tile-text"/>
+        </VBox>
+        <VBox styleClass="dashboard-tile" HBox.hgrow="ALWAYS">
+            <Label styleClass="dashboard-tile-number" fx:id="numberOfBorrowedDocuments"/>
+            <Label text="books borrowing" styleClass="dashboard-tile-text"/>
+        </VBox>
+    </HBox>
+
+    <HBox prefWidth="Infinity" prefHeight="280" styleClass="book-display"
+          alignment="CENTER" VBox.vgrow="ALWAYS" spacing="40">
+        <HBox styleClass="book-display-box" prefWidth="800" prefHeight="250" alignment="CENTER" HBox.hgrow="ALWAYS">
+            <VBox spacing="20" alignment="CENTER_LEFT">
+                <Label text="Top rated book" style="-fx-font-size: 30; -fx-font-family: 'Segoe UI Variable'"/>
+                <Label text="Name: The silence of the lamb" style="-fx-font-size: 25; -fx-font-family: 'Segoe UI Variable'" fx:id="topRatedTitle"/>
+                <Label text="Author: Thomas Harris" style="-fx-font-size: 20; -fx-font-family: 'Segoe UI Variable'" fx:id="topRatedAuthors"
+                        wrapText="true"/>
+            </VBox>
+
+            <ImageView fitWidth="240" fitHeight="240" styleClass="book-image-view" fx:id="topRatedCoverImage">
+            </ImageView>
+        </HBox>
+
+        <HBox styleClass="book-display-box" prefWidth="800" prefHeight="250" alignment="CENTER" HBox.hgrow="ALWAYS">
+            <VBox spacing="20" alignment="CENTER_LEFT">
+                <Label text="Recently added book" style="-fx-font-size: 30; -fx-font-family: 'Segoe UI Variable'"/>
+                <Label text="Name: The silence of the lamb" style="-fx-font-size: 25; -fx-font-family: 'Segoe UI Variable'" fx:id="recentTitle"/>
+                <Label text="Author: Thomas Harris" style="-fx-font-size: 20; -fx-font-family: 'Segoe UI Variable'" fx:id="recentAuthors"
+                       wrapText="true"/>
+            </VBox>
+
+            <ImageView fitWidth="160" fitHeight="240" styleClass="book-image-view" fx:id="recentCoverImage">
+            </ImageView>
+        </HBox>
+    </HBox>
+
+</VBox>

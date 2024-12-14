@@ -1,0 +1,99 @@
+.content-container {
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-background-color: transparent;
+}
+
+.counter {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 24;
+    -fx-text-fill: #424C5E;
+}
+
+.documents-table {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-width: 0;
+}
+
+.documents-table:focused {
+    -fx-background-color: white;
+    -fx-border-width: 0;
+}
+
+.documents-table .column-header-background {
+    -fx-background-color: #80A0C0;
+    -fx-background-radius: 15 15 0 0;
+    -fx-background-insets: 0;
+}
+
+.documents-table .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 15 10;
+    -fx-pref-height: 50;
+    -fx-border-width: 0;
+}
+
+.documents-table .column-header .label {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Cell styling */
+.documents-table .table-cell {
+    -fx-padding: 12 10;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 16;
+    -fx-text-fill: #333333;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Row styling */
+.documents-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-width: 0;
+}
+
+.documents-table .table-row-cell:hover {
+    -fx-background-color: #f5f5f5;
+    -fx-cursor: hand;
+}
+
+.documents-table .table-row-cell:selected {
+    -fx-background-color: derive(#6096ba, 90%);
+}
+
+.documents-table .table-row-cell:selected .table-cell {
+    -fx-text-fill: #333333;
+}
+
+/* Scroll bar styling */
+.documents-table .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 16;
+}
+
+.documents-table .scroll-bar:vertical .thumb {
+    -fx-background-color: #6096ba4D;
+    -fx-background-radius: 5;
+}
+
+.documents-table .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #6096ba;
+    -fx-background-radius: 5;
+}
+
+.documents-table .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.documents-table .scroll-bar .increment-button,
+.documents-table .scroll-bar .decrement-button {
+    -fx-padding: 0;
+    -fx-shape: null;
+    -fx-background-color: transparent;
+}

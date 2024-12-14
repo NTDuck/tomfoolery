@@ -1,0 +1,33 @@
+.root-scrollpane {
+    -fx-background-color: transparent;
+}
+
+.root-vbox {
+    -fx-background-color: white;
+}
+
+.main-hbox {
+    -fx-border-color: dededf;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.left-side {
+    -fx-border-color: dededf;
+    -fx-border-width: 0 1 0 0;
+}
+
+.profile-vbox {
+    -fx-border-color: dededf;
+    -fx-border-width: 0 0 1 0;
+}
+
+.save-button {
+    -fx-background-color: #4c70f0;
+    -fx-background-radius: 8;
+}
+
+.save-button:hover {
+    -fx-background-color: #7591f4;
+    -fx-cursor: hand;
+}

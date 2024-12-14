@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.text.Font?>
+<HBox alignment="CENTER" prefHeight="720.0" prefWidth="1280.0"
+      style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" stylesheets="/css/Admin/ShowPatronDetailsInfo.css" styleClass="root">
+   <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+         prefHeight="600.0" prefWidth="600.0" spacing="2.0" styleClass="container">
+      <effect>
+         <DropShadow/>
+      </effect>
+
+      <Label prefHeight="70.0" prefWidth="600.0" style="-fx-background-color: #a0aad0;" text="Patron information:">
+         <font>
+            <Font size="30.0"/>
+         </font>
+         <padding>
+            <Insets left="30.0" />
+         </padding>
+      </Label>
+
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="id"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="username"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="firstName"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="lastName"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="email"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="phoneNumber"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="city"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="country"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="createdAt"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="lastLogin"/>
+      <TextField editable="false" prefHeight="30.0" prefWidth="600.0" styleClass="label" fx:id="lastLogout"/>
+
+      <HBox prefHeight="90" alignment="CENTER_RIGHT" style="-fx-background-color: transparent">
+         <padding>
+            <Insets right="30"/>
+         </padding>
+         <Button fx:id="closeButton" styleClass="close-button" text="Close"/>
+      </HBox>
+   </VBox>
+</HBox>
