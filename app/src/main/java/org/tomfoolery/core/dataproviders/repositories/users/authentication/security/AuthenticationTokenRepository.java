@@ -2,15 +2,15 @@ package org.tomfoolery.core.dataproviders.repositories.users.authentication.secu
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 
 public interface AuthenticationTokenRepository {
-    void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken);
-    void removeAuthenticationToken();
+    void save(@NonNull AuthenticationToken authenticationToken);
+    void remove();
     
-    @Nullable AuthenticationToken getAuthenticationToken();
+    @Nullable AuthenticationToken get();
 
-    default boolean containsAuthenticationToken() {
-        return this.getAuthenticationToken() != null;
+    default boolean contains() {
+        return this.get() != null;
     }
 }

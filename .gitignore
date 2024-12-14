@@ -34,8 +34,8 @@ bin
 .vscode
 .idea
 
-# IDEA rubbish
-*.java~
+# Temporary files
+*~
 
 # Credentials
 src/main/resources/config.properties
@@ -43,6 +43,9 @@ src/main/resources/config.properties
 !gradle-wrapper.jar
 
 # KEYSTORE_NAME of KeyStoreAuthenticationTokenRepository
-.tomfoolery.p12
+*.p12
 
 *.db
+
+# Environment variables
+*.env

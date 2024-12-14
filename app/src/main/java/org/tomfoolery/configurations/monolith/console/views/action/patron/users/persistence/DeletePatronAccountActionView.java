@@ -10,8 +10,8 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.patron.users.persistence.DeletePatronAccountUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.users.persistence.DeletePatronAccountController;
+import org.tomfoolery.core.usecases.external.patron.users.persistence.DeletePatronAccountUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.persistence.DeletePatronAccountController;
 
 public final class DeletePatronAccountActionView extends UserActionView {
     private final @NonNull DeletePatronAccountController controller;

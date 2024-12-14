@@ -11,21 +11,23 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.relations.DocumentContentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentContentUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentContentController;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.usecases.external.staff.documents.persistence.UpdateDocumentContentUseCase;
+import org.tomfoolery.core.dataproviders.providers.io.file.FileVerifier;
+import org.tomfoolery.infrastructures.adapters.controllers.external.staff.documents.persistence.UpdateDocumentContentController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 public final class UpdateDocumentContentActionView extends UserActionView {
     private final @NonNull UpdateDocumentContentController controller;
 
-    public static @NonNull UpdateDocumentContentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new UpdateDocumentContentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull UpdateDocumentContentActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier, @NonNull FileStorageProvider fileStorageProvider) {
+        return new UpdateDocumentContentActionView(ioProvider, documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier, fileStorageProvider);
     }
 
-    private UpdateDocumentContentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private UpdateDocumentContentActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull DocumentContentRepository documentContentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileVerifier fileVerifier, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.controller = UpdateDocumentContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = UpdateDocumentContentController.of(documentRepository, documentContentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileVerifier, fileStorageProvider);
     }
 
     @Override
@@ -38,7 +40,7 @@ public final class UpdateDocumentContentActionView extends UserActionView {
 
         } catch (UpdateDocumentContentUseCase.AuthenticationTokenNotFoundException | AuthenticatedUserUseCase.AuthenticationTokenInvalidException exception) {
             this.onException(exception, GuestSelectionView.class);
-        } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException | UpdateDocumentContentUseCase.DocumentISBNInvalidException | UpdateDocumentContentUseCase.DocumentNotFoundException exception) {
+        } catch (UpdateDocumentContentController.DocumentContentFilePathInvalidException | UpdateDocumentContentUseCase.DocumentISBNInvalidException | UpdateDocumentContentUseCase.DocumentNotFoundException | UpdateDocumentContentUseCase.DocumentContentInvalidException exception) {
             this.onException(exception);
         }
     }

@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
-public class Cloner {
+public final class Cloner {
     /**
      * @param sourceInstance the {@code Source} instance to clone from
      * @param destinationClass marks the {@code Destination} type to clone to

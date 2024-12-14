@@ -4,13 +4,14 @@ import com.microsoft.credentialstorage.SecretStore;
 import com.microsoft.credentialstorage.StorageProvider;
 import com.microsoft.credentialstorage.model.StoredToken;
 import com.microsoft.credentialstorage.model.StoredTokenType;
+import lombok.Locked;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
 @NoArgsConstructor(staticName = "of")
 public class SecretStoreAuthenticationTokenRepository implements AuthenticationTokenRepository {
@@ -23,25 +24,34 @@ public class SecretStoreAuthenticationTokenRepository implements AuthenticationT
     private final @NonNull SecretStore<StoredToken> secretStore = StorageProvider.getTokenStorage(PERSIST, SECURE_OPTION);
 
     @Override
-    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    @Locked.Write
+    public void save(@NonNull AuthenticationToken authenticationToken) {
         val storedToken = getStoredTokenFromAuthenticationToken(authenticationToken);
         this.secretStore.add(ENTRY_ALIAS, storedToken);
         storedToken.clear();
     }
 
     @Override
-    public void removeAuthenticationToken() {
+    @Locked.Write
+    public void remove() {
         this.secretStore.delete(ENTRY_ALIAS);
     }
 
     @Override
-    public @Nullable AuthenticationToken getAuthenticationToken() {
+    @Locked.Read
+    public @Nullable AuthenticationToken get() {
         val storedToken = this.secretStore.get(ENTRY_ALIAS);
 
         if (storedToken == null)
             return null;
 
         return getAuthenticationTokenFromStoredToken(storedToken);
+    }
+
+    @Override
+    @Locked.Read
+    public boolean contains() {
+        return AuthenticationTokenRepository.super.contains();
     }
 
     private static @NonNull StoredToken getStoredTokenFromAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {

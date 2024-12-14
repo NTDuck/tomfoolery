@@ -10,9 +10,9 @@ import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.usecases.staff.documents.persistence.RemoveDocumentUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.RemoveDocumentController;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.usecases.external.staff.documents.persistence.RemoveDocumentUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.staff.documents.persistence.RemoveDocumentController;
 
 public final class RemoveDocumentActionView extends UserActionView {
     private final @NonNull RemoveDocumentController controller;

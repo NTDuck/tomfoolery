@@ -7,14 +7,13 @@ import org.tomfoolery.configurations.monolith.console.dataproviders.providers.io
 import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
-import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.abc.AuthenticatedUserUseCase;
-import org.tomfoolery.core.usecases.staff.documents.persistence.UpdateDocumentMetadataUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.staff.documents.persistence.UpdateDocumentMetadataController;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.usecases.external.staff.documents.persistence.UpdateDocumentMetadataUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.staff.documents.persistence.UpdateDocumentMetadataController;
 
 import java.util.Arrays;
 

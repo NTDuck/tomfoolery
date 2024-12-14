@@ -10,21 +10,21 @@ import org.tomfoolery.configurations.monolith.console.views.selection.PatronSele
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.RemoveDocumentReviewController;
+import org.tomfoolery.core.usecases.external.patron.documents.review.persistence.RemoveDocumentReviewUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.review.persistence.RemoveDocumentReviewController;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.documents.HybridDocumentRepository;
 
 public final class RemoveDocumentRatingActionView extends UserActionView {
     private final @NonNull RemoveDocumentReviewController removeDocumentReviewController;
 
-    public static @NonNull RemoveDocumentRatingActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new RemoveDocumentRatingActionView(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull RemoveDocumentRatingActionView of(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new RemoveDocumentRatingActionView(ioProvider, hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private RemoveDocumentRatingActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private RemoveDocumentRatingActionView(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.removeDocumentReviewController = RemoveDocumentReviewController.of(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.removeDocumentReviewController = RemoveDocumentReviewController.of(hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

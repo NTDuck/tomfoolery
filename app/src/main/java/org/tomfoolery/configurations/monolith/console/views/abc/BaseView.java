@@ -7,7 +7,8 @@ import org.tomfoolery.configurations.monolith.console.utils.constants.Message;
 
 public abstract class BaseView implements Runnable {
     protected final @NonNull IOProvider ioProvider;
-    
+
+    protected static @Nullable String loggedInUsername;
     protected @Nullable Class<? extends BaseView> nextViewClass;
 
     protected BaseView(@NonNull IOProvider ioProvider) {

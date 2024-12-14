@@ -8,7 +8,7 @@ import org.tomfoolery.configurations.monolith.console.views.selection.Administra
 import org.tomfoolery.configurations.monolith.console.views.selection.PatronSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.StaffSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.abc.UserSelectionView;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.abc.LogUserInController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.guest.users.authentication.abc.LogUserInController;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -23,14 +23,16 @@ public final class LogUserInPresenter implements Function<LogUserInController.Vi
 
     @Override
     public @NonNull ViewModel apply(LogUserInController.ViewModel viewModel) {
-        val userType = viewModel.getUserType();
+        val username = viewModel.getLoggedInUsername();
+        val userType = viewModel.getLoggedInUserType();
         val viewClass = viewClassesByUserTypes.get(userType);
 
-        return ViewModel.of(viewClass);
+        return ViewModel.of(username, viewClass);
     }
 
     @Value(staticConstructor = "of")
     public static class ViewModel {
+        @NonNull String loggedInUsername;
         @NonNull Class<? extends UserSelectionView> nextViewClass;
     }
 }

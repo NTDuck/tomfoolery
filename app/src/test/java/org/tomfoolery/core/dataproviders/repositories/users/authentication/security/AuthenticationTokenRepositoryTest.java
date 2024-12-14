@@ -2,47 +2,65 @@ package org.tomfoolery.core.dataproviders.repositories.users.authentication.secu
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.tomfoolery.abc.UnitTest;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
-import org.tomfoolery.core.utils.dataclasses.auth.security.SecureString;
+import org.tomfoolery.abc.BaseUnitTest;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
+
+import java.util.Iterator;
+import java.util.List;
 
 import static org.testng.Assert.*;
 
-public abstract class AuthenticationTokenRepositoryTest extends UnitTest<AuthenticationTokenRepository> {
-    protected static final @NonNull SecureString PSEUDO_SERIALIZED_PAYLOAD = SecureString.of("eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.");
-
-    private @NonNull AuthenticationToken authenticationToken;
-
-    @BeforeClass
-    public void setUp() {
-        super.setUp();
-
-        this.authenticationToken = AuthenticationToken.of(PSEUDO_SERIALIZED_PAYLOAD);
+@Test(groups = { "unit", "repository", "authentication" })
+public abstract class AuthenticationTokenRepositoryTest extends BaseUnitTest<AuthenticationTokenRepository> {
+    @Test(dataProvider = "AuthenticationTokenRepositoryTestDataProvider")
+    void WhenSavingToken_ExpectPresentAndMatchingToken(@NonNull AuthenticationToken authenticationToken) {
+        this.testSubject.save(authenticationToken);
+        this.assertPresentAndMatchingToken(authenticationToken);
     }
 
-    @Test
-    public void WhenSavingToken_ExpectPresentToken() {
-        this.unit.saveAuthenticationToken(authenticationToken);
-
-        // assertTrue(this.unit.containsAuthenticationToken());
-        assertFalse(this.unit.containsAuthenticationToken());
+    @Test(dataProvider = "AuthenticationTokenRepositoryTestDataProvider", dependsOnMethods = { "WhenSavingToken_ExpectPresentAndMatchingToken" })
+    void GivenPresentToken_WhenSavingToken_ExpectPresentAndMatchingToken(@NonNull AuthenticationToken authenticationToken) {
+        this.testSubject.save(authenticationToken);
+        this.assertPresentAndMatchingToken(authenticationToken);
     }
 
-    @Test(dependsOnMethods = { "WhenSavingToken_ExpectPresentToken" })
-    public void GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken() {
-        val retrievedAuthenticationToken = this.unit.getAuthenticationToken();
+    @Test(dependsOnMethods = { "GivenPresentToken_WhenSavingToken_ExpectPresentAndMatchingToken" })
+    void GivenPresentToken_WhenRemovingToken_ExpectAbsentToken() {
+        this.testSubject.remove();
+        this.assertAbsentToken();
+    }
 
+    @Test(dependsOnMethods = { "GivenPresentToken_WhenRemovingToken_ExpectAbsentToken" })
+    void GivenAbsentToken_WhenRemovingToken_ExpectAbsentToken() {
+        this.testSubject.remove();
+        this.assertAbsentToken();
+    }
+
+    private void assertPresentAndMatchingToken(@NonNull AuthenticationToken expectedAuthenticationToken) {
+        assertTrue(this.testSubject.contains());
+
+        val retrievedAuthenticationToken = this.testSubject.get();
         assertNotNull(retrievedAuthenticationToken);
-        assertEquals(this.authenticationToken, retrievedAuthenticationToken);
+        assertEquals(retrievedAuthenticationToken, expectedAuthenticationToken);
     }
 
-    @Test(dependsOnMethods = { "GivenTokenIsSaved_WhenRetrievingToken_ExpectPresentAndMatchingToken" })
-    public void WhenRemovingToken_ExpectAbsentToken() {
-        this.unit.removeAuthenticationToken();
+    private void assertAbsentToken() {
+        assertFalse(this.testSubject.contains());
+        assertNull(this.testSubject.get());
+    }
 
-        assertFalse(this.unit.containsAuthenticationToken());
-        assertNull(this.unit.getAuthenticationToken());
+    @DataProvider(name = "AuthenticationTokenRepositoryTestDataProvider")
+    public @NonNull Iterator<Object[]> createData() {
+        return List.of(
+            "eyJhbGciOiJub25lIn0.VGhlIHRydWUgc2lnbiBvZiBpbnRlbGxpZ2VuY2UgaXMgbm90IGtub3dsZWRnZSBidXQgaW1hZ2luYXRpb24u.",
+            "Hello World!"
+        ).parallelStream()
+            .map(SecureString::of)
+            .map(AuthenticationToken::of)
+            .map(authenticationToken -> new Object[] { authenticationToken })
+            .iterator();
     }
 }

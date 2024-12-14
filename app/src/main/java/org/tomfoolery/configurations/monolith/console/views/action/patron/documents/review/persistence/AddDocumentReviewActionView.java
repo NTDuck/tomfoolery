@@ -10,21 +10,21 @@ import org.tomfoolery.configurations.monolith.console.views.selection.PatronSele
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.relations.ReviewRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.patron.documents.review.persistence.AddDocumentReviewUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.patron.documents.review.persistence.AddDocumentReviewController;
+import org.tomfoolery.core.usecases.external.patron.documents.review.persistence.AddDocumentReviewUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.review.persistence.AddDocumentReviewController;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.documents.HybridDocumentRepository;
 
 public final class AddDocumentReviewActionView extends UserActionView {
     private final @NonNull AddDocumentReviewController addDocumentReviewController;
 
-    public static @NonNull AddDocumentReviewActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new AddDocumentReviewActionView(ioProvider, documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull AddDocumentReviewActionView of(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new AddDocumentReviewActionView(ioProvider, hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private AddDocumentReviewActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private AddDocumentReviewActionView(@NonNull IOProvider ioProvider, @NonNull HybridDocumentRepository hybridDocumentRepository, @NonNull ReviewRepository reviewRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.addDocumentReviewController = AddDocumentReviewController.of(documentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.addDocumentReviewController = AddDocumentReviewController.of(hybridDocumentRepository, reviewRepository, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override

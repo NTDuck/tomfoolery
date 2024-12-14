@@ -10,8 +10,8 @@ import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.administrator.users.retrieval.GetStaffByIdUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.GetStaffByIdController;
+import org.tomfoolery.core.usecases.external.administrator.users.retrieval.GetStaffByIdUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetStaffByIdController;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
 public final class GetStaffByIdActionView extends UserActionView {
@@ -43,7 +43,7 @@ public final class GetStaffByIdActionView extends UserActionView {
     }
 
     private GetStaffByIdController.@NonNull RequestObject collectRequestObject() {
-        val uuid = this.ioProvider.readLine(Message.Format.PROMPT, "administrator UUID");
+        val uuid = this.ioProvider.readLine(Message.Format.PROMPT, "staff UUID");
 
         return GetStaffByIdController.RequestObject.of(uuid);
     }
@@ -53,12 +53,18 @@ public final class GetStaffByIdActionView extends UserActionView {
             Staff Details:
             - UUID: %s
             - Username: %s
-            - Created At: %s
-            - Last Login: %s
-            - Last Logout: %s""",
+            - Created by Administrator: %s
+            - Last modified by Administrator: %s
+            - Created at: %s
+            - Last modified: %s
+            - Last login: %s
+            - Last logout: %s""",
             viewModel.getStaffUuid(),
             viewModel.getStaffUsername(),
+            viewModel.getCreatedByAdministratorId(),
+            viewModel.getLastModifiedByAdministratorId(),
             viewModel.getCreationTimestamp(),
+            viewModel.getLastModifiedTimestamp(),
             viewModel.getLastLoginTimestamp(),
             viewModel.getLastLogoutTimestamp()
         );

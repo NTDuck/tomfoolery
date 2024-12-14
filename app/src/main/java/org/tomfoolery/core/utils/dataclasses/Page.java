@@ -1,10 +1,6 @@
 package org.tomfoolery.core.utils.dataclasses;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
-import lombok.val;
+import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -12,7 +8,7 @@ import org.checkerframework.checker.signedness.qual.Unsigned;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 @Value
 public class Page<T> implements Iterable<T> {
@@ -32,26 +28,12 @@ public class Page<T> implements Iterable<T> {
         return new Page<>(paginatedItems, pageIndex, maxPageIndex);
     }
 
-    public static <T, U> @NonNull Page<U> fromPaginated(@NonNull Page<T> sourcePage, @NonNull Function<T, U> mapper) {
-        val paginatedItems = StreamSupport.stream(sourcePage.spliterator(), true)
-            .map(mapper)
-            .toList();
-
-        val pageIndex = sourcePage.getPageIndex();
-        val maxPageIndex = sourcePage.getMaxPageIndex();
-
-        val page = Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
-        assert page != null;
-
-        return page;
-    }
-
     public static <T> @Nullable Page<T> fromUnpaginated(@NonNull List<T> unpaginatedItems, int pageIndex, int maxPageSize) {
         if (pageIndex < 0)
             return null;
 
-        val pageOffset = (pageIndex - MIN_PAGE_INDEX) * maxPageSize;
-        val maxPageIndex = Math.ceilDiv(unpaginatedItems.size(), maxPageSize);
+        val pageOffset = calculatePageOffset(pageIndex, maxPageSize);
+        val maxPageIndex = calculateMaxPageIndex(unpaginatedItems.size(), maxPageSize);
 
         if (pageOffset < 0 || maxPageIndex < pageIndex)
             return null;
@@ -59,9 +41,29 @@ public class Page<T> implements Iterable<T> {
         val paginatedItems = unpaginatedItems.parallelStream()
             .skip(pageOffset)
             .limit(maxPageSize)
-            .toList();
+            .collect(Collectors.toUnmodifiableList());
 
         return Page.fromPaginated(paginatedItems, pageIndex, maxPageIndex);
+    }
+
+    public <U> @NonNull Page<U> map(@NonNull Function<T, U> mapper) {
+        val paginatedItems = this.paginatedItems.stream()
+            .map(mapper)
+            .toList();
+
+        return new Page<>(paginatedItems, this.pageIndex, this.maxPageIndex);
+    }
+
+    public @NonNull List<T> toPaginatedList() {
+        return this.paginatedItems;
+    }
+
+    public static @Unsigned int calculatePageOffset(@Unsigned int pageIndex, @Unsigned int maxPageSize) {
+        return (pageIndex - MIN_PAGE_INDEX) * maxPageSize;
+    }
+
+    public static @Unsigned int calculateMaxPageIndex(@Unsigned int unpaginatedItemsSize, @Unsigned int maxPageSize) {
+        return MIN_PAGE_INDEX + Math.ceilDiv(unpaginatedItemsSize, maxPageSize);
     }
 
     public int getPageSize() {

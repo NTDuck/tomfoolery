@@ -10,8 +10,8 @@ import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.administrator.users.retrieval.GetPatronByIdUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.retrieval.GetPatronByIdController;
+import org.tomfoolery.core.usecases.external.administrator.users.retrieval.GetPatronByIdUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetPatronByIdController;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
 public final class GetPatronByIdActionView extends UserActionView {
@@ -58,9 +58,10 @@ public final class GetPatronByIdActionView extends UserActionView {
             - Phone number: %s
             - Address: %s, %s
             - Email: %s
-            - Created At: %s
-            - Last Login: %s
-            - Last Logout: %s""",
+            - Created at: %s
+            - Last modified: %s
+            - Last login: %s
+            - Last logout: %s""",
             viewModel.getPatronUuid(),
             viewModel.getPatronUsername(),
             viewModel.getPatronFirstName(), viewModel.getPatronLastName(),
@@ -69,6 +70,7 @@ public final class GetPatronByIdActionView extends UserActionView {
             viewModel.getPatronCity(), viewModel.getPatronCountry(),
             viewModel.getPatronEmail(),
             viewModel.getCreationTimestamp(),
+            viewModel.getLastModifiedTimestamp(),
             viewModel.getLastLoginTimestamp(),
             viewModel.getLastLogoutTimestamp()
         );

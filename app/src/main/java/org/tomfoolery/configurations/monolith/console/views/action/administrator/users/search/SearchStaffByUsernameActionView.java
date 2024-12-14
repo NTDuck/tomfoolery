@@ -1,5 +1,8 @@
 package org.tomfoolery.configurations.monolith.console.views.action.administrator.users.search;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -9,23 +12,25 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActio
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.StaffSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Staff;
-import org.tomfoolery.core.usecases.administrator.users.search.SearchStaffByUsernameUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.search.SearchStaffByUsernameController;
+import org.tomfoolery.core.usecases.external.administrator.users.search.SearchStaffByUsernameUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetStaffByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchStaffByUsernameController;
+
+import java.util.List;
 
 public final class SearchStaffByUsernameActionView extends UserActionView {
     private final @NonNull SearchStaffByUsernameController searchStaffByUsernameController;
 
-    public static @NonNull SearchStaffByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Staff> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchStaffByUsernameActionView(ioProvider, userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchStaffByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull StaffSearchGenerator staffSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchStaffByUsernameActionView(ioProvider, staffSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchStaffByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Staff> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchStaffByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull StaffSearchGenerator staffSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.searchStaffByUsernameController = SearchStaffByUsernameController.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.searchStaffByUsernameController = SearchStaffByUsernameController.of(staffSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -61,12 +66,23 @@ public final class SearchStaffByUsernameActionView extends UserActionView {
     }
 
     private void displayViewModel(SearchStaffByUsernameController.@NonNull ViewModel viewModel) {
-        this.ioProvider.writeLine("Displaying patron accounts, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
+        this.ioProvider.writeLine("Displaying staff accounts, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        viewModel.getStaff()
-            .forEach(patron -> {
-                this.ioProvider.writeLine("- [%s] %s", patron.getStaffUuid(), patron.getStaffUsername());
-            });
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getPaginatedStaff(), List.of(
+                new Column()
+                    .header("UUID")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetStaffByIdController.ViewModel::getStaffUuid),
+                new Column()
+                    .header("username")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetStaffByIdController.ViewModel::getStaffUsername)
+            ))
+            .asString();
+
+        this.ioProvider.writeLine(table);
     }
 
     private void onSuccess(SearchStaffByUsernameController.@NonNull ViewModel viewModel) {

@@ -8,8 +8,8 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.BaseActio
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.utils.containers.UserRepositories;
-import org.tomfoolery.infrastructures.adapters.controllers.guest.users.authentication.LogUserInByAuthenticationTokenController;
+import org.tomfoolery.core.utils.containers.users.UserRepositories;
+import org.tomfoolery.infrastructures.adapters.controllers.external.guest.users.authentication.LogUserInByAuthenticationTokenController;
 
 public final class LogUserInByAuthenticationTokenActionView extends BaseActionView {
     private final @NonNull LogUserInByAuthenticationTokenController logUserInByAuthenticationTokenController;
@@ -48,6 +48,7 @@ public final class LogUserInByAuthenticationTokenActionView extends BaseActionVi
     }
 
     private void onSuccess(LogUserInPresenter.@NonNull ViewModel viewModel) {
+        loggedInUsername = viewModel.getLoggedInUsername();
         this.nextViewClass = viewModel.getNextViewClass();
     }
 

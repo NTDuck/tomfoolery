@@ -1,27 +1,31 @@
 package org.tomfoolery.infrastructures.dataproviders.repositories.inmemory.users.authentication.security;
 
+import lombok.Locked;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.utils.dataclasses.auth.security.AuthenticationToken;
+import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 
 @NoArgsConstructor(staticName = "of")
 public class InMemoryAuthenticationTokenRepository implements AuthenticationTokenRepository {
     private @Nullable AuthenticationToken authenticationToken = null;
 
     @Override
-    public void saveAuthenticationToken(@NonNull AuthenticationToken authenticationToken) {
+    @Locked.Write
+    public void save(@NonNull AuthenticationToken authenticationToken) {
         this.authenticationToken = authenticationToken;
     }
 
     @Override
-    public void removeAuthenticationToken() {
+    @Locked.Write
+    public void remove() {
         this.authenticationToken = null;
     }
 
     @Override
-    public @Nullable AuthenticationToken getAuthenticationToken() {
+    @Locked.Read
+    public @Nullable AuthenticationToken get() {
         return this.authenticationToken;
     }
 }

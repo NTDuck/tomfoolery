@@ -10,23 +10,35 @@ import java.util.Comparator;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class DocumentComparator {
-    public static final @NonNull Comparator<Document> byIdAscending = Comparator.comparing(
-        document -> document.getId().getISBN_10()
-    );
+    public static @NonNull Comparator<Document.Id> compareId() {
+        return Comparator.comparing(Document.Id::getISBN_10);
+    }
 
-    public static final @NonNull Comparator<Document> byCreationTimestampAscending = Comparator.comparing(
-        document -> document.getAudit().getTimestamps().getCreated()
-    );
+    public static @NonNull Comparator<Document> byIdAscending() {
+        return Comparator.comparing(Document::getId, compareId());
+    }
 
-    public static final @NonNull Comparator<Document> byAverageRatingAscending = Comparator.comparing(document -> {
-        val documentRating = document.getRating();
+    public static @NonNull Comparator<Document> byCreationTimestampAscending() {
+        return Comparator.comparing(
+            document -> document.getAudit().getTimestamps().getCreated());
+    }
 
-        if (documentRating == null)
-            return Double.MAX_VALUE;
+    public static @NonNull Comparator<Document> byAverageRatingAscending() {
+        return Comparator.comparing(document -> {
+            val documentRating = document.getRating();
 
-        return documentRating.getAverageRating();
-    });
+            if (documentRating == null)
+                return Double.MAX_VALUE;
 
-    public static final @NonNull Comparator<Document> byCreationTimestampDescending = byCreationTimestampAscending.reversed();
-    public static final @NonNull Comparator<Document> byAverageRatingDescending = byAverageRatingAscending.reversed();
+            return documentRating.getAverageRating();
+        });
+    }
+
+    public static @NonNull Comparator<Document> byCreationTimestampDescending() {
+        return byCreationTimestampAscending().reversed();
+    }
+
+    public static @NonNull Comparator<Document> byAverageRatingDescending() {
+        return byAverageRatingAscending().reversed();
+    }
 }

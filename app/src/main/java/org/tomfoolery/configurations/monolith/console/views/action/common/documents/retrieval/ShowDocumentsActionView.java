@@ -1,5 +1,9 @@
 package org.tomfoolery.configurations.monolith.console.views.action.common.documents.retrieval;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
+import com.github.freva.asciitable.OverflowBehaviour;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -10,20 +14,24 @@ import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
-import org.tomfoolery.core.usecases.common.documents.retrieval.ShowDocumentsUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.common.documents.retrieval.ShowDocumentsController;
+import org.tomfoolery.core.usecases.external.common.documents.retrieval.ShowDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.GetDocumentByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.ShowDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
+
+import java.util.List;
 
 public final class ShowDocumentsActionView extends UserActionView {
     private final @NonNull ShowDocumentsController showDocumentsController;
 
-    public static @NonNull ShowDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new ShowDocumentsActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull ShowDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new ShowDocumentsActionView(ioProvider, documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private ShowDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private ShowDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.showDocumentsController = ShowDocumentsController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository);
+        this.showDocumentsController = ShowDocumentsController.of(documentRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @Override
@@ -60,10 +68,44 @@ public final class ShowDocumentsActionView extends UserActionView {
     private void displayViewModel(ShowDocumentsController.@NonNull ViewModel viewModel) {
         this.ioProvider.writeLine("Showing documents, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        viewModel.getPaginatedDocuments()
-            .forEach(document -> {
-                this.ioProvider.writeLine("- [%s] %s", document.getDocumentISBN_10(), document.getDocumentTitle());
-            });
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getPaginatedDocuments(), List.of(
+                new Column()
+                    .header("ISBN 10")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_10),
+                new Column()
+                    .header("ISBN 13")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_13),
+                new Column()
+                    .header("Title")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(30, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentTitle),
+                new Column()
+                    .header("Authors")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentAuthors())),
+                new Column()
+                    .header("Genres")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentGenres())),
+                new Column()
+                    .header("Year")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.RIGHT)
+                    .with(document -> String.valueOf(document.getDocumentPublishedYear()))
+            ))
+            .asString();
+
+        this.ioProvider.writeLine(table);
     }
 
     private void onSuccess(ShowDocumentsController.@NonNull ViewModel viewModel) {

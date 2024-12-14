@@ -22,6 +22,6 @@ public final class Message {
 
     @NoArgsConstructor(access = AccessLevel.NONE)
     public static final class Page {
-        public static final @Unsigned int MAX_PAGE_SIZE = 7;
+        public static final @Unsigned int MAX_PAGE_SIZE = 10;
     }
 }

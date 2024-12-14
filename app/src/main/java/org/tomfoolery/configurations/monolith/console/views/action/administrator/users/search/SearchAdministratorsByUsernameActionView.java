@@ -1,5 +1,8 @@
 package org.tomfoolery.configurations.monolith.console.views.action.administrator.users.search;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -9,23 +12,25 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActio
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.AdministratorSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Administrator;
-import org.tomfoolery.core.usecases.administrator.users.search.SearchAdministratorsByUsernameUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.search.SearchAdministratorsByUsernameController;
+import org.tomfoolery.core.usecases.external.administrator.users.search.SearchAdministratorsByUsernameUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetAdministratorByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchAdministratorsByUsernameController;
+
+import java.util.List;
 
 public final class SearchAdministratorsByUsernameActionView extends UserActionView {
     private final @NonNull SearchAdministratorsByUsernameController searchAdministratorsByUsernameController;
 
-    public static @NonNull SearchAdministratorsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Administrator> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchAdministratorsByUsernameActionView(ioProvider, userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchAdministratorsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull AdministratorSearchGenerator administratorSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchAdministratorsByUsernameActionView(ioProvider, administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchAdministratorsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Administrator> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchAdministratorsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull AdministratorSearchGenerator administratorSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.searchAdministratorsByUsernameController = SearchAdministratorsByUsernameController.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.searchAdministratorsByUsernameController = SearchAdministratorsByUsernameController.of(administratorSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -63,10 +68,21 @@ public final class SearchAdministratorsByUsernameActionView extends UserActionVi
     private void displayViewModel(SearchAdministratorsByUsernameController.@NonNull ViewModel viewModel) {
         this.ioProvider.writeLine("Displaying administrator accounts, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        viewModel.getAdministrators()
-            .forEach(administrator -> {
-                this.ioProvider.writeLine("- [%s] %s", administrator.getAdministratorUuid(), administrator.getAdministratorUsername());
-            });
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getPaginatedAdministrators(), List.of(
+                new Column()
+                    .header("UUID")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetAdministratorByIdController.ViewModel::getAdministratorUuid),
+                new Column()
+                    .header("username")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetAdministratorByIdController.ViewModel::getAdministratorUsername)
+            ))
+            .asString();
+
+        this.ioProvider.writeLine(table);
     }
 
     private void onSuccess(SearchAdministratorsByUsernameController.@NonNull ViewModel viewModel) {

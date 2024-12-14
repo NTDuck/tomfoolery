@@ -9,16 +9,20 @@ import org.tomfoolery.configurations.monolith.console.views.action.patron.docume
 import org.tomfoolery.configurations.monolith.console.views.action.patron.users.retrieval.GetPatronUsernameAndMetadataActionView;
 import org.tomfoolery.configurations.monolith.console.views.action.staff.documents.persistence.*;
 import org.tomfoolery.configurations.monolith.console.views.selection.abc.UserSelectionView;
+import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.AdministratorRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
+import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 
 import java.util.List;
 
 public final class PatronSelectionView extends UserSelectionView {
-    public static @NonNull PatronSelectionView of(@NonNull IOProvider ioProvider) {
-        return new PatronSelectionView(ioProvider);
+    public static @NonNull PatronSelectionView of(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AdministratorRepository administratorRepository, @NonNull PatronRepository patronRepository, @NonNull StaffRepository staffRepository) {
+        return new PatronSelectionView(ioProvider, documentRepository, administratorRepository, patronRepository, staffRepository);
     }
 
-    private PatronSelectionView(@NonNull IOProvider ioProvider) {
-        super(ioProvider, List.of(
+    private PatronSelectionView(@NonNull IOProvider ioProvider, @NonNull DocumentRepository documentRepository, @NonNull AdministratorRepository administratorRepository, @NonNull PatronRepository patronRepository, @NonNull StaffRepository staffRepository) {
+        super(ioProvider, documentRepository, administratorRepository, patronRepository, staffRepository, List.of(
             SelectionItem.of("Borrow a Document", BorrowDocumentActionView.class),
             SelectionItem.of("Return a Document", ReturnDocumentActionView.class),
             SelectionItem.of("Read a Document", ReadBorrowedDocumentActionView.class),

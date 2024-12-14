@@ -1,5 +1,8 @@
 package org.tomfoolery.configurations.monolith.console.views.action.administrator.users.search;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -9,23 +12,25 @@ import org.tomfoolery.configurations.monolith.console.views.action.abc.UserActio
 import org.tomfoolery.configurations.monolith.console.views.selection.AdministratorSelectionView;
 import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelectionView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
-import org.tomfoolery.core.dataproviders.generators.users.search.UserSearchGenerator;
+import org.tomfoolery.core.dataproviders.generators.users.search.PatronSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.domain.users.Patron;
-import org.tomfoolery.core.usecases.administrator.users.search.SearchPatronsByUsernameUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.administrator.users.search.SearchPatronsByUsernameController;
+import org.tomfoolery.core.usecases.external.administrator.users.search.SearchPatronsByUsernameUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.GetPatronByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchPatronsByUsernameController;
+
+import java.util.List;
 
 public final class SearchPatronsByUsernameActionView extends UserActionView {
     private final @NonNull SearchPatronsByUsernameController searchPatronsByUsernameController;
 
-    public static @NonNull SearchPatronsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Patron> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchPatronsByUsernameActionView(ioProvider, userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchPatronsByUsernameActionView of(@NonNull IOProvider ioProvider, @NonNull PatronSearchGenerator patronSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+        return new SearchPatronsByUsernameActionView(ioProvider, patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
-    private SearchPatronsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull UserSearchGenerator<Patron> userSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchPatronsByUsernameActionView(@NonNull IOProvider ioProvider, @NonNull PatronSearchGenerator patronSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
         super(ioProvider);
 
-        this.searchPatronsByUsernameController = SearchPatronsByUsernameController.of(userSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.searchPatronsByUsernameController = SearchPatronsByUsernameController.of(patronSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
     }
 
     @Override
@@ -63,10 +68,21 @@ public final class SearchPatronsByUsernameActionView extends UserActionView {
     private void displayViewModel(SearchPatronsByUsernameController.@NonNull ViewModel viewModel) {
         this.ioProvider.writeLine("Displaying patron accounts, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        viewModel.getPatrons()
-            .forEach(patron -> {
-                this.ioProvider.writeLine("- [%s] %s", patron.getPatronUuid(), patron.getPatronUsername());
-            });
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getPaginatedPatrons(), List.of(
+                new Column()
+                    .header("UUID")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetPatronByIdController.ViewModel::getPatronUuid),
+                new Column()
+                    .header("username")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetPatronByIdController.ViewModel::getPatronUsername)
+            ))
+            .asString();
+
+        this.ioProvider.writeLine(table);
     }
 
     private void onSuccess(SearchPatronsByUsernameController.@NonNull ViewModel viewModel) {

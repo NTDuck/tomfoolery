@@ -1,5 +1,9 @@
 package org.tomfoolery.configurations.monolith.console.views.action.common.documents.search;
 
+import com.github.freva.asciitable.AsciiTable;
+import com.github.freva.asciitable.Column;
+import com.github.freva.asciitable.HorizontalAlign;
+import com.github.freva.asciitable.OverflowBehaviour;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.signedness.qual.Unsigned;
@@ -11,26 +15,29 @@ import org.tomfoolery.configurations.monolith.console.views.selection.GuestSelec
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.search.DocumentSearchGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.common.documents.search.abc.SearchDocumentsUseCase;
-import org.tomfoolery.infrastructures.adapters.controllers.common.documents.search.SearchDocumentsController;
+import org.tomfoolery.core.usecases.external.common.documents.search.abc.SearchDocumentsUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.retrieval.GetDocumentByIdController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.search.SearchDocumentsController;
+import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class SearchDocumentsActionView extends UserActionView {
-    private static final @NonNull String SEARCH_CRITERION_PROMPT = String.format("search criterion (%s)", EnumResolver.getEnumeratedNames(
+    private static final @NonNull String SEARCH_CRITERION_PROMPT = String.format("search criterion (%s)", EnumResolver.getCapitalizedEnumeratedNames(
         SearchDocumentsController.SearchCriterion.class, "%s (%d)", 0
     ).stream().collect(Collectors.joining(", ")));
 
     private final @NonNull SearchDocumentsController controller;
 
-    public static @NonNull SearchDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
-        return new SearchDocumentsActionView(ioProvider, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+    public static @NonNull SearchDocumentsActionView of(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
+        return new SearchDocumentsActionView(ioProvider, documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
-    private SearchDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository) {
+    private SearchDocumentsActionView(@NonNull IOProvider ioProvider, @NonNull DocumentSearchGenerator documentSearchGenerator, @NonNull AuthenticationTokenGenerator authenticationTokenGenerator, @NonNull AuthenticationTokenRepository authenticationTokenRepository, @NonNull FileStorageProvider fileStorageProvider) {
         super(ioProvider);
 
-        this.controller = SearchDocumentsController.of(documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository);
+        this.controller = SearchDocumentsController.of(documentSearchGenerator, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider);
     }
 
     @Override
@@ -84,10 +91,44 @@ public final class SearchDocumentsActionView extends UserActionView {
     private void displayViewModel(SearchDocumentsController.@NonNull ViewModel viewModel) {
         this.ioProvider.writeLine("Showing documents, page %d of %d", viewModel.getPageIndex(), viewModel.getMaxPageIndex());
 
-        viewModel.getPaginatedDocuments()
-            .forEach(document -> {
-                this.ioProvider.writeLine("- [%s] %s", document.getDocumentISBN_10(), document.getDocumentTitle());
-            });
+        val table = AsciiTable.builder()
+            .border(AsciiTable.NO_BORDERS)
+            .data(viewModel.getPaginatedDocuments(), List.of(
+                new Column()
+                    .header("ISBN 10")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_10),
+                new Column()
+                    .header("ISBN 13")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentISBN_13),
+                new Column()
+                    .header("Title")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(30, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(GetDocumentByIdController.ViewModel::getDocumentTitle),
+                new Column()
+                    .header("Authors")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentAuthors())),
+                new Column()
+                    .header("Genres")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .maxWidth(14, OverflowBehaviour.CLIP_RIGHT)
+                    .dataAlign(HorizontalAlign.LEFT)
+                    .with(document -> String.join(", ", document.getDocumentGenres())),
+                new Column()
+                    .header("Year")
+                    .headerAlign(HorizontalAlign.CENTER)
+                    .dataAlign(HorizontalAlign.RIGHT)
+                    .with(document -> String.valueOf(document.getDocumentPublishedYear()))
+            ))
+            .asString();
+
+        this.ioProvider.writeLine(table);
     }
 
     private void onSuccess(SearchDocumentsController.@NonNull ViewModel viewModel) {
