@@ -15,7 +15,6 @@ import org.tomfoolery.configurations.monolith.gui.view.user.documents.ShowDocume
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
-import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.external.common.documents.retrieval.ShowDocumentsUseCase;
 import org.tomfoolery.core.usecases.external.common.documents.search.abc.SearchDocumentsUseCase;
 import org.tomfoolery.core.usecases.external.staff.documents.persistence.UpdateDocumentContentUseCase;
@@ -121,8 +120,6 @@ public class DocumentsManagementView extends ShowDocumentsView{
             StageManager.getInstance().openLoginMenu();
         } catch (SearchDocumentsUseCase.PaginationInvalidException _) {
         }
-
-
     }
 
     private void updateContentMenu(@NonNull DocumentViewModel documentViewModel) {
@@ -220,7 +217,6 @@ public class DocumentsManagementView extends ShowDocumentsView{
 
             documentsTable.getItems().clear();
             viewModel.getPaginatedDocuments().forEach(document -> documentsTable.getItems().add(new DocumentViewModel(document)));
-
         } catch (ShowDocumentsUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
         } catch (ShowDocumentsUseCase.AuthenticationTokenInvalidException exception) {

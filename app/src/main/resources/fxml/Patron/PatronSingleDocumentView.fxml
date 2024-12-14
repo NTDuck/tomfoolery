@@ -21,7 +21,7 @@
          <Label prefHeight="50.0" prefWidth="230.0" text="Not borrowed" styleClass="status-label" fx:id="statusLabel"
             VBox.vgrow="ALWAYS" alignment="CENTER"/>
 
-         <ImageView fitHeight="400" fitWidth="260" preserveRatio="true" fx:id="coverImage">
+         <ImageView fitHeight="600" fitWidth="390" preserveRatio="true" fx:id="coverImage">
             <Image url="/images/default/placeholder-book-cover.png"/>
          </ImageView>
 
@@ -62,7 +62,10 @@
 
             <TextField text="Year Published: 2023" styleClass="document-info-label" fx:id="yearPublishedLabel" VBox.vgrow="ALWAYS" editable="false"/>
 
-            <VBox VBox.vgrow="ALWAYS">
+            <VBox VBox.vgrow="ALWAYS" spacing="5">
+               <padding>
+                  <Insets left="10"/>
+               </padding>
                <Label prefHeight="17.0" prefWidth="670.0" text="Description:" VBox.vgrow="ALWAYS">
                   <font>
                      <Font name="Segoe UI Variable" size="18.0" />
@@ -70,8 +73,8 @@
                </Label>
 
                <ScrollPane hbarPolicy="NEVER" prefHeight="200" styleClass="description-scroll-pane"
-                           fx:id="descriptionScrollPane" VBox.vgrow="ALWAYS">
-                  <TextArea styleClass="description" fx:id="descriptionArea" editable="false"/>
+                           fx:id="descriptionScrollPane" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
+                  <TextArea styleClass="description" fx:id="descriptionArea" editable="false" wrapText="true"/>
                </ScrollPane>
             </VBox>
 

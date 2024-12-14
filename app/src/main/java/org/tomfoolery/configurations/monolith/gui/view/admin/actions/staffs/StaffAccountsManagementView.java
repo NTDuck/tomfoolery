@@ -14,10 +14,14 @@ import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.StaffRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.external.administrator.users.persistence.DeleteStaffAccountUseCase;
 import org.tomfoolery.core.usecases.external.administrator.users.retrieval.ShowStaffAccountsUseCase;
+import org.tomfoolery.core.usecases.external.administrator.users.search.SearchPatronsByUsernameUseCase;
+import org.tomfoolery.core.usecases.external.administrator.users.search.abc.SearchUsersByUsernameUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.persistence.DeleteStaffAccountController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.ShowStaffAccountsController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchStaffByUsernameController;
 import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 import org.tomfoolery.infrastructures.utils.helpers.adapters.UserIdBiAdapter;
 
@@ -48,6 +52,9 @@ public class StaffAccountsManagementView {
     private Button createStaffAccountButton;
 
     @FXML
+    private TextField searchField;
+
+    @FXML
     private TableView<StaffAccountViewModel> staffAccountsTable;
 
     @FXML
@@ -67,8 +74,50 @@ public class StaffAccountsManagementView {
         });
 
         createStaffAccountButton.setOnAction(event -> openCreateStaffAccountView());
+        searchField.setOnAction(event -> searchStaffs());
 
         loadAccounts();
+    }
+
+    private void searchStaffs() {
+        SearchStaffByUsernameController controller = SearchStaffByUsernameController.of(
+                StageManager.getInstance().getResources().getStaffSearchGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+        );
+
+        if (searchField.getText().isEmpty()) {
+            loadAccounts();
+            return;
+        }
+
+        try {
+            val requestObject = SearchStaffByUsernameController.RequestObject.of(searchField.getText(), 1, Integer.MAX_VALUE);
+            val viewModel = controller.apply(requestObject);
+
+            val accounts = viewModel.getPaginatedStaff();
+
+            ObservableList<StaffAccountViewModel> accountList = FXCollections.observableArrayList();
+
+            accounts.forEach(account -> {
+                String uuid = account.getStaffUuid();
+                String username = account.getStaffUsername();
+                String created = account.getCreationTimestamp();
+                String lastLogin = account.getLastLoginTimestamp();
+                String lastLogout = account.getLastLogoutTimestamp();
+
+                StaffAccountViewModel accountViewModel = StaffAccountViewModel.of(uuid, username, created, lastLogin, lastLogout);
+                accountList.add(accountViewModel);
+            });
+
+            staffAccountsTable.getItems().clear();
+            staffAccountsTable.setItems(accountList);
+            counterLabel.setText(this.getStatisticsController.get().getNumberOfStaff() + " staffs");
+        } catch (SearchPatronsByUsernameUseCase.AuthenticationTokenNotFoundException |
+                 SearchPatronsByUsernameUseCase.AuthenticationTokenInvalidException e) {
+            StageManager.getInstance().openLoginMenu();
+        } catch (SearchPatronsByUsernameUseCase.PaginationInvalidException _) {
+        }
     }
 
     private void addButtonToColumn(@NonNull TableColumn<StaffAccountViewModel, Void> column, String buttonText, Consumer<StaffAccountViewModel> action) {

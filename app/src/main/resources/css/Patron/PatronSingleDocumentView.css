@@ -88,8 +88,6 @@
 .description {
     -fx-background-color: transparent;
     -fx-alignment: top-left;
-    -fx-wrap-text: true;
     -fx-font-family: "Segoe UI Variable";
     -fx-font-size: 16;
-    -fx-padding: 0 0 0 0;
 }

@@ -10,9 +10,9 @@
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       styleClass="root" stylesheets="/css/LoginMenu.css"
-      alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" maxHeight="550.0" maxWidth="600.0">
+      alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" maxHeight="570.0" maxWidth="600.0">
     <VBox alignment="TOP_CENTER" prefHeight="160.0" prefWidth="600.0"
-          style="-fx-border-color: #e4e5e6; -fx-background-color: #fafbfc; -fx-border-width: 0 0 1 0;">
+          style="-fx-border-color: #e4e5e6; -fx-background-color: #fafbfc; -fx-border-width: 0 0 1 0; -fx-padding: 20 0 0 0">
         <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" styleClass="icon">
             <Image url="/images/user.png"/>
         </ImageView>

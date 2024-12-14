@@ -4,6 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="content-container" stylesheets="/css/Admin/StaffAccountsManagementView.css"
@@ -13,6 +15,14 @@
     <Label fx:id="counterLabel" styleClass="counter"/>
 
     <Button fx:id="createStaffAccountButton" text="Add a staff" styleClass="create-button"/>
+
+    <HBox prefHeight="60" spacing="5" alignment="CENTER_LEFT" styleClass="search-field-container">
+        <ImageView fitHeight="35" fitWidth="35">
+            <Image url="/images/search.png"/>
+        </ImageView>
+        <TextField prefHeight="60" prefWidth="600" promptText="Search for staffs..."
+                   styleClass="search-field" fx:id="searchField"/>
+    </HBox>
 
     <TableView fx:id="staffAccountsTable"
                styleClass="accounts-table"

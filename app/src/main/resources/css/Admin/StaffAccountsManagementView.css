@@ -23,6 +23,23 @@
     -fx-cursor: hand;
 }
 
+.search-field {
+    -fx-font-size: 25;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-text-fill: #2f374f;
+    -fx-prompt-text-fill: rgba(0, 0, 0, 0.4);
+    -fx-background-color: transparent;
+}
+
+.search-field-container {
+    -fx-padding: 0 0 0 5;
+    -fx-border-width: 1;
+    -fx-border-color: #3e4257;
+    -fx-border-radius: 15;
+    -fx-background-color: rgba(96, 150, 186, 0.5);
+    -fx-background-radius: 15;
+}
+
 .accounts-table {
     -fx-background-color: #D8DEE8;
     -fx-background-radius: 15;

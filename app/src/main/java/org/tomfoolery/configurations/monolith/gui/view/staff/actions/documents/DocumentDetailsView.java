@@ -80,7 +80,12 @@ public class DocumentDetailsView {
         }
 
         this.description.setText("Description:\n" + documentViewModel.getDocumentDescription());
-        this.coverImage.setImage(new Image("file:" + documentViewModel.getDocumentCoverImageFilePath()));
+
+        if (documentViewModel.getDocumentCoverImageFilePath().endsWith(".gif")) {
+            this.coverImage.setImage(new Image("/images/default/placeholder-book-cover.png"));
+        } else {
+            this.coverImage.setImage(new Image("file:" + documentViewModel.getDocumentCoverImageFilePath()));
+        }
 
         this.closeButton.setOnAction(event -> {
             StageManager.getInstance().getRootStackPane().getChildren().removeLast();

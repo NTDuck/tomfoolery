@@ -2,6 +2,8 @@ package org.tomfoolery.configurations.monolith.gui.view.patron.actions.documents
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -9,10 +11,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
 import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
+import org.tomfoolery.configurations.monolith.gui.view.user.documents.ShowDocumentQRCodeView;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentQrCodeGenerator;
 import org.tomfoolery.core.dataproviders.generators.documents.references.DocumentUrlGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
@@ -46,6 +50,7 @@ public class PatronSingleDocumentView {
     private final @NonNull GetDocumentQrCodeController getDocumentQrCodeController;
     private final @NonNull GetDocumentBorrowStatusController getDocumentBorrowStatusController;
     private final @NonNull String documentISBN;
+    private String documentTitle;
 
     public PatronSingleDocumentView(
             @NonNull String documentISBN,
@@ -166,6 +171,7 @@ public class PatronSingleDocumentView {
     private void onSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
         ratingLabel.setText(String.format("Rating: %.2f / 5 (%d)", viewModel.getAverageRating(), viewModel.getNumberOfRatings()));
         titleLabel.setText("Title: " + viewModel.getDocumentTitle());
+        documentTitle = viewModel.getDocumentTitle();
         authorsLabel.setText("Authors: " + String.join(", ", viewModel.getDocumentAuthors()));
         genresLabel.setText("Genres: " + String.join(", ", viewModel.getDocumentGenres()));
         isbnLabel.setText("ISBN: " + this.documentISBN);
@@ -178,11 +184,8 @@ public class PatronSingleDocumentView {
         if (coverImagePath.endsWith(".gif")) {
             coverImage.setImage(new Image("/images/default/placeholder-book-cover.png"));
         } else {
-            coverImage.setImage(new Image("file:" + coverImagePath, 260, 400, false, true));
+            coverImage.setImage(new Image("file:" + coverImagePath));
         }
-
-        coverImage.setFitHeight(400);
-        coverImage.setFitWidth(260);
     }
 
     private void borrowDocument() {
@@ -259,47 +262,15 @@ public class PatronSingleDocumentView {
         return ReturnDocumentController.RequestObject.of(documentISBN);
     }
 
+    @SneakyThrows
     private void showQRCode() {
-        val requestObject = this.collectQRCodeRequestObject();
+        ShowDocumentQRCodeView controller = new ShowDocumentQRCodeView(documentTitle, documentISBN);
 
-        try {
-            val viewModel = this.getDocumentQrCodeController.apply(requestObject);
-            this.displayQRCode(viewModel);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/User/ShowDocumentQRCodeView.fxml"));
+        loader.setController(controller);
+        Node n = loader.load();
 
-        } catch (GetDocumentQrCodeUseCase.AuthenticationTokenNotFoundException | GetDocumentQrCodeUseCase.AuthenticationTokenInvalidException exception) {
-            StageManager.getInstance().openLoginMenu();
-        } catch (GetDocumentQrCodeUseCase.DocumentNotFoundException |
-                 GetDocumentQrCodeUseCase.DocumentISBNInvalidException e) {
-            System.err.println("never happens");
-        } catch (GetDocumentQrCodeController.DocumentQrCodeFileWriteException e) {
-            MessageLabelFactory.createErrorLabel("QR code unavailable.", 16, message);
-
-        }
-    }
-
-    private GetDocumentQrCodeController.@NonNull RequestObject collectQRCodeRequestObject() {
-        return GetDocumentQrCodeController.RequestObject.of(documentISBN);
-    }
-
-    private void displayQRCode(GetDocumentQrCodeController.@NonNull ViewModel viewModel) {
-        val documentQrCodeFilePath = viewModel.getDocumentQrCodeFilePath();
-
-        executor.submit(() -> {
-            File pdfFile = new File(documentQrCodeFilePath);
-            if (pdfFile.exists()) {
-                try {
-                    Desktop.getDesktop().open(pdfFile);
-                } catch (IOException e) {
-                    Platform.runLater(() -> {
-                        System.err.println("Error opening pdf: " + e.getMessage());
-                    });
-                }
-            } else {
-                Platform.runLater(() -> {
-                    System.err.println("File not found" + documentQrCodeFilePath);
-                });
-            }
-        });
+        StageManager.getInstance().getRootStackPane().getChildren().add(n);
     }
 
     private void closeView() {

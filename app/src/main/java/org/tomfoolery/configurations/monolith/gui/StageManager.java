@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.contexts.CloudApplicationContext;
 import org.tomfoolery.configurations.contexts.FileCachedInMemoryApplicationContext;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.configurations.monolith.gui.view.admin.layout.AdminView;
@@ -51,7 +50,7 @@ public class StageManager {
         primaryStage.setMaximized(false);
 
         primaryStage.setWidth(600);
-        primaryStage.setHeight(550);
+        primaryStage.setHeight(570);
 
         Image icon = new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("/images/logo.png")));
         primaryStage.getIcons().add(icon);

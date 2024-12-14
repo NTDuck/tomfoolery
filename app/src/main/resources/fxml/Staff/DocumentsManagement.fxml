@@ -10,7 +10,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ComboBox?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="content-container" stylesheets="/css/Staff/DocumentsManagement.css"
@@ -24,9 +23,8 @@
         <ImageView fitHeight="35" fitWidth="35">
             <Image url="/images/search.png"/>
         </ImageView>
-        <TextField prefHeight="60" prefWidth="600" promptText="Search through documents"
+        <TextField prefHeight="60" prefWidth="600" promptText="Search for documents..."
                    styleClass="search-field" fx:id="searchField"/>
-<!--        <ComboBox fx:id="pageChooserBox"/>-->
     </HBox>
 
     <TableView fx:id="documentsTable" styleClass="documents-table" VBox.vgrow="ALWAYS">

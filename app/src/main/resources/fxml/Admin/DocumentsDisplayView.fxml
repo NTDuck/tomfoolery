@@ -4,6 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="content-container" stylesheets="/css/Admin/DocumentTable.css"
@@ -12,55 +14,43 @@
 
     <Label fx:id="counterLabel" styleClass="counter"/>
 
-    <TableView fx:id="documentsTable"
-               styleClass="documents-table"
-               VBox.vgrow="ALWAYS">
+    <HBox prefHeight="60" spacing="5" alignment="CENTER_LEFT" styleClass="search-field-container">
+        <ImageView fitHeight="35" fitWidth="35">
+            <Image url="/images/search.png"/>
+        </ImageView>
+        <TextField prefHeight="60" prefWidth="600" promptText="Search for documents..."
+                   styleClass="search-field" fx:id="searchField"/>
+    </HBox>
+
+    <TableView fx:id="documentsTable" styleClass="documents-table" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn text="ISBN" prefWidth="100">
                 <cellValueFactory>
-                    <PropertyValueFactory property="ISBN"/>
+                    <PropertyValueFactory property="documentISBN_13"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Title" prefWidth="100">
+            <TableColumn text="Title" prefWidth="200">
                 <cellValueFactory>
-                    <PropertyValueFactory property="title"/>
+                    <PropertyValueFactory property="documentTitle"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Authors" prefWidth="100">
+            <TableColumn text="Authors" prefWidth="150">
                 <cellValueFactory>
-                    <PropertyValueFactory property="authors"/>
+                    <PropertyValueFactory property="documentAuthors"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Genres" prefWidth="100">
+            <TableColumn text="Created" prefWidth="180">
                 <cellValueFactory>
-                    <PropertyValueFactory property="genres"/>
+                    <PropertyValueFactory property="createdTimestamp"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Description" prefWidth="130">
+            <TableColumn text="Last Modified" prefWidth="180">
                 <cellValueFactory>
-                    <PropertyValueFactory property="description"/>
+                    <PropertyValueFactory property="lastModifiedTimestamp"/>
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Year" prefWidth="100">
-                <cellValueFactory>
-                    <PropertyValueFactory property="publishedYear"/>
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Publisher" prefWidth="130">
-                <cellValueFactory>
-                    <PropertyValueFactory property="publisher"/>
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Created" prefWidth="150">
-                <cellValueFactory>
-                    <PropertyValueFactory property="created"/>
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Last Modified" prefWidth="150">
-                <cellValueFactory>
-                    <PropertyValueFactory property="lastModified"/>
-                </cellValueFactory>
-            </TableColumn>
+
+            <TableColumn fx:id="showDetailsColumn" prefWidth="100"/>
         </columns>
 
         <columnResizePolicy>

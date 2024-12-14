@@ -11,11 +11,16 @@ import lombok.Value;
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tomfoolery.configurations.monolith.gui.StageManager;
+import org.tomfoolery.configurations.monolith.gui.view.admin.actions.staffs.StaffAccountsManagementView;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.external.administrator.users.retrieval.ShowPatronAccountsUseCase;
+import org.tomfoolery.core.usecases.external.administrator.users.search.SearchPatronsByUsernameUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.retrieval.ShowPatronAccountsController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchPatronsByUsernameController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.administrator.users.search.SearchStaffByUsernameController;
 import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 
 import java.util.function.Consumer;
@@ -40,6 +45,9 @@ public class PatronAccountsManagementView {
     private Label counterLabel;
 
     @FXML
+    private TextField searchField;
+
+    @FXML
     private TableView<PatronAccountViewModel> patronAccountsTable;
 
     @FXML
@@ -51,13 +59,53 @@ public class PatronAccountsManagementView {
             openShowPatronDetailsInfoView(patronAccount.getId());
         });
 
+        searchField.setOnAction(event -> searchPatrons());
+
         loadAccounts();
-        counterLabel.setText(this.getStatisticsController.get().getNumberOfPatrons() + " patrons");
+    }
+
+    private void searchPatrons() {
+        SearchPatronsByUsernameController controller = SearchPatronsByUsernameController.of(
+                StageManager.getInstance().getResources().getPatronSearchGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+        );
+
+        if (searchField.getText().isEmpty()) {
+            loadAccounts();
+            return;
+        }
+
+        try {
+            val requestObject = SearchPatronsByUsernameController.RequestObject.of(searchField.getText(), 1, Integer.MAX_VALUE);
+            val viewModel = controller.apply(requestObject);
+
+            val accounts = viewModel.getPaginatedPatrons();
+
+            ObservableList<PatronAccountViewModel> accountList = FXCollections.observableArrayList();
+
+            accounts.forEach(account -> {
+                String uuid = account.getPatronUuid();
+                String username = account.getPatronUsername();
+                String created = account.getCreationTimestamp();
+                String lastLogin = account.getLastLoginTimestamp();
+                String lastLogout = account.getLastLogoutTimestamp();
+
+                PatronAccountViewModel accountViewModel = PatronAccountViewModel.of(uuid, username, created, lastLogin, lastLogout);
+                accountList.add(accountViewModel);
+            });
+
+            patronAccountsTable.getItems().clear();
+            patronAccountsTable.setItems(accountList);
+            counterLabel.setText(this.getStatisticsController.get().getNumberOfPatrons() + " patrons");
+        } catch (SearchPatronsByUsernameUseCase.AuthenticationTokenNotFoundException |
+                 SearchPatronsByUsernameUseCase.AuthenticationTokenInvalidException e) {
+            StageManager.getInstance().openLoginMenu();
+        } catch (SearchPatronsByUsernameUseCase.PaginationInvalidException _) {
+        }
     }
 
     private void addButtonToColumn(@NonNull TableColumn<PatronAccountViewModel, Void> column, String buttonText, Consumer<PatronAccountViewModel> action) {
-
-
         column.setCellFactory(param -> new TableCell<>() {
             private final Button button = new Button(buttonText);
 
@@ -99,6 +147,7 @@ public class PatronAccountsManagementView {
         val patronAccounts = getPatronAccounts();
         patronAccountsTable.getItems().clear();
         patronAccountsTable.setItems(patronAccounts);
+        counterLabel.setText(this.getStatisticsController.get().getNumberOfPatrons() + " patrons");
     }
 
     private ObservableList<PatronAccountViewModel> getPatronAccounts() {
