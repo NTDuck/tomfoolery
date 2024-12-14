@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tomfoolery.configurations.contexts.FileCachedInMemoryApplicationContext;
+import org.tomfoolery.configurations.contexts.CloudApplicationContext;
 import org.tomfoolery.configurations.contexts.abc.ApplicationContext;
 import org.tomfoolery.configurations.monolith.gui.view.admin.layout.AdminView;
 import org.tomfoolery.configurations.monolith.gui.view.guest.LoginView;
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Getter
 public class StageManager {
-    private final @NonNull ApplicationContext resources = FileCachedInMemoryApplicationContext.of();
+    private final @NonNull ApplicationContext resources = CloudApplicationContext.of();
 
     private static StageManager instance;
 

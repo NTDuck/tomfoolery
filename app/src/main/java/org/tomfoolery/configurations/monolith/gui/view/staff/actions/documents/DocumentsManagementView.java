@@ -181,7 +181,7 @@ public class DocumentsManagementView extends ShowDocumentsView{
     @Override
     public void showDocuments() {
         try {
-            val requestObject = ShowDocumentsController.RequestObject.of(1, 30);
+            val requestObject = ShowDocumentsController.RequestObject.of(1, Integer.MAX_VALUE);
             val viewModel = this.controller.apply(requestObject);
 
             documentsTable.getItems().clear();

@@ -2,6 +2,7 @@ package org.tomfoolery.configurations.monolith.console;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tomfoolery.configurations.contexts.CloudApplicationContext;
 import org.tomfoolery.configurations.contexts.FileCachedInMemoryApplicationContext;
 import org.tomfoolery.configurations.contexts.proxies.DeterministicUsersApplicationContextProxy;
 import org.tomfoolery.configurations.contexts.proxies.KaggleDocumentDatasetApplicationContextProxy;
@@ -141,14 +142,14 @@ public final class Application implements Runnable, Closeable {
     }
 
     public static void main(@NonNull String[] args) throws Exception {
-        val applicationContext = FileCachedInMemoryApplicationContext.of();
+        val applicationContext = CloudApplicationContext.of();
 
-        val applicationContextProxies = ApplicationContextProxies.of(List.of(
-            // MockingApplicationContextProxy.of(),
-            DeterministicUsersApplicationContextProxy.of()
-            // KaggleDocumentDatasetApplicationContextProxy.of()
-        ));
-        applicationContextProxies.intercept(applicationContext);
+//        val applicationContextProxies = ApplicationContextProxies.of(List.of(
+//            // MockingApplicationContextProxy.of(),
+//            DeterministicUsersApplicationContextProxy.of()
+//            // KaggleDocumentDatasetApplicationContextProxy.of()
+//        ));
+//        applicationContextProxies.intercept(applicationContext);
 
         try (val application = Application.of(applicationContext)) {
             application.run();
