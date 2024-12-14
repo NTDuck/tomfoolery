@@ -74,8 +74,12 @@ public class UpdateDocumentContentView {
         try {
             val viewModel = this.showController.apply(requestObject);
 
+            val documents = viewModel.getPaginatedDocumentsWithoutContent();
+
+            headerLabel.setText(documents.size() + " documents missing content");
+
             documentsTable.getItems().clear();
-            viewModel.getPaginatedDocumentsWithoutContent().forEach(document -> {
+            documents.forEach(document -> {
                     documentsTable.getItems().add(new DocumentViewModel(
                             document.getDocumentISBN_13(),
                             document.getDocumentTitle(),

@@ -118,7 +118,7 @@ public class DiscoverView {
 
     private void onGetByIdSuccess(GetDocumentByIdController.@NonNull ViewModel viewModel) {
         val documentCoverImageFilePath = viewModel.getDocumentCoverImageFilePath();
-
+        System.out.println(documentCoverImageFilePath);
         booksContainer.getChildren().clear();
 
         String authors = String.join(", ", viewModel.getDocumentAuthors());
@@ -180,15 +180,14 @@ public class DiscoverView {
     }
 
     private @NonNull ImageView getCoverImageFromPath(@NonNull String path) {
-        ImageView imageView = new ImageView(new Image("/images/default/placeholder-book-cover.png", 200, 240, false, true));
-
-        try {
-            Image image = new Image("file:" + path, 200, 240, false, true);
-            imageView.setImage(image);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            System.err.println("Failed to load cover image: " + path);
+        if (path.endsWith(".gif")) {
+            return new ImageView(new Image("/images/default/placeholder-book-cover.png", 200, 240, false, true));
         }
-
+        ImageView imageView = new ImageView(new Image("/images/default/placeholder-book-cover.png", 200, 240, false, true));
+        Image image = new Image("file:" + path, 200, 240, false, true);
+        if (!image.isError()) {
+            imageView.setImage(image);
+        }
         return imageView;
     }
 

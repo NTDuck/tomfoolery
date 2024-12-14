@@ -20,11 +20,11 @@ public class MainApplication extends Application {
         StageManager.getInstance().setPrimaryStage(primaryStage);
         StageManager.getInstance().openLoginMenu();
 
-//        val applicationContextProxies = ApplicationContextProxies.of(List.of(
-//                MockingApplicationContextProxy.of(),
-//                DeterministicUsersApplicationContextProxy.of(),
-//                KaggleDocumentDatasetApplicationContextProxy.of()
-//        ));
-//        CompletableFuture.runAsync(() -> applicationContextProxies.intercept(StageManager.getInstance().getResources()));
+        val applicationContextProxies = ApplicationContextProxies.of(List.of(
+                MockingApplicationContextProxy.of(),
+                DeterministicUsersApplicationContextProxy.of(),
+                KaggleDocumentDatasetApplicationContextProxy.of()
+        ));
+        CompletableFuture.runAsync(() -> applicationContextProxies.intercept(StageManager.getInstance().getResources()));
     }
 }

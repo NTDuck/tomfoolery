@@ -26,7 +26,7 @@
         </ImageView>
         <TextField prefHeight="60" prefWidth="600" promptText="Search through documents"
                    styleClass="search-field" fx:id="searchField"/>
-        <ComboBox fx:id="pageChooserBox"/>
+<!--        <ComboBox fx:id="pageChooserBox"/>-->
     </HBox>
 
     <TableView fx:id="documentsTable" styleClass="documents-table" VBox.vgrow="ALWAYS">

@@ -174,8 +174,13 @@ public class PatronSingleDocumentView {
         descriptionArea.setText(viewModel.getDocumentDescription());
 
         String coverImagePath = viewModel.getDocumentCoverImageFilePath();
-        Image image = new Image("file:" + coverImagePath, 260, 400, false, true);
-        coverImage.setImage(image);
+
+        if (coverImagePath.endsWith(".gif")) {
+            coverImage.setImage(new Image("/images/default/placeholder-book-cover.png"));
+        } else {
+            coverImage.setImage(new Image("file:" + coverImagePath, 260, 400, false, true));
+        }
+
         coverImage.setFitHeight(400);
         coverImage.setFitWidth(260);
     }

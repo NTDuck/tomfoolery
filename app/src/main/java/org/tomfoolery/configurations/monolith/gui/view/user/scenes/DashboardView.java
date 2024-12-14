@@ -130,7 +130,11 @@ public class DashboardView {
             return;
         }
         val document = documentsList.getFirst();
-        topRatedCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
+        if (document.getDocumentCoverImageFilePath().endsWith(".gif")) {
+            topRatedCoverImage.setImage(new Image("/images/default/placeholder-book-cover.png"));
+        } else {
+            topRatedCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
+        }
         topRatedTitle.setText(document.getDocumentTitle());
         topRatedAuthors.setText("By: " + String.join(",", document.getDocumentAuthors()));
     }
@@ -144,7 +148,11 @@ public class DashboardView {
             return;
         }
         val document = documentsList.getFirst();
-        recentCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
+        if (document.getDocumentCoverImageFilePath().endsWith(".gif")) {
+            recentCoverImage.setImage(new Image("/images/default/placeholder-book-cover.png"));
+        } else {
+            recentCoverImage.setImage(new Image("file:" + document.getDocumentCoverImageFilePath()));
+        }
         recentTitle.setText(document.getDocumentTitle());
         recentAuthors.setText("By: " + String.join(",", document.getDocumentAuthors()));
     }
