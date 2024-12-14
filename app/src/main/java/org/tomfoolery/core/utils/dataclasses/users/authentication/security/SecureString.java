@@ -58,7 +58,16 @@ public final class SecureString implements CharSequence, Comparable<SecureString
 
     @Override
     public int compareTo(@NonNull SecureString other) {
-        return CharSequence.compare(this, other);
+        val thisChars = this.getChars();
+        val otherChars = other.getChars();
+
+        val length = Math.min(thisChars.length, otherChars.length);
+
+        for (int index = 0; index < length; ++index)
+            if (thisChars[index] != otherChars[index])
+                return thisChars[index] - otherChars[index];
+
+        return thisChars.length - otherChars.length;
     }
 
     @Override

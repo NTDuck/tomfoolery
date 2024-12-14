@@ -9,39 +9,31 @@ import org.testng.annotations.Test;
 import org.tomfoolery.abc.BaseUnitTest;
 import org.tomfoolery.core.utils.dataclasses.users.authentication.security.SecureString;
 
-import java.util.stream.Stream;
+import java.util.Iterator;
+import java.util.stream.IntStream;
 
 import static org.testng.Assert.*;
 
-@Test(groups = { "unit", "generator", "password" }, dataProviderClass = PasswordEncoderTest.Dataprovider.class)
+@Test(groups = { "unit", "generator", "password" })
 public abstract class PasswordEncoderTest extends BaseUnitTest<PasswordEncoder> {
-    @Test
-    public void GivenRawPassword_WhenEncodingPassword_ExpectValidEncodedPassword(@NonNull SecureString rawPassword) {
+    private static final @Unsigned int NUMBER_OF_INVOCATIONS = 10;
+
+    @Test(dataProvider = "PasswordEncoderTestDataProvider")
+    void GivenRawPassword_WhenEncodingPassword_ExpectValidEncodedPassword(@NonNull SecureString rawPassword) {
         val encodedPassword = this.testSubject.encode(rawPassword);
 
         assertNotNull(encodedPassword);
         assertTrue(this.testSubject.verify(rawPassword, encodedPassword));
     }
 
-    public static class Dataprovider {
-        private static final @Unsigned int NUMBER_OF_PASSWORDS = 44;
-        private static final @NonNull Faker faker = Faker.instance();
+    @DataProvider(name = "PasswordEncoderTestDataProvider", parallel = true)
+    public @NonNull Iterator<Object[]> createData() {
+        val faker = Faker.instance();
 
-        @DataProvider
-        public static Object[][] provide() {
-            return createMockRawPasswords(NUMBER_OF_PASSWORDS);
-        }
-
-        private static @NonNull SecureString createMockRawPassword() {
-            val rawPassword = faker.internet().password();
-            return SecureString.of(rawPassword);
-        }
-
-        private static @NonNull Object[][] createMockRawPasswords(@Unsigned int count) {
-            return Stream.generate(Dataprovider::createMockRawPassword)
-                .limit(count)
-                .map(password -> new Object[] { password })
-                .toArray(Object[][]::new);
-        }
+        return IntStream.range(0, NUMBER_OF_INVOCATIONS).parallel()
+            .mapToObj(_ -> faker.internet().password())
+            .map(SecureString::of)
+            .map(rawPassword -> new Object[] { rawPassword })
+            .iterator();
     }
 }

@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static org.testng.Assert.*;
 
+@Test(groups = { "unit", "repository", "users", "patron", "cloud" }, dependsOnGroups = { "configurations" })
 public class CloudPatronRepositoryTest extends BaseUnitTest<CloudPatronRepository> {
 
     @Override

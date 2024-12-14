@@ -1,4 +1,4 @@
-package org.tomfoolery.infrastructures.dataproviders.repositories.cloud;
+package org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations;
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -10,16 +10,15 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
-import org.tomfoolery.infrastructures.dataproviders.repositories.cloud.relations.CloudBorrowingSessionRepository;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import static org.testng.Assert.*;
 import static org.testng.AssertJUnit.fail;
 
+@Test(groups = { "unit", "repository", "bi-relation", "cloud" }, dependsOnGroups = { "configurations" })
 public class CloudBorrowingSessionRepositoryTest extends BaseUnitTest<CloudBorrowingSessionRepository> {
     @Override
     protected @NonNull CloudBorrowingSessionRepository createTestSubject() {
