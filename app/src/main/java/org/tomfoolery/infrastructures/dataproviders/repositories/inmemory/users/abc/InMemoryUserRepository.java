@@ -46,8 +46,11 @@ public abstract class InMemoryUserRepository<User extends BaseUser> extends Base
     @Locked.Write
     public void delete(User.@NonNull Id userId) {
         val deletedUser = this.entitiesByIds.remove(userId);
-        val usernameOfDeletedUser = deletedUser.getCredentials().getUsername();
 
+        if (deletedUser == null)
+            return;
+
+        val usernameOfDeletedUser = deletedUser.getCredentials().getUsername();
         this.userByUsername.remove(usernameOfDeletedUser);
     }
 }

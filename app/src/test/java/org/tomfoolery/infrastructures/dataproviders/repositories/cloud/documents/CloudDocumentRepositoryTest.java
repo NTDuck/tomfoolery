@@ -10,6 +10,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.CdimascioDotenvProvider;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.dotenv.abc.DotenvProvider;
 
+@Test(groups = { "unit", "repository", "documents", "cloud" }, dependsOnGroups = { "configurations" })
 public class CloudDocumentRepositoryTest extends BaseUnitTest<CloudDocumentRepository> {
     @Override
     protected @NonNull CloudDocumentRepository createTestSubject() {

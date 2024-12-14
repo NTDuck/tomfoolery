@@ -132,12 +132,12 @@ testlogger {
     showExceptions = false
     showStackTraces = false
     showFullStackTraces = false
-    showCauses = true
+    showCauses = false
     slowThreshold = 0
     showSummary = true
-    showSimpleNames = false
+    showSimpleNames = true
     showPassed = false
-    showSkipped = true
+    showSkipped = false
     showFailed = true
     showOnlySlow = false
     showStandardStreams = false
@@ -247,8 +247,6 @@ tasks.named<Test>("test") {
     // For unit testing
     useTestNG {
         // excludeGroups("cloud")
-        // excludeGroups(".*")
-        includeGroups(".*")
     }
 
     // systemProperties["file.encoding"] = "ISO-8859-1"

@@ -1,7 +1,6 @@
 package org.tomfoolery.abc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
@@ -13,10 +12,9 @@ import org.testng.annotations.Test;
 public abstract class BaseUnitTest<TestSubject> {
     protected @NonNull TestSubject testSubject;
 
-    protected abstract @NonNull TestSubject createTestSubject();
-
-    @BeforeClass
-    protected void setUp() {
+    protected BaseUnitTest() {
         this.testSubject = this.createTestSubject();
     }
+
+    protected abstract @NonNull TestSubject createTestSubject();
 }

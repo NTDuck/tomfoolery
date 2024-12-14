@@ -2,56 +2,82 @@ package org.tomfoolery.core.dataproviders.generators.users.authentication.securi
 
 import lombok.val;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signedness.qual.Unsigned;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.tomfoolery.abc.BaseUnitTest;
 import org.tomfoolery.core.domain.users.Administrator;
+import org.tomfoolery.core.domain.users.Patron;
+import org.tomfoolery.core.domain.users.Staff;
 import org.tomfoolery.core.domain.users.abc.BaseUser;
-import org.tomfoolery.core.utils.dataclasses.users.authentication.security.AuthenticationToken;
 
 import java.time.Instant;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static org.testng.Assert.*;
 
 @Test(groups = { "unit", "generator", "authentication" })
 public abstract class AuthenticationTokenGeneratorTest extends BaseUnitTest<AuthenticationTokenGenerator> {
-    private final BaseUser.@NonNull Id userId = BaseUser.Id.of(UUID.randomUUID());
-    private final @NonNull Class<? extends BaseUser> userClass = Administrator.class;
-    private final @NonNull Instant expiryTimestamp = Instant.now().plusMillis(4444);
+    private static final @Unsigned int NUMBER_OF_INVOCATIONS = 10;
 
-    private @Nullable AuthenticationToken cachedAuthenticationToken;
+    @Test(dataProvider = "AuthenticationTokenGeneratorTestValidDataProvider")
+    void GivenValidParams_WhenGeneratingToken_ExpectValidToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
+        val generatedAuthenticationToken = this.testSubject.generate(userId, userClass, expiryTimestamp);
 
-    @Test
-    public void WhenGeneratingToken_ExpectValidToken() {
-        this.cachedAuthenticationToken = this.testSubject.generate(this.userId, this.userClass, this.expiryTimestamp);
+        assertNotNull(generatedAuthenticationToken);
+        assertTrue(this.testSubject.verify(generatedAuthenticationToken));
 
-        assertNotNull(this.cachedAuthenticationToken);
-        assertTrue(this.testSubject.verify(this.cachedAuthenticationToken));
-    }
+        val retrievedUserid = this.testSubject.getUserIdFromAuthenticationToken(generatedAuthenticationToken);
+        assertNotNull(retrievedUserid);
+        assertEquals(retrievedUserid, userId);
 
-    @Test
-    public void GivenExpiredToken_WhenVerifyingToken_ExpectInvalidToken() {
-        val expiredAuthenticationToken = this.testSubject.generate(this.userId, this.userClass, Instant.now().minusNanos(1));
-
-        assertFalse(this.testSubject.verify(expiredAuthenticationToken));
-    }
-
-    @Test(dependsOnMethods = { "WhenGeneratingToken_ExpectValidToken" })
-    public void GivenValidToken_WhenRetrievingUserId_ExpectPresentAndMatchingUserId() {
-        assert this.cachedAuthenticationToken != null;
-        val retrievedUserId = this.testSubject.getUserIdFromAuthenticationToken(this.cachedAuthenticationToken);
-
-        assertNotNull(retrievedUserId);
-        assertEquals(retrievedUserId, this.userId);
-    }
-
-    @Test(dependsOnMethods = { "GivenValidToken_WhenRetrievingUserId_ExpectPresentAndMatchingUserId" })
-    public void GivenValidToken_WhenRetrievingUserClass_ExpectPresentAndMatchingUserClass() {
-        assert this.cachedAuthenticationToken != null;
-        val retrievedUserClass = this.testSubject.getUserClassFromAuthenticationToken(this.cachedAuthenticationToken);
-
+        val retrievedUserClass = this.testSubject.getUserClassFromAuthenticationToken(generatedAuthenticationToken);
         assertNotNull(retrievedUserClass);
-        assertEquals(retrievedUserClass, this.userClass);
+        assertEquals(retrievedUserClass, userClass);
+    }
+
+    @Test(dataProvider = "AuthenticationTokenGeneratorTestInvalidDataProvider")
+    void GivenExpiredToken_WhenVerifyingToken_ExpectInvalidToken(BaseUser.@NonNull Id userId, @NonNull Class<? extends BaseUser> userClass, @NonNull Instant expiryTimestamp) {
+        val generatedAuthenticationToken = this.testSubject.generate(userId, userClass, expiryTimestamp);
+
+        assertNotNull(generatedAuthenticationToken);
+        assertFalse(this.testSubject.verify(generatedAuthenticationToken));
+    }
+
+    @DataProvider(name = "AuthenticationTokenGeneratorTestValidDataProvider", parallel = true)
+    public @NonNull Iterator<Object[]> createValidData() {
+        val userClassesPool = List.of(Administrator.class, Patron.class, Staff.class);
+
+        return IntStream.range(0, NUMBER_OF_INVOCATIONS).parallel()
+            .mapToObj(_ -> new Object[] {
+                BaseUser.Id.of(UUID.randomUUID()),
+                getRandom(userClassesPool),
+                Instant.now().plusMillis(4444)
+            })
+            .iterator();
+    }
+
+    @DataProvider(name = "AuthenticationTokenGeneratorTestInvalidDataProvider", parallel = true)
+    public @NonNull Iterator<Object[]> createInvalidData() {
+        val userClassesPool = List.of(Administrator.class, Patron.class, Staff.class);
+
+        return IntStream.range(0, NUMBER_OF_INVOCATIONS).parallel()
+            .mapToObj(_ -> new Object[] {
+                BaseUser.Id.of(UUID.randomUUID()),
+                getRandom(userClassesPool),
+                Instant.now().minusNanos(getRandom(1, 4444))
+            })
+            .iterator();
+    }
+
+    private static <T> @NonNull T getRandom(@NonNull List<T> ts) {
+        return ts.get((int) (Math.random() * ts.size()));
+    }
+
+    private static @Unsigned int getRandom(@Unsigned int min, @Unsigned int max) {
+        return (int) (Math.random() * (max - min + 1)) + min;
     }
 }

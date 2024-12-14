@@ -7,7 +7,7 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 
 import static org.testng.Assert.*;
 
-@Test(groups = { "unit", "generator", "password" }, dataProviderClass = PasswordEncoderTest.Dataprovider.class)
+@Test(groups = { "unit", "generator", "password" })
 public class BCryptPasswordEncoderTest extends PasswordEncoderTest {
     @Override
     protected @NonNull PasswordEncoder createTestSubject() {

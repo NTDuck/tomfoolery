@@ -38,10 +38,13 @@ public class DocumentMocker implements EntityMocker<Document, Document.Id> {
 
     @Override
     public Document.@NonNull Id createMockEntityId() {
-        val ISBN_10 = this.faker.code().isbn10();
-        val documentId = Document.Id.of(ISBN_10);
+        Document.Id documentId;
 
-        assert documentId != null;
+        do {
+            val ISBN_10 = this.faker.code().isbn10();
+            documentId = Document.Id.ofISBN10(ISBN_10);
+        } while (documentId == null);
+
         return documentId;
     }
 
