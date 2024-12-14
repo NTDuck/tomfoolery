@@ -10,10 +10,7 @@ import org.tomfoolery.core.domain.users.Patron;
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
@@ -81,7 +78,24 @@ public class CloudReviewRepository implements ReviewRepository {
 
     @Override
     public @NonNull Set<Review.Id> showIds() {
-        return Set.of();
+        Set<Review.Id> ids = new HashSet<>();
+        String query = "SELECT id, documentId, patronId FROM Review";
+
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                Document.Id documentId = Document.Id.of(rs.getString("documentId"));
+                Patron.Id patronId = Patron.Id.of(UUID.fromString(rs.getString("patronId")));
+                Review.Id reviewId = Review.Id.of(documentId, patronId);
+                ids.add(reviewId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Set.copyOf(ids);
     }
 
     @Override

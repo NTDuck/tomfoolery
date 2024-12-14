@@ -12,10 +12,7 @@ import org.tomfoolery.core.utils.dataclasses.users.authentication.security.Secur
 import org.tomfoolery.infrastructures.dataproviders.providers.configurations.cloud.CloudDatabaseConfigurationsProvider;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "of")
@@ -108,8 +105,24 @@ public class CloudStaffRepository implements StaffRepository {
 
     @Override
     public @NonNull Set<BaseUser.Id> showIds() {
-        return Set.of();
+        Set<BaseUser.Id> ids = new HashSet<>();
+        String query = "SELECT id FROM Staff";
+
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                BaseUser.Id id = BaseUser.Id.of(UUID.fromString(rs.getString("id")));
+                ids.add(id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Set.copyOf(ids);
     }
+
 
     @Override
     public @NonNull Set<Staff> show() {

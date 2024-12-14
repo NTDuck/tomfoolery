@@ -99,7 +99,21 @@ public class CloudDocumentRepository implements DocumentRepository {
 
     @Override
     public @NonNull Set<Document.Id> showIds() {
-        return Set.of();
+        Set<Document.Id> ids = new HashSet<>();
+        String query = "SELECT id FROM Document";
+
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                ids.add(Document.Id.of(rs.getString("id")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.unmodifiableSet(ids);
     }
 
     @Override

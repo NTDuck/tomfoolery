@@ -10,6 +10,7 @@ import org.tomfoolery.infrastructures.dataproviders.providers.configurations.clo
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,8 +78,25 @@ public class CloudDocumentContentRepository implements DocumentContentRepository
 
     @Override
     public @NonNull Set<DocumentContent.Id> showIds() {
-        return Set.of();
+        Set<DocumentContent.Id> ids = new HashSet<>();
+        String query = "SELECT id, entityId FROM DocumentContent";
+
+        try (Connection connection = cloudDatabaseConfigurationsProvider.connect();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                Document.Id documentId = Document.Id.of(rs.getString("entityId"));
+                DocumentContent.Id documentContentId = DocumentContent.Id.of(documentId);
+                ids.add(documentContentId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Set.copyOf(ids);
     }
+
 
     @Override
     public @NonNull Set<DocumentContent> show() {

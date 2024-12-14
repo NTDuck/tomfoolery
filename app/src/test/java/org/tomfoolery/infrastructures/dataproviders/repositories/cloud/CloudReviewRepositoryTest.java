@@ -70,7 +70,6 @@ public class CloudReviewRepositoryTest extends BaseUnitTest<CloudReviewRepositor
 
     @Test
     public void WhenQueryingAllReviews_ExpectAllSavedReviewsToBeReturned() {
-        // Create and save multiple reviews
         Review review1 = Review.of(
                 Review.Id.of(
                         Document.Id.of("123456789X"),  // Example ISBN-10
