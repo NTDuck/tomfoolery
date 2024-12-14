@@ -1,5 +1,8 @@
 package org.tomfoolery.configurations.monolith.gui.view.staff.actions.documents;
 
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -23,6 +26,7 @@ import org.tomfoolery.infrastructures.adapters.controllers.external.common.docum
 import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.search.SearchDocumentsController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.staff.documents.persistence.UpdateDocumentContentController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.staff.documents.persistence.UpdateDocumentCoverImageController;
+import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
 import java.io.File;
@@ -44,6 +48,12 @@ public class DocumentsManagementView extends ShowDocumentsView{
             StageManager.getInstance().getResources().getFileVerifier(),
             StageManager.getInstance().getResources().getFileStorageProvider()
     );
+    private final @NonNull GetStatisticsController getStatisticsController = GetStatisticsController.of(
+            StageManager.getInstance().getResources().getDocumentRepository(),
+            StageManager.getInstance().getResources().getAdministratorRepository(),
+            StageManager.getInstance().getResources().getPatronRepository(),
+            StageManager.getInstance().getResources().getStaffRepository()
+    );
 
     @FXML
     private Button addDocumentButton;
@@ -54,8 +64,8 @@ public class DocumentsManagementView extends ShowDocumentsView{
     @FXML
     private TextField searchField;
 
-//    @FXML
-//    private ComboBox<Integer> pageChooserBox;
+    @FXML
+    private ComboBox<Integer> pageChooser;
 
     @FXML
     private TableColumn<DocumentViewModel, Void> showDetailsColumn;
@@ -91,9 +101,30 @@ public class DocumentsManagementView extends ShowDocumentsView{
 
         addDocumentButton.setOnAction(event -> openAddDocumentMenu());
         showDocumentsWithoutContentButton.setOnAction(event -> StageManager.getInstance().loadStaffView(StageManager.ContentType.STAFF_SHOW_DOCUMENTS_WITHOUT_CONTENT));
-        searchField.setOnAction(event -> this.searchDocuments());
+        searchField.setOnAction(event -> {
+            pageChooser.getSelectionModel().selectFirst();
+            this.searchDocuments();
+        });
 
+        this.setUpPageChooserBehaviour();
         showDocuments();
+    }
+
+    private void setUpPageChooserBehaviour() {
+        pageChooser.getItems().clear();
+        for (int i = 1; i <= Math.ceil((double) this.getStatisticsController.get().getNumberOfDocuments() / 60); i++) {
+            pageChooser.getItems().add(i);
+        }
+        pageChooser.getSelectionModel().selectFirst();
+
+        pageChooser.setOnAction(event -> {
+            if (searchField.getText().isEmpty()) {
+                showDocuments();
+            }
+            if (!searchField.getText().isEmpty()) {
+                searchDocuments();
+            }
+        });
     }
 
     private void searchDocuments() {
@@ -109,16 +140,28 @@ public class DocumentsManagementView extends ShowDocumentsView{
             return;
         }
 
-        val requestObject = SearchDocumentsController.RequestObject.of(SearchDocumentsController.SearchCriterion.TITLE, searchField.getText(), 1, Integer.MAX_VALUE);
+        int pageIndex = pageChooser.getSelectionModel().getSelectedItem();
+        val requestObject = SearchDocumentsController.RequestObject.of(SearchDocumentsController.SearchCriterion.TITLE, searchField.getText(), pageIndex, 60);
 
         try {
             val viewModel = controller.apply(requestObject);
+
+            pageChooser.getItems().clear();
+            for (int i = 1; i < viewModel.getMaxPageIndex(); ++i) {
+                pageChooser.getItems().add(i);
+            }
+            EventHandler<ActionEvent> currentHandler = pageChooser.getOnAction();
+            pageChooser.setOnAction(null);
+            pageChooser.setValue(pageIndex);
+            pageChooser.setOnAction(currentHandler);
+
             documentsTable.getItems().clear();
             viewModel.getPaginatedDocuments().forEach(document -> documentsTable.getItems().add(new DocumentViewModel(document)));
         } catch (SearchDocumentsUseCase.AuthenticationTokenNotFoundException |
                  SearchDocumentsUseCase.AuthenticationTokenInvalidException e) {
             StageManager.getInstance().openLoginMenu();
-        } catch (SearchDocumentsUseCase.PaginationInvalidException _) {
+        } catch (SearchDocumentsUseCase.PaginationInvalidException e) {
+            this.onPaginationInvalidException();
         }
     }
 
@@ -209,14 +252,22 @@ public class DocumentsManagementView extends ShowDocumentsView{
         StageManager.getInstance().getRootStackPane().getChildren().add(v);
     }
 
-    @Override
     public void showDocuments() {
         try {
-            val requestObject = ShowDocumentsController.RequestObject.of(1, Integer.MAX_VALUE);
+            int pageIndex = pageChooser.getSelectionModel().getSelectedItem();
+            val requestObject = ShowDocumentsController.RequestObject.of(pageIndex, 60);
             val viewModel = this.controller.apply(requestObject);
 
-            documentsTable.getItems().clear();
-            viewModel.getPaginatedDocuments().forEach(document -> documentsTable.getItems().add(new DocumentViewModel(document)));
+            pageChooser.getItems().clear();
+            for (int i = 1; i < viewModel.getMaxPageIndex(); ++i) {
+                pageChooser.getItems().add(i);
+            }
+            EventHandler<ActionEvent> currentHandler = pageChooser.getOnAction();
+            pageChooser.setOnAction(null);
+            pageChooser.setValue(pageIndex);
+            pageChooser.setOnAction(currentHandler);
+
+            this.onShowSuccess(viewModel);
         } catch (ShowDocumentsUseCase.AuthenticationTokenNotFoundException exception) {
             this.onAuthenticationTokenNotFoundException();
         } catch (ShowDocumentsUseCase.AuthenticationTokenInvalidException exception) {
@@ -224,6 +275,26 @@ public class DocumentsManagementView extends ShowDocumentsView{
         } catch (ShowDocumentsUseCase.PaginationInvalidException exception) {
             this.onPaginationInvalidException();
         }
+    }
+
+    private void onShowSuccess(ShowDocumentsController.@NonNull ViewModel viewModel) {
+        documentsTable.getItems().clear();
+
+        Task<Void> loadDocumentsTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                val documents = viewModel.getPaginatedDocuments();
+                documents.forEach(document -> documentsTable.getItems().add(new DocumentViewModel(document)));
+                return null;
+            }
+        };
+
+        loadDocumentsTask.setOnFailed(event -> {
+            Throwable e = loadDocumentsTask.getException();
+            System.err.println("Error loading documents: " + e.getMessage());
+        });
+
+        new Thread(loadDocumentsTask).start();
     }
 
     @SneakyThrows

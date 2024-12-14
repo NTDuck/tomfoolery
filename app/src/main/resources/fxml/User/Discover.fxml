@@ -44,7 +44,7 @@
         </padding>
         <Label text="Select Page:" styleClass="select-page-label"/>
 
-        <ComboBox fx:id="pageIndexChooserBox" prefHeight="50" prefWidth="100" styleClass="page-chooser-box"/>
+        <ComboBox fx:id="pageIndexChooserBox" prefHeight="30" prefWidth="100" styleClass="page-chooser-box"/>
     </HBox>
 
     <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS"

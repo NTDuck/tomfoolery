@@ -13,10 +13,13 @@ import org.tomfoolery.core.dataproviders.generators.users.authentication.securit
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
+import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
 import org.tomfoolery.core.usecases.external.common.documents.recommendation.abc.GetDocumentRecommendationUseCase;
 import org.tomfoolery.core.usecases.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
+import org.tomfoolery.core.usecases.external.patron.users.retrieval.GetPatronUsernameAndMetadataUseCase;
 import org.tomfoolery.infrastructures.adapters.controllers.external.common.documents.recommendation.GetDocumentRecommendationController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.retrieval.GetPatronUsernameAndMetadataController;
 import org.tomfoolery.infrastructures.adapters.controllers.internal.statistics.GetStatisticsController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
 
@@ -85,11 +88,30 @@ public class DashboardView {
 
     @FXML
     public void initialize() {
+        welcomeLabel.setText("Welcome back" + getCurrentPatronName());
         numberOfBorrowedDocuments.setText(String.valueOf(getNumberOfBorrowedDocuments()));
         numberOfPatrons.setText(String.valueOf(getNumberOfPatrons()));
         numberOfAvailableDocuments.setText(String.valueOf(getNumberOfDocuments()));
         
         this.loadRecommendation();
+    }
+
+    private @NonNull String getCurrentPatronName() {
+        String name = "";
+        final @NonNull GetPatronUsernameAndMetadataController controller = GetPatronUsernameAndMetadataController.of(
+                StageManager.getInstance().getResources().getPatronRepository(),
+                StageManager.getInstance().getResources().getAuthenticationTokenGenerator(),
+                StageManager.getInstance().getResources().getAuthenticationTokenRepository()
+        );
+        try {
+            val viewModel = controller.get();
+            name = ", " + viewModel.getPatronFirstName() + " " + viewModel.getPatronLastName();
+        } catch (GetPatronUsernameAndMetadataUseCase.AuthenticationTokenNotFoundException |
+                 GetPatronUsernameAndMetadataUseCase.AuthenticationTokenInvalidException e) {
+            StageManager.getInstance().openLoginMenu();
+        } catch (GetPatronUsernameAndMetadataUseCase.PatronNotFoundException _) {
+        }
+        return name;
     }
 
     private @Unsigned int getNumberOfPatrons() {

@@ -32,7 +32,7 @@ public abstract class BaseView {
 
         StageManager.getInstance().setMainStageProperties();
         StageManager.getInstance().getPrimaryStage().setScene(new Scene(rootStackPane));
-
+        StageManager.getInstance().getPrimaryStage().centerOnScreen();
         StageManager.getInstance().getPrimaryStage().show();
     }
 

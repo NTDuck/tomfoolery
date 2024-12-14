@@ -109,7 +109,7 @@ public class StageManager {
         setLoginStageProperties();
         primaryStage.setTitle("Tomfoolery - Login");
         primaryStage.setScene(scene);
-
+        primaryStage.centerOnScreen();
         primaryStage.show();
     }
 
@@ -127,7 +127,7 @@ public class StageManager {
         setSignupStageProperties();
         primaryStage.setTitle("Tomfoolery - Sign up");
         primaryStage.setScene(scene);
-
+        primaryStage.centerOnScreen();
         primaryStage.show();
     }
 

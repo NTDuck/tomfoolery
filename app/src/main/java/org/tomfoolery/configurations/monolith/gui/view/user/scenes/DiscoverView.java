@@ -136,7 +136,7 @@ public class DiscoverView {
         val searchCriterion = getChoseCriterion();
         String searchText = searchField.getText();
 
-        return SearchDocumentsController.RequestObject.of(searchCriterion, searchText, pageIndex, 30);
+        return SearchDocumentsController.RequestObject.of(searchCriterion, searchText, pageIndex, 60);
     }
 
     private SearchDocumentsController.@NonNull SearchCriterion getChoseCriterion() {

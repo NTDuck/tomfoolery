@@ -6,6 +6,7 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="content-container" stylesheets="/css/Admin/DocumentTable.css"
@@ -20,6 +21,15 @@
         </ImageView>
         <TextField prefHeight="60" prefWidth="600" promptText="Search for documents..."
                    styleClass="search-field" fx:id="searchField"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <padding>
+            <Insets top="10" left="10"/>
+        </padding>
+        <Label text="Select Page:" styleClass="select-page-label"/>
+
+        <ComboBox fx:id="pageChooser" prefHeight="20" prefWidth="100" styleClass="page-chooser"/>
     </HBox>
 
     <TableView fx:id="documentsTable" styleClass="documents-table" VBox.vgrow="ALWAYS">

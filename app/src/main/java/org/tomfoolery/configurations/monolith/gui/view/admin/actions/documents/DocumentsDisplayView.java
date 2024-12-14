@@ -1,5 +1,7 @@
 package org.tomfoolery.configurations.monolith.gui.view.admin.actions.documents;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -46,14 +48,38 @@ public class DocumentsDisplayView extends ShowDocumentsView {
     private Label counterLabel;
 
     @FXML
+    private ComboBox<Integer> pageChooser;
+
+    @FXML
     private TextField searchField;
 
     @FXML @Override
     public void initialize() {
         addButtonToColumn(showDetailsColumn, "More details", this::showDocumentDetails);
 
-        searchField.setOnAction(event -> searchDocuments());
+        searchField.setOnAction(event -> {
+            searchDocuments();
+            pageChooser.getSelectionModel().selectFirst();
+        });
+        this.setUpPageChooserBehaviour();
         showDocuments();
+    }
+
+    private void setUpPageChooserBehaviour() {
+        pageChooser.getItems().clear();
+        for (int i = 1; i <= Math.ceil((double) this.getStatisticsController.get().getNumberOfDocuments() / 60); ++i) {
+            pageChooser.getItems().add(i);
+        }
+        pageChooser.getSelectionModel().selectFirst();
+
+        pageChooser.setOnAction(event -> {
+            if (searchField.getText().isEmpty()) {
+                showDocuments();
+            }
+            if (!searchField.getText().isEmpty()) {
+                searchDocuments();
+            }
+        });
     }
 
     private void searchDocuments() {
@@ -69,10 +95,21 @@ public class DocumentsDisplayView extends ShowDocumentsView {
             return;
         }
 
-        val requestObject = SearchDocumentsController.RequestObject.of(SearchDocumentsController.SearchCriterion.TITLE, searchField.getText(), 1, Integer.MAX_VALUE);
+        int pageIndex = pageChooser.getSelectionModel().getSelectedItem();
+        val requestObject = SearchDocumentsController.RequestObject.of(SearchDocumentsController.SearchCriterion.TITLE, searchField.getText(), pageIndex, 60);
 
         try {
             val viewModel = controller.apply(requestObject);
+
+            pageChooser.getItems().clear();
+            for (int i = 1; i < viewModel.getMaxPageIndex(); ++i) {
+                pageChooser.getItems().add(i);
+            }
+            EventHandler<ActionEvent> currentHandler = pageChooser.getOnAction();
+            pageChooser.setOnAction(null);
+            pageChooser.setValue(pageIndex);
+            pageChooser.setOnAction(currentHandler);
+
             documentsTable.getItems().clear();
             viewModel.getPaginatedDocuments().forEach(document -> documentsTable.getItems().add(new DocumentViewModel(document)));
             counterLabel.setText(this.getStatisticsController.get().getNumberOfDocuments() + " document(s)");
@@ -86,8 +123,18 @@ public class DocumentsDisplayView extends ShowDocumentsView {
     @Override
     public void showDocuments() {
         try {
-            val requestObject = ShowDocumentsController.RequestObject.of(1, Integer.MAX_VALUE);
+            int pageIndex = pageChooser.getSelectionModel().getSelectedItem();
+            val requestObject = ShowDocumentsController.RequestObject.of(pageIndex, 60);
             val viewModel = this.controller.apply(requestObject);
+
+            pageChooser.getItems().clear();
+            for (int i = 1; i < viewModel.getMaxPageIndex(); ++i) {
+                pageChooser.getItems().add(i);
+            }
+            EventHandler<ActionEvent> currentHandler = pageChooser.getOnAction();
+            pageChooser.setOnAction(null);
+            pageChooser.setValue(pageIndex);
+            pageChooser.setOnAction(currentHandler);
 
             documentsTable.getItems().clear();
             viewModel.getPaginatedDocuments().forEach(document -> documentsTable.getItems().add(new DocumentViewModel(document)));

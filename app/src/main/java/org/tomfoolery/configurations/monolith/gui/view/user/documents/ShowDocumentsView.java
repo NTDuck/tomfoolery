@@ -39,7 +39,7 @@ public abstract class ShowDocumentsView {
     public abstract void showDocuments();
 
     public void onPaginationInvalidException() {
-        System.err.println("No documents found");
+        documentsTable.getItems().clear();
     }
 
     public void onAuthenticationTokenInvalidException() {

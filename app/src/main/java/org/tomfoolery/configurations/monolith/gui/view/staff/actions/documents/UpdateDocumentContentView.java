@@ -1,5 +1,8 @@
 package org.tomfoolery.configurations.monolith.gui.view.staff.actions.documents;
 
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -19,6 +22,7 @@ import org.tomfoolery.core.usecases.external.staff.documents.retrieval.ShowDocum
 import org.tomfoolery.infrastructures.adapters.controllers.external.staff.documents.persistence.UpdateDocumentContentController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.staff.documents.retrieval.ShowDocumentsWithoutContentController;
 import org.tomfoolery.infrastructures.dataproviders.providers.io.file.abc.FileStorageProvider;
+
 import java.io.File;
 import java.util.function.Consumer;
 
@@ -33,7 +37,7 @@ public class UpdateDocumentContentView {
             @NonNull AuthenticationTokenRepository authenticationTokenRepository,
             @NonNull FileStorageProvider fileStorageProvider,
             @NonNull FileVerifier fileVerifier
-            ) {
+    ) {
         this.updateController = UpdateDocumentContentController.of(
                 documentRepository,
                 documentContentRepository,
@@ -52,6 +56,9 @@ public class UpdateDocumentContentView {
     }
 
     @FXML
+    private ComboBox<Integer> pageChooser;
+
+    @FXML
     private TableView<DocumentViewModel> documentsTable;
 
     @FXML
@@ -66,34 +73,66 @@ public class UpdateDocumentContentView {
             addContent(document.getIsbn());
         });
 
+        this.setUpPageChooserBehaviour();
         this.showDocuments();
     }
 
+    private void setUpPageChooserBehaviour() {
+        pageChooser.getItems().clear();
+        pageChooser.getItems().add(1);
+        pageChooser.getSelectionModel().selectFirst();
+
+        pageChooser.setOnAction(event -> showDocuments());
+    }
+
     private void showDocuments() {
-        val requestObject = ShowDocumentsWithoutContentController.RequestObject.of(1, Integer.MAX_VALUE);
+        int pageIndex = pageChooser.getSelectionModel().getSelectedItem();
+        val requestObject = ShowDocumentsWithoutContentController.RequestObject.of(pageIndex, 60);
         try {
             val viewModel = this.showController.apply(requestObject);
 
-            val documents = viewModel.getPaginatedDocumentsWithoutContent();
+            pageChooser.getItems().clear();
+            for (int i = 1; i < viewModel.getMaxPageIndex(); ++i) {
+                pageChooser.getItems().add(i);
+            }
+            EventHandler<ActionEvent> currentHandler = pageChooser.getOnAction();
+            pageChooser.setOnAction(null);
+            pageChooser.setValue(pageIndex);
+            pageChooser.setOnAction(currentHandler);
 
-            headerLabel.setText(documents.size() + " documents missing content");
-
-            documentsTable.getItems().clear();
-            documents.forEach(document -> {
-                    documentsTable.getItems().add(new DocumentViewModel(
-                            document.getDocumentISBN_13(),
-                            document.getDocumentTitle(),
-                            String.join(", ", document.getDocumentAuthors()),
-                            document.getCreatedTimestamp(),
-                            document.getLastModifiedTimestamp()
-                    ));
-            });
-
+            this.onSuccess(viewModel);
         } catch (ShowDocumentsWithoutContentUseCase.AuthenticationTokenInvalidException |
                  ShowDocumentsWithoutContentUseCase.AuthenticationTokenNotFoundException e) {
             StageManager.getInstance().openLoginMenu();
-        } catch (ShowDocumentsWithoutContentUseCase.PaginationInvalidException _) {
+        } catch (ShowDocumentsWithoutContentUseCase.PaginationInvalidException e) {
+            this.documentsTable.getItems().clear();
         }
+    }
+
+    private void onSuccess(ShowDocumentsWithoutContentController.@NonNull ViewModel viewModel) {
+        documentsTable.getItems().clear();
+        val documents = viewModel.getPaginatedDocumentsWithoutContent();
+
+        Task<Void> loadDocumentsTask = new Task<>() {
+            @Override
+            protected Void call() {
+                documents.forEach(document -> documentsTable.getItems().add(new DocumentViewModel(
+                        document.getDocumentISBN_13(),
+                        document.getDocumentTitle(),
+                        String.join(", ", document.getDocumentAuthors()),
+                        document.getCreatedTimestamp(),
+                        document.getLastModifiedTimestamp()
+                )));
+                return null;
+            }
+        };
+
+        loadDocumentsTask.setOnFailed(event -> {
+            Throwable e = loadDocumentsTask.getException();
+            System.err.println("Error loading documents: " + e.getMessage());
+        });
+
+        new Thread(loadDocumentsTask).start();
     }
 
     private void addContent(String isbn) {

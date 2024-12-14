@@ -27,6 +27,21 @@
     -fx-background-radius: 15;
 }
 
+.page-chooser {
+    -fx-border-color: gray;
+    -fx-border-width: 2;
+    -fx-background-radius: 8;
+    -fx-background-color: white;
+    -fx-border-radius: 8;
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 14;
+}
+
+.select-page-label {
+    -fx-font-family: "Segoe UI Variable";
+    -fx-font-size: 20;
+}
+
 /* Table styling */
 .documents-table {
     -fx-background-color: white;

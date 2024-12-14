@@ -5,15 +5,26 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
-
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.geometry.Insets?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       styleClass="content-container" stylesheets="/css/Staff/UpdateDocumentContentView.css"
       VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" spacing="20">
 
     <HBox styleClass="panel" prefHeight="60" spacing="20">
-        <Label styleClass="header" text="XX documents missing content" fx:id="headerLabel"/>
+        <Label styleClass="header" text="Documents missing content" fx:id="headerLabel"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <padding>
+            <Insets top="10" left="10"/>
+        </padding>
+        <Label text="Select Page:" styleClass="select-page-label"/>
+
+        <ComboBox fx:id="pageChooser" prefHeight="20" prefWidth="100" styleClass="page-chooser"/>
     </HBox>
 
     <TableView fx:id="documentsTable"
