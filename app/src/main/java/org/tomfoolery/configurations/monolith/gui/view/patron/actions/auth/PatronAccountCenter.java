@@ -11,15 +11,18 @@ import org.tomfoolery.configurations.monolith.gui.utils.BirthdayValidator;
 import org.tomfoolery.configurations.monolith.gui.utils.MessageLabelFactory;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.AuthenticationTokenGenerator;
 import org.tomfoolery.core.dataproviders.generators.users.authentication.security.PasswordEncoder;
+import org.tomfoolery.core.dataproviders.repositories.aggregates.hybrids.documents.HybridDocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.documents.DocumentRepository;
 import org.tomfoolery.core.dataproviders.repositories.relations.BorrowingSessionRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.PatronRepository;
 import org.tomfoolery.core.dataproviders.repositories.users.authentication.security.AuthenticationTokenRepository;
 import org.tomfoolery.core.usecases.external.abc.AuthenticatedUserUseCase;
+import org.tomfoolery.core.usecases.external.patron.documents.borrow.retrieval.GetDocumentBorrowStatusUseCase;
 import org.tomfoolery.core.usecases.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsUseCase;
 import org.tomfoolery.core.usecases.external.patron.users.persistence.UpdatePatronMetadataUseCase;
 import org.tomfoolery.core.usecases.external.patron.users.persistence.UpdatePatronPasswordUseCase;
 import org.tomfoolery.core.usecases.external.patron.users.retrieval.GetPatronUsernameAndMetadataUseCase;
+import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.retrieval.GetDocumentBorrowStatusController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.patron.documents.borrow.retrieval.ShowBorrowedDocumentsController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.persistence.UpdatePatronMetadataController;
 import org.tomfoolery.infrastructures.adapters.controllers.external.patron.users.persistence.UpdatePatronPasswordController;
@@ -31,6 +34,7 @@ public class PatronAccountCenter {
     private final @NonNull UpdatePatronMetadataController updateMetadataController;
     private final @NonNull UpdatePatronPasswordController updatePasswordController;
     private final @NonNull ShowBorrowedDocumentsController showBorrowedDocumentsController;
+    private final @NonNull GetDocumentBorrowStatusController getDocumentBorrowStatusController;
 
     public PatronAccountCenter(
             @NonNull PatronRepository patronRepository,
@@ -39,7 +43,8 @@ public class PatronAccountCenter {
             @NonNull PasswordEncoder passwordEncoder,
             @NonNull DocumentRepository documentRepository,
             @NonNull BorrowingSessionRepository borrowingSessionRepository,
-            @NonNull FileStorageProvider fileStorageProvider
+            @NonNull FileStorageProvider fileStorageProvider,
+            @NonNull HybridDocumentRepository hybridDocumentRepository
             ) {
         this.getUsernameAndMetadataController = GetPatronUsernameAndMetadataController.of(
                 patronRepository, authenticationTokenGenerator, authenticationTokenRepository
@@ -52,6 +57,9 @@ public class PatronAccountCenter {
         );
         this.showBorrowedDocumentsController = ShowBorrowedDocumentsController.of(
                 documentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository, fileStorageProvider
+        );
+        this.getDocumentBorrowStatusController = GetDocumentBorrowStatusController.of(
+                hybridDocumentRepository, borrowingSessionRepository, authenticationTokenGenerator, authenticationTokenRepository
         );
     }
 
@@ -165,21 +173,47 @@ public class PatronAccountCenter {
         try {
             val viewModel = this.showBorrowedDocumentsController.apply(requestObject);
             val borrowedDocuments = viewModel.getPaginatedBorrowedDocuments();
-            val latestBorrowedDocument = borrowedDocuments.getLast();
-            val upcomingDueBorrowedDocument = borrowedDocuments.getFirst();
 
-            dueTitleLabel.setText("- " + upcomingDueBorrowedDocument.getDocumentTitle());
-            dueAuthorLabel.setText("- By: " + String.join(", ", upcomingDueBorrowedDocument.getDocumentAuthors()));
-            dueImage.setImage(new Image("file:" + upcomingDueBorrowedDocument.getDocumentCoverImageFilePath(), 100, 150, false, true));
+            if (!borrowedDocuments.isEmpty()) {
+                val latestBorrowedDocument = borrowedDocuments.getLast();
+                val latestBorrowedStatus = GetDocumentBorrowStatusController.RequestObject.of(latestBorrowedDocument.getDocumentISBN_13());
+                val latestStatusViewModel = this.getDocumentBorrowStatusController.apply(latestBorrowedStatus);
+                borrowDateLabel.setText(latestStatusViewModel.getBorrowedTimestamp());
 
-            borrowTitleLabel.setText("- " + latestBorrowedDocument.getDocumentTitle());
-            borrowAuthorLabel.setText("- By: " + String.join(", ", latestBorrowedDocument.getDocumentAuthors()));
-            borrowImage.setImage(new Image("file:" + latestBorrowedDocument.getDocumentCoverImageFilePath(), 100, 150, false, true));
+                borrowTitleLabel.setText("- " + latestBorrowedDocument.getDocumentTitle());
+                borrowAuthorLabel.setText("- By: " + String.join(", ", latestBorrowedDocument.getDocumentAuthors()));
+                borrowImage.setImage(new Image("file:" + latestBorrowedDocument.getDocumentCoverImageFilePath(), 100, 150, false, true));
+
+                val upcomingDueBorrowedDocument = borrowedDocuments.getFirst();
+                val upcomingDueStatus = GetDocumentBorrowStatusController.RequestObject.of(upcomingDueBorrowedDocument.getDocumentISBN_13());
+                val upcomingStatusViewModel = this.getDocumentBorrowStatusController.apply(upcomingDueStatus);
+                dueDateLabel.setText(upcomingStatusViewModel.getDueTimestamp());
+
+                dueTitleLabel.setText("- " + upcomingDueBorrowedDocument.getDocumentTitle());
+                dueAuthorLabel.setText("- By: " + String.join(", ", upcomingDueBorrowedDocument.getDocumentAuthors()));
+                dueImage.setImage(new Image("file:" + upcomingDueBorrowedDocument.getDocumentCoverImageFilePath(), 100, 150, false, true));
+            } else {
+                borrowDateLabel.setText("No documents borrowed");
+                borrowTitleLabel.setText("None");
+                borrowAuthorLabel.setText("");
+                borrowImage.setImage(null);
+
+                dueDateLabel.setText("No upcoming due");
+                dueTitleLabel.setText("None");
+                dueAuthorLabel.setText("");
+                dueImage.setImage(null);
+            }
         } catch (ShowBorrowedDocumentsUseCase.AuthenticationTokenInvalidException |
                  ShowBorrowedDocumentsUseCase.AuthenticationTokenNotFoundException e) {
             throw new RuntimeException(e);
         } catch (ShowBorrowedDocumentsUseCase.PaginationInvalidException e) {
             onException(e);
+        } catch (GetDocumentBorrowStatusUseCase.DocumentNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (GetDocumentBorrowStatusUseCase.DocumentISBNInvalidException e) {
+            throw new RuntimeException(e);
+        } catch (GetDocumentBorrowStatusUseCase.DocumentNotBorrowedException e) {
+            throw new RuntimeException(e);
         }
     }
 

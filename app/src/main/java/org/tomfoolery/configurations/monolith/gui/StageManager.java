@@ -21,7 +21,6 @@ import java.util.Objects;
 
 @Getter
 public class StageManager {
-//    private static final @NonNull String APPLICATION_CONTEXT_ENVIRONMENT_VARIABLE_NAME = "tomfoolery.context";
     private final @NonNull ApplicationContext resources = FileCachedInMemoryApplicationContext.of();
 
     private static StageManager instance;

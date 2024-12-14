@@ -20,7 +20,7 @@
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
         </padding>
-        <Label text="Account Center - Duy Nguyen" VBox.vgrow="ALWAYS">
+        <Label text="Account Center" VBox.vgrow="ALWAYS">
             <font>
                 <Font name="Segoe UI Bold" size="30.0"/>
             </font>

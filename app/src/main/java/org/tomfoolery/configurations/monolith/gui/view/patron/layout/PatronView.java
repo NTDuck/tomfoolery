@@ -95,7 +95,8 @@ public class PatronView extends BaseView {
                 StageManager.getInstance().getResources().getPasswordEncoder(),
                 StageManager.getInstance().getResources().getDocumentRepository(),
                 StageManager.getInstance().getResources().getBorrowingSessionRepository(),
-                StageManager.getInstance().getResources().getFileStorageProvider()
+                StageManager.getInstance().getResources().getFileStorageProvider(),
+                StageManager.getInstance().getResources().getHybridDocumentRepository()
         );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Patron/PatronAccountCenter.fxml"));
